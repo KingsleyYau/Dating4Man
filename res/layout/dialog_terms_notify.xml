@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" 
+    android:background="#FFFFFF">
+    <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+        <TextView 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#666666"
+            android:id="@+id/tvTitle"
+            android:text="The following fees apply when using call service"/>
+        <TextView 
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 - Translation: Free\n2 - Call: 1 Qpid Credit per min (starts when connected to lady)\n3 - International calling fees (determined by your Cellular Service Provider"
+            android:id="@+id/tvTerms"/>
+        <LinearLayout 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <CheckBox 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cbNoShow"/>
+            <TextView 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Don't show again"
+                android:textColor="#000000"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </LinearLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#666666"/>
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="56dp"
+        android:text="Call"
+        android:textColor="#0000FF"
+        android:background="@drawable/selector_menu_item"
+        android:id="@+id/btnPositive"/>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#666666"/>
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="56dp"
+        android:text="Cancel"
+        android:textColor="#0000FF"
+        android:background="@drawable/selector_menu_item"
+        android:id="@+id/btnNegative"/>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#666666"
+        android:layout_marginBottom="16dp"/>
+      
+</LinearLayout>

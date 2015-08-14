@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?><RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <SurfaceView
+        android:id="@+id/surfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageButton
+        android:id="@+id/buttonPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/touch_feedback_dark_grey_round"
+        android:src="@drawable/ic_play_circle_outline_white_48dp"
+        android:padding="16dp" />
+
+    
+    <com.qpidnetwork.view.MaterialProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            app:matProg_barColor="@color/white"
+            app:matProg_progressIndeterminate="true"
+            android:layout_centerInParent="true"/>
+
+    <RelativeLayout
+        android:id="@+id/layoutInsert"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="52dp"
+        android:visibility="visible"
+        android:background="@color/standard_grey"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
+
+        <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/buttonInsert"
+            android:gravity="left"
+            android:text="Virtual gift (1 credit)"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/buttonInsert"
+            android:layout_width="64dp"
+            android:layout_height="36dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/touch_feedback_round_white_white"
+            android:text="Insert"
+            android:textColor="@color/white"
+            android:textSize="14sp"/>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,76 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:circleimage = "http://schemas.android.com/apk/res/com.qpidnetwork.dating"
+    android:layout_width="fill_parent"
+    android:layout_height="72dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+    
+    
+	<com.qpidnetwork.framework.widget.CircleImageView
+ 		android:id="@+id/ivPhoto"
+ 		android:layout_width="45dp"
+ 		android:layout_height="45dp"
+ 		circleimage:border_width="1dp"
+ 		circleimage:border_color="#FFFFFF"
+ 		android:src="@drawable/female_default_profile_photo_40dp"/>
+ 
+	<FrameLayout 
+		android:layout_width="0dp"
+		android:layout_weight="1"
+		android:layout_height="40dp"
+		android:orientation="vertical"
+		android:layout_marginLeft="8dp">
+		<LinearLayout 
+			android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:orientation="horizontal"
+		    android:layout_gravity="top"
+		    android:gravity="left|center">
+         	<TextView 
+            	android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:textSize="16sp"
+	            android:textStyle="normal"
+	            android:textColor="@color/text_color_dark"
+	            android:text="Jennifer"
+	            android:includeFontPadding="false"
+	            android:id="@+id/tvName"/>
+         	
+         	<TextView 
+         	    android:layout_width="wrap_content"
+         	    android:layout_height="wrap_content"
+         	    android:id="@+id/tvAge"
+         	    android:text="22" 
+         	   	android:layout_marginLeft="8dp"
+         	   	android:textColor="@color/text_color_grey"
+         	   	android:textSize="16sp"/>
+         	
+         	<View 
+         	    android:layout_width="6dp"
+         	    android:layout_height="6dp"
+         	    android:background="@drawable/circle_32000000_bg"
+         	   	android:layout_marginLeft="4dp"/>
+         	<TextView 
+         	    android:layout_width="wrap_content"
+         	    android:layout_height="wrap_content"
+         	    android:text="China"
+         	   	android:layout_marginLeft="4dp"
+         	   	android:id="@+id/tvCountry"
+         	   	android:textColor="@color/text_color_grey"
+         	   	android:textSize="16sp"/>
+     	</LinearLayout>
+     	<TextView 
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:singleLine="true"
+	        android:ellipsize="end"
+	        android:textColor="@color/text_color_grey"
+	        android:textStyle="normal"
+	        android:textSize="14sp"
+	        android:includeFontPadding="false"
+	        android:text="Time received"
+	        android:layout_gravity="bottom"
+	        android:id="@+id/tvDesc"/>
+	</FrameLayout>
+</LinearLayout>
+ 

@@ -1,0 +1,74 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:circleimage = "http://schemas.android.com/apk/res/com.qpidnetwork.dating"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:id="@+id/flBody">
+    
+    <LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:orientation="vertical">
+	    <LinearLayout 
+	        android:layout_width="fill_parent"
+	        android:layout_height="45dp"
+	        android:orientation="horizontal"
+	        android:gravity="center_vertical">
+	        <FrameLayout 
+		        android:layout_width="40dp"
+			    android:layout_height="40dp">
+			    <com.qpidnetwork.framework.widget.CircleImageView
+				    android:id="@+id/imageView"
+				    android:layout_width="fill_parent"
+				    android:layout_height="fill_parent"
+				    android:src="@drawable/female_default_profile_photo_40dp"/>
+			    <ImageView 
+			        android:layout_width="16dp"
+			        android:layout_height="16dp"
+			        android:src="@drawable/circle_green_with_white_stroke_bg"
+			        android:layout_gravity="right|bottom"
+			        android:id="@+id/ivOnline"
+			        android:visibility="gone"/>
+		    </FrameLayout>
+		    <FrameLayout 
+		        android:layout_width="0dp"
+		        android:layout_weight="1"
+		        android:layout_height="40dp"
+		        android:orientation="vertical"
+		        android:layout_marginLeft="16dp">
+
+	            <TextView 
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content"
+	                android:textSize="16sp"
+	                android:textStyle="normal"
+	                android:textColor="@color/text_color_dark"
+	                android:text="Jennifer"
+	                android:includeFontPadding="false"
+	                android:id="@+id/textViewTitle"
+	                android:layout_gravity="top"/>
+		        <TextView 
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"
+		            android:singleLine="true"
+		            android:ellipsize="end"
+		            android:textColor="@color/text_color_grey"
+		            android:textStyle="normal"
+		            android:textSize="14sp"
+		            android:includeFontPadding="false"
+		            android:text="Time:16:30 22 Jan"
+		            android:layout_gravity="bottom"
+		            android:id="@+id/textViewSubTitle"/>
+		    </FrameLayout>
+	    </LinearLayout>
+	   
+	</LinearLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/listview_divider_grey"
+        android:layout_marginLeft="72dp"
+        android:layout_gravity="bottom"/>  
+</FrameLayout>

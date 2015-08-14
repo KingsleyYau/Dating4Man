@@ -1,0 +1,169 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+     xmlns:wheel="http://schemas.android.com/apk/res-auto"
+     xmlns:button="http://schemas.android.com/apk/res-auto"
+             android:background="#FFFFFF" >
+     
+
+
+    <!-- actionbar -->
+    <RelativeLayout android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_height"
+        android:background="#000000" >
+
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/menu_normal_marginleft"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:text="Chat"
+            android:layout_centerVertical="true"
+            android:id="@+id/tvTitle"
+            android:textStyle="bold"/>
+        <LinearLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal"
+            android:layout_alignParentRight="true"
+            android:gravity="center_vertical">
+           
+            
+            <ImageButton
+                android:layout_width="@dimen/actionbar_height"
+                android:layout_height="@dimen/actionbar_height"
+                android:src="@drawable/ic_launch_left_white_24dp"
+                android:id="@+id/expand"
+				android:background="@drawable/touch_feedback_holo_dark_circle"/>
+            
+            
+            <ImageButton android:id="@+id/search"
+                android:layout_width="@dimen/actionbar_height"
+                android:layout_height="@dimen/actionbar_height"
+                android:src="@drawable/ic_search_white_24dp"
+                android:background="@drawable/touch_feedback_holo_dark_circle"
+                />
+        </LinearLayout>
+    </RelativeLayout>
+    
+    
+
+
+    <!-- invite -->
+    <LinearLayout android:id="@+id/footer"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/actionbar_height"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#294461"
+        android:layout_alignParentBottom="true">
+        
+		<ImageView android:id="@+id/ivInvitePhoto"
+		    android:layout_width="40dp"
+		    android:layout_height="40dp"
+		    android:src="@drawable/female_default_profile_photo_40dp"
+		    android:layout_marginLeft="8dp"
+		    android:scaleType="centerCrop"/>
+		
+		
+		<LinearLayout 
+		    android:layout_width="fill_parent"
+		    android:layout_height="40dp"
+		    android:orientation="horizontal"
+		    android:gravity="center_vertical"
+		    android:layout_marginLeft="8dp"
+		    android:layout_marginRight="8dp"
+		    android:background="@drawable/touch_feedback_round_white_white">
+		    <TextView  android:id="@+id/tvInviteMsg"
+		        android:layout_width="0dp"
+		        android:layout_weight="1"
+		        android:layout_height="wrap_content"
+		        android:textSize="16sp"
+		        android:textColor="#FFFFFF"
+		        android:layout_marginLeft="8dp"
+		        android:layout_marginRight="8dp"
+		        android:singleLine="true"
+		        android:ellipsize="end"/>
+		    
+		    <TextView android:id="@+id/tvInviteNum"
+		        android:layout_width="24dp"
+		        android:layout_height="24dp"
+		        android:textSize="14sp"
+		        android:textColor="#FFFFFF"
+		        android:gravity="center"
+		        android:background="@drawable/circle_angle_solid_orange_rect"
+		        android:layout_marginRight="8dp"/>
+		</LinearLayout>        
+    </LinearLayout>
+    
+    
+    
+
+            
+                
+            <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+        android:layout_below="@id/header"
+        android:layout_above="@id/footer" >
+        
+        <ListView 
+        android:layout_width="fill_parent"
+		android:layout_height="match_parent"
+        android:cacheColorHint="@null"
+        android:listSelector="#00FFFFFF"
+        android:id="@+id/lvContacts"
+        android:fadeScrollbars="true"
+        android:fadingEdge="none"
+        android:divider="@null"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
+        
+
+                        <LinearLayout android:id="@+id/no_content"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_below="@id/header"
+                android:gravity="top|center"
+                        android:padding="24dp">
+                
+                                <TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_grey"
+        android:textSize="18sp"
+        android:visibility="visible"
+        android:text="@string/contact_no_data_tips_not_login"
+        android:gravity="center"
+        android:id="@+id/no_data_view_tips"/>
+                                
+                                	    <com.qpidnetwork.view.ButtonRaised
+        android:id="@+id/btn_no_data_login"
+        android:layout_width="112dp"
+        android:layout_height="40dp"
+        android:clickable="true"
+        button:background="@color/blue_color"
+        button:elevation="2dp"
+        button:title="@string/login"
+        button:title_color="@color/white"
+        button:touch_feedback="@drawable/touch_feedback_holo_dark"
+        android:layout_marginTop="24dp"
+        android:focusable="true"/>
+                
+            </LinearLayout>
+
+            
+                        <com.qpidnetwork.view.MaterialProgressBar
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            wheel:matProg_barColor="@color/blue_color"
+            wheel:matProg_progressIndeterminate="true"
+            android:layout_centerInParent="true"
+            android:id="@+id/progress_bar"/>
+                        
+    
+</RelativeLayout>

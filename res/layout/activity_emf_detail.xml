@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" 
+    android:background="#FFFFFF"
+    android:fitsSystemWindows="true">
+    
+    
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fadingEdge="@null"
+        android:layout_marginTop="@dimen/actionbar_height"
+        android:fadeScrollbars="true">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp" >
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/include_emf_detail_base_header" />
+
+            <include
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/include_emf_detail_body" />
+
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                layout="@layout/include_emf_detail_error"
+                android:id="@+id/includeError"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </ScrollView>
+    
+    <com.qpidnetwork.view.MaterialAppBar 
+        android:layout_height="@dimen/actionbar_height"
+        android:layout_width="match_parent"
+        android:id="@+id/appbar"/>
+
+</RelativeLayout>

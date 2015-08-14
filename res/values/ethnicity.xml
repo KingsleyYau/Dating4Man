@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ethnicity">
+		<item>--</item>
+		<item>Asian</item>
+		<item>Black/African descent</item>
+		<item>Caucasian</item>
+		<item>EastIndian</item>
+		<item>Hispanic/Latino</item>
+		<item>Native American</item>
+		<item>Pacific Islander</item>
+		<item>Semitic</item>
+		<item>Other</item>
+    </string-array> 
+</resources>

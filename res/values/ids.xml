@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <!-- actionBar -->
+    <item name="common_button_send" type="id"/>
+    <item name="common_button_search" type="id"/>
+    <item name="common_button_back" type="id"/>
+    <item name="common_button_overflow" type="id"/>
+    <item name="common_button_mainmenu" type="id"/>
+    <item name="common_button_contacts" type="id"/>
+    <item name="common_button_gift" type="id"/>
+    <item name="common_button_attachments" type="id"/>
+    <item name="common_button_reply" type="id"/>
+    <item name="common_button_forward" type="id"/>
+    <item name="common_button_online" type="id"/>
+    <item name="common_button_emf" type="id"/>
+    <item name="common_button_call" type="id"/>
+    <item name="common_button_ok" type="id"/>
+    <item name="common_button_favorite" type="id"/>
+    <item name="common_button_save" type="id"/>
+        
+    <!-- livechat -->
+    <item name="item_position" type="id">false</item>
+    <item name="emo_item_img" type="id">false</item>
+    <item name="emo_item_progress" type="id">false</item>
+    
+    <!-- slidingmenu -->
+    <item name="widget_slidingmenu_selected_view" type="id"/> 
+    <item name="activity_content_viewpager" type="id"/>
+</resources>

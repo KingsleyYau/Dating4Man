@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/video_width"
+    android:layout_height="@dimen/video_width">
+
+    <ImageView
+        android:id="@+id/item_photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+
+    
+    <TextView
+        android:id="@+id/item_video_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:background="#80000000"
+        android:padding="6dip"
+        android:text="3:53"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
+
+</FrameLayout>

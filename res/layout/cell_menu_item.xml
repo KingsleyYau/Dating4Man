@@ -1,0 +1,32 @@
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/menu_cell_height">
+    
+
+    
+   	<ImageView 
+   	    android:id="@+id/ivMenuIcon"
+   	    android:layout_width="@dimen/menu_cell_photo_width"
+   	    android:layout_height="@dimen/menu_cell_photo_height"
+   	    android:layout_marginLeft="@dimen/menu_normal_marginleft"
+   	    android:layout_centerVertical="true"
+   	    android:scaleType="fitXY"
+   	    android:padding="6dp"/>
+   	<TextView 
+   	    style="@style/menu_desc_textview"
+   	    android:layout_marginLeft="@dimen/menu_desc_marginleft"
+   	    android:id="@+id/tvMenuDesc"
+   	    android:layout_centerVertical="true"
+   	    android:text="test"/>
+   	<TextView 
+   	    style="@style/menu_tips_textview"
+   	    android:layout_alignParentRight="true"
+   	    android:layout_marginRight="@dimen/menu_normal_marginright"
+   	    android:id="@+id/tvMenuUnread"
+   	   	android:gravity="center"
+   	   	android:background="@drawable/gray_stroke_circle"
+   	   	android:visibility="gone"
+   	   	android:layout_centerVertical="true"/>
+</RelativeLayout>

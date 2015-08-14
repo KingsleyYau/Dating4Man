@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- common -->
+    <color name="unread_item_grey">#e9e9e9</color>
+    <color name="brown">#F2F2F2</color>
+    <color name="listview_divider_grey">#16000000</color>
+    <color name="blue_color">#0099FF</color>
+    <color name="thin_grey">#16000000</color>
+    <color name="tiny_grey_solid">#F2F2F2</color>
+    <color name="standard_grey">#32000000</color>
+    <color name="text_color_grey">#666666</color>
+    <color name="text_color_dark">#333333</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="Gray">#808080</color>
+    <color name="green">#0f9d58</color>
+    <color name="transparent_green">#700f9d58</color>
+    <color name="transparent_black_windown_bg">#98000000</color>
+    
+    <!-- theme -->
+    <color name="theme_actionbar_indicator">#92FFFFFF</color>
+    
+        
+    <!-- theme -->
+    <color name="theme_actionbar_bg_cd">#149CEB</color>
+    <color name="them_actionbar_bg_cl">#ff4444</color>
+    <color name="them_actionbar_bg_ida">#fe7800</color>
+    <color name="them_actionbar_bg_ld">#0f9d58</color>
+    
+    <color name="theme_actionbar_secoundary">#FFFFFF</color>
+
+    
+    <!-- menu item -->
+    <color name="menu_item_normal">#00FFFFFF</color>
+    <color name="menu_item_pressed">#16000000</color>
+    <color name="menu_item_unread">#16000000</color>
+    <color name="menu_item_unread_pressed">#32000000</color>
+    
+
+    <!-- holo light button background -->
+    <color name="holo_light_btn_bg_n">#00FFFFFF</color>
+    <color name="holo_light_btn_bg_a">#16FFFFFF</color>
+    <color name="holo_light_btn_bg_p">#32000000</color>
+    
+    <!-- holo light dark background -->
+    <color name="holo_dark_btn_bg_n">#00FFFFFF</color>
+    <color name="holo_dark_btn_bg_p">#32FFFFFF</color>
+    
+    
+    <!-- 半透明 -->
+    <color name="transparent">#9FFF</color>
+    
+    <!-- popwindow -->
+    <color name="pop_item_press">#01568D</color>
+    <color name="pop_item_nomal">#006BAF</color>
+    <color name="pop_item_divider">#005D9B</color>
+    
+    <!-- branding colors -->
+    <color name="brand_color_light1">#7ACA83</color>
+    <color name="brand_color_light2">#60BFEB</color>
+    <color name="brand_color_light3">#D774A0</color>
+    <color name="brand_color_light4">#F47852</color>
+    <color name="brand_color_light5">#F67D70</color>
+    <color name="brand_color_light6">#F99B5D</color>
+    
+        <!-- branding colors -->
+    <color name="brand_color_light11">#607ACA83</color>
+    <color name="brand_color_light12">#6060BFEB</color>
+    <color name="brand_color_light13">#60D774A0</color>
+    <color name="brand_color_light14">#60F47852</color>
+    <color name="brand_color_light15">#60F67D70</color>
+    <color name="brand_color_light16">#60F99B5D</color>
+    
+    <color name="brand_color_1">#37b652</color>
+    <color name="brand_color_2">#f37800</color>
+    <color name="brand_color_3">#00aae0</color>
+    <color name="brand_color_4">#eb4000</color>
+    <color name="brand_color_5">#c53b7c</color>
+    <color name="brand_color_6">#ee4942</color>
+    
+    <!-- common color -->
+    <color name="red_light">#FF4040</color>
+    
+    <!-- livechat -->
+    <color name="dot_normal">#333333</color>
+    <color name="dot_selected">#52aff7</color>
+    
+</resources>

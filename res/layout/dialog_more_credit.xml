@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:paddingBottom="20dp"
+    android:paddingTop="20dp" >
+
+    <include
+        android:id="@+id/layoutChooseAge"
+        layout="@layout/layout_choose_age"
+        android:layout_width="match_parent"
+   	 	android:layout_height="48dp"
+   	 	android:paddingLeft="10dp"
+   	 	android:paddingRight="10dp"
+        />
+    
+  	<TextView
+  	    android:id="@+id/textViewSep1"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="1dp"
+  	    android:layout_below="@+id/layoutChooseAge"
+  	    android:layout_marginTop="10dp"
+  	    android:background="#333333"
+  	    />  
+  	    
+    <TextView
+  	    android:id="@+id/textViewConfirm"
+  	    android:layout_width="wrap_content"
+  	    android:layout_height="wrap_content"
+  	    android:layout_below="@+id/textViewSep1"
+  	    android:layout_marginTop="10dp"
+  	    android:layout_centerHorizontal="true"
+  	    android:gravity="center_horizontal"
+  	    android:text="Confirm"
+  	    android:textSize="23dp"
+  	    android:textColor="#666666"
+  	    android:clickable="true"
+  	    />
+    
+    <TextView
+  	    android:id="@+id/textViewSep4"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="1dp"
+  	    android:layout_marginTop="10dp"
+  	    android:layout_below="@+id/textViewConfirm"
+  	    android:background="#333333"
+  	    /> 
+    	
+</RelativeLayout>

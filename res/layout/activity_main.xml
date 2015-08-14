@@ -1,0 +1,58 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <Button
+        android:id="@+id/register"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:onClick="onClickRegister"
+        android:text="register" />
+            
+    <Button
+        android:id="@+id/quickmatch"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/register"
+        android:onClick="onClickQuickMatch"
+        android:text="quickmatch" />
+    
+    <Button
+        android:id="@+id/myprofile"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/quickmatch"
+        android:onClick="onClickMyProfile"
+        android:text="myprofile" />
+    
+    <com.qpidnetwork.view.ProgressImageHorizontalView
+        android:id="@+id/progressImageHorizontalView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_below="@+id/myprofile"
+        >
+
+    </com.qpidnetwork.view.ProgressImageHorizontalView>
+
+    <Button
+        android:id="@+id/livechat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/progressImageHorizontalView"
+        android:onClick="onClickLiveChat"
+        android:text="LiveChat" />
+    
+    <ImageView
+	    android:id="@+id/testImageView"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/livechat"
+	    android:src="@drawable/ic_close_white_24dp"
+	    android:onClick="onClickTestImageView" />
+
+</RelativeLayout>

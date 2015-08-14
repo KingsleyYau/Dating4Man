@@ -1,0 +1,36 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true" >
+    
+    <LinearLayout android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white">
+
+    <include
+        android:id="@+id/includeSearch"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/include_search_header"
+        android:layout_gravity="top|left" />
+
+
+    <com.qpidnetwork.view.MartinListView
+        android:id="@+id/martinListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top|center" />
+    
+    
+    <com.qpidnetwork.view.MaterialProgressBar
+        android:id="@+id/pbTopLoading"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="32dp" />
+    
+
+</LinearLayout>
+</LinearLayout>

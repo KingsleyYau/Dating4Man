@@ -1,0 +1,41 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tiny_grey_solid"
+    android:fitsSystemWindows="true"> 
+    
+
+        
+        <GridView 
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/gvAlbum"
+            android:numColumns="2"
+            android:gravity="center"
+            android:verticalSpacing="1dp"
+			android:horizontalSpacing="1dp"
+			android:listSelector="@null"/>
+        
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_close_white_24dp"
+            android:id="@+id/ivClose"
+            android:background="@drawable/touch_feedback_circle_grey"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"/>
+        
+    <TextView
+        android:id="@+id/tvPayment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="@string/x_credits_will_be_charged_for_each_photo_sent"
+        android:background="@color/thin_grey"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="16dp"/>
+
+</RelativeLayout>

@@ -1,3 +1,12 @@
+# C & C++
+*.a
+*.so
+
+# Eclipse
+.settings
+.externalToolBuilders
+.classpath
+
 # Built application files
 *.apk
 *.ap_

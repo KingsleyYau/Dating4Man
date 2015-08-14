@@ -1,0 +1,59 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:circleimage="http://schemas.android.com/apk/res/com.qpidnetwork.dating"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
+    android:gravity="left|center">
+
+    <com.qpidnetwork.framework.widget.CircleImageView
+        android:id="@+id/ivPhoto"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/default_photo_64dp"
+        circleimage:border_color="#FFFFFF"
+        circleimage:border_width="0dp"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:orientation="vertical"
+        android:gravity="left|center" >
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:text="Customer Care"
+            android:textColor="@color/text_color_dark"
+            android:textSize="18sp"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/tvDesc"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="Jun 26, 2015"
+            android:textColor="@color/text_color_grey"
+            android:textSize="16sp"
+            android:textStyle="normal" />
+    </LinearLayout>
+    
+    <TextView 
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@color/thin_grey"
+        android:text="2"
+        android:gravity="center"
+        android:id="@+id/tvIndex"
+        android:textColor="@color/text_color_dark"
+        android:textSize="16sp"/>
+
+</LinearLayout>

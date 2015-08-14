@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rectangle_rounded_angle_white_bg"
+    android:paddingBottom="8dp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:minWidth="280dp">
+    
+  	<TextView
+  	    android:id="@+id/textViewTitle"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="wrap_content"
+  	    android:gravity="left"
+  	    android:text="Switch Site"
+  	    android:textSize="20sp"
+  	    android:textColor="#669900"
+  	    android:paddingLeft="24dp"
+  	    android:paddingRight="24dp"
+  	    android:paddingTop="24dp"
+  	    android:paddingBottom="20dp"/>
+  	
+  	<TextView
+  	    android:layout_width="match_parent"
+  	    android:layout_height="1dp"
+  	    android:background="@color/listview_divider_grey"/>
+    <LinearLayout 
+        android:id="@+id/layoutContent"
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"	
+    	android:orientation="vertical"
+    	>
+        
+    </LinearLayout>
+</LinearLayout>

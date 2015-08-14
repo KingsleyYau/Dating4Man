@@ -1,0 +1,53 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/thin_grey" >
+
+    <LinearLayout
+        android:id="@+id/llTabBar"
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal" >
+
+        
+
+        <ImageButton
+            android:id="@+id/ivEmotionHistory"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_history_grey600_24dp" 
+            android:background="@null"/>
+
+        <ImageButton
+            android:id="@+id/ivEmotion"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_premium_emotion_24dp" 
+            android:background="@null"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/viewDivider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/llTabBar"
+        android:background="#FFFFFF" />
+
+    <View
+        android:id="@+id/indicator"
+        android:layout_width="48dp"
+        android:layout_height="2dp"
+        android:layout_below="@id/llTabBar"
+
+        android:background="@color/blue_color" />
+
+    <com.qpidnetwork.view.AbilitySwapablePageView
+        android:id="@+id/vpEmotion"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/viewDivider"
+        android:layout_gravity="top" />
+
+</RelativeLayout>

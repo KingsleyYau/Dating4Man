@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:button="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+	<LinearLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="64dp"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+        
+        <com.qpidnetwork.view.ButtonRaised
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:clickable="true"
+        button:background="@color/blue_color"
+        button:elevation="2dp"
+        button:title="@string/lovecall_details_btn_confirm"
+        button:title_color="@color/white"
+        button:touch_feedback="@drawable/touch_feedback_holo_dark" />
+        
+    </LinearLayout>
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/lovecall_details_decline_tips"
+        android:gravity="center_horizontal"
+        android:textColor="@color/text_color_grey"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp"/>
+
+    
+            <com.qpidnetwork.view.ButtonRaised
+        android:id="@+id/btnDecline"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:clickable="true"
+        button:background="@color/white"
+        button:elevation="1dp"
+        button:title="@string/lovecall_details_btn_decline"
+        button:title_color="@color/text_color_grey"
+        button:touch_feedback="@drawable/touch_feedback_round_border_white"
+        android:layout_marginBottom="16dp" />
+</LinearLayout>

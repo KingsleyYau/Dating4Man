@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rectangle_rounded_angle_white_bg"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:minWidth="280dp">
+  	
+  	<TextView
+  	    android:id="@+id/textView"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="wrap_content"
+  	    android:gravity="center_horizontal"
+  	    android:text="@string/emf_credit_tips_title"
+  	    android:textSize="20sp"
+  	    android:textColor="#669900"
+  	    android:padding="16dp"/>
+  	
+  	<LinearLayout
+  	    android:layout_width="match_parent"
+  	    android:layout_height="wrap_content"
+  	    android:orientation="horizontal"
+  	    android:paddingBottom="16dp"
+  	    android:paddingLeft="16dp"
+  	    android:paddingRight="16dp" >
+
+  	    <TextView
+  	        android:id="@+id/textViewTips"
+  	        android:layout_width="match_parent"
+  	        android:layout_height="wrap_content"
+  	        android:layout_weight="1"
+  	        android:gravity="right"
+  	        android:text="@string/emf_credit_tips"
+  	        android:textColor="@color/text_color_grey"
+  	        android:textSize="16sp"
+  	        android:textStyle="bold" />
+
+  	    <TextView
+  	        android:id="@+id/textViewBounds"
+  	        android:layout_width="match_parent"
+  	        android:layout_height="wrap_content"
+  	        android:layout_weight="2"
+  	        android:layout_marginLeft="5dp"
+  	        android:gravity="left"
+  	        android:text="3.5"
+  	        android:textColor="#FF3300"
+  	        android:textSize="16sp"
+  	        android:textStyle="bold" 
+  	        />
+  	</LinearLayout>
+
+    <TextView
+  	    android:id="@+id/textViewRemoveAttachment"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="56dp"
+  	    android:gravity="center"
+  	    android:text="@string/emf_credit_button_remove"
+  	    android:textSize="18sp"
+  	    android:textColor="@color/blue_color"
+  	    android:clickable="true"
+  	    android:background="@drawable/touch_feedback_holo_light"/>
+    
+    <TextView
+  	    android:id="@+id/textViewAddCredit"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="56dp"
+  	    android:gravity="center"
+  	    android:text="@string/emf_credit_button_add"
+  	    android:textSize="18sp"
+  	    android:textColor="@color/blue_color"
+  	    android:clickable="true"
+  	    android:background="@drawable/touch_feedback_holo_light"/>    
+    	
+</LinearLayout>

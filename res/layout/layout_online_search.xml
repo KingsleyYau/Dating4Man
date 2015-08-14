@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:button="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical">
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="left|center"
+        android:text="@string/search_criterial"
+        android:textColor="@color/text_color_dark"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingLeft="16dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Age"
+            android:textColor="@color/text_color_dark"
+            android:textSize="16sp" 
+            android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/textViewMin"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="18"
+                android:textColor="@color/text_color_grey"
+                android:textSize="16sp"
+                android:layout_marginLeft="72dp" />
+
+            <LinearLayout
+                android:id="@+id/layoutAge"
+                android:layout_width="144dp"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_toRightOf="@id/textViewMin"
+                android:gravity="center"/>
+
+
+            <TextView
+                android:id="@+id/textViewMax"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="99"
+                android:textColor="@color/text_color_grey"
+                android:textSize="16sp"
+                android:layout_toRightOf="@+id/layoutAge" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="8dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Online"
+            android:textColor="@color/text_color_dark"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="72dp"
+            android:orientation="horizontal"
+            android:gravity="left|center"
+            android:background="@drawable/circle_angle_soild_gray_rect_bg"
+            android:padding="1dp">
+
+            <com.qpidnetwork.view.CheckButtonNormal
+                android:id="@+id/buttonNoMatter"
+                android:layout_width="102dp"
+                android:layout_height="wrap_content" />
+
+            <com.qpidnetwork.view.CheckButtonNormal
+                android:id="@+id/buttonOnline"
+                android:layout_width="86dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </RelativeLayout>
+    
+    <com.qpidnetwork.view.ButtonRaised
+        android:id="@+id/buttonSearch"
+        android:layout_width="96dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        button:background="@color/green"
+        button:elevation="1dp"
+        button:title="@string/common_btn_search"
+        button:title_color="@color/white"
+        button:touch_feedback="@drawable/touch_feedback_holo_dark" 
+        android:layout_marginLeft="88dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/listview_divider_grey" />
+
+    
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left|bottom"
+        android:orientation="horizontal"
+        android:padding="16dp">
+        
+        <TextView android:id="@+id/search_by_id_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left|center"
+        android:text="@string/Lady_ID"
+        android:textColor="@color/text_color_dark"
+        android:textSize="16sp"
+        android:layout_centerVertical="true"/>
+
+        <com.qpidnetwork.view.MaterialTextField
+            android:id="@+id/editTextId"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="72dp"
+            android:layout_centerVertical="true"/>
+
+            <com.qpidnetwork.view.ButtonRaised
+        android:id="@+id/buttonGo"
+        android:layout_width="64dp"
+        android:layout_height="40dp"
+        android:clickable="true"
+        button:background="@color/white"
+        button:elevation="0dp"
+        button:title="@string/common_btn_go"
+        button:title_color="@color/text_color_dark"
+        button:touch_feedback="@drawable/touch_feedback_round_border_white"
+        android:layout_marginLeft="16dp" 
+        android:layout_toRightOf="@id/editTextId"
+        android:layout_centerVertical="true"/>
+
+    </RelativeLayout>
+    
+    </LinearLayout>
+        <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/rectangle_grey_shawdow"/>
+
+</LinearLayout>

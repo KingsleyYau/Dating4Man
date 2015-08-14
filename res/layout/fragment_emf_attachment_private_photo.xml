@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rl_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.qpidnetwork.view.TouchImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/layoutBuy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="16dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textViewTips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/emf_private_photo_tips"
+            android:textSize="18sp" />
+
+        <com.qpidnetwork.view.ButtonRaised
+            android:id="@+id/buttonView"
+            android:layout_width="96dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:clickable="true"
+            android:onClick="onClickView"
+            app:background="@color/white"
+            app:elevation="1dp"
+            app:title="@string/emf_View"
+            app:title_color="@color/text_color_dark"
+            app:touch_feedback="@drawable/touch_feedback_round_border_white" />
+    </LinearLayout>
+
+    <com.qpidnetwork.view.MaterialProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        app:matProg_barColor="@color/white"
+        app:matProg_progressIndeterminate="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/standard_grey"
+        android:gravity="left|center"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp" >
+
+        <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <ImageButton
+            android:id="@+id/imageViewDownload"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/touch_feedback_holo_dark_round_rectangle"
+            android:onClick="onClickDownload"
+            android:src="@drawable/ic_file_download_white_24dp" />
+    </LinearLayout>
+
+</RelativeLayout>

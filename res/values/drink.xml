@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="drink">
+		<item>--</item>
+		<item>Never</item>
+		<item>Frequently</item>
+		<item>Socially on occasion</item>
+    </string-array> 
+</resources>

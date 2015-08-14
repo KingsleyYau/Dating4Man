@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${relativePackage}.${activityClass}" 
+    android:background="#FFFFFF"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
+
+    
+    <LinearLayout android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/actionbar_height">
+
+        <TextView
+	        android:id="@+id/textViewTips"
+	        android:layout_width="match_parent"
+	        android:layout_height="58dp"
+	        android:gravity="center_vertical"
+	        android:textColor="@color/black"
+	        android:text="@string/My_selfintro_tips"
+	        android:textSize="18sp"
+	        android:padding="16dp"
+	        android:background="@color/standard_grey"
+	        android:visibility="gone"/> <!-- Martin set gone -->
+    
+		<EditText
+		    android:id="@+id/editTextSelfIntro"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:gravity="top|left"
+		    android:textColor="@color/text_color_dark"
+		    android:textSize="16sp"
+		    android:background="@null"
+		    android:padding="16dp"
+		    android:hint="Enter your self-intro here"/>
+        
+    </LinearLayout>
+    
+    <com.qpidnetwork.view.MaterialAppBar
+        android:layout_height="@dimen/actionbar_height"
+        android:layout_width="match_parent"
+        android:id="@+id/appbar"/>
+	
+    
+</RelativeLayout>

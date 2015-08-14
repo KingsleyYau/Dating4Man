@@ -1,0 +1,234 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:circleimage="http://schemas.android.com/apk/res/com.qpidnetwork.dating"
+    android:id="@+id/llRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true" >
+
+    <!-- title -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_height"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+            android:background="@drawable/touch_feedback_holo_light">
+
+        <LinearLayout
+            android:id="@+id/llBack"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingRight="8dp">
+
+            <ImageView android:id="@+id/back_button_icon"
+                android:layout_width="@dimen/actionbar_height"
+                android:layout_height="@dimen/actionbar_height"
+                android:src="@drawable/ic_arrow_back_grey600_24dp" 
+                android:scaleType="center"
+                android:background="@drawable/touch_feedback_holo_light_circle"/>
+
+            <TextView
+                android:id="@+id/tvUnread"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(2)" 
+                android:textColor="@color/text_color_dark"
+                android:textSize="14sp"
+                android:textStyle="bold"/>
+            
+            
+        </LinearLayout>
+
+        <com.qpidnetwork.framework.widget.CircleImageView
+            android:id="@+id/ivPhoto"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/female_default_profile_photo_40dp"
+            circleimage:border_width="0dp"
+            android:layout_marginLeft="8dp" />
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            android:textColor="@color/text_color_dark"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:singleLine="true"
+            android:ellipsize="end" />
+
+        <ImageButton
+            android:id="@+id/btnMore"
+            android:layout_width="36dp"
+            android:layout_height="@dimen/actionbar_height"
+            android:src="@drawable/ic_more_vert_grey600_24dp"
+            android:background="@drawable/touch_feedback_holo_light"
+            android:visibility="gone" />
+    </LinearLayout>
+
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1"
+        android:background="#F2F2F2" >
+        
+        <com.qpidnetwork.dating.livechat.MessageListView
+            android:id="@+id/msgList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbarStyle="insideOverlay" >
+        </com.qpidnetwork.dating.livechat.MessageListView>
+        
+                <View android:layout_height="4dp"
+            android:layout_width="match_parent"
+            android:background="@drawable/rectangle_grey_shawdow"/>
+        
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/listview_divider_grey" />
+    <!-- 消息编辑框 -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp" >
+
+        <EditText
+            android:id="@+id/etMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="@string/type_message_here"
+            android:maxLines="4"
+            android:scrollbars="vertical"
+            android:singleLine="false" 
+            android:textSize="16sp"
+            android:textColor="@color/text_color_dark"
+            android:textCursorDrawable="@drawable/material_text_field_cursor"/>
+
+        <ImageButton
+            android:id="@+id/btnExpression"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginLeft="4dp"
+            android:src="@drawable/ic_tag_faces_grey600_24dp"
+            android:background="@drawable/touch_feedback_holo_light_circle" />
+
+        <ImageButton
+            android:id="@+id/btnSend"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginLeft="4dp"
+            android:src="@drawable/ic_send_grey600_24dp"
+            android:background="@drawable/touch_feedback_holo_light_circle" />
+    </LinearLayout>
+
+    <!-- functional area -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="4dp" >
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left" >
+
+            <ImageButton
+                android:id="@+id/btnTakePhoto"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/touch_feedback_holo_light_circle"
+                android:src="@drawable/ic_photo_camera_grey600_24dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" 
+            android:gravity="left|center">
+
+            <ImageButton
+                android:id="@+id/btnSelectPhoto"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/touch_feedback_holo_light_circle"
+                android:src="@drawable/ic_photo_grey600_24dp" />
+            
+  
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left|center" >
+
+            <ImageButton
+                android:id="@+id/btnVoice"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/touch_feedback_holo_light_circle"
+                android:src="@drawable/ic_mic_grey600_24dp" />
+            
+ 
+        </LinearLayout>
+
+                <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right|center" >
+
+            <ImageButton
+                android:id="@+id/btnEmotion"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/touch_feedback_holo_light_circle"
+                android:src="@drawable/ic_premium_emotion_24dp" />
+            
+ 
+        </LinearLayout>
+        
+
+    </LinearLayout>
+    
+
+    <FrameLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:minWidth="200dp"
+        android:id="@+id/flBottom"
+        android:visibility="visible"> 
+        
+        <FrameLayout 
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/flPane"/>
+            
+    </FrameLayout>
+    
+</LinearLayout>

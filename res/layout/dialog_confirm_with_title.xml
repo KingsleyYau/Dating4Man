@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rectangle_rounded_angle_white_bg"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:minWidth="280dp">
+  	
+  	<TextView
+  	    android:id="@+id/textViewTitle"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="wrap_content"
+  	    android:gravity="center_horizontal"
+  	    android:text="@string/emf_bp_tips_title"
+  	    android:textSize="20sp"
+  	    android:textColor="#669900"
+  	    android:padding="16dp"/>
+  	
+  	<TextView
+  	    android:id="@+id/textViewTips"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="wrap_content"
+  	    android:gravity="left"
+  	    android:paddingBottom="16dp"
+  	    android:paddingLeft="16dp"
+  	    android:paddingRight="16dp"
+  	    android:text="@string/emf_bp_tips"
+  	    android:textColor="@color/text_color_grey"
+  	    android:textSize="16sp" />
+  	
+  	<RelativeLayout 
+  	    android:layout_width="match_parent"
+  	    android:layout_height="wrap_content"
+  	    >
+  	    <Button
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:id="@+id/buttonConfirm"
+	        android:text="OK"
+	        android:textColor="#0000FF"
+	        android:background="@null"
+	        android:layout_marginRight="32dp" 
+	        android:layout_alignParentRight="true"
+	        />
+  	</RelativeLayout>
+    	
+</LinearLayout>

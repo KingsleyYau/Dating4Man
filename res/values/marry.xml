@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="marry">
+		<item>--</item>
+		<item>Single</item>
+		<item>Divorced</item>
+		<item>Widowed</item>
+		<item>Separated</item>
+		<item>Married</item>
+    </string-array> 
+</resources>

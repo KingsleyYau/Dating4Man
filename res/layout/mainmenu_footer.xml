@@ -1,0 +1,57 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    
+			<View android:layout_height="1dp"
+	    android:layout_width="match_parent"
+	    android:background="#16000000"/>
+		
+		<TextView android:layout_height="wrap_content"
+		    android:layout_width="match_parent"
+		    android:textSize="@dimen/menu_tips_textsize"
+		    android:textColor="#999999"
+		    android:textStyle="bold"
+		    android:text="@string/menu_service"
+		    android:padding="16dp"/>
+    
+    <RelativeLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="64dp"
+		android:orientation="horizontal"
+		android:gravity="center_vertical"
+		android:id="@+id/rlChangeSite"
+		android:clickable="true"
+		android:background="@drawable/selector_menu_item">
+	    <ImageView 
+			android:layout_width="@dimen/menu_cell_photo_width"
+			android:layout_height="@dimen/menu_cell_photo_height"
+			android:background="@drawable/menu_icon_gray_circle_bg"
+			android:layout_marginLeft="@dimen/menu_normal_marginleft"
+			android:padding="4dp"
+			android:src="@drawable/ic_launcher"
+			android:scaleType="fitXY"/>
+		<LinearLayout 
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:orientation="vertical"
+		    android:layout_marginLeft="@dimen/menu_desc_marginleft">
+		    <TextView 
+		        style="@style/menu_desc_textview"
+		        android:id="@+id/tvCurrentSite"
+		        android:text="Your are on CharmDate"/>
+		    <Button 
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:background="@null"
+		        android:text="@string/menu_changesite"
+		        android:textColor="#797979"
+		        android:textSize="@dimen/menu_desc_textsize"
+		        android:id="@+id/btnChangeSite"
+		        android:focusable="false"/>
+		</LinearLayout>
+	</RelativeLayout>
+	<View
+	    android:layout_width="match_parent"
+	    android:layout_height="30dp"/>
+</LinearLayout>

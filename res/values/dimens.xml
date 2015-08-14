@@ -1,0 +1,80 @@
+<resources>
+    
+    <!-- home setting -->
+    <dimen name="home_drawer_offset">56dp</dimen>
+    
+    <!-- actionBar -->
+    <dimen name="actionbar_height">56dp</dimen>
+    <dimen name="actionbar_icon_width">56dp</dimen>
+    <dimen name="actionbar_shadow_height">4dp</dimen>
+    <dimen name="actionbar_indicator_height">3dp</dimen>
+    
+    <!-- SwipyRefreshLayout -->
+    <dimen name="cell_padding">20dp</dimen>
+    
+    <!-- menu -->
+    <dimen name="menu_width_offset">56dp</dimen>
+    <dimen name="menu_photo_border">4dp</dimen>
+    <dimen name="menu_photo_width">64dp</dimen>
+    <dimen name="menu_photo_height">64dp</dimen>
+    
+    <dimen name="menu_cell_height">56dp</dimen>
+    <dimen name="menu_credit_height">64dp</dimen>
+    <dimen name="menu_cell_photo_width">32dp</dimen>
+    <dimen name="menu_cell_photo_height">32dp</dimen>
+    <dimen name="menu_unread_width">22dp</dimen>
+    <dimen name="menu_unread_height">22dp</dimen>
+    
+    <dimen name="menu_normal_margintop">8dp</dimen>
+    <dimen name="menu_normal_marginleft">16dp</dimen>
+    <dimen name="menu_normal_marginright">16dp</dimen>
+    <dimen name="menu_desc_marginleft">72dp</dimen>
+    <dimen name="menu_desc_textsize">16sp</dimen>
+    <dimen name="menu_tips_textsize">12sp</dimen>
+    
+    <!-- video show -->
+    <dimen name="dimen_1_dip">1.0dip</dimen>
+    <dimen name="dimen_2_dip">2.0dip</dimen>
+    <dimen name="dimen_3_dip">3.0dip</dimen>
+    <dimen name="dimen_5_dip">5.0dip</dimen>
+    <dimen name="dimen_7_dip">7.0dip</dimen>
+    <dimen name="dimen_8_dip">8.0dip</dimen>
+    <dimen name="dimen_10_dip">10.0dip</dimen>
+    <dimen name="dimen_15_dip">15.0dip</dimen>
+    <dimen name="dimen_20_dip">20.0dip</dimen>
+    <dimen name="dimen_25_dip">25.0dip</dimen>
+    <dimen name="dimen_40_dip">40.0dip</dimen>
+    <dimen name="dimen_44_dip">44.0dip</dimen>
+    <dimen name="dimen_50_dip">50.0dip</dimen>
+    <dimen name="dimen_60_dip">60.0dip</dimen>
+    <dimen name="dimen_94_dip">94.0dip</dimen>
+    <dimen name="dimen_120_dip">120.0dip</dimen>
+    <dimen name="dimen_220_dip">220.0dip</dimen>
+    <dimen name="video_width">115dip</dimen>
+    <dimen name="video_height">87dip</dimen>
+     
+    
+    <!-- home -->
+    <dimen name="actionbar_title_textsize">16dp</dimen>
+    
+    <!-- 聊天窗口 -->
+    <dimen name="icon_message_list">40dip</dimen>
+    <dimen name="dot_radius">3.5dip</dimen>
+    <dimen name="expre_drawable_size">25dip</dimen>
+    <dimen name="emotion_progrss_wh">30dip</dimen>
+    <!-- 按钮尺寸 -->
+    <dimen name="btnWidth">80dip</dimen>
+    <dimen name="btnHeight">40dip</dimen>
+    <!-- 高级表情尺寸 -->
+    <dimen name="emtWidth">80dip</dimen>
+    <dimen name="emtHeight">80dip</dimen>
+    
+    <dimen name="item_msg_inner_margin">3dip</dimen>
+     
+    <!-- v2s dialog -->
+    <!-- 弹出框按钮左右角度 -->
+    <dimen name="bottom_radius">5dip</dimen>
+    <dimen name="bottom_radius1">0.1dip</dimen>
+    
+    
+</resources>

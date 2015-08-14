@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rectangle_rounded_angle_white_bg"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:minWidth="280dp">
+  	
+  	<TextView
+  	    android:id="@+id/textViewTips"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="wrap_content"
+  	    android:gravity="center"
+  	    android:text="@string/emf_save_draft_tips"
+  	    android:textSize="16sp"
+  	    android:textColor="@color/text_color_grey"
+  	    android:paddingLeft="16dp"
+  	    android:paddingRight="16dp"
+  	    android:paddingBottom="16dp"/>
+  	
+  	<TextView
+  	    android:layout_width="match_parent"
+  	    android:layout_height="1dp"
+  	    android:background="@color/listview_divider_grey"/>
+  	
+    <TextView
+  	    android:id="@+id/textViewSave"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="56dp"
+  	    android:gravity="center"
+  	    android:text="@string/emf_save_draft"
+  	    android:textSize="18sp"
+  	    android:textColor="@color/blue_color"
+  	    android:clickable="true"
+  	    android:background="@drawable/touch_feedback_holo_light"/>
+    
+    <View android:layout_width="match_parent"
+  	    android:layout_height="1dp"
+  	    android:background="@color/listview_divider_grey" />
+    
+    <TextView
+  	    android:id="@+id/textViewDelete"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="56dp"
+  	    android:gravity="center"
+  	    android:text="@string/emf_delete_draft"
+  	    android:textSize="18sp"
+  	    android:textColor="@color/blue_color"
+  	    android:clickable="true"
+  	    android:background="@drawable/touch_feedback_holo_light"/>
+    
+    
+        <View android:layout_width="match_parent"
+  	    android:layout_height="1dp"
+  	    android:background="@color/listview_divider_grey" />
+    
+    <TextView
+  	    android:id="@+id/textViewCancel"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="56dp"
+  	    android:gravity="center"
+  	    android:text="@string/common_btn_cancel"
+  	    android:textSize="18sp"
+  	    android:textColor="@color/text_color_grey"
+  	    android:clickable="true"
+  	    android:background="@drawable/touch_feedback_holo_light"/>
+    
+    <View android:layout_width="match_parent"
+  	    android:layout_height="1dp"
+  	    android:background="@color/listview_divider_grey" />
+    	
+</LinearLayout>

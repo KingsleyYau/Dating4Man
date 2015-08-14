@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="religion">
+		<item>--</item>
+		<item>None</item>
+		<item>Buddhist</item>
+		<item>Catholic</item>
+		<item>Christian</item>
+		<item>Evangelical</item>
+		<item>Hinduism</item>
+		<item>Islam</item>
+		<item>Jain</item>
+		<item>Jewish</item>
+		<item>Mormon</item>
+		<item>Not Practicing</item>
+		<item>Orthodox</item>
+		<item>Other</item>
+		<item>Protestant</item>
+		<item>Sikh</item>		
+		<item>Taoism</item>
+		<item>Zoroastrianism</item>
+		<item>JehovahsWitness</item>			
+    </string-array> 
+</resources>

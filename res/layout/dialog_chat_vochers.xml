@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:padding="20dp"
+    >
+
+  	<ImageView
+  	    android:id="@+id/imageView"
+  	    android:layout_width="wrap_content"
+  	    android:layout_height="wrap_content"
+  	    android:layout_centerHorizontal="true"
+		android:src="@drawable/u152"
+		android:scaleType="fitCenter"
+  	    />
+  	
+  	<TextView
+  	    android:id="@+id/textView"
+  	    android:layout_width="wrap_content"
+  	    android:layout_height="wrap_content"
+  	    android:layout_below="@+id/imageView"
+  	    android:layout_marginTop="20dp"
+  	    android:layout_centerHorizontal="true"
+  	    android:gravity="center_horizontal"
+  	    android:text="You must be in the photo!"
+  	    android:textSize="20dp"
+  	    android:textColor="#669900"
+  	    />
+  	
+  	<TextView
+  	    android:id="@+id/textViewTips"
+  	    android:layout_width="wrap_content"
+  	    android:layout_height="wrap_content"
+  	    android:layout_below="@+id/textView"
+  	    android:layout_marginTop="10dp"
+  	    android:layout_centerHorizontal="true"
+  	    android:gravity="center_horizontal"
+  	    android:text="Free Chat Vouchers can be used to start Free chat with all newly introduced ladies."
+  	    android:textSize="15dp"
+  	    android:textColor="#666666"
+  	    />
+
+  	<Button
+  	    android:id="@+id/buttonOK"
+  	    android:layout_width="wrap_content"
+  	    android:layout_height="wrap_content"
+  	    android:layout_alignParentRight="true"
+  	    android:layout_below="@+id/textViewTips"
+   	    android:layout_marginTop="10dp"
+  	    android:background="@null"
+  	    android:text="OK"
+  	    android:textColor="#0099FF" />
+    	
+</RelativeLayout>

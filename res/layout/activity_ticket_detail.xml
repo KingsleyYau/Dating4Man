@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical" 
+    android:fitsSystemWindows="true">
+    <ListView 
+        android:id="@+id/lvContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadingEdge="@null"
+        android:divider="@color/standard_grey"
+        android:dividerHeight="1dp"
+        android:scrollbars="none"
+        android:listSelector="#00FFFFFF"
+        android:visibility="gone"
+        android:cacheColorHint="@null"/>
+    
+    <TextView
+        android:id="@+id/emptyView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/text_color_grey"
+		android:textSize="18sp"
+        android:visibility="gone" />
+    
+</LinearLayout>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RaisedButton">
+   		<attr name="icon"/>
+        <attr name="title" />
+        <attr name="title_color" format="color"/>
+        <attr name="background" />
+        <attr name="touch_feedback" format="reference"/>
+        <attr name="elevation"/>
+        <attr name="radius" format="dimension"/>
+    </declare-styleable>
+    
+	<!-- APP主题 -->
+    <declare-styleable name="AppTheme">
+        <attr name="top_bar_bg" format="reference" />
+        <attr name="top_leftbtn" format="reference" />
+        <attr name="nav_switch_btn" format="reference" />
+        <attr name="icon_back" format="reference" />
+        <attr name="top_rightbtn" format="reference" />
+        <attr name="menu_tab_bg" format="reference" />
+        <attr name="nav_bg_bm" format="reference" />
+        <attr name="nav_divide_line_bm" format="reference" />
+        <attr name="nav_group_bg_bm" format="reference" />
+        <attr name="nav_group2_bg_bm" format="reference" />
+        <attr name="nav_main_title_bg_bm" format="reference" />
+        <attr name="nav_right_shadow_bm" format="reference" />
+        <attr name="nav_channel_item_bg" format="reference" />
+        <attr name="viewpager_tabbar" format="reference" />
+        <attr name="common_actionbar_bg" format="reference" />
+        <attr name="actionbar_item_bg" format="reference" />
+        <attr name="actionbar_item_devider" format="reference" />
+    </declare-styleable>
+    
+        <declare-styleable name="ProgressWheel">
+        <attr name="matProg_progressIndeterminate" format="boolean" />
+        <attr name="matProg_barColor" format="color" />
+        <attr name="matProg_rimColor" format="color" />
+        <attr name="matProg_rimWidth" format="dimension" />
+        <attr name="matProg_spinSpeed" format="float" />
+        <attr name="matProg_barSpinCycleTime" format="integer" />
+        <attr name="matProg_circleRadius" format="dimension" />
+        <attr name="matProg_fillRadius" format="boolean" />
+        <attr name="matProg_barWidth" format="dimension" />
+        <attr name="matProg_linearProgress" format="boolean" />
+    </declare-styleable>
+    
+    <!-- widgets -->
+    
+    <!-- circleImageView -->
+    <declare-styleable name="CircleImageView">
+        <attr name="border_width" format="dimension" />
+        <attr name="border_color" format="color" />
+    </declare-styleable>
+    
+    <!-- slidingmenu -->
+    <declare-styleable name="widget_SlidingMenu">
+        <attr name="mode">
+            <enum name="left" value="0" />
+            <enum name="right" value="1" />
+        </attr>
+        <attr name="viewAbove" format="reference" />
+        <attr name="viewBehind" format="reference" />
+        <attr name="behindOffset" format="dimension" />
+        <attr name="behindWidth" format="dimension" />
+        <attr name="behindScrollScale" format="float" />
+        <attr name="touchModeAbove">
+            <enum name="margin" value="0" />
+            <enum name="fullscreen" value="1" />
+        </attr>
+        <attr name="touchModeBehind">
+            <enum name="margin" value="0" />
+            <enum name="fullscreen" value="1" />
+        </attr>
+        <attr name="shadowDrawable" format="reference" />
+        <attr name="shadowWidth" format="dimension" />
+        <attr name="fadeEnabled" format="boolean" />
+        <attr name="fadeDegree" format="float" />
+        <attr name="selectorEnabled" format="boolean" />
+        <attr name="selectorDrawable" format="reference" />
+    </declare-styleable>
+    
+    <!-- SwipyRefreshLayout -->
+    <declare-styleable name="SwipyRefreshLayout">
+        <attr name="direction">
+            <enum name="top" value="0" />
+            <enum name="bottom" value="1" />
+            <enum name="both" value="2" />
+        </attr>
+    </declare-styleable>
+    
+    <!-- MenuItem -->
+    <declare-styleable name="MenuItem">
+        <attr name="menu_desc" format="string" />
+        <attr name="indicater_icon" format="reference" />
+    </declare-styleable>
+    
+    <!-- qpidGallery -->
+    <declare-styleable name="QpidGallery">
+        <attr name="spacing" format="reference|dimension" />
+        <attr name="gravity">
+            <flag name="left" value="3" />
+            <flag name="center" value="17" />
+        </attr>
+    </declare-styleable>
+    
+        <declare-styleable name="FlowLayout">
+        <attr name="android:orientation" />
+        <attr name="layoutDirection" format="enum">
+            <enum name="ltr" value="0"/>
+            <enum name="rtl" value="1"/>
+        </attr>
+        <attr name="debugDraw" format="boolean"/>
+        <attr name="weightDefault" format="float" />
+        <attr name="android:gravity"/>
+    </declare-styleable>
+    <declare-styleable name="FlowLayout_LayoutParams">
+        <attr name="layout_newLine" format="boolean"/>
+        <attr name="layout_weight" format="float"/>
+        <attr name="android:layout_gravity"/>
+    </declare-styleable>
+    
+    
+</resources>

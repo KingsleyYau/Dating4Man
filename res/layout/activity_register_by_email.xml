@@ -1,0 +1,149 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${relativePackage}.${activityClass}"
+    xmlns:button="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true" >
+    
+
+
+    <LinearLayout android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:layout_marginTop="@dimen/actionbar_height">
+    
+    <ScrollView android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:fadeScrollbars="true"
+        android:fadingEdge="@null">
+    
+       <LinearLayout android:layout_height="wrap_content"
+           android:layout_width="match_parent"
+           android:orientation="vertical">
+        
+    <LinearLayout
+        android:id="@+id/layoutHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:orientation="horizontal" >
+        
+        <ImageView
+            android:id="@+id/imageViewHeader"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center_vertical"
+            android:onClick="onClickImageHeader"
+            android:scaleType="center"
+            android:src="@drawable/ic_photo_camera_grey600_48dp" 
+            android:background="@drawable/touch_feedback_holo_light_round_rectangle"/>
+
+       	<LinearLayout
+       	    android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:layout_marginLeft="16dp"
+	    	android:orientation="vertical" 
+	    	android:layout_marginTop="16dp">
+	    	
+       	    <TextView
+                android:id="@+id/textViewSexTips"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/you_are_a"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_grey"
+                android:textStyle="bold" />
+            
+            <com.qpidnetwork.view.CheckButton
+                android:id="@+id/buttonMale"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"/>
+            
+            <com.qpidnetwork.view.CheckButton
+                android:id="@+id/buttonFemale"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"/>
+
+       	</LinearLayout>
+
+    </LinearLayout>
+    
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/layoutHeader"
+	    android:layout_marginTop="24dp"
+	    android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp" 
+        android:orientation="vertical">
+
+
+	    
+	    <TextView android:id="@+id/textViewProfileTips"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/your_profile_details"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_grey"
+                android:textStyle="bold" />
+	    		
+		
+		<com.qpidnetwork.view.MaterialTextField
+            android:id="@+id/editTextFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+		
+		<com.qpidnetwork.view.MaterialTextField
+            android:id="@+id/editTextLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+		
+		<com.qpidnetwork.view.MaterialTextField
+            android:id="@+id/editTextViewCountry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onClickCountry"/>
+		
+		<com.qpidnetwork.view.MaterialTextField
+            android:id="@+id/editTextViewBirthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onClickBirthday"/>
+		
+
+
+	
+		
+		<com.qpidnetwork.view.ButtonRaised
+    	    android:id="@+id/buttonCoutinue"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="24dp"
+                    android:clickable="true"
+                    android:onClick="onClickContinue"
+                    button:background="@color/blue_color"
+                    button:elevation="2dp"
+                    button:title="@string/common_continue"
+                    button:title_color="@color/white"
+                    button:touch_feedback="@drawable/touch_feedback_holo_dark" />
+
+	</LinearLayout>
+	
+	</LinearLayout>
+	
+	</ScrollView>
+	</LinearLayout>
+	
+        <com.qpidnetwork.view.MaterialAppBar
+           android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_height"/>
+    
+</RelativeLayout>

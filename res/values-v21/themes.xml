@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppCompatTheme" parent="android:Theme.Light"></style>
+
+    <!-- 共同性主题定义 -->
+    <style name="AppTheme" parent="AppCompatTheme">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- 公共区主题 -->
+    <style name="AppTheme.Common">
+
+    </style>
+
+    <!-- 东欧区主题 -->
+    <style name="AppTheme.Charmingdate">
+
+    </style>
+
+    <!-- 中国区主题 -->
+    <style name="AppTheme.Chnlove">
+
+    </style>
+
+    <!-- 东南亚区主题 -->
+    <style name="AppTheme.iDateasia">
+
+    </style>
+
+    <!-- 拉美区主题 -->
+    <style name="AppTheme.latamDate">
+       
+    </style>
+    
+    <style name="QpidAppTheme" parent="@style/Theme.AppCompat.Light">
+ 	    <item name="windowActionBar">false</item> 
+        <item name="windowNoTitle">true</item> 
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item> 
+    </style>
+    
+    <style name="QpidAppTheme.Translucent" parent="QpidAppTheme">
+ 	    <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+</resources>

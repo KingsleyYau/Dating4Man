@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/llErrorPage"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    xmlns:button="http://schemas.android.com/apk/res-auto" >
+
+	<ImageView 
+	    android:layout_width="100dp"
+	    android:layout_height="100dp"
+	    android:src="@drawable/ic_broken_image_grey_100dp"
+	    android:scaleType="fitXY"/>
+	<TextView 
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="Trouble loading full-sized image."
+	    android:textColor="#FFFFFF"
+	    android:padding="24dp"
+	    android:textSize="18sp"/>
+
+	
+	<com.qpidnetwork.view.ButtonRaised
+        android:id="@+id/tvRetry"
+        android:layout_width="112dp"
+        android:layout_height="40dp"
+        android:clickable="true"
+        button:background="@color/blue_color"
+        button:elevation="2dp"
+        button:title="@string/common_btn_retry"
+        button:title_color="@color/white"
+        button:touch_feedback="@drawable/touch_feedback_holo_dark" 
+        android:layout_marginBottom="56dp"
+        button:icon="@drawable/ic_refresh_white_24dp"/>
+	
+</LinearLayout>

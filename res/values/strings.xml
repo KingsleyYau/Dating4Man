@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Qpid Dating</string>
+    <string name="app_description">Discover love and beauties</string>
+    <string name="app_id">851829941571736</string>
+    <string name="title_activity_quick_match_main">QuickMatchMainActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_quick_match">QuickMatchActivity</string>
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="title_activity_register_by_email">RegisterByEmailActivity</string>
+    <string name="title_activity_register_password">RegisterPasswordActivity</string>
+    <string name="title_activity_register_by_facebook">RegisterByFacebookActivity</string>
+    <string name="title_activity_register_forget_password">RegisterResetPasswordActivity</string>
+	<string name="title_activity_login">LoginActivity</string>
+	<string name="title_activity_profile">My Profile</string>
+	<string name="title_activity_profile_detail">My profile details</string>
+	<string name="title_activity_profile_detail_selfintro">MyProfileDetailSelfIntroActivity</string>
+	<string name="title_activity_profile_detail_interest">MyProfileDetailInterestActivity</string>
+	<string name="title_activity_match_criteria">MyProfileMatchCriteriaActivity</string>
+	<string name="title_activity_profile_photo">MyProfilePhotoActivity</string>
+	<string name="title_activity_profile_phone_verify">MyProfilePhoneVerifyActivity</string>
+	<string name="title_activity_profile_phone_verify_mobile">MyProfilePhoneVerifyMobileActivity</string>	
+	<string name="title_activity_profile_phone_verify_landline">MyProfilePhoneVerifyLandlineActivity</string>	
+	<string name="title_activity_profile_phone_verify_mobile_code">MyProfilePhoneVerifyMobileCodeActivity</string>			
+	<string name="title_activity_profile_slect_country">MyProfileSelectCountryActivity</string>
+	<string name="title_activity_profile_change_password">MyProfileChangePasswordActivity</string>	
+	<string name="title_activity_setting">SettingActivity</string>	
+	<string name="title_company_name">Qpid Network Dating</string>
+	<string name="title_select_member_site">Select a member site</string>
+	<string name="myprofile_free_chat">Free Chat Vouchers can be used to start free chat with all newly introduced ladies.</string>
+	<string name="myprofile_sure_clean_cache">Are you sure you wish to clean the app cache?</string>
+	<string name="title_activity_forget_password_successful">RegisterResetPasswordSuccessfulAcitiviy</string>
+	
+	<string name="login_x_ladies_are_online_now">%s ladies are online now.</string>
+	<string name="login_email_or_id">Login email or ID</string>
+	<string name="login_password">Password</string>
+	<string name="logn_secure_code">Secure code</string>
+	<string name="login_connect_with_facebook">Connect with Facebook</string>
+	<string name="login">Login</string>
+	
+	<!-- Home -->
+	<string name="search_criterial">Search Criteria</string>
+	<string name="search_by_id">Search by ID</string>
+	<string name="ladys_id">Lady\' ID</string>
+	<string name="Lady_ID">Lady ID</string>
+	<string name="no_online_lady_at_the_moment">No online ladies at the moment.</string>
+	<string name="no_ladies_available_for_call_at_the_moment">No ladies available for calls at the moment.</string>
+	<string name="error_msg">Trouble loading lady profiles. Please check your internet connection and try again.</string>
+	<string name="no_ladies_which_age_between_x_and_x_are_online">No ladies whoes age between age1 and age2 are online at the moment.</string>
+	<string name="no_ladies_found_whoes_age_between_x_and_x">No ladies found whoes age between age1 and age2.</string>
+	<string name="your_favorite_list_is_empty">Your favorite list is empty.</string>
+	<string name="profile_id_x_does_not_exist">Profile %s doesn\'t exist.</string>
+	<string name="get_qpid_credits_to_continue">Get Qpid Credits to continue</string>
+	<string name="more_options">More options</string>
+	<string name="view_profile">View profile</string>
+	<string name="Crash_report_detected">Crash report detected</string>
+	<string name="Do_you_want_report_an_incident_to_help_us_for_app_improvement">Do you want report an incident to help us for app improvement?</string>
+	<string name="Remember_my_choise">Remember my choise</string>
+	
+	<!-- menu -->
+    <string name="menu_credit">Credit Balance</string>
+    <string name="menu_quickmatch">Quick Match</string>
+    <string name="menu_mailbox">Mail Box</string>
+    <string name="menu_lovecalls">Love Call</string>
+    <string name="menu_admirers">My Admirers</string>
+    <string name="menu_contacts">My Contacts</string>
+    <string name="menu_setting">Settings</string>
+    <string name="menu_helps">Helps</string>
+    <string name="menu_changesite">Tap to change</string>
+    <string name="menu_current_site">You\'r on %s</string>
+    <string name="menu_service">SERVICE</string>
+    <string name="menu_tap_to_change">Tap to change</string>
+    <string name="lady_category_online">Online Ladies</string>
+    <string name="lady_category_with_video">With Video</string>
+    <string name="lady_category_with_call">Available for Calls</string>
+    <string name="lady_category_newest">Newly Joined</string>
+    
+    
+    
+    <!-- Love call -->
+    <string name="lovecall_schedule_time">Time: %s</string>
+    <string name="lovecall_request_time">Wants your call on %s</string>
+    <string name="lovecall_request_tips">Tap to make a schedule</string>
+    <string name="lovecall_schedule_details_title">Love Call Schedule</string>
+    <string name="lovecall_request_details_title">Love Call Request</string>
+    <string name="lovecall_schedule_point">&#183;</string>
+    <string name="lovecall_schedule_detail_desc">You have a call scheduled with</string>
+    <string name="lovecall_schedule_details_subtitle">Schedule Details</string>
+    <string name="lovecall_request_details_subtitle">Request Details</string>
+    <string name="lovecall_details_date">Date</string>
+    <string name="lovecall_details_time">Time</string>
+    <string name="lovecall_details_call_period">Calling period</string>
+    <string name="lovecall_details_callid">Call ID</string>
+    <string name="lovecall_details_translate_tips">This is a 3-way call in which a call interpreter will be involved.</string>
+    <string name="lovecall_details_call_notwork">Above button not working? tap here.</string>
+    <string name="lovecall_details_decline_tips">If you believe this is not an accurate call schedule or you want to decline this request, please tap below button.</string>
+    <string name="lovecall_details_btn_call">Call Now</string>
+    <string name="lovecall_details_btn_confirm">Confirm this schedule</string>
+    <string name="lovecall_details_btn_decline">Decline</string>
+    <string name="lovecall_details_message">Your message to lady</string>
+    <string name="lovecall_confirm_tips">1 credit will be charged for confirming this schedule.</string>
+    <string name="lovecall_decline_tips">Are you sure you want to decline this call request?</string>
+   	<string name="lovecall_confirm_fail_tips">Trouble confirming this call request.</string>
+    <string name="lovecall_decline_fail_tips">Trouble declining this call request.</string>
+    <string name="lovecall_terms_title">Call service fee note</string>
+    <string name="lovecall_terms_detail">1 - Interpretation: Free\n2 - Call: 1 Qpid Credit per min (starts when connected to lady)\n3 - International calling fees (determined by your Cellular Service Provider)</string>
+    <string name="lovecall_no_sim_tips">Don\'t have a SIM card?</string>
+    <string name="lovecall_call_now">Call Now</string>
+    <string name="love_call_dont_tell_again">Don\'t tell me again and call</string>
+    <string name="lovecall_instruction">1) Dial into our call center at %s.\n2) Enter your Call ID as instructed.\n3) Your and the lady will be connected shortly </string>
+    <string name="lovecall_active_after_x">Call active after %s</string>
+    
+    
+    <!-- EMF Admirer -->
+    <string name="emf_credit_not_enough">Oops, you don\'t have sufficient credits to read this message.</string>
+    <string name="emf_all_other_error">An error was encountered. Please return to the previous page and try again.</string>
+    <string name="emf_purshase_credits">Purchase Credits</string>
+    <string name="emf_menu_delete">Delete</string>
+    <string name="emf_menu_block">Block</string>
+    <string name="emf_delete_confirm">Are you sure you want to delete this message?</string>
+    <string name="emf_delete_error">Trouble deleting message.</string>
+    <string name="emf_private_photo_tips">This is lady\'s private photo.\n%1$d credit for viewing this photo.</string>
+    <string name="emf_View">View</string>
+    <string name="emf_edit_title">Send mail</string>
+    <string name="emf_Select_virtual_gift">Select virtual gift</string>
+    <string name="emf_virtual_gift_name_credit">(%2$d credit) %1$s</string>
+    <string name="emf_reply">Reply</string> 
+    <string name="emf_translators_message">Translator\'s message</string>
+    <string name="emf_to_me">To me</string>
+    <string name="emf_save_draft_tips">If you choose save, draft will be reloaded next time you write a mail to this lady.</string>
+   	<string name="emf_save_draft">Save Draft</string>
+   	<string name="emf_delete_draft">Delete Draft</string>
+    <string name="emf_remove_virtual_gift">Please remove the virtual gift before attaching another.</string>
+    <string name="emf_maximum_attachments">Sorry, you have exceeded to maximum number of attachments.</string>
+	<string name="emf_send_fail">Trouble sending your message!</string>
+	<string name="emf_attachment_fail">	Trouble uploading attachment.</string>
+	<string name="emf_send_without_attachment">Would you like to discard unsuccessfully uploaded attachments and send thia mail?</string>
+	<string name="emf_bp_tips_title">Your are using bonus point</string>
+	<string name="emf_bp_tips">You are using bonus points (10 points) instead of Qpid Credits to send an introductory letter to the lady.\n\nNote: Bonus points only pay for your basic message fee, and not for your attachments.</string>
+	<string name="emf_credit_tips_title">Oops! you don\'t have suffient credits to send this mail.</string>
+	<string name="emf_credit_tips">Credits balance: </string>
+	<string name="emf_credit_button_remove">Remove some attachement</string>
+	<string name="emf_credit_button_add">Add more credits</string>
+	<string name="emf_do_photo_add_tips">First attachment is free!</string>
+	<string name="emf_do_photo_add">1 credit for each extra attachment added</string>
+	<string name="emf_notification_unread">You have %1$d emf</string>
+	<string name="emf_block_list">Blocked list</string>
+	<string name="why_you_choose_to_block_her_from_mail">Why do you consider adding her to your mailing blacklist?</string>
+	<string name="emf_block_reasonA">She\'s not suitable for me</string>
+	<string name="emf_block_reasonB">I am writing to another lady</string>
+	<string name="emf_block_reasonC">Other reasons</string>
+
+    <!--  contacts -->
+    <string name="contact_title">My contact list</string>
+    <string name="contact_list_desc">Last contact: %s</string>
+    <string name="contact_label_online_only">Online only</string>
+    <string name="contact_label_offline_only">Offline only</string>
+    <string name="contact_label_my_favorites">My favorites</string>
+    <string name="contact_label_with_videos">With videos</string>
+    <string name="contact_search_filter_hint">Name or ID</string>
+    <string name="contact_add_to_favourite">Add favorite</string>
+    <string name="contact_remove_from_favourite">Revome favorite</string>
+    <string name="contact_she_is_already_in_your_favorite_list">She\'s already in your favorite list.</string>
+    <string name="contact_no_data_tips_not_login">Your have no contacts or haven\'t logged in yet.</string>
+    <string name="contact_no_data_tips_logined_in">Your contact list is empty.</string>
+    <string name="contact_manager_contacts">Manager contact list</string>
+    <string name="contact_no_online_contacts">No online contacts.</string>
+    <string name="contact_no_offline_contacts">No offline contacts.</string>
+    <string name="contact_no_favorites">Your favorite list is empty.</string>
+    <string name="contact_no_video_ladies">Your contacts has not posted any videos.</string>
+    <string name="contact_delete_confirm_tips">Are you sure you wish to delete this contact?</string>
+    
+    
+    <!-- buy credit -->
+    <string name="tv_item_creadits">Buy Credits</string>
+    <string name="title_payment_failed">Payment Failed</string>
+	<string name="btn_try_again">Try Again</string>
+	<string name="title_warm_tip">Kind Reminder</string>
+	<string name="title_payment_success">Payment Success</string>
+	<string name="title_payment_tips">Tips</string>
+	<string name="being_processed">Being processed......</string>
+    
+    <!-- livechat -->
+    <string name="animated_emotion_credit">Animated Emoticons are billed at 0.3 credits each.</string>
+    <string name="message_too_short">Voice message is too short.</string>
+    <string name="livechat_voice_record">Hold to Speak</string>
+    <string name="livechat_voice_record_speak">Speak</string>
+    <string name="livechat_voice_record_cancel">Release to cancel</string>
+    <string name="livechat_voice_record_payment">0.3 credits for each voice message sent.</string>
+    <string name="livechat_voice_record_tips">00:00</string>
+    <string name="msg_warn_from">%s sent you a serious reminder: </string>
+    <string name="msg_chat_illegal"><![CDATA[ <font color=\"red\">(Warning: Your message may contain prohibited information which has violated our <a href=\""ChatPrivacyUrl "\">Terms of Use</a>. Your message will not be delivered.)</font>]]></string>
+    <string name="livechat_msg_trychat_start_end">Your free chat is ended. Live chat billed at 0.5 credit per 5 mins.</string>
+    <string name="livechat_msg_no_credit_warning">You have run out of credits. </string>
+    <string name="livechat_msg_no_credit_warning_link">Add credit to continue.</string>
+    <string name="type_message_here">Type message here</string>
+    <string name="x_credits_will_be_charged_for_each_photo_sent">1.5 credits for each photo sent.</string>
+    <string name="trychat_tips">send your first message to start free chat now.</string>
+    <string name="livechat_charge_terms">Live chat billed at 0.5 credit per 5 mins. Billing begins after your first message is sent.</string>
+    <string name="send_error_lady_offline">Oops! The lady has gone offline.</string>
+    <string name="send_error_text_normal">Your message was not sent.</string>
+    <string name="send_error_photo_normal">Your photo was not sent.</string>
+    <string name="send_error_voice_normal">Trouble sending voice message.</string>  
+    <string name="send_error_not_enough_money">Insufficient credits.</string>
+    <string name="common_send_email">Send mail</string> 
+    <string name="livechat_end_chat">End chat</string>
+    <string name="end_chat">End chat</string>
+    <string name="ok_and_donnot_tell_me_again">OK and don\'t tell me again</string>
+    <string name="livechat_download_photo_fail">Photo loading failed.</string>
+    <string name="livechat_download_emotion_fail">Premium sticker loading failed.</string>
+    <string name="livechat_download_voice_fail">Voice message loading failed.</string>
+    <string name="livechat_price_info">Live chat billed at 0.5 credit per 5mins. Billing begins after your first message is sent.</string>
+    <string name="livechat_saved_origional_image">Photo has beend saved to your photo album.</string>
+    <string name="livechat_lady_has_nerver_sent_you_message_yet">Conversation has not started yet.</string>
+    <string name="livechat_can_not_send_photo_before_the_conversation_has_started">Can not send photos before the conversation is started.</string>
+    <string name="livechat_can_not_send_voice_message_before_the_conversation_has_started">Can not send voice messages before the conversation is started.</string>
+    <string name="livechat_can_not_send_premium_sticker_before_the_conversation_has_started">Can not send premium stickers before the conversation is started.</string>
+    <string name="livechat_take_photo_fee_note">Photo exchange note</string>
+    <string name="livechat_kickoff_by_other">You have been signed out because your account is logged in elsewhere.</string>
+    <string name="livechat_kickoff_by_sever_update">You have been disconnected due to the server is now under maintenance.</string>
+    <string name="livechat_emotion_preview_title">Sticker preview</string>
+    <string name="livechat_emotion_preview_price">%s credits</string>
+    
+    
+    <string name="livechat_lady_illeage_message">Your message may contain prohibited information which has violated our Terms of Use. Your message will not be delivered.</string>
+    <string name="livechat_lady_invite_title">Chat Invitation</string>
+    <string-array name="livechat_msg_in_type">
+        <item name="received_system_message">You have a system messge</item>
+        <item name="send_a_photo">You sent a photo</item>
+        <item name="send_a_premium_sticker">You sent a premium sticker</item>
+        <item name="send_a_voice_message">You sent a voice message</item>
+        <item name="receive_a_photo">%s sent a photo</item>
+        <item name="receive_a_premium_sticker">%s sent a premium sticker</item>
+        <item name="receive_a_voice_message">%s sent a voice message</item>
+    </string-array>
+    
+    
+   
+    
+    <!-- common -->
+    <string name="msg_nodata">No data yet, please pull to refresh.</string>
+    <string name="common_btn_send">Send</string>
+    <string name="common_btn_edit">Edit</string>
+    <string name="common_btn_ok">OK</string>
+    <string name="common_btn_yes">YES</string>
+    <string name="common_btn_no">NO</string>
+    <string name="common_btn_retry">Retry</string>
+    <string name="common_btn_remove">Remove</string>
+    <string name="common_btn_tap_to_retry">Top to retry</string>
+    <string name="common_btn_cancel">Cancel</string>
+    <string name="common_no_show_again">Don\'t show again</string>
+    <string name="common_btn_call">Call</string>
+    <string name="common_btn_confirm">Confirm</string>
+    <string name="common_btn_close">Close</string>
+    <string name="common_loading_tips">Loading</string>
+    <string name="common_confirmed">Confirmed</string>
+    <string name="common_deleted">Deleted</string>
+    <string name="common_continue">Continue</string>
+    <string name="common_take_photo">Take Photo</string>
+    <string name="common_select_existing">Select Exsting</string>
+    <string name="common_empty_text">No content yet.</string>
+    <string name="common_no_result">No result for %s.</string>
+    <string name="common_btn_search">Search</string>
+    <string name="common_btn_go">Go</string>
+    <string name="common_btn_done">Done</string>
+    <string name="common_btn_add_credit">Add credits</string>
+    <string name="common_pic_a_date">Pick a Date</string>
+    <string name="common_btn_delete">Delete</string>
+	<string name="common_btn_read_now">Read now</string>
+    
+    
+     <!-- video about list -->
+    <string name="btn_by_video">Browse by video</string>
+    <string name="btn_by_profile">Browse by profile</string>
+    <string name="title_search_dialog">Search Video</string>
+    <string name="sort_by">Sort By:</string>
+    <string name="msg_save_video_suc">Successfully add to your insterest list.</string>
+    <string name="msg_save_video_suc1">The video %s has been successfully added to your Interested Videos! Want to contact her? Send her a mail now.</string>
+    <string name="msg_remove_video_suc">Video %s has been removed from your Interested Videos successfully!</string>
+    <string name="msg_saved_video">The video has already been added to your Interested Videos.</string>
+    <string name="msg_saved_video1">The video %s has already been added to your Interested Videos! Want to view all of your interested videos? Go to your Interested Videos list now.</string>
+    <string name="video_transcription">I am beautiful, have a pair of big eyes, and I am a lively and cheerful loving girl, usually like to listen to music and dance.</string>
+    <string name="btn_play">Play</string>
+    <string name="video_title">Video Show</string>
+    <string name="btn_watch">Watch Video Now</string>
+    <string name="video_cost_desc">Please confirm that 2 credits will be deducted from your account for viewing this video.</string>
+    <string name="video_cost_desc1">Watching the above video will cost you 2 credits. View it on mobile phones will need %sM network flow.</string>
+    <string name="msg_delete_empty">Please select item(s).</string>
+    <string name="title_del_interest">Remove from Interested Videos</string>
+    <string name="msg_delete">Do you want to delete %s item(s)?</string>
+    <string name="remove_fail">Remove failed. Please try again.</string>
+    <string name="btn_checkall">Check All</string>
+    <string name="btn_uncheckall">Uncheck All</string>
+    <string name="btn_delete">Delete</string>
+    <string name="title_video_player">%\'s Videos</string>
+    <string name="title_video_player_right">%\'s Videos:</string>
+    <string name="video_toast">You do not have sufficient credits to watch this video. To continue, please</string>
+    <string name="btn_buy">Buy More Credits</string>
+    <string name="tv_wanna_watch">Wanna watch her stunning video?</string>
+    <string name="tv_video_text">Video Show takes dating to a new level! Watch full-length feature videos of your lady straight from %s. See her face, hear her voice!</string>
+    <string name="tv_video_valid_time">2 credits will be deducted to view this video. Thereafter, you can watch it unlimited times in 7 days.</string>
+    <string name="msg_search_lady_id_empty"> Sorry, there is no lady with the ID of %s.</string>
+    <string name="msg_search_lady_empty">Sorry, no records found.\n Please reset your search criteria.</string>
+    <string name="list_empty">There are no records yet.</string>
+    <string name="valid_for">Valid for %s</string>
+    <string name="until">Until</string>
+    <string name="btn_video_interested">I\'m Interested</string>
+    <string name="video_detail_title">%s\'s Videos</string>
+    <string name="msg_video_delete_suc">Video(s) have been deleted successfully.</string>
+    <string name="msg_deleted_suc">Deleted!</string>
+    <string name="msg_img_format_error">Please upload images in JPG format.</string>
+    <string name="item_clear_cache">Clear Cache</string>
+    <string name="clear_cache">Confirm Clearing</string>
+    <string name="msg_clear_cache">Are you sure you want to clear the cached images?</string>
+    <string name="msg_display_video">Are you sure you want to play this video?</string>
+    <string name="clear_cache_suc">Cache clear success!</string>
+    <string name="pull_to_refresh_footer_pull_label">Pull up to refresh</string>
+    <string name="pull_to_refresh_footer_refreshing_label">Refreshing\u2026</string>
+    <string name="video_layout_loading">Loading......</string>
+    <string name="common_risk_control_notify">Sorry, we can not process your request right now, please try later.</string>
+    <string name="can_not_load_video_please_try_again">Trouble loading lady\'s video. Please check your connection and try again.</string>
+    
+    
+    <!-- common error -->
+    <string name="common_network_error">Network error</string>
+    <string name="common_search_nodata">No result for %s</string>
+	
+	<!-- ############################################################################### -->
+	<!-- Authorization Module -->
+	<string name="Complete">Complete</string>
+	<string name="Create_your_account">Create your account</string>
+	<string name="by_using_our_app_your_agree_to_the_term_of_user">By using our app, your agree to the Terms of Use and Privacy Policy</string>
+	<string name="continue_with_facebook">Continue with facebook</string>
+	<string name="register_with_email">Register with email</string>
+	<string name="if_you_have_an_account_login_here">Have an account? Login here</string>
+	<string name="capitalized_skip">SKIP</string>
+	<string name="signing_in">SINGING IN&#8230;</string>
+	<string name="almost_done">Almost Done!</string>
+	<string name="a_password_reset_link_has_been_sent_to">A password retrieval email has been sent to your email account:</string>
+	<string name="please_check_your_email_to_reset_password">Please check your email and follow the instructions to reset your login password.</string>
+	<string name="your_password_should_be_4_12_characters_only_numbers_and_english_letters_allowed">Your password should be 4 &#8211; 6 characters long. Only numbers and English letters allowed.</string>
+	
+	
+	
+	<!-- facebook 绑定邮箱界面 -->
+	<string name="Your_email_address">Your email address</string>
+	<string name="Your_birthday">Your birthday</string>
+	<string name="facebook_connect">Facebook connect</string>
+	<string name="password_on_qpid_network_site">Password on Qpid Network Site</string>
+	
+	<!-- facebook 绑定密码界面 -->
+	<string name="register_facebook_error_tips">Your facebook account (%1$s) has been registered on our site, please enter your password to continue.</string>
+	<string name="Forget_password">Forgotten password?</string>
+	
+	<!-- 注册提交界面 -->
+	<string name="Enter_your_email_address">Your email address</string>
+	<string name="Choose_a_password">Choose a password</string>
+	<string name="Create_profile">Create profile</string>
+	<string name="man_looking_for_woman">Man looking for woman</string>
+	<string name="woman_looking_for_man">Woman looking ofr man</string>
+	<string name="you_are_a">YOU ARE A</string>
+	<string name="your_profile_details">YOUR PROFILE DETAILS</string>
+	<string name="last_name">Last name</string>
+	<string name="first_name">First name</string>
+	<string name="your_nationality">Your nationality</string>
+	<string name="your_birthday">Your birthday</string>
+	
+	<!-- 忘记密码 -->
+	<string name="Enter_your_eamil">Enter your eamil</string>
+	<string name="Enter_verification_code">Enter verification code</string>
+	<string name="Reset_Password">Reset Password</string>
+	<string name="Fogot_password">Fogot password</string>
+	
+	<!-- ############################################################################### -->
+	
+	<!-- ############################################################################### -->
+	<!-- Profile Module -->
+	<string name="my_profile_change_photo">Change Photo</string>
+	<string name="My_profile_details">My profile details</string>
+	<string name="My_details">My details</string>
+	<string name="more">more</string>
+	<string name="less">less</string>
+	<string name="My_match_criteria">My match criteria</string>
+	<string name="my_interest">My interests</string>
+	<string name="My_selfintro">My self-intro</string>
+	<string name="My_selfintro_tips">Describe of yourself and of the person you\'d like to meet..</string>
+	<string name="YOUR_MATCH_CRITERIA">YOUR MATCH CRITERIA</string>
+	<string name="You_have_vouchers">You have %1$d vouchers</string>
+	<string name="Select_country">Select country</string>
+	<string name="my_profile">My profile</string>
+	<string name="Select_country_code">Select country code</string>
+	<string name="how_do_you_feel_about_x">How do you feel about her?</string>
+	
+	<!-- 上传头像界面  -->
+	<string name="my_profile_photo_tips_under_review">"Your profile photo is under review."</string>
+	<string name="my_profile_photo_tips_under_seal_temp_lock">"Your profile photo has temporary been locked for Qpid SEAL verification."</string>
+	<string name="my_profile_photo_tips_seal_fine_lock">"Your profile photo has been locked after Qpid SEAL verification."</string>
+	
+	<!-- 电话验证主界面  -->
+	<string name="Phone_verify">Phone verify</string>
+	<string name="Add_Mobile">Add Mobile</string>
+	<string name="Mobile">Mobile\n %1$s %2$s</string>
+	<string name="Add_Landline">Add Landline</string>
+	<string name="Landline">Landline\n %1$s %2$s</string>
+	<string name="Change">Change</string>
+	<!-- 电话验证主界面  end-->
+	
+	<!-- 手机验证界面  -->
+	<string name="Add_mobile_number">Add mobile number</string>
+	<string name="mobile_verify_tips">We will send you a one time SMS message to verify your phone number. Carrier SMS charge may apply.</string>
+	<string name="mobile_verify_confirm_tips">Please confirm your country code and enter your phone number.</string>
+	<string name="United_States">United States (+$1%s)</string>
+	<string name="United_States_Hint">United States</string>
+	<string name="Phone_number">Phone number</string>
+	<string name="verify_mobile_code_tips">A verification code has been sent to your number %s via SMS. Please enter the code to verify.</string>
+	<string name="verify_landline_code_tips">We are making you a call at %s. Please wait for a moment.</string>
+	<string name="Verification_cdoe">Verification cdoe</string>
+	<string name="Verify">Verify</string>
+	<!-- 手机验证界面  end -->
+	
+	<!-- 固话验证界面  -->
+	<string name="Add_landline_number">Add landline number</string>
+	<string name="landline_verify_tips">You will receive a call from us with your verification code.</string>
+	<string name="landline_verify_confirm_tips">Please confirm your country code and enter your phone number.</string>
+	<string name="Area_code_Hint">Area code</string>
+	<!-- 固话验证界面  end -->
+	
+	<!-- 找回密码界面  -->
+	<string name="Change_Password">Change Password</string>
+	<string name="Your_current_password_is_incorrect">Your current password is incorrect.</string>
+	<string name="Your_current_password">Your current password</string>
+	<string name="New_password">New password</string>
+	<string name="Confirm_password">Confirm password</string>
+	<!-- 找回密码界面  end -->
+	
+	<!-- 个人详细界面专用  -->
+	<string name="my_profile_match_criteria_age">She\'s between %1$d to %2$d years old,</string>
+	
+	<string name="my_profile_match_criteria_children_yes">does have children,</string>
+	<string name="my_profile_match_criteria_children_no">does not have children,</string>
+
+	<string name="my_profile_match_criteria_education_height_school">height school graduated</string>
+	<string name="my_profile_match_criteria_education_vocational_school">vocational school graduated</string>
+	<string name="my_profile_match_criteria_education_college">college graduated</string>
+	<string name="my_profile_match_criteria_education_bachelor">bachelor graduated</string>
+	<string name="my_profile_match_criteria_education_master">master graduated</string>
+	<string name="my_profile_match_criteria_education_doctorate">doctorate graduated</string>
+	<string name="my_profile_match_criteria_education_post_doctorate">dost doctorate graduated</string>
+		
+	<string name="my_profile_match_criteria_married_single">and she is single.</string>
+	<string name="my_profile_match_criteria_married_divorced">and she is divorced.</string>
+	<string name="my_profile_match_criteria_married_widowed">and she is widowed.</string>	
+	<string name="my_profile_match_criteria_married_separated">and she is separated.</string>
+	<string name="my_profile_match_criteria_married_married">and she is married.</string>
+	
+	<string name="my_profile_going_to_restaurants">Going to Restaurants</string>
+	<string name="my_profile_cooking">Cooking</string>
+	<string name="my_profile_travel">Travel</string>	
+	
+	<string name="my_profile_hiking_outdoor_activities">Hiking/outdoor activities</string>
+	<string name="my_profile_dancing">Dancing</string>
+	<string name="my_profile_watching_movies">Watching movies</string>
+
+	<string name="my_profile_shopping">Shopping</string>
+	<string name="my_profile_having_pets">Having pets</string>
+	<string name="my_profile_reading">Reading</string>	
+	
+	<string name="my_profile_sports_exercise">Sports/exercise</string>
+	<string name="my_profile_playing_cards_chess">Playing cards/chess</string>
+	<string name="my_profile_Music_play_instruments">Music/play instruments</string>
+	
+	<!-- 个人详细界面专用  end -->
+	
+	<!-- 匹配女士条件界面专用  -->
+	<string name="match_criteria_children_yes">YES</string>
+	<string name="match_criteria_children_no">NO</string>
+	<string name="match_criteria_education_height_school">height school</string>
+	<string name="match_criteria_education_vocational_school">vocational</string>
+	<string name="match_criteria_education_college">college</string>
+	<string name="match_criteria_education_bachelor">bachelor</string>
+	<string name="match_criteria_education_master">master</string>
+	<string name="match_criteria_education_doctorate">doctorate</string>
+	<string name="match_criteria_education_post_doctorate">post doctorate</string>
+	<string name="match_criteria_married_single">Single</string>
+	<string name="match_criteria_married_divorced">Divorced</string>
+	<string name="match_criteria_married_widowed">Widowed</string>	
+	<string name="match_criteria_married_separated">Separated</string>
+	<string name="match_criteria_married_married">Married</string>
+	<!-- 匹配女士条件界面专用  end -->
+	<!-- ############################################################################### -->
+	
+	<!-- ############################################################################### -->
+	<!-- Setting Module-->
+	<string name="Settings">Settings</string>
+	<string name="NOTIFICATION">NOTIFICATION</string>
+	<string name="Chat_Notification">Chat Notification</string>
+	<string name="Vibrate_only">Vibrate only</string>
+	<string name="Mail_Notification">Mail Notification</string>
+	<string name="Push_news_offers">Push news &amp; offers</string>
+	<string name="Silent">Silent</string>
+	<string name="APPLICATION">APPLICATION</string>
+	<string name="Clean_cache">Clean cache</string>
+	<string name="Check_update">Check update</string>
+	<string name="Current_Version">Current Version: %1$s</string>
+	<string name="SOCIALIZATION">SOCIALIZATION</string>
+	<string name="Setting_Help">Help</string>
+	<string name="Recommand_this_app_to_friends">Recommand this app to friends</string>
+	<string name="Follow_us_on_facebook">Follow us on facebook</string>
+	<string name="share_text"><![CDATA[Get connected with beautiful and romantic ladies, chat and find your special one with Qpid Network app. Download for free now (available in Google Play)! -- https://secure.qpidnetwork.com/app.php]]></string>
+	<string name="upgrade_title">Please upgrade your app.</string>
+	<string name="Setting_FAQ_Terms">FAQ and Terms</string>
+	<string name="Setting_Contact_US">Contact Us</string>
+	<!-- ############################################################################### -->
+	
+	<!-- ############################################################################### -->
+	<!-- Contact Us Module-->
+	<string name="title_open_tickets">Open tickets</string>
+	<string name="menu_more_add_new_ticket">New ticket</string>
+	<string name="What_is_your_problem_relatedto">What is your problem related to?</string>
+	<string name="contact_form">Contact form: &#160;</string>
+	<string name="ticket_subject">Ticket subject</string>
+	<string name="describe_your_issue">Describe your issue</string>
+	<string name="add_reply">Add reply</string>
+	<string name="set_as_resolved">Set as resolved</string>
+	<string name="ticket_add_screen_shot">Add a screenshot (optional)</string>
+	<string name="ticket_create_new">Create New Ticket</string>
+	<string name="ticket_reply">Reply</string>
+	<string name="ticket_detail_error">Trouble loading ticket details. Please check your internet connection and try again.</string>
+	<string name="ticket_force_read_tips">You have an important message which requires your attention.</string>
+	<string name="this_tecket_will_be_closed">This ticket will be colosed.</string>
+	<string name="this_ticket_is_resolved">This ticket is resolved.</string>
+	<!-- ############################################################################### -->
+	
+	
+	<!-- ########################## QUICK MATCH ############################## -->
+	
+	<string name="matches">Matches</string>
+	<string name="i_like">I Like</string>
+	<string name="you_are_out_of_daily_match_quota_today_please_come_tommorow">You\'r our of daily match quota today, please come tomorrow.</string>
+	
+	<string-array name="cool_statements">
+	    	<item name="they_met_each_other_on_qpidnetwork_dating">They met on Qpid Network\'s dating platform</item>
+	<item name="they_flirt_everyday_over_the_ocean">They flirt across the ocean</item>
+	<item name="they_still_searching_on_our_qpidnetwork">They are still searching on the platform </item>
+	<item name="qpidnetwork_dating_app_descover_love_and_beauties">Qpid Network dating app\nDiscover love and beauties</item>
+	</string-array>	
+</resources>

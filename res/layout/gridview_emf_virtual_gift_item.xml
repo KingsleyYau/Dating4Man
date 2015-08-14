@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    android:background="#FFFFFF" 
+    android:id="@+id/flContainer"
+    android:descendantFocusability="blocksDescendants">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:id="@+id/layoutTips"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:background="#92000000"
+        android:gravity="left|center"
+        android:padding="8dp" >
+
+        <TextView
+            android:id="@+id/textViewTips"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="Virtual gift"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/textViewPreview"
+            android:layout_width="72dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/touch_feedback_round_white_white"
+            android:text="Preview"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:focusable="false" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageViewPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/touch_feedback_dark_grey_round"
+        android:padding="8dp"
+        android:src="@drawable/ic_play_circle_outline_white_48dp"
+        android:visibility="gone" />
+
+</FrameLayout>

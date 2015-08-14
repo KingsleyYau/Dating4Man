@@ -1,0 +1,73 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/llSearchContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true" >
+
+    <include
+        android:id="@+id/includeSearch"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/include_search_header" />
+
+    <LinearLayout
+        android:id="@+id/llLabelContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btnOnline"
+                style="@style/search_tag_button"
+                android:text="@string/contact_label_online_only" />
+
+            <Button
+                android:id="@+id/btnOffline"
+                style="@style/search_tag_button"
+                android:text="@string/contact_label_offline_only" />
+
+            <Button
+                android:id="@+id/btnFavorite"
+                style="@style/search_tag_button"
+                android:text="@string/contact_label_my_favorites" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btnVideos"
+                style="@style/search_tag_button"
+                android:text="@string/contact_label_with_videos"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lvContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cacheColorHint="@null"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:fadeScrollbars="true"
+        android:fadingEdge="@null"
+        android:fadingEdgeLength="0dp"
+        android:gravity="top|center"
+        android:visibility="gone" />
+
+</LinearLayout>

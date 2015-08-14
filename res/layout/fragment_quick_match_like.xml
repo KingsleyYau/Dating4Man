@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/rl_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:background="#FFFFFF"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+   
+    <ListView
+        android:id="@+id/listViewLike"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:listSelector="@drawable/touch_feedback_holo_light"
+        android:divider="@null"
+        android:dividerHeight="@null"
+        android:fadingEdge="@null"
+        android:fadeScrollbars="true"
+        android:cacheColorHint="@null">
+        
+    </ListView>
+</RelativeLayout>    
+

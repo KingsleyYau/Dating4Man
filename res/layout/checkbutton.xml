@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="36dp"
+    android:orientation="horizontal"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:gravity="left|center">
+    
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:text="@string/man_looking_for_woman"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:singleLine="true"
+        android:ellipsize="end" 
+        android:layout_weight="1"/>
+
+	<ImageView
+	    android:id="@+id/imageView"
+	    android:layout_width="18dp"
+	    android:layout_height="18dp"
+	    android:src="@drawable/ic_done_white_24dp"
+	    android:layout_marginLeft="8dp" />
+
+</LinearLayout>

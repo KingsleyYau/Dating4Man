@@ -1,0 +1,86 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF"
+    xmlns:button="http://schemas.android.com/apk/res-auto" >
+
+    <include
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/include_ticket_detail_header" />
+    
+   <View android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/listview_divider_grey"/>
+
+    <TextView 
+        android:id="@+id/tvBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/text_color_dark"
+        android:textSize="16sp"/>
+    
+    <ImageView
+	    android:id="@+id/ivAttach1"
+	    android:layout_width="100dp"
+	    android:layout_height="120dp"
+	    android:scaleType="centerCrop"
+	    android:background="@color/thin_grey"
+	    android:layout_marginTop="16dp"
+	    android:visibility="visible"/>
+    
+    <ImageView
+	    android:id="@+id/ivAttach2"
+	    android:layout_width="100dp"
+	    android:layout_height="120dp"
+	    android:scaleType="centerCrop"
+	    android:background="@color/thin_grey"
+	    android:layout_marginTop="16dp"
+	    android:visibility="gone"/>
+    
+    <ImageView
+	    android:id="@+id/ivAttach3"
+	    android:layout_width="100dp"
+	    android:layout_height="120dp"
+	    android:scaleType="centerCrop"
+	    android:background="@color/thin_grey"
+	    android:layout_marginTop="16dp"
+	    android:visibility="gone"/>
+    
+    <ImageView
+	    android:id="@+id/ivAttach4"
+	    android:layout_width="100dp"
+	    android:layout_height="120dp"
+	    android:scaleType="centerCrop"
+	    android:background="@color/thin_grey"
+	    android:layout_marginTop="16dp"
+	    android:visibility="gone"/>
+    
+    <ImageView
+	    android:id="@+id/ivAttach5"
+	    android:layout_width="100dp"
+	    android:layout_height="120dp"
+	    android:scaleType="centerCrop"
+	    android:background="@color/thin_grey"
+	    android:layout_marginTop="16dp"
+	    android:visibility="gone"/>
+    
+	
+	<com.qpidnetwork.view.ButtonRaised
+        android:id="@+id/tvResolve"
+        android:layout_width="200dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        button:background="@color/white"
+        button:elevation="0dp"
+        button:icon="@drawable/ic_done_all_grey600_24dp"
+        button:title="@string/set_as_resolved"
+        button:title_color="@color/text_color_dark"
+        button:touch_feedback="@drawable/touch_feedback_round_border_white" />
+
+</LinearLayout>
+ 

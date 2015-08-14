@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+    android:orientation="horizontal"  
+    android:layout_width="match_parent"  
+    android:layout_height="48dp"  
+    android:padding="5dp"
+    android:background="@color/black"
+    >  
+    <ImageView 
+        android:id="@+id/imageView"  
+        android:layout_width="36dp"  
+        android:layout_height="36dp"  
+        android:src="@drawable/ic_launcher"
+        android:scaleType="fitCenter"
+        />  
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="3dp"
+        android:layout_gravity="center_vertical"
+        >
+        <LinearLayout 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical"
+	        >  
+	        <TextView 
+		        android:id="@+id/textViewContent"  
+		        android:layout_width="wrap_content"  
+		        android:layout_height="wrap_content"  
+		        android:textColor="#FFFFFF" 
+		        android:text="Content"
+		        android:textSize="14sp"
+		        android:layout_gravity="center_vertical"
+		        />	        
+	    </LinearLayout>
+        <TextView 
+	        android:id="@+id/textViewTime"  
+	        android:layout_width="wrap_content"  
+	        android:layout_height="wrap_content"  
+	        android:layout_alignParentRight="true"
+	        
+	        android:textColor="#FFFFFF" 
+	        android:text="上午"
+	        android:textSize="14sp"
+	        />  
+    </RelativeLayout>
+  
+</LinearLayout> 

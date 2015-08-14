@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <!-- 实心 -->
+	<solid android:color="#AEAEAE"/>
+	
+	<!-- 大小 -->
+	<size 
+	    android:width="@dimen/menu_unread_width"
+	    android:height="@dimen/menu_unread_height"/>
+
+</shape>

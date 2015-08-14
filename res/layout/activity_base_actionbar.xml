@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:button="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
+  
+
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/llContainer"
+        android:layout_marginTop="@dimen/actionbar_height"/>
+    
+        <com.qpidnetwork.view.MaterialAppBar
+        android:id="@+id/appbar"
+        android:layout_height="@dimen/actionbar_height"
+        android:layout_width="match_parent"/>
+    
+        
+        	    <com.qpidnetwork.view.ButtonFloat
+        android:id="@+id/floatButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:clickable="true"
+        button:background="@color/blue_color"
+        button:elevation="4dp"
+        button:icon="@drawable/ic_create_white_24dp"
+        button:touch_feedback="@drawable/touch_feedback_holo_dark" 
+        button:radius="28dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:visibility="gone"/>
+        	    
+        	    
+       	<TextView android:id="@+id/errorMsg"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="#86FF0000"
+        android:layout_marginTop="72dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:padding="8dp"
+        android:visibility="gone"/>
+
+</RelativeLayout>

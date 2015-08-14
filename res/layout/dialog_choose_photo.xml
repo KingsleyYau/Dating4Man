@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rectangle_rounded_angle_white_bg"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
+    android:orientation="vertical">
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/masterView"
+        android:gravity="center">
+    
+  	<ImageView
+  	    android:id="@+id/imageView"
+  	    android:layout_width="86dp"
+  	    android:layout_height="86dp"
+  	    android:layout_centerHorizontal="true"
+		android:src="@drawable/ic_photo_camera_white_48dp"
+		android:scaleType="center"
+  	    android:background="@drawable/circle_green_bg"/>
+  	
+  	<TextView
+  	    android:id="@+id/textView"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="wrap_content"
+  	    android:gravity="center_horizontal"
+  	    android:text="You must be in the photo!"
+  	    android:textSize="20sp"
+  	    android:textColor="#669900"
+  	    android:padding="16dp"/>
+  	
+  	<TextView
+  	    android:id="@+id/textViewTips"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="wrap_content"
+  	    android:gravity="center"
+  	    android:text="Side face, no face, blur, group people, watermark are not allowed."
+  	    android:textSize="18sp"
+  	    android:textColor="@color/text_color_grey"
+  	    android:paddingLeft="16dp"
+  	    android:paddingRight="16dp"
+  	    android:paddingBottom="16dp"/>
+  	
+  	<TextView
+  	    android:layout_width="match_parent"
+  	    android:layout_height="1dp"
+  	    android:background="@color/listview_divider_grey"/>
+  	
+    <TextView
+  	    android:id="@+id/textViewTakePhoto"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="56dp"
+  	    android:gravity="center"
+  	    android:text="@string/common_take_photo"
+  	    android:textSize="18sp"
+  	    android:textColor="@color/blue_color"
+  	    android:clickable="true"
+  	    android:background="@drawable/touch_feedback_holo_light"/>
+    
+    <View android:layout_width="match_parent"
+  	    android:layout_height="1dp"
+  	    android:background="@color/listview_divider_grey" />
+    
+    <TextView
+  	    android:id="@+id/textViewSelectExisting"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="56dp"
+  	    android:gravity="center"
+  	    android:text="@string/common_select_existing"
+  	    android:textSize="18sp"
+  	    android:textColor="@color/blue_color"
+  	    android:clickable="true"
+  	    android:background="@drawable/touch_feedback_holo_light"/>
+    
+    
+        <View android:layout_width="match_parent"
+  	    android:layout_height="1dp"
+  	    android:background="@color/listview_divider_grey" />
+    
+    <TextView
+  	    android:id="@+id/textViewCancel"
+  	    android:layout_width="match_parent"
+  	    android:layout_height="56dp"
+  	    android:gravity="center"
+  	    android:text="@string/common_btn_cancel"
+  	    android:textSize="18sp"
+  	    android:textColor="@color/text_color_grey"
+  	    android:clickable="true"
+  	    android:background="@drawable/touch_feedback_holo_light"/>
+    
+    <View android:layout_width="match_parent"
+  	    android:layout_height="1dp"
+  	    android:background="@color/listview_divider_grey" />
+    	
+</LinearLayout>
+</LinearLayout>

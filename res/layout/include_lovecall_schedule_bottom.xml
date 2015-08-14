@@ -1,0 +1,46 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:button="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+	<LinearLayout  
+	    android:layout_width="fill_parent"
+	    android:layout_height="64dp"
+	    android:orientation="vertical"
+	    android:layout_marginTop="16dp"
+	    android:gravity="center_vertical">
+
+	    
+	    	<com.qpidnetwork.view.ButtonRaised
+        android:id="@+id/btnCall"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:clickable="true"
+        button:background="@color/blue_color"
+        button:elevation="2dp"
+        button:title="@string/lovecall_details_btn_call"
+        button:title_color="@color/white"
+        button:touch_feedback="@drawable/touch_feedback_holo_dark" />
+	</LinearLayout>
+    
+
+	
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/touch_feedback_holo_light_round_rectangle"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/lovecall_details_call_notwork"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:layout_marginBottom="16dp"
+        android:id="@+id/btnNoWork"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/text_color_grey"
+        android:minHeight="36dp"
+        android:textSize="16sp"
+        android:visibility="gone"/>
+    
+</LinearLayout>

@@ -1,0 +1,62 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto">
+    
+    
+    <ImageView android:id="@+id/back_image"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:scaleType="centerCrop"/>
+    
+    <com.qpidnetwork.view.MovingImageView
+        android:id="@+id/imageView"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+    
+
+	
+	
+	
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+    
+    <View android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="#32000000"/>
+    
+    <TextView android:id="@+id/text"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_margin="32dp"
+        android:textColor="@color/white"
+        android:textSize="36sp"
+        android:text="Verified profiles of qaulity singles"
+        android:gravity="center"
+        android:layout_centerVertical="true"/>
+    
+    <Button android:id="@+id/skip"
+        android:layout_height="36dp"
+        android:layout_width="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:background="@drawable/touch_feedback_holo_light_round_rectangle"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:text="@string/capitalized_skip"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
+    
+    
+    
+</RelativeLayout>

@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.qpidnetwork.dating"
+    android:versionCode="306"
+    android:versionName="3.0.6" >
+
+    <uses-sdk
+        android:minSdkVersion="9"
+        android:targetSdkVersion="21" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <application
+        android:name=".QpidApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" 
+        android:theme="@style/QpidAppTheme">
+
+        <!-- Add by Max for facebook -->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/app_id" />
+
+        <activity
+            android:name="com.facebook.LoginActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:screenOrientation="portrait" />
+        <!-- end -->
+        
+        <!-- Add by Samson for Google Play Services -->
+	    <meta-data
+	      android:name="com.google.android.gms.version"
+	      android:value="@integer/google_play_services_version" />
+
+	    <!-- Optionally, register AnalyticsReceiver and AnalyticsService to support background
+	         dispatching on non-Google Play devices -->
+	    <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+	        android:enabled="true">
+	        <intent-filter>
+	            <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
+	        </intent-filter>
+	    </receiver>
+	    <service android:name="com.google.android.gms.analytics.AnalyticsService"
+	        android:enabled="true"
+	        android:exported="false"/>
+	
+	    <!-- Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
+	         installation campaign reporting -->
+	    <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
+	    <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+	              android:exported="true">
+	        <intent-filter>
+	            <action android:name="com.android.vending.INSTALL_REFERRER" />
+	        </intent-filter>
+	    </receiver>
+        <!-- end -->
+        
+        <!-- 推广用于监控推广状态 -->
+        <receiver android:name="com.google.ads.conversiontracking.InstallReceiver" android:exported="true">
+  			<intent-filter>
+    			<action android:name="com.android.vending.INSTALL_REFERRER" />
+  			</intent-filter>
+		</receiver>
+        
+        <!-- Add by Sasmon for InstallTracking -->
+        <receiver android:name=".InstallReferrerReceiver" android:exported="true">
+			<intent-filter>
+				<action android:name="com.android.vending.INSTALL_REFERRER" />
+			</intent-filter>
+		</receiver>
+        <!-- end -->
+        
+        <service android:name="com.qpidnetwork.dating.advertisement.AdvertService" >
+        </service>
+        
+        <!-- Base Module -->
+        <!-- ################################################################################## -->
+        <activity
+            android:name=".DefaultActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ChooseSiteActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.qpidnetwork.dating.home.HomeActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+             android:launchMode="singleTop">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.MainActivity"
+            android:screenOrientation="portrait">
+        </activity>   
+        <activity 
+            android:name="com.qpidnetwork.dating.WebViewActivity"
+            android:screenOrientation="portrait">
+        </activity>  
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.advertisement.AdvertWebviewActivity"
+            android:screenOrientation="portrait">
+        </activity> 
+        <!-- Base Module End -->
+        <!-- ################################################################################## -->
+        
+        <!-- ################################################################################## -->
+        <!-- Lady Module -->
+        <activity 
+        	android:name=".lady.LadyDetailActivity"
+        	android:screenOrientation="portrait">
+   		</activity>  
+   		        
+        <activity 
+            android:name=".lady.LadyLabelActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/QpidAppTheme.Translucent" >
+        </activity>
+        
+        <activity
+            android:name=".lady.VideoDetailActivity"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|keyboardHidden|navigation|locale|screenSize|keyboard" 
+            android:windowSoftInputMode="stateHidden|adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:mimeType="video/*" />
+                <data android:mimeType="application/mp4" />
+                <data android:mimeType="*/rmvb" />
+                <data android:mimeType="*/avi" />
+                <data android:mimeType="*/mkv" />
+                <data android:mimeType="audio/x-pn-realaudio" />
+                <data android:mimeType="video/x-ms-asf" />
+                <data android:mimeType="video/quicktime" />
+                <data android:mimeType="application/mpeg*" />
+                <data android:mimeType="application/vnd.rn-realmedia*" />
+                <data android:mimeType="application/3gpp*" />
+                <data android:mimeType="application/vnd.3gp*" />
+                <data android:mimeType="application/vnd.dvb*" />
+                <data android:mimeType="application/vnd.dolby*" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:mimeType="video/*" android:scheme="http" />
+                <data android:mimeType="video/*" android:scheme="rtsp" />
+                <data android:mimeType="video/*" android:scheme="file" />
+                <data android:mimeType="video/*" android:scheme="content" />
+                <data android:mimeType="video/*" android:scheme="mms" />
+            </intent-filter>
+        </activity>
+        <!-- Lady Module End -->
+        <!-- ################################################################################## -->
+        
+        <!-- ################################################################################## -->
+        <!-- love call -->
+        <activity 
+            android:name="com.qpidnetwork.dating.lovecall.LoveCallListActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.lovecall.LoveCallDetailActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <!-- EMF Module -->
+        <!-- ################################################################################## -->
+        <activity 
+            android:name="com.qpidnetwork.dating.emf.EMFListActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.admirer.AdmirersListActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.emf.EMFDetailActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.emf.EMFSearchActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.emf.MailEditActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.emf.EMFBlockedListActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.emf.EmotionChooseActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <!-- EMF Module End -->
+        <!-- ################################################################################## -->
+        
+        <!-- LiveChat Module start -->
+        <!-- ################################################################################## -->
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.livechat.expression.PremiumTestActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.livechat.ChatActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.livechat.voice.VoiceRecordActivity"
+            android:theme="@style/chat_box_tool_dialog"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.livechat.picture.PictureSelectActivity"
+            android:theme="@style/chat_box_tool_dialog"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.livechat.expression.EmotionActivity"
+            android:theme="@style/chat_box_tool_dialog"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.livechat.expression.PlatinumEmoticonsActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.livechat.LivechatPrivatePhotoPreview"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.livechat.invite.LivechatInviteListActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <!-- ################################################################################## -->  
+        <!-- LiveChat Module end -->     
+        
+        <!-- contact  -->
+        <activity 
+            android:name="com.qpidnetwork.dating.contacts.ContactsListActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.contacts.ContactSearchActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity 
+            android:name="com.qpidnetwork.dating.contacts.ContactLabelSearchActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <!-- ################################################################################## -->
+        <!-- QuickMatch Module -->
+        <activity
+            android:name=".quickmatch.QuickMatchActivity"
+            android:label="@string/title_activity_quick_match" 
+            android:screenOrientation="portrait">
+        </activity>
+        <!-- QuickMatch Module End -->
+        
+        
+        <!-- BuyCreditActivity -->
+        <activity 
+            android:name="com.qpidnetwork.dating.credit.BuyCreditActivity"
+            android:screenOrientation="portrait">
+        </activity> 
+        
+        <!-- Advertisement -->
+        <activity 
+            android:name="com.qpidnetwork.dating.advertisement.MainAdvertisementActivity"
+            android:theme="@android:style/Theme.Dialog" 
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <!-- ################################################################################## -->
+        
+        <!-- ################################################################################## -->
+        <!-- Authorization Module -->
+        <activity
+            android:name=".authorization.RegisterActivity"
+            android:label="@string/title_activity_register" 
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode = "adjustResize">
+        </activity>
+        <activity
+            android:name=".authorization.RegisterByEmailActivity"
+            android:label="@string/title_activity_register_by_email" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".authorization.RegisterPasswordActivity"
+            android:label="@string/title_activity_register_password" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".authorization.RegisterByFacebookActivity"
+            android:label="@string/title_activity_register_by_facebook" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".authorization.RegisterFacebookPasswordActivity"
+            android:label="@string/title_activity_register_by_facebook" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".authorization.LoginActivity"
+            android:label="@string/title_activity_login" 
+            android:theme="@android:style/Theme.Dialog" 
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".authorization.RegisterResetPasswordActivity"
+            android:label="@string/title_activity_register_forget_password" 
+            android:screenOrientation="portrait">
+        </activity>
+        <!-- Authorization Module End -->
+        <!-- ################################################################################## -->
+        
+        <!-- ################################################################################## -->
+        <!-- Profile Module -->
+        <activity
+            android:name=".profile.MyProfileActivity"
+            android:label="@string/title_activity_profile" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".profile.MyProfileDetailActivity"
+            android:label="@string/title_activity_profile_detail" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".profile.MyProfileDetailSelfIntroActivity"
+            android:label="@string/title_activity_profile_detail_selfintro" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".profile.MyProfileDetailInterestActivity"
+            android:label="@string/title_activity_profile_detail_interest" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".profile.MyProfileMatchCriteriaActivity"
+            android:label="@string/title_activity_match_criteria" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".profile.MyProfilePhotoActivity"
+            android:label="@string/title_activity_profile_photo" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".profile.MyProfilePhoneVerifyActivity"
+            android:label="@string/title_activity_profile_phone_verify" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".profile.MyProfilePhoneVerifyMobileActivity"
+            android:label="@string/title_activity_profile_phone_verify_mobile"
+            android:screenOrientation="portrait" >
+        </activity>                      
+        <activity
+            android:name=".profile.MyProfilePhoneVerifyLandlineActivity"
+            android:label="@string/title_activity_profile_phone_verify_landline" 
+            android:screenOrientation="portrait">
+        </activity> 
+        <activity
+            android:name=".profile.MyProfilePhoneVerifyMobileCodeActivity"
+            android:label="@string/title_activity_profile_phone_verify_mobile_code" 
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+        </activity>   
+        <activity
+            android:name=".profile.MyProfileSelectCountryActivity"
+            android:label="@string/title_activity_profile_slect_country" 
+            android:screenOrientation="portrait">
+        </activity>    
+        <activity
+            android:name=".profile.MyProfileChangePasswordActivity"
+            android:label="@string/title_activity_profile_change_password" 
+            android:screenOrientation="portrait">
+        </activity> 
+        <activity
+            android:name=".authorization.RegisterResetPasswordSuccessfulAcitiviy"
+            android:label="@string/title_activity_forget_password_successful"
+            android:screenOrientation="portrait" >
+        </activity> 
+        
+        <!-- Profile Module End -->
+        <!-- ################################################################################## -->
+        
+        <!-- ################################################################################## -->
+        <!-- Setting Module -->
+        <activity
+            android:name=".setting.SettingActivity"
+            android:label="@string/title_activity_setting" 
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity
+            android:name="com.qpidnetwork.dating.contactus.ContactTicketListActivity"
+            android:screenOrientation="portrait">
+        </activity> 
+        
+        <activity
+            android:name="com.qpidnetwork.dating.contactus.TicketDetailListActivity"
+            android:screenOrientation="portrait">
+        </activity>
+         
+        <activity
+            android:name="com.qpidnetwork.dating.contactus.TicketCreateActivity"
+            android:screenOrientation="portrait">
+        </activity> 
+        
+        <activity
+            android:name="com.qpidnetwork.dating.contactus.TicketReplyActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
+        <activity
+            android:name="com.qpidnetwork.dating.contactus.AttachmentPhotoPreview"
+            android:screenOrientation="portrait">
+        </activity> 
+        
+        <!-- Setting Module End -->
+        <!-- ################################################################################## -->
+        
+    </application>
+
+</manifest>

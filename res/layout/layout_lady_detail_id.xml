@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    android:layout_width="wrap_content"
+    android:layout_height="36dp"
+    android:background="@drawable/shap_lady_detail_id"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="left|center"
+    android:layout_marginRight="16dp">
+
+        
+    <com.qpidnetwork.framework.widget.CircleImageView
+        android:id="@+id/imageViewId"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/female_default_profile_photo_40dp" />
+        
+    <EditText
+        android:id="@+id/editTextId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:gravity="left|center"
+        android:inputType="text"
+        android:lines="1"
+        android:text="MB1234"
+        android:textColor="@color/text_color_dark"
+        android:textSize="16sp"
+        android:background="@null"
+        android:layout_weight="1"
+        android:layout_marginRight="8dp" />
+  	    
+    <ImageView 
+        android:id="@+id/imageViewIdCancel"
+        android:layout_width="18dp"
+  	    android:layout_height="18dp"
+  	    android:background="@drawable/circle_grey_bg"
+  	    android:layout_marginRight="8dp"
+  	    android:src="@drawable/ic_close_white_18dp"/>
+ 
+</LinearLayout>

@@ -1,0 +1,45 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    
+    
+    
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"  
+    android:layout_height="wrap_content"    
+    android:orientation="horizontal"  
+    card_view:cardBackgroundColor="@color/white"  
+    card_view:cardCornerRadius="2dp"
+    android:id="@+id/cvLabel"
+    android:layout_marginRight="8dp"
+    android:layout_marginBottom="8dp">
+        
+    
+    
+    <LinearLayout android:id="@+id/element_container"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_done_white_24dp" 
+            android:layout_marginLeft="8dp"
+            android:id="@+id/ivLabelCheck"/>
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="12dp"
+            android:id="@+id/tvLabelDesc"
+            android:textColor="@color/text_color_dark"/>
+    </LinearLayout>
+    
+    </android.support.v7.widget.CardView>
+      
+</LinearLayout>

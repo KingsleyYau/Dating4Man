@@ -1,0 +1,81 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true" >
+
+    <!-- title -->
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="left|center" >
+
+        <ImageView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_close_white_24dp" 
+            android:background="@drawable/touch_feedback_holo_dark_circle"
+            android:id="@+id/ivCancel"/>
+        
+        <TextView android:id="@+id/how_do_you_feel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/how_do_you_feel_about_x"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginRight="56dp"
+            android:singleLine="true"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+		android:paddingLeft="24dp"
+		android:paddingRight="24dp"
+		android:paddingBottom="24dp"
+		android:paddingTop="16dp"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+            
+            <ScrollView android:layout_height="0dp"
+                android:layout_width="match_parent"
+				android:layout_weight="1"
+                android:fadeScrollbars="true"
+                android:fadingEdge="@null"
+                android:fadingEdgeLength="0dp">
+            
+            <com.qpidnetwork.view.FlowLayout
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:id="@+id/labelList"/>
+            
+            </ScrollView>
+        
+                <FrameLayout
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/circle_ffffff_bg"
+            android:layout_marginTop="20dp"
+                        android:id="@+id/ivSummit"
+                        android:visibility="invisible">
+                    
+                            <ImageView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/touch_feedback_holo_light_circle"
+            android:src="@drawable/ic_done_grey600_24dp"
+            android:scaleType="center" />
+                            
+                </FrameLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

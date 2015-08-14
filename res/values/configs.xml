@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="demo" type="bool">false</item>
+    <item name="app_name" type="string">Qpid Network</item>
+    <!-- 
+    <item name="voice_server_ip" type="string">58.64.141.117</item>
+     -->
+
+    <array name="siteIdArray">
+        <item name="siteId_chnlove" type="integer">1</item>
+        <item name="siteId_idateasia" type="integer">2</item>
+        <item name="siteId_charmingdate" type="integer">4</item>
+        <item name="siteId_latamdate" type="integer">8</item>
+    </array>
+    <array name="webHostArray">
+        <item name="webHost_chnlove" type="string">http://mobile.chnlove.com</item>
+        <!--<item name="webHost_chnlove" type="string">http://192.168.88.140:81</item>-->
+        <item name="webHost_idateasia" type="string">http://mobile.idateasia.com</item>
+        <item name="webHost_charmingdate" type="string">http://mobile.charmdate.com</item>
+        <item name="webHost_latamdate" type="string">http://mobile.latamdate.com</item>
+    </array>
+    <array name="webKeyArray">
+        <item name="webKey_chnlove" type="string">ChnLove</item>
+        <item name="webKey_idateasia" type="string">IDateAsia</item>
+        <item name="webKey_charmingdate" type="string">CharmDate</item>
+        <item name="webKey_latamdate" type="string">LatamDate</item>
+    </array>
+    <array name="webNameArray">
+        <item name="webName_chnlove" type="string">ChnLove.com</item>
+        <item name="webName_idateasia" type="string">iDateAsia.com</item>
+        <item name="webName_charmingdate" type="string">CharmDate.com</item>
+        <item name="webName_latamdate" type="string">LatamDate.com</item>
+    </array>
+    <array name="webDescArray">
+        <item name="webDesc_chnlove" type="string">Find Chinese Lovers</item>
+        <item name="webDesc_idateasia" type="string">East Asian Singles</item>
+        <item name="webDesc_charmingdate" type="string">Russia &amp; Ukraine Ladies</item>
+        <item name="webDesc_latamdate" type="string">Latin American Beauties</item>
+    </array>
+    <array name="wwwHostArray">
+        <item name="wwwHost_chnlove" type="string">http://www.chnlove.com</item>
+        <!--<item name="wwwHost_chnlove" type="string">http://192.168.88.140</item>-->
+        <item name="wwwHost_idateasia" type="string">http://www.idateasia.com</item>
+        <item name="wwwHost_charmingdate" type="string">http://www.charmdate.com</item>
+        <item name="wwwHost_latamdate" type="string">http://www.latamdate.com</item>
+    </array>
+    <array name="appThemeArray">
+        <item name="appTheme_chnlove" type="reference">@style/AppTheme.Chnlove</item>
+        <item name="appTheme_idateasia" type="reference">@style/AppTheme.iDateasia</item>
+        <item name="appTheme_charmingdate" type="reference">@style/AppTheme.Charmingdate</item>
+        <item name="appTheme_latamdate" type="reference">@style/AppTheme.latamDate</item>
+    </array>
+    <array name="appColorArray">
+        <item name="appColor_chnlove" type="reference">@color/them_actionbar_bg_cl</item>
+        <item name="appColor_idateasia" type="reference">@color/them_actionbar_bg_ida</item>
+        <item name="appColor_charmingdate" type="reference">@color/theme_actionbar_bg_cd</item>
+        <item name="appColor_latamdate" type="reference">@color/them_actionbar_bg_ld</item>
+    </array>
+    <array name="mHostArray">
+        <item name="mHost_chnlove" type="string">http://m.chnlove.com</item>
+        <item name="mHost_idateasia" type="string">http://m.idateasia.com</item>
+        <item name="mHost_charmingdate" type="string">http://m.charmdate.com</item>
+        <item name="mHost_latamdate" type="string">http://m.latamdate.com</item>
+    </array>
+    <array name="facebookArray">
+        <item name="facebook_chnlove" type="string">https://www.facebook.com/chnlovepage</item>
+        <item name="facebook_idateasia" type="string">https://www.facebook.com/idateasiapage</item>
+        <item name="facebook_charmingdate" type="string">https://www.facebook.com/charmdate</item>
+        <item name="facebook_latamdate" type="string">https://www.facebook.com/latamdatepage</item>
+    </array>
+    <array name="helpArray">
+        <item name="help_chnlove" type="string">http://m.chnlove.com/help/app_index</item>
+        <item name="help_idateasia" type="string">http://m.idateasia.com/help/app_index</item>
+        <item name="help_charmingdate" type="string">http://m.charmdate.com/help/app_index</item>
+        <item name="help_latamdate" type="string">http://m.latamdate.com/help/app_index</item>
+    </array> 
+    <array name="bounsArray">
+        <item name="bouns_chnlove" type="string">http://mobile.chnlove.com/member/bonus_points</item>
+        <item name="bouns_idateasia" type="string">http://mobile.idateasia.com/member/bonus_points</item>
+        <item name="bouns_charmingdate" type="string">http://mobile.charmdate.com/member/bonus_points</item>
+        <item name="bouns_latamdate" type="string">http://mobile.latamdate.com/member/bonus_points</item>
+    </array>      
+
+</resources>
