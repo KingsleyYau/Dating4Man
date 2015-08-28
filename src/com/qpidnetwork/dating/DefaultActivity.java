@@ -322,7 +322,7 @@ public class DefaultActivity extends BaseActivity implements OnLoginManagerCallb
 	}
 
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.view.MaterialAppBar;

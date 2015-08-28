@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,18 +13,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.R.color;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.framework.util.UnitConversion;
-import com.qpidnetwork.framework.widget.wrap.WrapListView;
 import com.qpidnetwork.request.OnLadySignListCallback;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestOperator;
@@ -71,26 +66,6 @@ public class LadyLabelActivity extends BaseActivity {
 		REQUEST_FAIL,
 	}
 	
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-		}
-		public String errno;
-		public String errmsg;
-		public LadySignItem[] ladySignItem;
-	}
-	
 	@Override
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub
@@ -125,7 +100,7 @@ public class LadyLabelActivity extends BaseActivity {
 			public void OnRequest(boolean isSuccess, String errno, String errmsg) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 				if( isSuccess ) {
 					// 获取个人信息成功
 					msg.what = RequestFlag.REQUEST_SUBMIT_LABEL_SUCCESS.ordinal();
@@ -152,11 +127,11 @@ public class LadyLabelActivity extends BaseActivity {
 					LadySignItem[] listArray) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 				if( isSuccess ) {
 					// 成功
 					msg.what = RequestFlag.REQUEST_GET_LABEL_SUCCESS.ordinal();
-					obj.ladySignItem = listArray;
+					obj.body = listArray;
 				} else {
 					// 失败
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
@@ -225,17 +200,18 @@ public class LadyLabelActivity extends BaseActivity {
 			public void handleMessage(android.os.Message msg) {
 				// 收起菊花
 				hideProgressDialog();
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_GET_LABEL_SUCCESS:{
 					// 获取标签成功
 					mLabelList.clear();
 					mOrignalLabelList.clear();
-					if( obj.ladySignItem != null ) {
+					LadySignItem[] ladySignItem = (LadySignItem[])obj.body;
+					if( ladySignItem != null ) {
 						// 保存原始数组
-						mOrignalLabelList.addAll(Arrays.asList(obj.ladySignItem));
+						mOrignalLabelList.addAll(Arrays.asList(ladySignItem));
 						// 复制用于界面改变数组
-						for(LadySignItem item : obj.ladySignItem) {
+						for(LadySignItem item : ladySignItem) {
 							mLabelList.add(item.clone());
 						}
 					}
@@ -247,8 +223,8 @@ public class LadyLabelActivity extends BaseActivity {
 					Intent intent = new Intent();
 					
 					// 获取增加和删除的标签
-					List<String> labelListAdd = new ArrayList<>();
-					List<String> labelListDel = new ArrayList<>();
+					List<String> labelListAdd = new ArrayList<String>();
+					List<String> labelListDel = new ArrayList<String>();
 					for(int i = 0; i < mOrignalLabelList.size() && i < mLabelList.size(); i++ ) {
 						LadySignItem itemOrignal = mOrignalLabelList.get(i);
 						LadySignItem item = mLabelList.get(i);

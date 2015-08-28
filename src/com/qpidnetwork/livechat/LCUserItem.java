@@ -297,13 +297,19 @@ public class LCUserItem implements Serializable{
 							LCMessageItem lMsgItem = lhs.msgList.get(lhs.msgList.size()-1);
 							LCMessageItem rMsgItem = rhs.msgList.get(rhs.msgList.size()-1);
 							
+							// 以最后一条消息的聊天时间倒序排序
 							if (null != lMsgItem && null != rMsgItem) {
 								if (lMsgItem.createTime != rMsgItem.createTime) {
 									result = (lMsgItem.createTime > rMsgItem.createTime ? -1 : 1);
 								}
 							}
 							else {
-								result = (lMsgItem == null ? 1 : -1);
+								if (null == lMsgItem && null != rMsgItem) {
+									result = 1;
+								}
+								else if (null != lMsgItem && null == rMsgItem) {
+									result = -1;
+								}
 							}
 						}
 						else {

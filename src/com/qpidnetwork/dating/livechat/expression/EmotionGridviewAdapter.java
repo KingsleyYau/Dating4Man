@@ -2,20 +2,12 @@ package com.qpidnetwork.dating.livechat.expression;
 
 import java.util.List;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.livechat.ChatActivity;
-import com.qpidnetwork.dating.livechat.downloader.EmotionImageDownloader;
-import com.qpidnetwork.dating.livechat.expression.NormalEmotionFragment.OnItemClickCallback;
-import com.qpidnetwork.livechat.LiveChatManager;
-import com.qpidnetwork.request.item.OtherEmotionConfigEmotionItem;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Build;
-import com.qpidnetwork.framework.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,11 +24,19 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.livechat.ChatActivity;
+import com.qpidnetwork.dating.livechat.downloader.EmotionImageDownloader;
+import com.qpidnetwork.dating.livechat.expression.NormalEmotionFragment.OnItemClickCallback;
+import com.qpidnetwork.framework.util.Log;
+import com.qpidnetwork.livechat.LiveChatManager;
+import com.qpidnetwork.request.item.OtherEmotionConfigEmotionItem;
+
+@SuppressLint("InflateParams")
 public class EmotionGridviewAdapter extends BaseAdapter{
 	
 	private Context mContext;
 	private List<OtherEmotionConfigEmotionItem> mEmotionList;
-	private LiveChatManager liveChatManager;
 	private GridView gridView;
 	private EmotionPreviewer preview;
 	private boolean canScroll = true;
@@ -50,7 +50,7 @@ public class EmotionGridviewAdapter extends BaseAdapter{
 	public EmotionGridviewAdapter(Context context, List<OtherEmotionConfigEmotionItem> emotionList, GridView gridView, OnItemClickCallback callback){
 		mContext = context;
 		mEmotionList = emotionList;
-		liveChatManager = LiveChatManager.newInstance(null);
+		LiveChatManager.newInstance(null);
 		this.gridView = gridView;
 		this.gridView.setClickable(true);
 		this.gridView.setLongClickable(true);
@@ -81,9 +81,9 @@ public class EmotionGridviewAdapter extends BaseAdapter{
 	}
 	
 
-	@SuppressLint("NewApi") @Override
+	@SuppressWarnings("deprecation")
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		String path = null;
 		if (convertView == null) {
 			
 			
@@ -155,7 +155,7 @@ public class EmotionGridviewAdapter extends BaseAdapter{
 				int position, long arg3) {
 			// TODO Auto-generated method stub
 			Log.v("ong", "ong click");
-			OtherEmotionConfigEmotionItem b = (OtherEmotionConfigEmotionItem) mEmotionList.get(position);
+//			OtherEmotionConfigEmotionItem b = (OtherEmotionConfigEmotionItem) mEmotionList.get(position);
 			if (!preview.isShowing()){
 				preview.showAtLocation(arg0.getRootView(), Gravity.CENTER, 0, 0);
 				canScroll = false;

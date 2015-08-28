@@ -10,18 +10,18 @@ extern "C" {
 /*
  * Class:     com_qpidnetwork_request_RequestJniAuthorization
  * Method:    LoginWithFacebook
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnLoginWithFacebookCallback;)J
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnLoginWithFacebookCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_LoginWithFacebook
-  (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jobject);
+  (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jstring, jobject);
 
 /*
  * Class:     com_qpidnetwork_request_RequestJniAuthorization
  * Method:    Register
- * Signature: (Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnRegisterCallback;)J
+ * Signature: (Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnRegisterCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_Register
-  (JNIEnv *, jclass, jstring, jstring, jboolean, jstring, jstring, jint, jstring, jstring, jstring, jboolean, jstring, jstring, jstring, jobject);
+  (JNIEnv *, jclass, jstring, jstring, jboolean, jstring, jstring, jint, jstring, jstring, jstring, jboolean, jstring, jstring, jstring, jstring, jobject);
 
 /*
  * Class:     com_qpidnetwork_request_RequestJniAuthorization

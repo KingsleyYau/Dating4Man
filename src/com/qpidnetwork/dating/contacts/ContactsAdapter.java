@@ -4,11 +4,11 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +46,7 @@ public class ContactsAdapter extends UpdateableAdapter<ContactBean>{
 	public Activity mContext;
 	public int type = 0;//0:联系人列表 1:livechat列表 
 	private OnContactListItemLongClickListener listener;
-	private static String[] attachmentText;
+//	private static String[] attachmentText;
 	private ExpressionImageGetter imageGetter; 
 	private MaterialNameCardDialog nameCard;
 	private FlatToast flatToast;
@@ -55,11 +55,13 @@ public class ContactsAdapter extends UpdateableAdapter<ContactBean>{
 	public ContactsAdapter(Activity context, int type){
 		this.mContext = context;
 		this.type = type;
-		attachmentText = mContext.getResources().getStringArray(R.array.livechat_msg_in_type);
+//		attachmentText = mContext.getResources().getStringArray(R.array.livechat_msg_in_type);
 		imageGetter = new ExpressionImageGetter(context, UnitConversion.dip2px(context, 16), UnitConversion.dip2px(context, 16));
 		nameCard = new MaterialNameCardDialog(mContext);
 	}
 	
+	@SuppressLint("InflateParams")
+	@SuppressWarnings("deprecation")
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
@@ -83,7 +85,8 @@ public class ContactsAdapter extends UpdateableAdapter<ContactBean>{
 		}
 		
 		final ContactBean item = getItem(position);
-		holder.tvName.setText(item.firstname);
+		String firstName = item.firstname;
+		holder.tvName.setText(firstName);
 		
 		if (item.unreadCount > 0){
 			holder.ivUnread.setVisibility(View.VISIBLE);

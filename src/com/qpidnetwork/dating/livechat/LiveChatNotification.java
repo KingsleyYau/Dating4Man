@@ -18,6 +18,7 @@ import com.qpidnetwork.dating.home.HomeActivity;
  * @author Max.Chiu
  *
  */
+@SuppressWarnings("deprecation")
 public class LiveChatNotification {
 
 	private static final int NOTIFICATION_BASE_ID = 20000;
@@ -117,7 +118,8 @@ public class LiveChatNotification {
     	intent.putExtra(HomeActivity.START_LIVECHAT_LIST, true);
     	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
     	
-        PendingIntent pt = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    	PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        PendingIntent pt = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 //    	notification.contentIntent = pt;
     	
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);

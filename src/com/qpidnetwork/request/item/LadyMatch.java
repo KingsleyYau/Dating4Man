@@ -2,7 +2,9 @@ package com.qpidnetwork.request.item;
 
 import java.io.Serializable;
 
-import com.qpidnetwork.request.RequestEnum.*;
+import com.qpidnetwork.request.RequestEnum.Children;
+import com.qpidnetwork.request.RequestEnum.Education;
+import com.qpidnetwork.request.RequestEnum.Marry;
 
 public class LadyMatch implements Serializable {
 	/**

@@ -3,8 +3,6 @@ package com.qpidnetwork.dating.livechat.voice;
 import java.io.File;
 import java.io.IOException;
 
-import com.qpidnetwork.dating.R;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -12,6 +10,8 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.view.View;
 import android.widget.TextView;
+
+import com.qpidnetwork.dating.R;
 
 public class VoicePlayerManager {
 
@@ -101,6 +101,7 @@ public class VoicePlayerManager {
 	/**
 	 * 异常或手动停止及异常播放，状态及界面修改
 	 */
+	@SuppressWarnings("deprecation")
 	private void onStopUIUpdate(){
 		isPlaying = false;
 		if(v != null){
@@ -113,6 +114,7 @@ public class VoicePlayerManager {
 	/**
 	 * 正式开始播放，界面修改
 	 */
+	@SuppressWarnings("deprecation")
 	private void onStartUIUpdate(){
 		isPlaying = true;
 		if(v != null){

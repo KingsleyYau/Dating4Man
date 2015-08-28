@@ -1,8 +1,8 @@
 package com.qpidnetwork.dating.contacts;
 
-import com.qpidnetwork.dating.R;
-
 import android.content.Context;
+
+import com.qpidnetwork.dating.R;
 
 public class ContactSearchType {
 

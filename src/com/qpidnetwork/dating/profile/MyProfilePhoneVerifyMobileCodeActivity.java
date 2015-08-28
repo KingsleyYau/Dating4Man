@@ -12,14 +12,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.TranslateAnimation;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.request.OnRequestCallback;
-import com.qpidnetwork.request.RequestJniAuthorization;
 import com.qpidnetwork.request.RequestJniAuthorization.Verify;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.view.MaterialAppBar;

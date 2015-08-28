@@ -101,7 +101,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_SendGift
  * Signature: (Ljava/lang/String;Lcom/qpidnetwork/request/OnQueryRecentVideoListCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_QueryRecentVideo
-  (JNIEnv *, jclass, jstring, jobject);
+  (JNIEnv *, jclass, jstring, jstring, jstring, jobject);
 
 /*
  * Class:     com_qpidnetwork_request_RequestJniLiveChat
@@ -109,7 +109,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_QueryRec
  * Signature: (Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Lcom/qpidnetwork/request/OnRequestFileCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetVideoPhoto
-  (JNIEnv *, jclass, jstring, jstring, jint, jstring, jobject);
+  (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jint, jstring, jobject);
 
 /*
  * Class:     com_qpidnetwork_request_RequestJniLiveChat
@@ -117,7 +117,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetVideo
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Lcom/qpidnetwork/request/OnGetVideoCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetVideo
-  (JNIEnv *, jclass, jstring, jstring, jstring, jint, jstring, jobject);
+  (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jstring, jint, jstring, jobject);
 
 #ifdef __cplusplus
 }

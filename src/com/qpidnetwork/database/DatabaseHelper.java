@@ -2,12 +2,12 @@ package com.qpidnetwork.database;
 
 import java.util.HashMap;
 
-import com.qpidnetwork.framework.util.Log;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.qpidnetwork.framework.util.Log;
 
 /**
  * @author Max.Chiu
@@ -15,6 +15,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+	@SuppressWarnings("unused")
 	private class TableColumnInfo {
 		String cid = "";
 		String name = "";

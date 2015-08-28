@@ -1,5 +1,6 @@
 package com.qpidnetwork.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -36,6 +37,7 @@ public class QpidGallery extends HorizontalScrollView {
 		init(context);
 	}
 
+	@SuppressLint("RtlHardcoded")
 	public QpidGallery(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.QpidGallery);
@@ -44,6 +46,7 @@ public class QpidGallery extends HorizontalScrollView {
 		init(context);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void init(Context context) {
 		setHorizontalFadingEdgeEnabled(false);
 		setHorizontalScrollBarEnabled(false);

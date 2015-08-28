@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.qpidnetwork.framework.util.StringUtil;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore.Images.Media;
 import android.provider.MediaStore.Images.Thumbnails;
+
+import com.qpidnetwork.framework.util.StringUtil;
 
 /**
  * 系统图库工具类,获取系统图片列表
@@ -86,6 +86,7 @@ public class AlbumHelper {
 	 * 
 	 * @param cur
 	 */
+	@SuppressWarnings("unused")
 	private void getThumbnailColumnData(Cursor cur) {
 		if (cur.moveToFirst()) {
 			int _id;

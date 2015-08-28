@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 
 public class EMFEditAttachAdapter extends BaseAdapter {
 	
+	@SuppressWarnings("unused")
 	private Context mContext;
 	
 	private List<View> mAttachList;

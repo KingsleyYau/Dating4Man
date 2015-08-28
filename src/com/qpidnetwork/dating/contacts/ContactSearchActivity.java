@@ -29,7 +29,7 @@ public class ContactSearchActivity extends BaseFragmentActivity{
 	
 	public static final String CURRENT_CONTACT_TYPE = "contactType";
 	
-	private LinearLayout llSearchContainer;
+//	private LinearLayout llSearchContainer;
 	private ImageView ivCancle;
 	private EditText etSearchFilter;
 	private ListView lvContainer;
@@ -142,7 +142,7 @@ public class ContactSearchActivity extends BaseFragmentActivity{
 		btnVideos.setOnClickListener(this);
 		
 		LinearLayout includeSearch = (LinearLayout) findViewById(R.id.includeSearch);
-		llSearchContainer = (LinearLayout)findViewById(R.id.llSearchContainer);
+//		llSearchContainer = (LinearLayout)findViewById(R.id.llSearchContainer);
 		if(type == 0){
 			includeSearch.setBackgroundColor(getResources().getColor(WebSiteManager.getInstance().GetWebSite().getSiteColor()));
 		} else if(type == 1){

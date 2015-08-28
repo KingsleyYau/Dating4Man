@@ -1,6 +1,5 @@
 package com.qpidnetwork.dating.authorization;
 
-import java.util.logging.LogManager;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,13 +19,12 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.qpidnetwork.dating.BaseActivity;
-import com.qpidnetwork.dating.MainActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.home.HomeActivity;
 import com.qpidnetwork.manager.ConfigManager;
-import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
+import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnRegisterCallback;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestEnum.Country;
@@ -239,61 +237,83 @@ public class RegisterPasswordActivity extends BaseActivity implements OnLoginMan
 		final String password = editTextPassword.getText().toString();
 		
 		// 先同步配置
-		ConfigManager.getInstance().GetOtherSynConfigItem(new OnConfigManagerCallback() {
+//		ConfigManager.getInstance().GetOtherSynConfigItem(new OnConfigManagerCallback() {
+//			
+//			@Override
+//			public void OnGetOtherSynConfigItem(boolean isSuccess, String errno,
+//					String errmsg, OtherSynConfigItem item) {
+//				// TODO Auto-generated method stub
+//				if( isSuccess ) {
+//					// 同步配置成功, 这里是主线程
+//					
+//					// 调用注册接口
+//					TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+//					RequestJniAuthorization.Register(
+//							email,
+//							password,
+//							mRegisterParam.male, 
+//							mRegisterParam.firstname, 
+//							mRegisterParam.lastname, 
+//							mRegisterParam.country,
+//							mRegisterParam.year, 
+//							mRegisterParam.month, 
+//							mRegisterParam.day, 
+//							false,
+//							Build.MODEL, 
+//							RequestJni.GetDeviceId(tm), 
+//							Build.MANUFACTURER, new OnRegisterCallback() {
+//								
+//								@Override
+//								public void OnRegister(boolean isSuccess, String errno, String errmsg,
+//										RegisterItem item) {
+//									// TODO Auto-generated method stub
+//									Message msg = Message.obtain();
+//									MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+//									if( isSuccess ) {
+//										// 登录成功
+//										msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
+//										obj.item = item;
+//									} else {
+//										// 登录失败
+//										msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+//									}
+//									obj.email = email;
+//									obj.password = password;
+//									msg.obj = obj;
+//									mHandler.sendMessage(msg);
+//								}
+//							});
+//				} else {
+//					Message msg = Message.obtain();
+//					MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+//					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+//					obj.email = email;
+//					obj.password = password;
+//					msg.obj = obj;
+//					mHandler.sendMessage(msg);
+//				}
+//			}
+//		});
+		
+		RegisterManager.getInstance().emailRegister(email, password, mRegisterParam, new OnRegisterCallback() {
 			
 			@Override
-			public void OnGetOtherSynConfigItem(boolean isSuccess, String errno,
-					String errmsg, OtherSynConfigItem item) {
-				// TODO Auto-generated method stub
+			public void OnRegister(boolean isSuccess, String errno, String errmsg,
+					RegisterItem item) {
+				Message msg = Message.obtain();
+				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
 				if( isSuccess ) {
-					// 同步配置成功, 这里是主线程
-					
-					// 调用注册接口
-					TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-					RequestJniAuthorization.Register(
-							email,
-							password,
-							mRegisterParam.male, 
-							mRegisterParam.firstname, 
-							mRegisterParam.lastname, 
-							mRegisterParam.country,
-							mRegisterParam.year, 
-							mRegisterParam.month, 
-							mRegisterParam.day, 
-							false,
-							Build.MODEL, 
-							RequestJni.GetDeviceId(tm), 
-							Build.MANUFACTURER, new OnRegisterCallback() {
-								
-								@Override
-								public void OnRegister(boolean isSuccess, String errno, String errmsg,
-										RegisterItem item) {
-									// TODO Auto-generated method stub
-									Message msg = Message.obtain();
-									MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
-									if( isSuccess ) {
-										// 登录成功
-										msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
-										obj.item = item;
-									} else {
-										// 登录失败
-										msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-									}
-									obj.email = email;
-									obj.password = password;
-									msg.obj = obj;
-									mHandler.sendMessage(msg);
-								}
-							});
+					// 登录成功
+					msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
+					obj.item = item;
 				} else {
-					Message msg = Message.obtain();
-					MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+					// 登录失败
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-					obj.email = email;
-					obj.password = password;
-					msg.obj = obj;
-					mHandler.sendMessage(msg);
 				}
+				obj.email = email;
+				obj.password = password;
+				msg.obj = obj;
+				mHandler.sendMessage(msg);
 			}
 		});
 
@@ -452,7 +472,7 @@ public class RegisterPasswordActivity extends BaseActivity implements OnLoginMan
 	}
 
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
 	}

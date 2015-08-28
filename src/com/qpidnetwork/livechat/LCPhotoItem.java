@@ -47,7 +47,7 @@ public class LCPhotoItem implements Serializable{
 	 */
 	public String thumbSrcFilePath;
 	/**
-	 * 是否需要购买
+	 * 是否已付费
 	 */
 	public boolean charge;
 	/**

@@ -133,6 +133,21 @@
 #define OTHER_UPLOAD_CRASH_DEVICEID		"deviceId"
 #define OTHER_UPLOAD_CRASH_CRASHFILE	"crashfile"
 
+// 提交APP安装记录
+#define OTHER_INSTALLLOGS_PATH		"/other/install_logs"
+#define OTHER_INSTALLLOGS_DEVICEID		"deviceId"
+#define OTHER_INSTALLLOGS_INSTALLTIME	"installtime"
+#define OTHER_INSTALLLOGS_SUBMITTIME	"submittime"
+#define OTHER_INSTALLLOGS_VERSIONCODE	"versionCode"
+#define OTHER_INSTALLLOGS_MODEL			"model"
+#define OTHER_INSTALLLOGS_MANUFACTURER	"manufacturer"
+#define OTHER_INSTALLLOGS_OS			"os"
+#define OTHER_INSTALLLOGS_RELEASE		"release"
+#define OTHER_INSTALLLOGS_SDK			"sdk"
+#define OTHER_INSTALLLOGS_WIDTH			"width"
+#define OTHER_INSTALLLOGS_HEIGHT		"height"
+#define OTHER_INSTALLLOGS_UTMREFERRER	"utm_referrer"
+
 // ------ 枚举定义 ------
 // action(新用户类型)
 static const char* OTHER_ACTION_TYPE[] =

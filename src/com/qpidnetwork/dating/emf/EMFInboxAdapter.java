@@ -33,6 +33,7 @@ public class EMFInboxAdapter extends EMFBaseAdapter<EMFInboxListItem>{
 		notifyDataSetChanged();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void instantiateViews(int position, ViewHolder holder) {
 		// TODO Auto-generated method stub

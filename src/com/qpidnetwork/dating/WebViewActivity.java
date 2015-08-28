@@ -22,6 +22,7 @@ import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.view.MaterialAppBar;
 
+@SuppressWarnings("deprecation")
 public class WebViewActivity extends BaseActivity implements OnLoginManagerCallback {
 	
 	public static final String WEB_URL = "web_url";
@@ -73,11 +74,11 @@ public class WebViewActivity extends BaseActivity implements OnLoginManagerCallb
 		// 域名
 		String domain = WebSiteManager.newInstance(this).GetWebSite().getAppSiteHost();
 		// Cookie 认证
+		CookieSyncManager.createInstance(this);
 		CookieManager cookieManager = CookieManager.getInstance();
 		cookieManager.setAcceptCookie(true);
 		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
 		cookieManager.setCookie(domain, phpSession);
-		CookieSyncManager.createInstance(this);
 		CookieSyncManager.getInstance().sync();
 		
 		mWebView.setWebViewClient(new WebViewClient() { 
@@ -180,7 +181,7 @@ public class WebViewActivity extends BaseActivity implements OnLoginManagerCallb
 	}
 
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
 	}

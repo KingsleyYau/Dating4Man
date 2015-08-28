@@ -36,6 +36,7 @@ public class AdmirerListAdapter extends EMFBaseAdapter<EMFAdmirerListItem>{
 		notifyDataSetChanged();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void instantiateViews(int position, final ViewHolder holder) {
 		// TODO Auto-generated method stub

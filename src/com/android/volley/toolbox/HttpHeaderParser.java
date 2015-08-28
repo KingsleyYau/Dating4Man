@@ -16,18 +16,19 @@
 
 package com.android.volley.toolbox;
 
-import com.android.volley.Cache;
-import com.android.volley.NetworkResponse;
+import java.util.Map;
 
 import org.apache.http.impl.cookie.DateParseException;
 import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.protocol.HTTP;
 
-import java.util.Map;
+import com.android.volley.Cache;
+import com.android.volley.NetworkResponse;
 
 /**
  * Utility methods for parsing HTTP headers.
  */
+@SuppressWarnings("deprecation")
 public class HttpHeaderParser {
 
     /**

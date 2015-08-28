@@ -292,6 +292,7 @@ public class EMFSearchActivity extends BaseFragmentActivity implements OnClickLi
 	 * 搜索成功统一返回处理
 	 * @param obj 数据对象
 	 */
+	@SuppressWarnings("unchecked")
 	private void onSearchSuccess(Message msg){
 		String filter = etSearchFilter.getText().toString();
 		filter = String.format(getString(R.string.common_no_result), filter);
@@ -336,10 +337,12 @@ public class EMFSearchActivity extends BaseFragmentActivity implements OnClickLi
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void onRefreshFinish(){
 		hideLoading();
 		mMLV.onRefreshComplete();
-		mMLV.setCanPullUp(((UpdateableAdapter)adapter).getDataList().size() >= pageBean.getDataCount());
+		UpdateableAdapter updateableAdapter = (UpdateableAdapter)adapter;
+		mMLV.setCanPullUp((updateableAdapter).getDataList().size() >= pageBean.getDataCount());
 	}
 	
 	/*进入详情删除操作*/

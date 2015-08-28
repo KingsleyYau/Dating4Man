@@ -20,6 +20,7 @@ import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.WebViewActivity;
 import com.qpidnetwork.dating.authorization.LoginManager;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.contactus.ContactTicketListActivity;
 import com.qpidnetwork.dating.setting.SettingPerfence.NotificationItem;
 import com.qpidnetwork.manager.FileCacheManager;
@@ -35,26 +36,6 @@ public class SettingActivity extends BaseActivity {
 	private enum RequestFlag {
 		REQUEST_VERSIONCHECK_SUCCESS,
 		REQUEST_FAIL,
-	}
-	
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-		}
-		public String errno;
-		public String errmsg;
-		public OtherVersionCheckItem otherVersionCheckItem;
 	}
 	
 	public MaterialAppBar appbar;
@@ -305,11 +286,11 @@ public class SettingActivity extends BaseActivity {
 			public void handleMessage(android.os.Message msg) {
 				// 收起菊花
 				hideProgressDialog();
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_VERSIONCHECK_SUCCESS:{
 					// 版本检测成功
-					mOtherVersionCheckItem = obj.otherVersionCheckItem;
+					mOtherVersionCheckItem = (OtherVersionCheckItem)obj.body;
 					
 					ReloadData();
 					
@@ -363,16 +344,15 @@ public class SettingActivity extends BaseActivity {
 					String errmsg, OtherVersionCheckItem item) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse response = new RequestBaseResponse(isSuccess, errno, errmsg, item);
 				if( isSuccess ) {
 					// 版本检测成功
 					msg.what = RequestFlag.REQUEST_VERSIONCHECK_SUCCESS.ordinal();
-					obj.otherVersionCheckItem = item;
 				} else {
 					// 失败
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
 				}
-				msg.obj = obj;
+				msg.obj = response;
 				mHandler.sendMessage(msg);
 			}
 		});

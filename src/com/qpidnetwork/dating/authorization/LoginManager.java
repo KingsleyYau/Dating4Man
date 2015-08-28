@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -19,11 +18,9 @@ import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 
-import com.facebook.AccessToken;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
-import com.facebook.SessionLoginBehavior;
 import com.facebook.SessionState;
 import com.facebook.SharedPreferencesTokenCachingStrategy;
 import com.facebook.model.GraphUser;
@@ -69,8 +66,9 @@ public class LoginManager {
 		
 		/**
 		 * 注销成功回调
+		 * @param bActive			是否主动注销
 		 */
-		public void OnLogout();
+		public void OnLogout(boolean bActive);
 	}
 	
 	/**
@@ -135,7 +133,7 @@ public class LoginManager {
 	/**
 	 * 登录状态改变监听
 	 */
-	private List<OnLoginManagerCallback> mCallbackList = new ArrayList<>();
+	private List<OnLoginManagerCallback> mCallbackList = new ArrayList<OnLoginManagerCallback>();
 	
 	/**
 	 * facebook变量
@@ -466,61 +464,86 @@ public class LoginManager {
 		
     	mLoginStatus = LoginStatus.LOGINING;
 
-		// 先同步配置
-		ConfigManager.getInstance().GetOtherSynConfigItem(new OnConfigManagerCallback() {
+//		// 先同步配置
+//		ConfigManager.getInstance().GetOtherSynConfigItem(new OnConfigManagerCallback() {
+//			
+//			@Override
+//			public void OnGetOtherSynConfigItem(boolean isSuccess, String errno,
+//					String errmsg, OtherSynConfigItem item) {
+//				// TODO Auto-generated method stub
+//				if( isSuccess ) {
+//					// 同步配置成功, 这里是主线程
+//					TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+//
+//					RequestJniAuthorization.LoginWithFacebook(
+//							finalAccessToken,
+//							email, 
+//							password, 
+//							RequestJni.GetDeviceId(tm), 
+//							String.valueOf(QpidApplication.versionCode),
+//							Build.MODEL, 
+//							Build.MANUFACTURER, 
+//							error,
+//							year,
+//							month,
+//							day,
+//							new OnLoginWithFacebookCallback() {
+//								
+//								@Override
+//								public void OnLoginWithFacebook(boolean isSuccess, String errno,
+//										String errmsg, LoginFacebookItem item, LoginErrorItem errItem) {
+//									// TODO Auto-generated method stub
+//							    	
+//									Message msg = Message.obtain();
+//									MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+//									obj.loginItem = new LoginItem(item);
+//									obj.loginErrorItem = errItem;
+//									obj.isSuccess = isSuccess;
+//									obj.email = email;
+//									obj.password = password;
+//									obj.accessToken = finalAccessToken;
+//									obj.type = LoginType.Facebook;
+//									msg.obj = obj;
+//									mHandler.sendMessage(msg);
+//									
+//									if(isSuccess 
+//											&& (item != null)
+//											&&(item.is_reg)){
+//										mAdwordsHandler.sendEmptyMessage(ADWORDS_REGISTER_SUCCESS_UPDATE);
+//									}
+//								}
+//							});
+//				} else {
+//					Message msg = Message.obtain();
+//					MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+//					obj.isSuccess = false;
+//					msg.obj = obj;
+//					mHandler.sendMessage(msg);
+//				}
+//			}
+//		});
+    	
+    	RegisterManager.getInstance().facebookRegister(email, password, finalAccessToken, error, year, month, day, new OnLoginWithFacebookCallback() {
 			
 			@Override
-			public void OnGetOtherSynConfigItem(boolean isSuccess, String errno,
-					String errmsg, OtherSynConfigItem item) {
-				// TODO Auto-generated method stub
-				if( isSuccess ) {
-					// 同步配置成功, 这里是主线程
-					TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-
-					RequestJniAuthorization.LoginWithFacebook(
-							finalAccessToken,
-							email, 
-							password, 
-							RequestJni.GetDeviceId(tm), 
-							String.valueOf(QpidApplication.versionCode),
-							Build.MODEL, 
-							Build.MANUFACTURER, 
-							error,
-							year,
-							month,
-							day,
-							new OnLoginWithFacebookCallback() {
-								
-								@Override
-								public void OnLoginWithFacebook(boolean isSuccess, String errno,
-										String errmsg, LoginFacebookItem item, LoginErrorItem errItem) {
-									// TODO Auto-generated method stub
-							    	
-									Message msg = Message.obtain();
-									MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
-									obj.loginItem = new LoginItem(item);
-									obj.loginErrorItem = errItem;
-									obj.isSuccess = isSuccess;
-									obj.email = email;
-									obj.password = password;
-									obj.accessToken = finalAccessToken;
-									obj.type = LoginType.Facebook;
-									msg.obj = obj;
-									mHandler.sendMessage(msg);
-									
-									if(isSuccess 
-											&& (item != null)
-											&&(item.is_reg)){
-										mAdwordsHandler.sendEmptyMessage(ADWORDS_REGISTER_SUCCESS_UPDATE);
-									}
-								}
-							});
-				} else {
-					Message msg = Message.obtain();
-					MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
-					obj.isSuccess = false;
-					msg.obj = obj;
-					mHandler.sendMessage(msg);
+			public void OnLoginWithFacebook(boolean isSuccess, String errno,
+					String errmsg, LoginFacebookItem item, LoginErrorItem errItem) {
+				Message msg = Message.obtain();
+				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				obj.loginItem = new LoginItem(item);
+				obj.loginErrorItem = errItem;
+				obj.isSuccess = isSuccess;
+				obj.email = email;
+				obj.password = password;
+				obj.accessToken = finalAccessToken;
+				obj.type = LoginType.Facebook;
+				msg.obj = obj;
+				mHandler.sendMessage(msg);
+				
+				if(isSuccess 
+						&& (item != null)
+						&&(item.is_reg)){
+					mAdwordsHandler.sendEmptyMessage(ADWORDS_REGISTER_SUCCESS_UPDATE);
 				}
 			}
 		});
@@ -529,8 +552,9 @@ public class LoginManager {
     
     /**
      * 注销
+     * @param bActive			是否主动注销
      */
-    public void Logout() {
+    public void Logout(boolean bActive) {
     	RequestJni.CleanCookies();
     	
 		Log.d("LoginManager", "Logout( " + 
@@ -552,13 +576,21 @@ public class LoginManager {
 		// 通知其他模块
 		for(OnLoginManagerCallback callback : mCallbackList) {
 			if( callback != null ) {
-				callback.OnLogout();
+				callback.OnLogout(bActive);
 			} 
 		}
     }
     
+    /**
+     * 非主动注销
+     */
+    public void Logout() {
+    	Logout(false);
+    }
+    
     public void LogoutAndClean() {
-    	Logout();
+    	Logout(true);
+    	
 		LoginParam param = LoginPerfence.GetLoginParam(mContext);
 		if( param != null ) {
 			param.password = "";

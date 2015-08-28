@@ -4,15 +4,10 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
-import com.qpidnetwork.dating.QpidApplication;
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.home.HomeActivity;
-import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.request.OnOtherSynConfigCallback;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestJniOther;
 import com.qpidnetwork.request.item.OtherSynConfigItem;
-import com.qpidnetwork.view.MaterialDialogAlert;
 
 /**
  * 同步配置管理器 
@@ -84,11 +79,11 @@ public class ConfigManager {
 	/**
 	 * 实例变量
 	 */
-	private Context mContext = null;
+//	private Context mContext = null;
 	private Handler mHandler = null;
 	
 	public ConfigManager(Context context) {
-		mContext = context;
+//		mContext = context;
 		mHandler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {

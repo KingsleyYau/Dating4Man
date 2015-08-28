@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Canvas;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
@@ -44,10 +43,6 @@ public class VideoView extends SurfaceView implements MediaPlayerControl {
 	 * 音频、视频文件播放时间总长度
 	 */
 	private int mDuration;
-	/**
-	 * 上下文，或者说坏境变量
-	 */
-	private Context mContext;
 	
 	// all possible internal states
 	private static final int STATE_ERROR = -1;
@@ -96,7 +91,6 @@ public class VideoView extends SurfaceView implements MediaPlayerControl {
 	 */
 	private SurfaceHolder mSurfaceHolder = null;
 
-	private Canvas canvas;
 	/**
 	 * 播放视频、音乐其实就是靠这个类。
 	 */
@@ -483,7 +477,6 @@ public class VideoView extends SurfaceView implements MediaPlayerControl {
 	public VideoView(Context context) {
 		super(context);
 		initVideoView();
-		this.mContext = context;  
 	}
 
 	/**
@@ -495,7 +488,6 @@ public class VideoView extends SurfaceView implements MediaPlayerControl {
 	public VideoView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 		initVideoView();
-		this.mContext = context;
 	}
 
 	/**
@@ -511,12 +503,12 @@ public class VideoView extends SurfaceView implements MediaPlayerControl {
 	public VideoView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initVideoView();
-		this.mContext = context;  
 	}
 
 	/**
 	 * 初始化VideoView，设置相关参数。
 	 */
+	@SuppressWarnings("deprecation")
 	private void initVideoView() {
 		Log.i("initVideoView", "initVideoView");
 		mVideoWidth = 0;

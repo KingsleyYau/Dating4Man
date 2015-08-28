@@ -28,6 +28,8 @@ JNIEXPORT void JNICALL Java_com_qpidnetwork_request_RequestJni_SetLogDirectory
 	HttpClient::SetLogDirectory(cpDirectory);
 	CrashHandler::GetInstance()->SetLogDirectory(cpDirectory);
 
+	GetPhoneInfo();
+
 	FileLog("httprequest", "SetLogDirectory ( directory : %s ) ", cpDirectory);
 	FileLog("httprequest", "SetLogDirectory ( Android CPU ABI : %s ) ", GetPhoneCpuAbi().c_str());
 

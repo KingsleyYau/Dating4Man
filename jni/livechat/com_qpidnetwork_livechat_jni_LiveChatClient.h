@@ -153,6 +153,14 @@ JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_Show
 
 /*
  * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    PlayVideo
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_PlayVideo
+  (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jboolean, jstring, jint);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
  * Method:    GetUserInfo
  * Signature: (Ljava/lang/String;)Z
  */

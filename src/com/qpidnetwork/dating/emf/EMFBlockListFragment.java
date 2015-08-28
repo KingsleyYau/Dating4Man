@@ -144,6 +144,7 @@ public class EMFBlockListFragment extends BaseListFragment{
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleUiMessage(Message msg) {
 		super.handleUiMessage(msg);

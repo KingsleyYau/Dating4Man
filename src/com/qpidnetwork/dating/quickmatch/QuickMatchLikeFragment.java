@@ -1,18 +1,9 @@
 package com.qpidnetwork.dating.quickmatch;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.lady.LadyDetailActivity;
-import com.qpidnetwork.dating.quickmatch.QuickMatchManager.OnQueryQuickMatchManagerLikeLadyListCallback;
-import com.qpidnetwork.framework.widget.CircleImageView;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
-import com.qpidnetwork.manager.FileCacheManager;
-import com.qpidnetwork.request.item.EMFMsgTotalItem;
-import com.qpidnetwork.request.item.OtherGetCountItem;
-import com.qpidnetwork.request.item.QuickMatchLady;
-import com.qpidnetwork.tool.ImageViewLoader;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,10 +15,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.lady.LadyDetailActivity;
+import com.qpidnetwork.dating.quickmatch.QuickMatchManager.OnQueryQuickMatchManagerLikeLadyListCallback;
+import com.qpidnetwork.framework.widget.CircleImageView;
+import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.request.item.QuickMatchLady;
+import com.qpidnetwork.tool.ImageViewLoader;
 
 /**
  * QuickMatch模块
@@ -41,6 +39,7 @@ public class QuickMatchLikeFragment extends Fragment {
 	/**
 	 * 界面消息
 	 */
+	@SuppressWarnings("unused")
 	private class MessageCallbackItem {
 		/**
 		 * @param errno				接口错误码
@@ -66,12 +65,15 @@ public class QuickMatchLikeFragment extends Fragment {
 		
 		public QuickMatchLikeListAdapter(Context context) {
 			mInflater = LayoutInflater.from(context);
+			mArrayList = new ArrayList<QuickMatchLady>();
 		}
 		
 		public void SetList(List<QuickMatchLady> arrayList) {
-			mArrayList = arrayList;
+			this.mArrayList.clear();
+			this.mArrayList.addAll(arrayList);
 		}
 		
+		@SuppressWarnings({ "deprecation"})
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ViewHolder holder = null;
@@ -152,7 +154,6 @@ public class QuickMatchLikeFragment extends Fragment {
 	
 	// 上次获取到最大值
 	private int mMaxCount = 10;
-	private boolean mHasMore = true;
 	private QuickMatchLikeListAdapter mAdapter;
 	
 	public static QuickMatchLikeFragment newInstance() {
@@ -167,7 +168,8 @@ public class QuickMatchLikeFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
     
-    @Override
+    @SuppressLint("InflateParams")
+	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
                                                                                                                                                                                                                                                                                                                       
@@ -214,10 +216,10 @@ public class QuickMatchLikeFragment extends Fragment {
 								mMaxCount = obj.itemList.size();
 							}
 							mAdapter.SetList(obj.itemList);
+							mAdapter.notifyDataSetChanged();
 						}
-						mHasMore = obj.hasMore;
 					}
-					mAdapter.notifyDataSetChanged();
+					
 				} break;
 				case REQUEST_FAIL:{
 					// 失败

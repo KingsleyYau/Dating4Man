@@ -11,7 +11,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -20,10 +19,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.ImageView.ScaleType;
+
 import com.qpidnetwork.dating.R;
 
 
+@SuppressLint("RtlHardcoded")
 public class MaterialAppBar extends LinearLayout {
 
 	public static int TOUCH_FEEDBACK_HOLO_DARK = R.drawable.touch_feedback_holo_dark_circle;
@@ -411,7 +411,9 @@ public class MaterialAppBar extends LinearLayout {
 		button_area.setBackgroundColor(color);
 	}
 
-	@SuppressLint("NewApi") public void setAppbarBackgroundDrawable(Drawable drawable) {
+	@SuppressWarnings("deprecation")
+	@SuppressLint("NewApi") 
+	public void setAppbarBackgroundDrawable(Drawable drawable) {
 		if (Build.VERSION.SDK_INT > 15) {
 			button_area.setBackground(drawable);
 		} else {

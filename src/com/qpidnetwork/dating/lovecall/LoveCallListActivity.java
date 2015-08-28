@@ -20,6 +20,7 @@ public class LoveCallListActivity extends BaseTabbarTitleFragmentActivity{
 	private boolean newScheduleUpdate = false;
 	private boolean newRequesrUpdate = false;
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub

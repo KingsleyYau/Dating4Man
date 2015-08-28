@@ -1,12 +1,10 @@
 package com.qpidnetwork.dating.credit;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslError;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -37,6 +35,8 @@ import com.qpidnetwork.request.item.OtherSynConfigItem;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogAlert;
 
+@SuppressLint("SetJavaScriptEnabled")
+@SuppressWarnings("deprecation")
 public class BuyCreditActivity extends BaseActionBarFragmentActivity{
 	
 	protected final String tag = getClass().getName();

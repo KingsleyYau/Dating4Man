@@ -6,6 +6,7 @@ import java.util.Comparator;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.request.RequestJniLiveChat.PhotoModeType;
 import com.qpidnetwork.request.RequestJniLiveChat.PhotoSizeType;
+import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
 import com.qpidnetwork.request.item.Record;
 import com.qpidnetwork.request.item.Record.ToFlag;
 
@@ -27,6 +28,7 @@ public class LCMessageItem implements Serializable{
 		Emotion,	// 高级表情
 		Voice,		// 语音
 		Photo,		// 私密照
+		Video,		// 微视频
 		System,		// 系统消息
 		Custom,     //自定义消息
 	}
@@ -70,6 +72,10 @@ public class LCMessageItem implements Serializable{
 	 */
 	public String toId;
 	/**
+	 * 邀请ID
+	 */
+	public String inviteId;
+	/**
 	 * 接收/发送时间
 	 */
 	public int createTime;
@@ -101,6 +107,10 @@ public class LCMessageItem implements Serializable{
 	 * 图片item
 	 */
 	private LCPhotoItem photoItem;
+	/**
+	 * 微视频item
+	 */
+	private LCVideoItem videoItem;
 	/**
 	 * 系统消息item
 	 */
@@ -137,6 +147,7 @@ public class LCMessageItem implements Serializable{
 			, SendType sendType
 			, String fromId
 			, String toId
+			, String inviteId
 			, StatusType statusType)
 	{
 		boolean result = false;
@@ -148,6 +159,7 @@ public class LCMessageItem implements Serializable{
 			this.sendType = sendType;
 			this.fromId = fromId;
 			this.toId = toId;
+			this.inviteId = inviteId;
 			this.statusType = statusType;
 			
 			this.createTime = GetCreateTime();
@@ -206,12 +218,22 @@ public class LCMessageItem implements Serializable{
 	 * @param record
 	 * @return
 	 */
-	public boolean InitWithRecord(int msgId, String selfId, String userId, Record record, LCEmotionManager emotionMgr, LCVoiceManager voiceMgr, LCPhotoManager photoMgr) 
+	public boolean InitWithRecord(
+			int msgId
+			, String selfId
+			, String userId
+			, String inviteId
+			, Record record
+			, LCEmotionManager emotionMgr
+			, LCVoiceManager voiceMgr
+			, LCPhotoManager photoMgr
+			, LCVideoManager videoMgr) 
 	{
 		boolean result = false;
 		this.msgId = msgId;
 		this.toId = (record.toflag == ToFlag.Receive ? selfId : userId);
 		this.fromId = (record.toflag == ToFlag.Receive ? userId : selfId);
+		this.inviteId = inviteId;
 		this.sendType = (record.toflag == ToFlag.Receive ? SendType.Recv : SendType.Send);
 		this.statusType = StatusType.Finish;
 		this.createTime = GetLocalTimeWithServerTime(record.adddate);
@@ -267,6 +289,20 @@ public class LCMessageItem implements Serializable{
 			setVoiceItem(voiceItem);
 			result = true;
 		}break;
+		case Video: {
+			LCVideoItem videoItem = new LCVideoItem();
+			videoItem.init(
+					record.videoId
+					, record.videoSendId
+					, record.videoDesc
+					, videoMgr.getVideoPhotoPath(userId, record.videoId, inviteId, VideoPhotoType.Big)
+					, videoMgr.getVideoPhotoPath(userId, record.videoId, inviteId, VideoPhotoType.Default)
+					, ""
+					, videoMgr.getVideoPath(userId, record.videoId, inviteId)
+					, record.videoCharge);
+			setVideoItem(videoItem);
+			result = true;
+		}break;
 		default: {
 			Log.e("livechat", String.format("%s::%s() unknow message type", "LCMessageItem", "InitWithRecord"));
 		}break;
@@ -275,7 +311,9 @@ public class LCMessageItem implements Serializable{
 	}
 	
 	public void setVoiceItem(LCVoiceItem theVoiceItem) {
-		if (msgType == MessageType.Unknow) {
+		if (msgType == MessageType.Unknow
+				&& theVoiceItem != null) 
+		{
 			voiceItem = theVoiceItem;
 			msgType = MessageType.Voice;
 		}
@@ -285,7 +323,9 @@ public class LCMessageItem implements Serializable{
 	}
 	
 	public void setPhotoItem(LCPhotoItem thePhotoItem) {
-		if (msgType == MessageType.Unknow) {
+		if (msgType == MessageType.Unknow
+				&& thePhotoItem != null) 
+		{
 			photoItem = thePhotoItem;
 			msgType = MessageType.Photo;
 		}
@@ -294,8 +334,22 @@ public class LCMessageItem implements Serializable{
 		return photoItem;
 	}
 	
+	public void setVideoItem(LCVideoItem theVideoItem) {
+		if (msgType == MessageType.Unknow
+				&& theVideoItem != null) 
+		{
+			videoItem = theVideoItem;
+			msgType = MessageType.Video;
+		}
+	}
+	public LCVideoItem getVideoItem() {
+		return videoItem;
+	}
+	
 	public void setTextItem(LCTextItem theTextItem) {
-		if (msgType == MessageType.Unknow) {
+		if (msgType == MessageType.Unknow
+				&& theTextItem != null) 
+		{
 			textItem = theTextItem;
 			msgType = MessageType.Text;
 		}
@@ -305,7 +359,9 @@ public class LCMessageItem implements Serializable{
 	}
 	
 	public void setWarningItem(LCWarningItem theWarningItem) {
-		if (msgType == MessageType.Unknow) {
+		if (msgType == MessageType.Unknow
+				&& theWarningItem != null) 
+		{
 			warningItem = theWarningItem;
 			msgType = MessageType.Warning;
 		}
@@ -315,7 +371,9 @@ public class LCMessageItem implements Serializable{
 	}
 	
 	public void setEmotionItem(LCEmotionItem theEmotionItem) {
-		if (msgType == MessageType.Unknow) {
+		if (msgType == MessageType.Unknow
+				&& theEmotionItem != null) 
+		{
 			emotionItem = theEmotionItem;
 			msgType = MessageType.Emotion;
 		}
@@ -325,7 +383,9 @@ public class LCMessageItem implements Serializable{
 	}
 	
 	public void setSystemItem(LCSystemItem theSystemItem) {
-		if (msgType == MessageType.Unknow) {
+		if (msgType == MessageType.Unknow
+				&& theSystemItem != null) 
+		{
 			systemItem = theSystemItem;
 			msgType = MessageType.System;
 		}
@@ -350,6 +410,7 @@ public class LCMessageItem implements Serializable{
 		sendType = SendType.Unknow;
 		fromId = "";
 		toId = "";
+		inviteId = "";
 		createTime = 0;
 		statusType = StatusType.Unprocess;
 		msgType = MessageType.Unknow;
@@ -358,6 +419,7 @@ public class LCMessageItem implements Serializable{
 		emotionItem = null;
 		voiceItem = null;
 		photoItem = null;
+		videoItem = null;
 		systemItem = null;
 		userItem = null;
 		customItem = null;

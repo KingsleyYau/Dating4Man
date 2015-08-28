@@ -73,7 +73,8 @@ public class AlbumGridAdapter extends BaseAdapter {
 		return position;
 	}
 
-	@SuppressLint("NewApi") @Override
+	@SuppressWarnings("deprecation")
+	@SuppressLint({ "NewApi", "InflateParams" }) @Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		Holder holder;

@@ -26,6 +26,7 @@ import com.facebook.SessionLoginBehavior;
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnOtherOnlineCountCallback;
 import com.qpidnetwork.request.OnRequestOriginalCallback;
@@ -71,33 +72,9 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 	private ButtonRaised buttonRetry;
 	
 	private boolean mbHasGetCheckCode = false;
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * 
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 * @param bitmap			验证码
-		 * @param loginItem			登录正常返回
-		 * @param loginErrorItem	登录错误返回
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-		}
-		public String errno;
-		public String errmsg;
-		public Bitmap bitmap = null;
-		public LoginItem loginItem = null;
-		public LoginErrorItem loginErrorItem = null;
-		public OtherOnlineCountItem[] otherOnlineCountItem = null;
-	}
 	
+	
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -256,11 +233,10 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 							String errmsg, OtherOnlineCountItem[] item) {
 						// TODO Auto-generated method stub
 						Message msg = Message.obtain();
-						MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+						RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, item);
 						if( isSuccess ) {
 							// 获取站点在线人数成功
 							msg.what = RequestFlag.REQUEST_ONLINE_SUCCESS.ordinal();
-							obj.otherOnlineCountItem = item;
 						} else {
 							// 获取验证码失败
 							msg.what = RequestFlag.REQUEST_ONLINE_FAIL.ordinal();
@@ -285,12 +261,12 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 					byte[] data) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 				if( isSuccess ) {
 					// 获取验证码成功
 					msg.what = RequestFlag.REQUEST_CHECKCODE_SUCCESS.ordinal();
 					if( data.length != 0 ) {
-						obj.bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+						obj.body = BitmapFactory.decodeByteArray(data, 0, data.length);
 					}
 				} else {
 					// 获取验证码失败
@@ -319,15 +295,15 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 			LoginItem item, LoginErrorItem errItem) {
 		// TODO Auto-generated method stub
 		Message msg = Message.obtain();
-		MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+		RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 		if( isSuccess ) {
 			// 登录成功
 			msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
-			obj.loginItem = item;
+			obj.body = item;
 		} else {
 			// 登录失败
 			msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-			obj.loginErrorItem = errItem;
+			obj.body = errItem;
 		}
 		msg.obj = obj;
 		mHandler.sendMessage(msg);
@@ -337,7 +313,7 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 	 * 注销
 	 */
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -386,7 +362,7 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 			public void handleMessage(Message msg) {
 				// 收起菊花
 				hideProgressDialog();
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_SUCCESS:{
 					// 登录成功
@@ -441,8 +417,8 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 					mbHasGetCheckCode = true;
 					imageViewCheckCode.setClickable(true);
 					
-					if( obj != null && obj.bitmap != null ) {
-						Bitmap bitmap = obj.bitmap;
+					if( obj != null && obj.body != null ) {
+						Bitmap bitmap = (Bitmap)obj.body;
 						imageViewCheckCode.setImageBitmap(bitmap);
 						imageViewCheckCode.setVisibility(View.VISIBLE);
 					} else {
@@ -472,9 +448,10 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 				}break;
 				case REQUEST_ONLINE_SUCCESS:{
 					// 获取站点在线人数成功
-					for(int i = 0; i < obj.otherOnlineCountItem.length; i++) {
-						if( obj.otherOnlineCountItem[i].site == WebSiteManager.newInstance(mContext).GetWebSite().getSiteId() ) {
-							textViewOnline.setText(String.valueOf(obj.otherOnlineCountItem[i].onlineCount));
+					OtherOnlineCountItem[] otherOnlineCountItem = (OtherOnlineCountItem[])obj.body;
+					for(int i = 0; i < otherOnlineCountItem.length; i++) {
+						if( otherOnlineCountItem[i].site == WebSiteManager.newInstance(mContext).GetWebSite().getSiteId() ) {
+							textViewOnline.setText(String.valueOf(otherOnlineCountItem[i].onlineCount));
 							break;
 						}
 					}

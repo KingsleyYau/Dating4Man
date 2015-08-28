@@ -1,9 +1,6 @@
 package com.qpidnetwork.dating.bean;
 
 import java.io.Serializable;
-import java.util.Map;
-
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkMsgType;
 
 public class MsgBean implements Serializable{
 

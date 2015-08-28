@@ -195,6 +195,7 @@ public class EMFAttachmentPrivatePhotoFragment extends IndexFragment {
 	/**
 	 * 刷新界面
 	 */
+	@SuppressWarnings("deprecation")
 	private void UpdateViewWM() {
 		if( imageView != null ) {
 			imageView.SetCanScale(false);

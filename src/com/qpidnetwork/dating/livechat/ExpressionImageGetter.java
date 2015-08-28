@@ -5,7 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.text.Html.ImageGetter;
@@ -23,11 +22,11 @@ import com.qpidnetwork.dating.bean.MsgBean;
 public class ExpressionImageGetter implements ImageGetter {
 
 	private Context context;
-	private TypedArray expressionsIcon;
+//	private TypedArray expressionsIcon;
 	private Pattern p;
 
 	private int imgType;// 1为按钮，2为普通表情，3为高级表情,4为国家按字母排序的搜索图片
-	private int msgForward;// 高级表情来源1为发出，0为收到
+//	private int msgForward;// 高级表情来源1为发出，0为收到
 
 	private int imgWidth;
 	private int imgHeight;
@@ -38,7 +37,7 @@ public class ExpressionImageGetter implements ImageGetter {
 		// this.optionGroup = SpinnerDataParser.getOptionGroup(context,
 		// "expressions");
 		this.context = context;
-		this.expressionsIcon = context.getResources().obtainTypedArray(R.array.expressions);
+//		this.expressionsIcon = context.getResources().obtainTypedArray(R.array.expressions);
 		// this.p = Pattern.compile("/[0-9]+\\.");
 		this.p = Pattern.compile("\\[img:[0-9]+\\]");
 		textSize = context.getResources().getDimensionPixelSize(R.dimen.expre_drawable_size);
@@ -51,6 +50,7 @@ public class ExpressionImageGetter implements ImageGetter {
 		textSize = context.getResources().getDimensionPixelSize(R.dimen.expre_drawable_size);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public Drawable getDrawable(String source) {
 		// String key = source;
@@ -152,6 +152,7 @@ public class ExpressionImageGetter implements ImageGetter {
 	 * @param input
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public Spanned getExpressMsgHTML_bak(String input) { // 表情与文字的情况下，文字有时候居中，有时候靠下
 		SpannableString span = new SpannableString(input);
 		Matcher m = p.matcher(input);
@@ -216,7 +217,7 @@ public class ExpressionImageGetter implements ImageGetter {
 	 * @return
 	 */
 	public Spanned getExpressMsgHTML(String input, int msgForward) {
-		this.msgForward = msgForward;
+//		this.msgForward = msgForward;
 		String msg = input.replace("[img:", "<img src=\"e");
 		msg = msg.replace("]", "\">");
 		msg = msg.replace("[btn:", "<img src=\"b");

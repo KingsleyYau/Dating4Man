@@ -14,8 +14,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
-import com.qpidnetwork.framework.util.Log;
 
+import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.manager.FileCacheManager;
 
 public class CrashHandler implements UncaughtExceptionHandler {

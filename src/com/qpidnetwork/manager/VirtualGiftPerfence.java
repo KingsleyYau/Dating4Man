@@ -8,11 +8,11 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.qpidnetwork.request.item.Gift;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
+
+import com.qpidnetwork.request.item.Gift;
 
 public class VirtualGiftPerfence {
 	/**

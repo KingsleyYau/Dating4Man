@@ -175,6 +175,7 @@ public class ContactsListFragment extends BaseListFragment implements
 				});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub

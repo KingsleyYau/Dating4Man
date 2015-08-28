@@ -1,11 +1,10 @@
 package com.qpidnetwork.view;
 
-import com.qpidnetwork.dating.R;
 import java.math.BigDecimal;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,6 +15,8 @@ import android.os.Parcelable;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.ImageView;
+
+import com.qpidnetwork.dating.R;
 
 /**
  * Widget that lets users select a minimum and maximum value on a given
@@ -589,7 +590,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
 		paint.setStyle(Style.FILL);
 		paint.setAntiAlias(true);
-		int radus = (int)(2.0f * getResources().getDisplayMetrics().density);
+//		int radus = (int)(2.0f * getResources().getDisplayMetrics().density);
 
 		if (!IS_MULTI_COLORED) {
 			// draw seek bar background line

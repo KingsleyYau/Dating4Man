@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.text.format.Time;
 import android.widget.RemoteViews;
 
@@ -18,6 +17,7 @@ import com.qpidnetwork.request.item.AdMainAdvert.OpenType;
  * @author Max.Chiu
  *
  */
+@SuppressWarnings("deprecation")
 public class AdvertNotification {
 
 	private static final int NOTIFICATION_BASE_ID = 10000;

@@ -4,7 +4,6 @@ import java.io.File;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;

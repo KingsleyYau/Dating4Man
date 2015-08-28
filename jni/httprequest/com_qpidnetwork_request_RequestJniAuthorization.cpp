@@ -82,6 +82,7 @@ void onLoginWithFacebook(long requestId, bool success, LoginFacebookItem item, s
 					"Z"
 					"Z"
 					"Z"
+					"Z"
 					")V"
 					);
 
@@ -115,8 +116,11 @@ void onLoginWithFacebook(long requestId, bool success, LoginFacebookItem item, s
 						sessionid,
 						ga_uid,
 						ticketid,
+
 						item.photosend,
 						item.photoreceived,
+						item.videoreceived,
+
 						item.premit,
 						item.ladyprofile,
 						item.livechat,
@@ -223,12 +227,13 @@ void onLoginWithFacebook(long requestId, bool success, LoginFacebookItem item, s
 /*
  * Class:     com_qpidnetwork_request_RequestJniAuthorization
  * Method:    LoginWithFacebook
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnLoginCallback;)J
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnLoginCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_LoginWithFacebook
   (JNIEnv *env , jclass cls, jstring token, jstring email, jstring password, jstring deviceId,
 		  jstring versioncode, jstring model, jstring manufacturer, jstring prevcode,
-		  jstring birthday_y, jstring birthday_m, jstring birthday_d, jobject callback) {
+		  jstring birthday_y, jstring birthday_m, jstring birthday_d, jstring referrer,
+		  jobject callback) {
 	jlong requestId = -1;
 
 	const char *cpToken = env->GetStringUTFChars(token, 0);
@@ -242,9 +247,11 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_Log
 	const char *cpBirthday_y = env->GetStringUTFChars(birthday_y, 0);
 	const char *cpBirthday_m = env->GetStringUTFChars(birthday_m, 0);
 	const char *cpBirthday_d = env->GetStringUTFChars(birthday_d, 0);
+	const char *cpReferrer = env->GetStringUTFChars(referrer, 0);
 
 	requestId = gRequestAuthorizationController.LoginWithFacebook(cpToken, cpEmail, cpPassword, cpDeviceId,
-			cpVersioncode, cpModel, cpManufacturer, cpPrevcode, cpBirthday_y, cpBirthday_m, cpBirthday_d);
+			cpVersioncode, cpModel, cpManufacturer, cpPrevcode, cpBirthday_y, cpBirthday_m, cpBirthday_d,
+			cpReferrer);
 
 	jobject obj = env->NewGlobalRef(callback);
 	gCallbackMap.Insert(requestId, obj);
@@ -260,6 +267,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_Log
 	env->ReleaseStringUTFChars(birthday_y, cpBirthday_y);
 	env->ReleaseStringUTFChars(birthday_m, cpBirthday_m);
 	env->ReleaseStringUTFChars(birthday_d, cpBirthday_d);
+	env->ReleaseStringUTFChars(referrer, cpReferrer);
 
 	return requestId;
 }
@@ -299,6 +307,7 @@ void onRegister(long requestId, bool success, RegisterItem item, string errnum, 
 
 					"Z"
 					"Z"
+					"Z"
 					")V"
 					);
 
@@ -332,7 +341,8 @@ void onRegister(long requestId, bool success, RegisterItem item, string errnum, 
 						sessionid,
 						ga_uid,
 						item.photosend,
-						item.photoreceived
+						item.photoreceived,
+						item.videoreceived
 						);
 
 				env->DeleteLocalRef(manid);
@@ -391,12 +401,13 @@ void onRegister(long requestId, bool success, RegisterItem item, string errnum, 
 /*
  * Class:     com_qpidnetwork_request_RequestJniAuthorization
  * Method:    Register
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnRegisterCallback;)J
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnRegisterCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_Register
   (JNIEnv *env, jclass cls, jstring email, jstring password, jboolean male, jstring first_name, jstring last_name,
 		  jint country, jstring birthday_y, jstring birthday_m, jstring birthday_d,
-		  jboolean weeklymail, jstring model, jstring deviceId, jstring manufacturer, jobject callback) {
+		  jboolean weeklymail, jstring model, jstring deviceId, jstring manufacturer,
+		  jstring referrer, jobject callback) {
 	jlong requestId = -1;
 
 	const char *cpEmail = env->GetStringUTFChars(email, 0);
@@ -408,10 +419,11 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_Reg
 	const char *cpBirthday_d = env->GetStringUTFChars(birthday_d, 0);
 	const char *cpModel = env->GetStringUTFChars(model, 0);
 	const char *cpDeviceId = env->GetStringUTFChars(deviceId, 0);
-	const char *cpManufacturer= env->GetStringUTFChars(manufacturer, 0);
+	const char *cpManufacturer = env->GetStringUTFChars(manufacturer, 0);
+	const char *cpReferrer = env->GetStringUTFChars(referrer, 0);
 
 	requestId = gRequestAuthorizationController.Register(cpEmail, cpPassword, male, cpFirst_name, cpLast_name,
-			country, cpBirthday_y, cpBirthday_m, cpBirthday_d, weeklymail, cpModel, cpDeviceId,
+			country, cpBirthday_y, cpBirthday_m, cpBirthday_d, weeklymail, cpModel, cpDeviceId, cpReferrer,
 			cpManufacturer);
 
 	jobject obj = env->NewGlobalRef(callback);
@@ -427,6 +439,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_Reg
 	env->ReleaseStringUTFChars(model, cpModel);
 	env->ReleaseStringUTFChars(deviceId, cpDeviceId);
 	env->ReleaseStringUTFChars(manufacturer, cpManufacturer);
+	env->ReleaseStringUTFChars(referrer, cpReferrer);
 
 	return requestId;
 }
@@ -543,6 +556,7 @@ void onLogin(long requestId, bool success, LoginItem item, string errnum, string
 					"Z"
 					"Z"
 					"Z"
+					"Z"
 					")V"
 					);
 
@@ -575,8 +589,11 @@ void onLogin(long requestId, bool success, LoginItem item, string errnum, string
 						sessionid,
 						ga_uid,
 						ticketid,
+
 						item.photosend,
 						item.photoreceived,
+						item.videoreceived,
+
 						item.premit,
 						item.ladyprofile,
 						item.livechat,

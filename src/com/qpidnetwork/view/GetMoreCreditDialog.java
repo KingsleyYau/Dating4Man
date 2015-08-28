@@ -32,6 +32,7 @@ import com.qpidnetwork.dating.credit.BuyCreditActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.manager.WebSiteManager;
 
+@SuppressLint("InflateParams")
 public class GetMoreCreditDialog extends Dialog implements OnClickListener{
 	
 	private float density = this.getContext().getResources().getDisplayMetrics().density;
@@ -57,7 +58,8 @@ public class GetMoreCreditDialog extends Dialog implements OnClickListener{
         mContext = context;
     }
     
-    @SuppressLint("NewApi") @Override
+    @SuppressWarnings("deprecation")
+	@SuppressLint("NewApi") @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);

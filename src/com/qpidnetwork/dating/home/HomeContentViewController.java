@@ -12,9 +12,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.telephony.TelephonyManager;
-
-import com.qpidnetwork.framework.util.Log;
-
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +20,8 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.advertisement.AdvertPerfence;
-import com.qpidnetwork.dating.advertisement.AdvertisementManager;
 import com.qpidnetwork.dating.advertisement.AdWomanListAdvertItem;
+import com.qpidnetwork.dating.advertisement.AdvertPerfence;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.bean.ContactBean;
@@ -38,6 +34,7 @@ import com.qpidnetwork.dating.lady.LadyDetailManager;
 import com.qpidnetwork.dating.lady.LadyListItem;
 import com.qpidnetwork.dating.lady.LadyListManager;
 import com.qpidnetwork.dating.lovecall.DirectCallManager;
+import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.SystemUtil;
 import com.qpidnetwork.framework.widget.pinterest.MultiColumnListView;
 import com.qpidnetwork.framework.widget.pinterest.internal.PLA_AbsListView;
@@ -53,7 +50,6 @@ import com.qpidnetwork.request.OnQueryLadyListCallback;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestJniAdvert;
-import com.qpidnetwork.request.RequestJniLady;
 import com.qpidnetwork.request.RequestJniLady.OnlineType;
 import com.qpidnetwork.request.RequestJniLady.OrderType;
 import com.qpidnetwork.request.RequestJniLady.SearchType;
@@ -70,6 +66,7 @@ import com.qpidnetwork.view.MaterialProgressBar;
 import com.qpidnetwork.view.MaterialThreeButtonDialog;
 import com.qpidnetwork.view.MultiSwipeRefreshLayout;
 
+@SuppressLint("RtlHardcoded")
 public class HomeContentViewController implements View.OnClickListener {
 	
 	public interface HomeContentViewControllerCallback {
@@ -251,6 +248,7 @@ public class HomeContentViewController implements View.OnClickListener {
 		return mView;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@SuppressLint("InflateParams")
 	private View CreateView() {
 		View view = LayoutInflater.from(mContext).inflate(R.layout.fragment_home_ladylist, null);
@@ -916,7 +914,7 @@ public class HomeContentViewController implements View.OnClickListener {
 				new DirectCallManager(mContext).makeCall(callcenterNumber, callId);
 				/*获取token成功，去拨号，添加到现有联系人*/
 				if(mCallingLadyItem != null && mCallingLadyItem.lady != null){
-					ContactManager.getInstance().updateOrAddContact(mCallingLadyItem.lady.womanid, false);
+					ContactManager.getInstance().updateOrAddContact(mCallingLadyItem.lady.womanid);
 				}
 				return;
 			}
@@ -928,7 +926,7 @@ public class HomeContentViewController implements View.OnClickListener {
 					new DirectCallManager(mContext).makeCall(callcenterNumber, callId);
 					/*获取token成功，去拨号，添加到现有联系人*/
 					if(mCallingLadyItem != null && mCallingLadyItem.lady != null){
-						ContactManager.getInstance().updateOrAddContact(mCallingLadyItem.lady.womanid, false);
+						ContactManager.getInstance().updateOrAddContact(mCallingLadyItem.lady.womanid);
 					}
 					LoginPerfence.SaveStringPreference(mContext, "donnot_show_love_call_fee", "true");
 				}
@@ -938,7 +936,7 @@ public class HomeContentViewController implements View.OnClickListener {
 					new DirectCallManager(mContext).makeCall(callcenterNumber, callId);
 					/*获取token成功，去拨号，添加到现有联系人*/
 					if(mCallingLadyItem != null && mCallingLadyItem.lady != null){
-						ContactManager.getInstance().updateOrAddContact(mCallingLadyItem.lady.womanid, false);
+						ContactManager.getInstance().updateOrAddContact(mCallingLadyItem.lady.womanid);
 					}
 				}
 				

@@ -24,9 +24,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
-
-import com.qpidnetwork.framework.base.BaseDialog;
-import com.qpidnetwork.framework.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +40,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseDialog;
+import com.qpidnetwork.framework.util.Log;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2) 
 public class MaterialDialogSingleChoice extends BaseDialog{
@@ -130,7 +129,7 @@ public class MaterialDialogSingleChoice extends BaseDialog{
         listView.setVisibility(View.VISIBLE);
         listView.setFadingEdgeLength(0);
         listView.setDivider(null);
-        listView.setSelector(new ColorDrawable(Color.TRANSPARENT));
+        listView.setSelector(R.drawable.touch_feedback_holo_light);
         
         listView.setOnItemClickListener(new OnItemClickListener(){
 
@@ -261,7 +260,6 @@ class ThisAdapter extends ArrayAdapter<ArrayList<String>>{
 		item.setPadding(padding, 0, padding, 0);
 		item.setOrientation(LinearLayout.HORIZONTAL);
 		item.setLayoutParams(params);
-		item.setBackgroundResource(R.drawable.touch_feedback_holo_light);
 		
 		TextView text = new TextView(mContext);
 		LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);

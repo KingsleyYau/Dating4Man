@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,7 +24,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.qpidnetwork.dating.BaseActivity;
@@ -33,10 +31,8 @@ import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.R.string;
 import com.qpidnetwork.dating.advertisement.AdvertisementManager;
-import com.qpidnetwork.dating.advertisement.MainAdvertisementActivity;
+import com.qpidnetwork.dating.analysis.AdAnakysisManager;
 import com.qpidnetwork.dating.authorization.LoginManager;
-import com.qpidnetwork.dating.authorization.LoginParam;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.RegisterActivity;
 import com.qpidnetwork.dating.bean.ContactBean;
@@ -48,18 +44,17 @@ import com.qpidnetwork.dating.emf.EMFListActivity;
 import com.qpidnetwork.dating.emf.EMFNotification;
 import com.qpidnetwork.dating.home.HomeContentViewController.HomeContentViewControllerCallback;
 import com.qpidnetwork.dating.home.MenuHelper.MenuType;
-import com.qpidnetwork.dating.livechat.LiveChatNotification;
 import com.qpidnetwork.dating.setting.SettingPerfence;
 import com.qpidnetwork.dating.setting.SettingPerfence.NotificationItem;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.livechat.LCMessageItem;
 import com.qpidnetwork.livechat.LCUserItem;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.LiveChatManagerMessageListener;
 import com.qpidnetwork.livechat.LiveChatManagerOtherListener;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
 import com.qpidnetwork.manager.FileCacheManager;
@@ -86,6 +81,7 @@ import com.qpidnetwork.tool.CrashPerfence;
 import com.qpidnetwork.tool.CrashPerfence.CrashParam;
 import com.qpidnetwork.view.MaterialDialogAlert;
 
+@SuppressLint("RtlHardcoded")
 public class HomeActivity extends BaseActivity implements OnLoginManagerCallback, OnChangeWebsiteCallback, LiveChatManagerOtherListener, LiveChatManagerMessageListener {
 	
 	public static final String NEED_RELOGIN_OPERATE = "needLogin";
@@ -145,6 +141,7 @@ public class HomeActivity extends BaseActivity implements OnLoginManagerCallback
 	/**
 	 * 界面消息
 	 */
+	@SuppressWarnings("unused")
 	private class MessageCallbackItem {
 		/**
 		 * 
@@ -279,6 +276,7 @@ public class HomeActivity extends BaseActivity implements OnLoginManagerCallback
 		StartFromNotification(getIntent());
 		
 		this.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(WebSiteManager.getInstance().GetWebSite().getSiteColor())));
+		
 	}
 	
 	@Override
@@ -330,6 +328,11 @@ public class HomeActivity extends BaseActivity implements OnLoginManagerCallback
 			Message msg = Message.obtain();
 			msg.what = msgWhat;
 			mHandler.sendMessage(msg);
+		}
+		
+		//广告跟踪提交
+		if(!AdAnakysisManager.getInstance().getAnalysisItem().isSummit){
+			AdAnakysisManager.getInstance().summitUtmReference(null);
 		}
 		
 		super.onResume();
@@ -927,7 +930,7 @@ public class HomeActivity extends BaseActivity implements OnLoginManagerCallback
 		Bundle bundle = intent.getExtras();
 		if( bundle != null ) {
 			if(bundle.containsKey(ContactManager.LIVE_CHAT_KICK_OFF)){
-				KickOfflineType type = KickOfflineType.values()[bundle.getInt(ContactManager.LIVE_CHAT_KICK_OFF)];
+//				KickOfflineType type = KickOfflineType.values()[bundle.getInt(ContactManager.LIVE_CHAT_KICK_OFF)];
 				Intent loginIntent = new Intent(HomeActivity.this, RegisterActivity.class);
 				startActivity(loginIntent);
 			} else if(bundle.containsKey(NEED_RELOGIN_OPERATE)){
@@ -989,7 +992,7 @@ public class HomeActivity extends BaseActivity implements OnLoginManagerCallback
 	}
 
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
 	} 

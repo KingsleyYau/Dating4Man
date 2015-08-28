@@ -1,6 +1,9 @@
 package com.qpidnetwork.dating;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.lang.reflect.Field;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
@@ -8,6 +11,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -21,9 +25,11 @@ import android.util.DisplayMetrics;
 import com.qpidnetwork.dating.advertisement.AdvertService;
 import com.qpidnetwork.dating.advertisement.AdvertisementManager;
 import com.qpidnetwork.dating.advertisement.IAdvertBinder;
+import com.qpidnetwork.dating.analysis.AdAnakysisManager;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.PhoneInfoManager;
+import com.qpidnetwork.dating.authorization.RegisterManager;
 import com.qpidnetwork.dating.contacts.ContactManager;
 import com.qpidnetwork.dating.googleanalytics.GAManager;
 import com.qpidnetwork.dating.lady.LadyDetailManager;
@@ -41,6 +47,8 @@ import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.tool.CrashHandler;
 import com.qpidnetwork.tool.CrashHandlerJni;
+
+import dalvik.system.DexClassLoader;
 
 public class QpidApplication extends Application implements OnLoginManagerCallback {
 	
@@ -140,11 +148,14 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 		RequestJni.CleanCookies();
 		
 		// crash日志管理器
-		CrashHandler ch = CrashHandler.newInstance(this);
+		CrashHandler.newInstance(this);
 		
 		// 创建登录状态个管理器
 		LoginManager lm = LoginManager.newInstance(this);
 		lm.AddListenner(this);
+		
+		//注册管理器
+		RegisterManager.newInstance(this);
 		
 		// LiveChat
 		LiveChatManager liveChatManager = LiveChatManager.newInstance(this);
@@ -173,6 +184,9 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 
 		// 初始化站点
 		wm.LoadData();
+		
+		//推广跟踪使用
+		AdAnakysisManager.newInstance(this);
 		
 		// 广告管理
 		AdvertisementManager.newInstance(this);
@@ -255,7 +269,7 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 
 
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		/*注销，清除所有Livechat 拍照临时图片*/
 		String path = FileCacheManager.getInstance().getPrivatePhotoTempSavePath();
 		File file = new File(path);
@@ -265,38 +279,49 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 	}
 
 	
-//	/**
-//	 * 缓存http
-//	 * 为了兼容4.0以前版本，采用反射的方式获取api
-//	 */
-//	private void EnableHttpResponseCache() {
-//		Log.d("QpidApplication", "EnableHttpResponseCache()");
-//	    try {
-//	        long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
-//	        File httpCacheDir = new File(FileCacheManager.getInstance().GetHttpPath()/*getCacheDir()*/);
-//	        Class.forName("android.net.http.HttpResponseCache")
-//	            .getMethod("install", File.class, long.class)
-//	            .invoke(null, httpCacheDir, httpCacheSize);
-//	    } catch (Exception ex) {
-//	    	ex.printStackTrace();
-//	    	Log.d("QpidApplication", "EnableHttpResponseCache( Exception : " + ex.toString() + " )");
-//	    }
-//	}
-//	
-//	private void DisableHttpResponseCache() {
-//	    try {
-//	        Object cache = Class.forName("android.net.http.HttpResponseCache")
-//	            .getMethod("getInstalled")
-//	            .invoke(null);
-//	        
-//	        if( cache != null ) {
-//		        cache.getClass()
-//		        .getMethod("flush")
-//		        .invoke(cache);
-//	        }
-//	    } catch (Exception ex) {
-//	    	ex.printStackTrace();
-//	    	Log.d("QpidApplication", "DisableHttpResponseCache( Exception : " + ex.toString() + " )");
-//	    }
-//	}
+	/**
+     * Copy the following code and call dexTool() after super.onCreate() in
+     * Application.onCreate()
+     * <p>
+     * This method hacks the default PathClassLoader and load the secondary dex
+     * file as it's parent.
+     */
+    @SuppressLint("NewApi")
+    private void dexTool() {
+
+        File dexDir = new File(getFilesDir(), "dlibs");
+        dexDir.mkdir();
+        File dexFile = new File(dexDir, "libs.apk");
+        File dexOpt = new File(dexDir, "opt");
+        dexOpt.mkdir();
+        try {
+            InputStream ins = getAssets().open("libs.apk");
+            if (dexFile.length() != ins.available()) {
+                FileOutputStream fos = new FileOutputStream(dexFile);
+                byte[] buf = new byte[4096];
+                int l;
+                while ((l = ins.read(buf)) != -1) {
+                    fos.write(buf, 0, l);
+                }
+                fos.close();
+            }
+            ins.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        ClassLoader cl = getClassLoader();
+        ApplicationInfo ai = getApplicationInfo();
+        String nativeLibraryDir = ai.nativeLibraryDir;
+        DexClassLoader dcl = new DexClassLoader(dexFile.getAbsolutePath(),
+                dexOpt.getAbsolutePath(), nativeLibraryDir, cl.getParent());
+
+        try {
+            Field f = ClassLoader.class.getDeclaredField("parent");
+            f.setAccessible(true);
+            f.set(cl, dcl);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

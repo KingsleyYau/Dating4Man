@@ -5,7 +5,6 @@ import java.util.Random;
 import android.content.Context;
 
 import com.qpidnetwork.dating.R;
-import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.SystemUtil;
 import com.qpidnetwork.framework.util.UnitConversion;
 

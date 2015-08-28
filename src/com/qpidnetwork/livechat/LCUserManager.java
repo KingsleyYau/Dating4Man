@@ -159,9 +159,9 @@ public class LCUserManager {
 					list.add(item);
 				}
 			}
+			
+			Collections.sort(list, LCUserItem.getComparator());
 		}
-		
-		Collections.sort(list, LCUserItem.getComparator());
 		
 		return list;
 	}

@@ -3,6 +3,7 @@ package com.qpidnetwork.dating.contactus;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
@@ -14,7 +15,6 @@ import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.RequestFailBean;
-import com.qpidnetwork.dating.contactus.TicketDetailAdapter.OnResolveClickListener;
 import com.qpidnetwork.framework.base.BaseActionBarFragmentActivity;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.util.ToastUtil;
@@ -81,6 +81,7 @@ public class TicketDetailListActivity extends BaseActionBarFragmentActivity{
 		
 	}
 	
+	@SuppressLint("InflateParams")
 	private void initViews(){
 		lvContent = (ListView)findViewById(R.id.lvContent);
 		emptyView = (TextView)findViewById(R.id.emptyView);
@@ -89,13 +90,13 @@ public class TicketDetailListActivity extends BaseActionBarFragmentActivity{
 		headerResolve.setVisibility(View.GONE);
 		
 		mAdapter = new TicketDetailAdapter(this, ticketDetailItem);
-		mAdapter.setOnResolveClickListener(new OnResolveClickListener() {
-			
-			@Override
-			public void onResolveClick() {
-				resolveTicket(ticketId);
-			}
-		});
+//		mAdapter.setOnResolveClickListener(new OnResolveClickListener() {
+//			
+//			@Override
+//			public void onResolveClick() {
+//				resolveTicket(ticketId);
+//			}
+//		});
 		
 		lvContent.addHeaderView(headerResolve);
 		lvContent.setAdapter(mAdapter);

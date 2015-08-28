@@ -2,29 +2,29 @@ package com.qpidnetwork.dating.livechat.expression;
 
 import java.util.ArrayList;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.livechat.downloader.EmotionPlayImageDownloader2.OnEmotionPlayImageDownloadListener;
-import com.qpidnetwork.livechat.LCEmotionItem;
-import com.qpidnetwork.livechat.LCMessageItem;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
-import com.qpidnetwork.livechat.LiveChatManager;
-import com.qpidnetwork.livechat.LiveChatManagerEmotionListener;
-import com.qpidnetwork.request.item.OtherEmotionConfigEmotionItem;
-import com.qpidnetwork.request.item.OtherEmotionConfigItem;
-import com.qpidnetwork.view.EmotionPlayer;
-import com.qpidnetwork.view.MaterialProgressBar;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Message;
-import com.qpidnetwork.framework.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.util.Log;
+import com.qpidnetwork.livechat.LCEmotionItem;
+import com.qpidnetwork.livechat.LCMessageItem;
+import com.qpidnetwork.livechat.LiveChatManager;
+import com.qpidnetwork.livechat.LiveChatManagerEmotionListener;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
+import com.qpidnetwork.request.item.OtherEmotionConfigEmotionItem;
+import com.qpidnetwork.request.item.OtherEmotionConfigItem;
+import com.qpidnetwork.view.EmotionPlayer;
+import com.qpidnetwork.view.MaterialProgressBar;
 
 public class EmotionPreviewer extends PopupWindow implements LiveChatManagerEmotionListener{
 	
@@ -58,6 +58,7 @@ public class EmotionPreviewer extends PopupWindow implements LiveChatManagerEmot
 		
 	}
 	
+	@SuppressLint("InflateParams")
 	private View createWindow(){
 		contentView = LayoutInflater.from(context).inflate(R.layout.view_emotion_previewer, null);
 		emotionPlayer = (EmotionPlayer)contentView.findViewById(R.id.emotionPlayer);
@@ -120,6 +121,7 @@ public class EmotionPreviewer extends PopupWindow implements LiveChatManagerEmot
 		
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public void OnGetEmotionPlayImage(boolean success, LCEmotionItem emotionItem) {
 		// TODO Auto-generated method stub

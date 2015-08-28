@@ -3,12 +3,17 @@ package com.qpidnetwork.dating.quickmatch;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.telephony.TelephonyManager;
+import android.text.format.Time;
+
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
-import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.manager.WebSiteManager.OnChangeWebsiteCallback;
 import com.qpidnetwork.manager.WebSiteManager.WebSite;
-import com.qpidnetwork.request.OnQueryQuickMatchLikeLadyListCallback;
 import com.qpidnetwork.request.OnQueryQuickMatchLadyListCallback;
+import com.qpidnetwork.request.OnQueryQuickMatchLikeLadyListCallback;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestJniQuickMatch;
@@ -17,12 +22,6 @@ import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.request.item.QuickMatchLady;
 
-import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
-import android.telephony.TelephonyManager;
-import android.text.format.Time;
-
 
 /**
  * 认证模块
@@ -30,6 +29,7 @@ import android.text.format.Time;
  * @author Max.Chiu
  *
  */
+@SuppressWarnings("deprecation")
 public class QuickMatchManager implements OnLoginManagerCallback, OnChangeWebsiteCallback {
 	/**
 	 *	回调函数 
@@ -121,6 +121,8 @@ public class QuickMatchManager implements OnLoginManagerCallback, OnChangeWebsit
 	 */
 	private List<QuickMatchLady> mQuickMatchLadyLocalUnLikeList = new ArrayList<QuickMatchLady>();
 	
+	private Object mLocalLock = new Object();
+	
 	public QuickMatchManager(Context context) {
 		// TODO Auto-generated constructor stub
 		mContenxt = context;
@@ -135,17 +137,19 @@ public class QuickMatchManager implements OnLoginManagerCallback, OnChangeWebsit
 	 * @param like		是否喜欢
 	 */
 	public void MarkLady(int index, boolean like) {
-		mIndex = index + 1;
-		if( like ) {
-			// 喜爱
-			AddLikeLady(index);
-		} else {
-			// 不喜爱
-			AddUnLikeLady(index);
+		synchronized (mLocalLock) {
+			mIndex = index + 1;
+			if( like ) {
+				// 喜爱
+				AddLikeLady(index);
+			} else {
+				// 不喜爱
+				AddUnLikeLady(index);
+			}
+			
+			// 执行数据持久化
+			SaveData();
 		}
-		
-		// 执行数据持久化
-		SaveData();
 	}
 	
 	/**
@@ -153,23 +157,26 @@ public class QuickMatchManager implements OnLoginManagerCallback, OnChangeWebsit
 	 * @param index		服务器女士列表中下标	
 	 */
 	private void AddUnLikeLady(int index) {
-		if( index < 0 || index >= mQuickMatchLadyList.size() ) {
-			return;
-		}
-		
-		// 从服务器女士列表寻找
-		QuickMatchLady item = mQuickMatchLadyList.get(index);
-		if( item != null ) {
-			// 删除本地喜爱女士列表
-			if( !CheckLadyExist(mQuickMatchLadyLocalLikeList, item.womanid) ) {
-				mQuickMatchLadyLocalLikeList.remove(item);
+		synchronized (mLocalLock) {
+			if( index < 0 || index >= mQuickMatchLadyList.size() ) {
+				return;
 			}
 			
-			// 加到本地不喜爱女士列表
-			if( !CheckLadyExist(mQuickMatchLadyLocalUnLikeList, item.womanid) ) {
-				mQuickMatchLadyLocalUnLikeList.add(item);
+			// 从服务器女士列表寻找
+			QuickMatchLady item = mQuickMatchLadyList.get(index);
+			if( item != null ) {
+				// 删除本地喜爱女士列表
+				if( !CheckLadyExist(mQuickMatchLadyLocalLikeList, item.womanid) ) {
+					mQuickMatchLadyLocalLikeList.remove(item);
+				}
+				
+				// 加到本地不喜爱女士列表
+				if( !CheckLadyExist(mQuickMatchLadyLocalUnLikeList, item.womanid) ) {
+					mQuickMatchLadyLocalUnLikeList.add(0, item);
+				}
 			}
 		}
+
 	}
 	
 	/**
@@ -177,50 +184,56 @@ public class QuickMatchManager implements OnLoginManagerCallback, OnChangeWebsit
 	 * @param index		服务器女士列表中下标
 	 */
 	private void AddLikeLady(int index) {
-		if( index < 0 || index >= mQuickMatchLadyList.size() ) {
-			return;
-		}
-		
-		// 从服务器女士列表寻找
-		QuickMatchLady item = mQuickMatchLadyList.get(index);
-		if( item != null ) {
-			// 删除本地不喜爱女士列表
-			if( CheckLadyExist(mQuickMatchLadyLocalUnLikeList, item.womanid) ) {
-				mQuickMatchLadyLocalUnLikeList.remove(item);
+		synchronized (mLocalLock) {
+			if( index < 0 || index >= mQuickMatchLadyList.size() ) {
+				return;
 			}
 			
-			// 加到本地喜爱女士列表
-			if( !CheckLadyExist(mQuickMatchLadyLocalLikeList, item.womanid) ) {
-				mQuickMatchLadyLocalLikeList.add(item);
+			// 从服务器女士列表寻找
+			QuickMatchLady item = mQuickMatchLadyList.get(index);
+			if( item != null ) {
+				// 删除本地不喜爱女士列表
+				if( CheckLadyExist(mQuickMatchLadyLocalUnLikeList, item.womanid) ) {
+					mQuickMatchLadyLocalUnLikeList.remove(item);
+				}
+				
+				// 加到本地喜爱女士列表
+				if( !CheckLadyExist(mQuickMatchLadyLocalLikeList, item.womanid) ) {
+					mQuickMatchLadyLocalLikeList.add(0, item);
+				}
 			}
 		}
+
 	}
 	
 	/**
 	 * 删除喜爱
 	 */
 	public void RemoveLikeLady(String womanId) {
-		// 本地删除喜爱
-		for( QuickMatchLady item : mQuickMatchLadyLocalLikeList ) {
-			if( item.womanid.compareTo(womanId) == 0 ) {
-				mQuickMatchLadyLocalLikeList.remove(item);
-				return;
-			}
-		}
-		
-		// 加入到服务器删除列表
-		// 是否在服务器喜爱列表
-		for( QuickMatchLady item : mQuickMatchLadyLikeList ) {
-			if( item.womanid.compareTo(womanId) == 0 ) {
-				// 加入本地删除列表
-				if( !CheckLadyExist(mQuickMatchLadyRemoveList, womanId) ) {
-					mQuickMatchLadyRemoveList.add(item);
+		synchronized (mLocalLock) {
+			// 本地删除喜爱
+			for( QuickMatchLady item : mQuickMatchLadyLocalLikeList ) {
+				if( item.womanid.compareTo(womanId) == 0 ) {
+					mQuickMatchLadyLocalLikeList.remove(item);
+					return;
 				}
 			}
+			
+			// 加入到服务器删除列表
+			// 是否在服务器喜爱列表
+			for( QuickMatchLady item : mQuickMatchLadyLikeList ) {
+				if( item.womanid.compareTo(womanId) == 0 ) {
+					// 加入本地删除列表
+					if( !CheckLadyExist(mQuickMatchLadyRemoveList, womanId) ) {
+						mQuickMatchLadyRemoveList.add(item);
+					}
+				}
+			}
+			
+			// 执行数据持久化
+			SaveData();
 		}
-		
-		// 执行数据持久化
-		SaveData();
+
 	}
 	
 	/**
@@ -245,51 +258,54 @@ public class QuickMatchManager implements OnLoginManagerCallback, OnChangeWebsit
 	 * @return
 	 */
 	public void QueryMatchLadyList(final OnQueryQuickMatchManagerLadyListCallback callback) {
-		// 同一天内，是否已经获取列表到本地
-		if( IsSameDay() ) {
-			// 直接返回列表
-			if( callback != null ) {
-				callback.OnQueryLadyList(true, "", "", mQuickMatchLadyList, mIndex);
-			}
-		} else {
-			// 请求接口
-			TelephonyManager tm = (TelephonyManager) mContenxt.getSystemService(Context.TELEPHONY_SERVICE);
-			
-			// 调用jni接口
-			RequestJniQuickMatch.QueryQuickMatchLadyList(
-					RequestJni.GetDeviceId(tm), 
-					new OnQueryQuickMatchLadyListCallback() {
-						
-						@Override
-						public void OnQueryQuickMatchLadyList(boolean isSuccess, String errno, String errmsg,
-								QuickMatchLady[] itemList) {
-							// TODO Auto-generated method stub
+		synchronized (mLocalLock) {
+			// 同一天内，是否已经获取列表到本地
+			if( IsSameDay() ) {
+				// 直接返回列表
+				if( callback != null ) {
+					callback.OnQueryLadyList(true, "", "", mQuickMatchLadyList, mIndex);
+				}
+			} else {
+				// 请求接口
+				TelephonyManager tm = (TelephonyManager) mContenxt.getSystemService(Context.TELEPHONY_SERVICE);
+				
+				// 调用jni接口
+				RequestJniQuickMatch.QueryQuickMatchLadyList(
+						RequestJni.GetDeviceId(tm), 
+						new OnQueryQuickMatchLadyListCallback() {
 							
-							if( isSuccess ) {
-								// 保存最后更新时间
-								mLastUpdateTime = new Time();
-								mLastUpdateTime.setToNow();
-								
-								mQuickMatchLadyList.clear();
-								mIndex = 0;
-								
-								if( itemList != null ) {
-									for(QuickMatchLady item : itemList) {
-//										if( !mQuickMatchLadyList.contains(item) ) {
-											mQuickMatchLadyList.add(item);
-//										}
+							@Override
+							public void OnQueryQuickMatchLadyList(boolean isSuccess, String errno, String errmsg,
+									QuickMatchLady[] itemList) {
+								// TODO Auto-generated method stub
+								synchronized (mLocalLock) {
+									if( isSuccess ) {
+										// 保存最后更新时间
+										mLastUpdateTime = new Time();
+										mLastUpdateTime.setToNow();
+										
+										mQuickMatchLadyList.clear();
+										mIndex = 0;
+										
+										if( itemList != null ) {
+											for(QuickMatchLady item : itemList) {
+	//											if( !mQuickMatchLadyList.contains(item) ) {
+													mQuickMatchLadyList.add(item);
+	//											}
+											}
+										}
+										
+										// 保存数据
+										SaveData();
+									}
+									
+									if( callback != null ) {
+										callback.OnQueryLadyList(isSuccess, errno, errmsg, mQuickMatchLadyList, mIndex);
 									}
 								}
-								
-								// 保存数据
-								SaveData();
 							}
-							
-							if( callback != null ) {
-								callback.OnQueryLadyList(isSuccess, errno, errmsg, mQuickMatchLadyList, mIndex);
-							}
-						}
-					});
+						});
+			}
 		}
 	}
 	
@@ -297,66 +313,69 @@ public class QuickMatchManager implements OnLoginManagerCallback, OnChangeWebsit
 	 * 上传标记女士列表
 	 * @return*/
 	public void UploadToServer() {
-		// 上传删除的女士列表
-		// 生成需要删除的列表
-		List<String> removeLadyId = new ArrayList<String>();
-		if( mQuickMatchLadyRemoveList.size() > 0 ) {
-			final List<QuickMatchLady> removeList = new ArrayList<QuickMatchLady>(mQuickMatchLadyRemoveList);
-			for(QuickMatchLady item : removeList) {
-				removeLadyId.add(item.womanid);
-			}
-			// 调用接口
-			RequestOperator.getInstance().RemoveQuickMatchLikeLadyList(
-					(String[]) removeLadyId.toArray(new String[removeLadyId.size()]), 
-					new OnRequestCallback() {
-						
-						@Override
-						public void OnRequest(boolean isSuccess, String errno, String errmsg) {
-							// TODO Auto-generated method stub
+		synchronized (mLocalLock) {
+			// 上传删除的女士列表
+			// 生成需要删除的列表
+			List<String> removeLadyId = new ArrayList<String>();
+			if( mQuickMatchLadyRemoveList.size() > 0 ) {
+				final List<QuickMatchLady> removeList = new ArrayList<QuickMatchLady>(mQuickMatchLadyRemoveList);
+				for(QuickMatchLady item : removeList) {
+					removeLadyId.add(item.womanid);
+				}
+				// 调用接口
+				RequestOperator.getInstance().RemoveQuickMatchLikeLadyList(
+						(String[]) removeLadyId.toArray(new String[removeLadyId.size()]), 
+						new OnRequestCallback() {
 							
-							// 清空已经上传的女士
-							mQuickMatchLadyRemoveList.removeAll(removeList);
-							
-							// 保存数据
-							SaveData();
-						}
-					});
-		}
-		
-		// 上传标记的女士列表
-		if( mQuickMatchLadyLocalLikeList.size() > 0 || mQuickMatchLadyLocalUnLikeList.size() > 0 ) {
-			// 喜爱的女士
-			List<String> likeLadyId = new ArrayList<String>();
-			final List<QuickMatchLady> likeList = new ArrayList<QuickMatchLady>(mQuickMatchLadyLocalLikeList);
-			for(QuickMatchLady item : likeList) {
-				likeLadyId.add(item.womanid);
+							@Override
+							public void OnRequest(boolean isSuccess, String errno, String errmsg) {
+								// TODO Auto-generated method stub
+								synchronized (mLocalLock) {
+									// 清空已经上传的女士
+									mQuickMatchLadyRemoveList.removeAll(removeList);
+									
+									// 保存数据
+									SaveData();
+								}
+							}
+						});
 			}
 			
-			// 不喜爱的女士
-			List<String> unlikeLadyId = new ArrayList<String>();
-			final List<QuickMatchLady> unlikeList = new ArrayList<QuickMatchLady>(mQuickMatchLadyLocalUnLikeList);
-			for(QuickMatchLady item : unlikeList) {
-				unlikeLadyId.add(item.womanid);
+			// 上传标记的女士列表
+			if( mQuickMatchLadyLocalLikeList.size() > 0 || mQuickMatchLadyLocalUnLikeList.size() > 0 ) {
+				// 喜爱的女士
+				List<String> likeLadyId = new ArrayList<String>();
+				final List<QuickMatchLady> likeList = new ArrayList<QuickMatchLady>(mQuickMatchLadyLocalLikeList);
+				for(QuickMatchLady item : likeList) {
+					likeLadyId.add(item.womanid);
+				}
+				
+				// 不喜爱的女士
+				List<String> unlikeLadyId = new ArrayList<String>();
+				final List<QuickMatchLady> unlikeList = new ArrayList<QuickMatchLady>(mQuickMatchLadyLocalUnLikeList);
+				for(QuickMatchLady item : unlikeList) {
+					unlikeLadyId.add(item.womanid);
+				}
+	
+				// 调用接口
+				RequestOperator.getInstance().SubmitQuickMatchMarkLadyList(
+						(String[]) likeLadyId.toArray(new String[likeLadyId.size()]),
+						(String[]) unlikeLadyId.toArray(new String[unlikeLadyId.size()]),
+						new OnRequestCallback() {
+							@Override
+							public void OnRequest(boolean isSuccess, String errno, String errmsg) {
+								// TODO Auto-generated method stub
+								synchronized (mLocalLock) {
+									// 清空已经上传的女士
+									mQuickMatchLadyLocalLikeList.removeAll(likeList);
+									mQuickMatchLadyLocalUnLikeList.removeAll(unlikeList);
+									
+									// 保存数据
+									SaveData();
+								}
+							}
+						});
 			}
-
-			
-			// 调用接口
-			RequestOperator.getInstance().SubmitQuickMatchMarkLadyList(
-					(String[]) likeLadyId.toArray(new String[likeLadyId.size()]),
-					(String[]) unlikeLadyId.toArray(new String[unlikeLadyId.size()]),
-					new OnRequestCallback() {
-						@Override
-						public void OnRequest(boolean isSuccess, String errno, String errmsg) {
-							// TODO Auto-generated method stub
-							
-							// 清空已经上传的女士
-							mQuickMatchLadyLocalLikeList.removeAll(likeList);
-							mQuickMatchLadyLocalUnLikeList.removeAll(unlikeList);
-		
-							// 保存数据
-							SaveData();
-						}
-					});
 		}
 	}
 
@@ -367,88 +386,91 @@ public class QuickMatchManager implements OnLoginManagerCallback, OnChangeWebsit
 	 */
 	public void QueryLikeLadyList(boolean loadMore, 
 			final OnQueryQuickMatchManagerLikeLadyListCallback callback) {
-		
-		// 当次需要获取结果的第几页
-		int pageIndex = 1;
-		// 每页最大纪录数
-		final int pageSize = 10;
-		
-		// 需要从服务器获取的记录
-		final int maxOnlineCount = mQuickMatchLadyLikeList.size() + pageSize;
-		
-	    // 当次需要获取结果的第几页
-		pageIndex = (maxOnlineCount - 1) / pageSize + 1;
-		pageIndex = (pageIndex > 0)?pageIndex:1;
-	    
-		if( !loadMore ) {
-			// 刷最新
-			pageIndex = 1;
-		}
-		
-	    // 同步数据
-		mQuickMatchLadyLocalShowLikeList.clear();
-		// 先加入本地
-		mQuickMatchLadyLocalShowLikeList.addAll(mQuickMatchLadyLocalLikeList);
-		// 再加入服务器, 并且不在本地删除列表
-		for(QuickMatchLady item : mQuickMatchLadyLikeList) {
-			// 加入到本地显示列表
-			if( !CheckLadyExist(mQuickMatchLadyRemoveList, item.womanid) ) {
-				mQuickMatchLadyLocalShowLikeList.add(item);
+		synchronized (mLocalLock) {
+			// 当次需要获取结果的第几页
+			int pageIndex = 1;
+			// 每页最大纪录数
+			final int pageSize = 10;
+			
+			// 需要从服务器获取的记录
+			final int maxOnlineCount = mQuickMatchLadyLikeList.size() + pageSize;
+			
+		    // 当次需要获取结果的第几页
+			pageIndex = (maxOnlineCount - 1) / pageSize + 1;
+			pageIndex = (pageIndex > 0)?pageIndex:1;
+		    
+			if( !loadMore ) {
+				// 刷最新
+				pageIndex = 1;
 			}
-		}
+			
+		    // 同步数据
+			mQuickMatchLadyLocalShowLikeList.clear();
+			// 先加入本地
+			mQuickMatchLadyLocalShowLikeList.addAll(mQuickMatchLadyLocalLikeList);
+			// 再加入服务器, 并且不在本地删除列表
+			for(QuickMatchLady item : mQuickMatchLadyLikeList) {
+				// 加入到本地显示列表
+				if( !CheckLadyExist(mQuickMatchLadyRemoveList, item.womanid) ) {
+					mQuickMatchLadyLocalShowLikeList.add(item);
+				}
+			}
+			
+			// 请求喜爱女士列表
+			RequestOperator.getInstance().QueryQuickMatchLikeLadyList(
+					pageIndex,
+					pageSize,
+					new OnQueryQuickMatchLikeLadyListCallback() {
+						@Override
+						public void OnQueryQuickMatchLikeLadyList(
+								boolean isSuccess,
+								String errno, 
+								String errmsg,
+								QuickMatchLady[] itemList, 
+								int totalCount) {
+							// TODO Auto-generated method stub
+							synchronized (mLocalLock) {
+								boolean hasMore = false;
+								if( itemList != null ) {
+									hasMore = !(pageSize <= itemList.length);
+									
+									for(QuickMatchLady item : itemList) {
+										// 加入到本地显示喜爱列表
+										boolean bLikeFlag = CheckLadyExist(mQuickMatchLadyLikeList, item.womanid);
+										if( !bLikeFlag ) {
+											mQuickMatchLadyLikeList.add(item);
+										}
+										
+										// 是否存在本地删除列表
+										boolean bRemoveFlag = CheckLadyExist(mQuickMatchLadyRemoveList, item.womanid);
+										
+										// 加入到本地显示列表
+										if( !bLikeFlag && !bRemoveFlag ) {
+											mQuickMatchLadyLocalShowLikeList.add(item);
+										}
+									}
 		
-		// 请求喜爱女士列表
-		RequestOperator.getInstance().QueryQuickMatchLikeLadyList(
-				pageIndex,
-				pageSize,
-				new OnQueryQuickMatchLikeLadyListCallback() {
-					@Override
-					public void OnQueryQuickMatchLikeLadyList(
-							boolean isSuccess,
-							String errno, 
-							String errmsg,
-							QuickMatchLady[] itemList, 
-							int totalCount) {
-						// TODO Auto-generated method stub
-						
-						boolean hasMore = false;
-						if( itemList != null ) {
-							hasMore = !(pageSize <= itemList.length);
-							
-							for(QuickMatchLady item : itemList) {
-								// 加入到本地显示喜爱列表
-								boolean bLikeFlag = CheckLadyExist(mQuickMatchLadyLikeList, item.womanid);
-								if( !bLikeFlag ) {
-									mQuickMatchLadyLikeList.add(item);
 								}
+		
+								// 执行数据持久化
+								SaveData();
 								
-								// 是否存在本地删除列表
-								boolean bRemoveFlag = CheckLadyExist(mQuickMatchLadyRemoveList, item.womanid);
-								
-								// 加入到本地显示列表
-								if( !bLikeFlag && !bRemoveFlag ) {
-									mQuickMatchLadyLocalShowLikeList.add(item);
+								// 回调界面, 请求回来的记录数和发起请求的时候一样表示有更多
+								isSuccess = (mQuickMatchLadyLocalShowLikeList.size() > 0)?true:isSuccess;
+								if( callback != null ) {
+									callback.OnQueryLikeLadyList(
+											isSuccess, 
+											errno,
+											errmsg,
+											mQuickMatchLadyLocalShowLikeList,
+											hasMore
+											);
 								}
 							}
 
 						}
-
-						// 执行数据持久化
-						SaveData();
-						
-						// 回调界面, 请求回来的记录数和发起请求的时候一样表示有更多
-						isSuccess = (mQuickMatchLadyLocalShowLikeList.size() > 0)?true:isSuccess;
-						if( callback != null ) {
-							callback.OnQueryLikeLadyList(
-									isSuccess, 
-									errno,
-									errmsg,
-									mQuickMatchLadyLocalShowLikeList,
-									hasMore
-									);
-						}
-					}
-				});
+					});
+		}
 	}
 	
 	/**
@@ -528,7 +550,7 @@ public class QuickMatchManager implements OnLoginManagerCallback, OnChangeWebsit
 	}
 
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -536,12 +558,14 @@ public class QuickMatchManager implements OnLoginManagerCallback, OnChangeWebsit
 	@Override
 	public void OnChangeWebsite(WebSite website) {
 		// TODO Auto-generated method stub
-		// 切换站点
-		// 先保存旧数据
-		SaveData();
-		mWebsite = website;
-		// 加载本地新数据
-		LoadData();
+		synchronized (mLocalLock) {
+			// 切换站点
+			// 先保存旧数据
+			SaveData();
+			mWebsite = website;
+			// 加载本地新数据
+			LoadData();
+		}
 	}
 
 }

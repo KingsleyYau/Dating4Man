@@ -2,12 +2,7 @@ package com.qpidnetwork.view;
 
 import java.util.Random;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.bean.ContactBean;
-import com.qpidnetwork.manager.FileCacheManager;
-import com.qpidnetwork.tool.ImageViewLoader;
-import com.qpidnetwork.tool.ImageViewLoader.ImageViewLoaderCallback;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -18,12 +13,16 @@ import android.os.Build;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.view.View.OnClickListener;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.bean.ContactBean;
+import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.tool.ImageViewLoader;
+import com.qpidnetwork.tool.ImageViewLoader.ImageViewLoaderCallback;
 
 public class MaterialNameCardDialog extends Dialog implements OnClickListener{
 
@@ -44,7 +43,7 @@ public class MaterialNameCardDialog extends Dialog implements OnClickListener{
 	
 	private TextView name;
 	private TextView age;
-	private TextView country;
+//	private TextView country;
 	
 	
 	private int[] brandColors = new int[]{
@@ -75,6 +74,8 @@ public class MaterialNameCardDialog extends Dialog implements OnClickListener{
 
 	}
 	
+	@SuppressLint("InflateParams")
+	@SuppressWarnings("deprecation")
 	private View createView(){
 		
 		Display display = this.getWindow().getWindowManager().getDefaultDisplay();
@@ -106,7 +107,7 @@ public class MaterialNameCardDialog extends Dialog implements OnClickListener{
     	
     	name = (TextView)contentView.findViewById(R.id.name);
     	age = (TextView)contentView.findViewById(R.id.age);
-    	country = (TextView)contentView.findViewById(R.id.country);
+//    	country = (TextView)contentView.findViewById(R.id.country);
     	
     	image.setOnClickListener(this);
     	btnChat.setOnClickListener(this);

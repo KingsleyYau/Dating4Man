@@ -8,6 +8,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -34,6 +36,7 @@ import com.qpidnetwork.dating.livechat.downloader.EmotionPlayImageDownloader2;
 import com.qpidnetwork.dating.livechat.downloader.EmotionPlayImageDownloader2.OnEmotionPlayImageDownloadListener;
 import com.qpidnetwork.dating.livechat.downloader.LivechatVoiceDownloader;
 import com.qpidnetwork.dating.livechat.downloader.PrivatePhotoDownloader;
+import com.qpidnetwork.dating.livechat.video.LivechatVideoItem;
 import com.qpidnetwork.dating.livechat.voice.VoicePlayerManager;
 import com.qpidnetwork.framework.util.ImageUtil;
 import com.qpidnetwork.framework.util.StringUtil;
@@ -44,10 +47,11 @@ import com.qpidnetwork.livechat.LCMessageItem.MessageType;
 import com.qpidnetwork.livechat.LCMessageItem.SendType;
 import com.qpidnetwork.livechat.LCMessageItem.StatusType;
 import com.qpidnetwork.livechat.LCWarningLinkItem.LinkOptType;
+import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.jni.LiveChatClient.UserStatusType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
-import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.request.RequestJniEMF.ReplyType;
+import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
 import com.qpidnetwork.view.EmotionPlayer;
 import com.qpidnetwork.view.GetMoreCreditDialog;
 import com.qpidnetwork.view.MaterialDialogAlert;
@@ -75,7 +79,7 @@ public class MessageListView extends ScrollLayout implements
 	private boolean isDestroyed = false; // 是否被回收，防止退出时高级表情仍回调导致高表播放，资源无法回收
 
 	private List<LCMessageItem> currVisibleList = new ArrayList<LCMessageItem>();// 记录当前可见的item
-	private boolean isScrolled = false;//存储当前列表是否滚动过，解决未滚动情况下收到高级表情，下载完不播放问题
+	private boolean isScrolled = false;// 存储当前列表是否滚动过，解决未滚动情况下收到高级表情，下载完不播放问题
 
 	public MessageListView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -142,6 +146,9 @@ public class MessageListView extends ScrollLayout implements
 				break;
 			case Photo:
 				row = getPhotoViewIn(bean, position);
+				break;
+			case Video:
+				row = getVideoViewIn(bean, position);
 				break;
 			case Warning:
 				row = getWarningView(bean);
@@ -228,8 +235,8 @@ public class MessageListView extends ScrollLayout implements
 		TextView msgView = (TextView) row.findViewById(R.id.tvNotifyMsg);
 		if ((bean.getWarningItem().linkItem != null)
 				&& (bean.getWarningItem().linkItem.linkOptType == LinkOptType.Rechange)) {
-			String tips = bean.getWarningItem().message
-					+ " " + bean.getWarningItem().linkItem.linkMsg;
+			String tips = bean.getWarningItem().message + " "
+					+ bean.getWarningItem().linkItem.linkMsg;
 			SpannableString sp = new SpannableString(tips);
 			ClickableSpan clickableSpan = new ClickableSpan() {
 
@@ -241,15 +248,18 @@ public class MessageListView extends ScrollLayout implements
 					dialog.show();
 				}
 			};
-//			sp.setSpan(new UnderlineSpan(),
-//					bean.getWarningItem().message.length(), tips.length(),
-//					Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-			sp.setSpan(new StyleSpan(Typeface.BOLD), bean.getWarningItem().message.length() + 1, tips.length(),
+			// sp.setSpan(new UnderlineSpan(),
+			// bean.getWarningItem().message.length(), tips.length(),
+			// Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			sp.setSpan(new StyleSpan(Typeface.BOLD),
+					bean.getWarningItem().message.length() + 1, tips.length(),
 					Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-			sp.setSpan(clickableSpan, bean.getWarningItem().message.length() + 1,
-					tips.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			sp.setSpan(clickableSpan,
+					bean.getWarningItem().message.length() + 1, tips.length(),
+					Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 			msgView.setText(sp);
-			msgView.setLinkTextColor(mContext.getResources().getColor(R.color.blue_color));
+			msgView.setLinkTextColor(mContext.getResources().getColor(
+					R.color.blue_color));
 			msgView.setMovementMethod(LinkMovementMethod.getInstance());
 			msgView.setFocusable(false);
 			msgView.setClickable(false);
@@ -356,6 +366,16 @@ public class MessageListView extends ScrollLayout implements
 		timeView.setOnClickListener(this);
 		new LivechatVoiceDownloader(mContext).downloadAndPlayVoice(pbDownload,
 				btnError, bean);
+		return row;
+	}
+
+	private View getVideoViewIn(LCMessageItem bean, int position) {
+		View row = mLayoutInflater.inflate(R.layout.item_in_video, null);
+		updateVideoItem(row, bean);
+		LivechatVideoItem videoItem = (LivechatVideoItem) row
+				.findViewById(R.id.videoItem);
+		videoItem.setTag(position);
+		videoItem.setOnClickListener(this);
 		return row;
 	}
 
@@ -479,6 +499,9 @@ public class MessageListView extends ScrollLayout implements
 		} else if (vid == R.id.chat_sound_time) {
 			/* 语音Item，点击播放语音 */
 			onVoiceItemClick(v);
+		} else if (vid == R.id.videoItem) {
+			/* 点击小视屏响应 */
+			onVideoItemClick(v);
 		}
 	}
 
@@ -520,6 +543,88 @@ public class MessageListView extends ScrollLayout implements
 	}
 
 	/**
+	 * Video Item 点击处理
+	 * 
+	 * @param v
+	 */
+	private void onVideoItemClick(View v) {
+		int postion = getPosition(v);
+		if (beanList.size() > postion) {
+			LCMessageItem item = beanList.get(postion);
+			downloadOrOpenVideo(item, v);
+		}
+	}
+
+	/**
+	 * 点击购买下载video或者跳转播放Video
+	 * 
+	 * @param item
+	 */
+	private void downloadOrOpenVideo(final LCMessageItem item, View v) {
+		if (item != null && (item.getVideoItem() != null)) {
+			String videoThumbPhotoPath = mLiveChatManager
+					.GetVideoPhotoPathWithExist(item.getUserItem().userId,
+							item.inviteId, item.getVideoItem().videoId,
+							VideoPhotoType.Default);
+			if (StringUtil.isEmpty(videoThumbPhotoPath)) {
+				// 缩略图未下载成功，下载
+				mLiveChatManager.GetVideoPhoto(item, VideoPhotoType.Default);
+			}
+
+			if (v instanceof LivechatVideoItem) {
+				final LivechatVideoItem videoView = (LivechatVideoItem)v;
+				if (!item.getVideoItem().charget) {
+					SharedPreferences preference = mContext.getSharedPreferences("video_charge_tips", Context.MODE_PRIVATE);
+					boolean isRemeber = preference.getBoolean("video_charge_no_tips", false);
+					if(!isRemeber){
+						final MaterialDialogAlert dialog = new MaterialDialogAlert(
+								mContext);
+	
+						dialog.setMessage(mContext
+								.getString(R.string.livechat_video_charge_tips));
+						dialog.setCheckBox(
+								getResources().getString(
+										R.string.livechat_donot_ask_again), false);
+						dialog.addButton(dialog.createButton(
+								mContext.getString(R.string.common_btn_ok),
+								new OnClickListener() {
+	
+									@Override
+									public void onClick(View v) {
+										
+										boolean checked = dialog.getCheckBox().getChecked();
+										SharedPreferences preference = mContext.getSharedPreferences("video_charge_tips", Context.MODE_PRIVATE);
+										Editor edit = preference.edit();
+										edit.putBoolean("video_charge_no_tips", checked);
+										edit.commit();
+										
+										videoView.updateForDownloading();
+										mLiveChatManager.VideoFee(item);
+									}
+								}));
+	
+						dialog.show();
+					}else{
+						videoView.updateForDownloading();
+						mLiveChatManager.VideoFee(item);
+					}
+				} else {
+					String videoPath = mLiveChatManager.GetVideoPathWithExist(
+							item.getUserItem().userId, item.inviteId,
+							item.getVideoItem().videoId);
+					if (StringUtil.isEmpty(videoPath)) {
+						videoView.updateForDownloading();
+						mLiveChatManager.GetVideo(item);
+					} else {
+						VideoPlayActivity.launchVideoPlayActivity(mContext,
+								videoThumbPhotoPath, videoPath);
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * 发送消息回调处理
 	 * 
 	 * @param errType
@@ -528,7 +633,10 @@ public class MessageListView extends ScrollLayout implements
 	public void updateSendMessageCallback(final LiveChatCallBackItem callback) {
 		LCMessageItem item = (LCMessageItem) callback.body;
 		LiveChatErrType errType = LiveChatErrType.values()[callback.errType];
-		/*解决Livechat聊天消息由于底层处理试聊及是否有钱等情况成功后才返回错误提示，在这个过程中受到女士邀请，导致失败返回列表消息中包含了收到的文本消息，导致无进度条异常失败*/
+		/*
+		 * 解决Livechat聊天消息由于底层处理试聊及是否有钱等情况成功后才返回错误提示，在这个过程中受到女士邀请，
+		 * 导致失败返回列表消息中包含了收到的文本消息，导致无进度条异常失败
+		 */
 		if (item != null && (item.sendType == SendType.Send)) {
 			if (mPositionMap.containsKey(item.msgId)) {
 				/* 音频暂时单独处理 */
@@ -542,38 +650,41 @@ public class MessageListView extends ScrollLayout implements
 						.findViewById(R.id.pbDownload);
 				ImageButton btnError = (ImageButton) row
 						.findViewById(R.id.btnError);
-				if(pbDownload != null){
+				if (pbDownload != null) {
 					pbDownload.setVisibility(View.GONE);
 				}
 				if (errType != LiveChatErrType.Success) {
 					btnError.setVisibility(View.VISIBLE);
 					btnError.setTag(item);
-					if (errType == LiveChatErrType.SideOffile ||
-							errType == LiveChatErrType.UnbindInterpreter||
-							errType == LiveChatErrType.BlockUser) {
+					if (errType == LiveChatErrType.SideOffile
+							|| errType == LiveChatErrType.UnbindInterpreter
+							|| errType == LiveChatErrType.BlockUser) {
 						btnError.setOnClickListener(offlineOnClickListener);
 					} else if (errType == LiveChatErrType.NoMoney) {
 						btnError.setOnClickListener(noMoneyOnClickListener);
-					} else if(errType == LiveChatErrType.InvalidUser ||
-								errType == LiveChatErrType.InvalidPassword ||
-								errType == LiveChatErrType.CheckVerFail ||
-								errType == LiveChatErrType.LoginFail ||
-								errType == LiveChatErrType.CanNotSetOffline){
+					} else if (errType == LiveChatErrType.InvalidUser
+							|| errType == LiveChatErrType.InvalidPassword
+							|| errType == LiveChatErrType.CheckVerFail
+							|| errType == LiveChatErrType.LoginFail
+							|| errType == LiveChatErrType.CanNotSetOffline) {
 						btnError.setOnClickListener(noLoginOnClickListener);
-					}else {
+					} else {
 						if (!StringUtil.isEmpty(callback.errNo)) {
 							if (callback.errNo.equals("ERROR00003")) {
 								btnError.setOnClickListener(noMoneyOnClickListener);
 								return;
-							}else if(!StringUtil.isEmpty(callback.errMsg)){
-								/*Jaywar 接口返回错误提示*/
+							} else if (!StringUtil.isEmpty(callback.errMsg)) {
+								/* Jaywar 接口返回错误提示 */
 								btnError.setOnClickListener(new OnClickListener() {
-									
+
 									@Override
 									public void onClick(View v) {
-										MaterialDialogAlert dialog = new MaterialDialogAlert(mContext);
+										MaterialDialogAlert dialog = new MaterialDialogAlert(
+												mContext);
 										dialog.setMessage(callback.errMsg);
-										dialog.addButton(dialog.createButton(mContext.getString(R.string.common_btn_ok),null));
+										dialog.addButton(dialog.createButton(
+												mContext.getString(R.string.common_btn_ok),
+												null));
 										dialog.show();
 									}
 								});
@@ -581,6 +692,100 @@ public class MessageListView extends ScrollLayout implements
 							}
 						}
 						btnError.setOnClickListener(normalErrorOnClickListener);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * 更新指定消息队列View video thumb photo
+	 * 
+	 * @param msgList
+	 */
+	public void updateVideoThumbPhoto(ArrayList<LCMessageItem> msgList) {
+		if (msgList != null) {
+			for (LCMessageItem msgItem : msgList) {
+				updateVideoThumbPhoto(msgItem);
+			}
+		}
+	}
+
+	/**
+	 * 更新指定消息队列View video 状态
+	 * 
+	 * @param msgList
+	 */
+	public void updateVideoStatus(ArrayList<LCMessageItem> msgList) {
+		if (msgList != null) {
+			for (LCMessageItem msgItem : msgList) {
+				updateVideoStatus(msgItem);
+			}
+		}
+	}
+
+	/**
+	 * 更新指定message video thumb图片
+	 * 
+	 * @param bean
+	 */
+	private void updateVideoThumbPhoto(LCMessageItem bean) {
+		if ((bean != null) && (bean.msgType == MessageType.Video)) {
+			if (mPositionMap.containsKey(bean.msgId)) {
+				/* 音频暂时单独处理 */
+				int position = mPositionMap.get(bean.msgId);
+				/* 更新界面 */
+				View row = getContainer().getChildAt(position);
+				if (row != null) {
+					LivechatVideoItem videoItem = (LivechatVideoItem) row
+							.findViewById(R.id.videoItem);
+					if (videoItem != null) {
+						String videoThumbPath = mLiveChatManager
+								.GetVideoPhotoPathWithExist(
+										bean.getUserItem().userId,
+										bean.inviteId,
+										bean.getVideoItem().videoId,
+										VideoPhotoType.Default);
+						if (!StringUtil.isEmpty(videoThumbPath)) {
+							videoItem.setVideoThumb(videoThumbPath);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * 更新指定消息video 处理状态（默认，下载中，下载成功）
+	 * 
+	 * @param bean
+	 */
+	public void updateVideoStatus(LCMessageItem bean) {
+		if ((bean != null) && (bean.msgType == MessageType.Video)) {
+			if (mPositionMap.containsKey(bean.msgId)) {
+				/* 音频暂时单独处理 */
+				int position = mPositionMap.get(bean.msgId);
+				/* 更新界面 */
+				View row = getContainer().getChildAt(position);
+				if (row != null) {
+					LivechatVideoItem videoItem = (LivechatVideoItem) row
+							.findViewById(R.id.videoItem);
+					if (videoItem != null) {
+						String videoPath = mLiveChatManager
+								.GetVideoPathWithExist(
+										bean.getUserItem().userId,
+										bean.inviteId,
+										bean.getVideoItem().videoId);
+						if (!StringUtil.isEmpty(videoPath)) {
+							videoItem.updateForPlay();
+						} else {
+							if (mLiveChatManager.isGetVideoNow(bean
+									.getVideoItem().videoId)) {
+								videoItem.updateForDownloading();
+							} else {
+								videoItem.updateForDefault();
+							}
+						}
 					}
 				}
 			}
@@ -622,9 +827,9 @@ public class MessageListView extends ScrollLayout implements
 							.decodeHeightDependedBitmapFromFile(
 									bean.getPhotoItem().showSrcFilePath,
 									UnitConversion.dip2px(mContext, 112));
-					if(bitmap != null){
-						privatePhoto.setImageBitmap(ImageUtil.get2DpRoundedImage(
-								mContext, bitmap));
+					if (bitmap != null) {
+						privatePhoto.setImageBitmap(ImageUtil
+								.get2DpRoundedImage(mContext, bitmap));
 					}
 				}
 			}
@@ -639,8 +844,8 @@ public class MessageListView extends ScrollLayout implements
 		@Override
 		public void onClick(View v) {
 			final LCMessageItem item = (LCMessageItem) v.getTag();
-			if(item.getUserItem().statusType == UserStatusType.USTATUS_ONLINE){
-				/*女士上线后可以重新发送*/
+			if (item.getUserItem().statusType == UserStatusType.USTATUS_ONLINE) {
+				/* 女士上线后可以重新发送 */
 				MaterialDialogAlert dialog = new MaterialDialogAlert(mContext);
 				dialog.setMessage(mContext
 						.getString(R.string.send_error_text_normal));
@@ -665,32 +870,34 @@ public class MessageListView extends ScrollLayout implements
 						}));
 
 				dialog.show();
-			}else{
+			} else {
 				MaterialDialogAlert dialog = new MaterialDialogAlert(mContext);
 				dialog.setMessage(mContext
 						.getString(R.string.send_error_lady_offline));
 				dialog.addButton(dialog.createButton(
 						mContext.getString(R.string.common_send_email),
 						new OnClickListener() {
-	
+
 							@Override
 							public void onClick(View v) {
-								MailEditActivity.launchMailEditActivity(mContext, item.toId, ReplyType.DEFAULT, "");
+								MailEditActivity.launchMailEditActivity(
+										mContext, item.toId, ReplyType.DEFAULT,
+										"");
 							}
 						}));
 				dialog.addButton(dialog.createButton(
 						mContext.getString(R.string.livechat_end_chat),
 						new OnClickListener() {
-	
+
 							@Override
 							public void onClick(View v) {
 								// TODO Auto-generated method stub
 								mLiveChatManager.EndTalk(item.toId);
 								((ChatActivity) mContext).finish();
 							}
-	
+
 						}));
-	
+
 				dialog.show();
 			}
 		}
@@ -704,18 +911,18 @@ public class MessageListView extends ScrollLayout implements
 		@Override
 		public void onClick(View v) {
 			LoginManager.newInstance(mContext).Logout();
-			/*清除密码*/
+			/* 清除密码 */
 			LoginParam param = LoginPerfence.GetLoginParam(mContext);
 			param.password = "";
 			LoginPerfence.SaveLoginParam(mContext, param);
-			
+
 			((ChatActivity) mContext).finish();
-			
+
 			Intent loginIntent = new Intent(mContext, RegisterActivity.class);
 			mContext.startActivity(loginIntent);
 		}
 	};
-	
+
 	/**
 	 * 发送消息失败（男士余额不足），点击重发按钮提示
 	 */
@@ -796,7 +1003,7 @@ public class MessageListView extends ScrollLayout implements
 			int position = mPositionMap.get(item.msgId);
 			View row = getContainer().getChildAt(position);
 			row.setVisibility(GONE);
-			/*消息重发，删除列表中旧消息*/
+			/* 消息重发，删除列表中旧消息 */
 			mLiveChatManager.RemoveHistoryMessage(item);
 		}
 		LCMessageItem newItem = null;
@@ -824,6 +1031,47 @@ public class MessageListView extends ScrollLayout implements
 
 		addRow(newItem);
 		scrollToBottom(true);
+	}
+
+	/**
+	 * 更新指定Video Item界面显示
+	 * 
+	 * @param parent
+	 *            父View
+	 * @param bean
+	 *            数据结构
+	 */
+	private void updateVideoItem(View parent, LCMessageItem bean) {
+		LivechatVideoItem videoItem = (LivechatVideoItem) parent
+				.findViewById(R.id.videoItem);
+		TextView tvDesc = (TextView) parent.findViewById(R.id.tvDesc);
+
+		String videoThumbPath = mLiveChatManager.GetVideoPhotoPathWithExist(
+				bean.getUserItem().userId, bean.inviteId,
+				bean.getVideoItem().videoId, VideoPhotoType.Default);
+		if (!StringUtil.isEmpty(videoThumbPath)) {
+			videoItem.setVideoThumb(videoThumbPath);
+		}else{
+			//下载thumb photo
+			mLiveChatManager.GetVideoPhoto(bean, VideoPhotoType.Default);
+		}
+
+		String videoPath = mLiveChatManager.GetVideoPathWithExist(
+				bean.getUserItem().userId, bean.inviteId,
+				bean.getVideoItem().videoId);
+		if (!StringUtil.isEmpty(videoPath)) {
+			videoItem.updateForPlay();
+		} else {
+			if (mLiveChatManager.isGetVideoNow(bean.getVideoItem().videoId)) {
+				videoItem.updateForDownloading();
+			} else {
+				videoItem.updateForDefault();
+			}
+		}
+
+		tvDesc.setText(String.format(
+				mContext.getString(R.string.livechat_receive_a_video),
+				bean.getUserItem().userName));
 	}
 
 	/*
@@ -931,13 +1179,14 @@ public class MessageListView extends ScrollLayout implements
 							.findViewById(R.id.emotionPlayer);
 					player.setVisibility(View.VISIBLE);
 					player.setImageList(emotionItem.playBigImages);
-					if(isScrolled){
-						if ((currVisibleList != null)&& currVisibleList.contains(item)) {
+					if (isScrolled) {
+						if ((currVisibleList != null)
+								&& currVisibleList.contains(item)) {
 							/* 可见的则播放，否则不播放 */
 							player.play();
 						}
-					}else{
-						/*未满一页的情况下直接播放*/
+					} else {
+						/* 未满一页的情况下直接播放 */
 						player.play();
 					}
 				}

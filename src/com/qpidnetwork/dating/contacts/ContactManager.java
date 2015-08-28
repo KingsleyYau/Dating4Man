@@ -22,17 +22,16 @@ import com.qpidnetwork.dating.authorization.LoginParam;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.bean.ContactBean;
 import com.qpidnetwork.dating.bean.LoveCallBean;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.contacts.ContactSearchType.LabelType;
 import com.qpidnetwork.dating.googleanalytics.GAFragmentActivity;
 import com.qpidnetwork.dating.lady.LadyDetailManager;
 import com.qpidnetwork.dating.lady.LadyDetailManager.OnLadyDetailManagerQueryLadyDetailCallback;
-import com.qpidnetwork.dating.livechat.ExpressionImageGetter;
 import com.qpidnetwork.dating.livechat.LiveChatNotification;
 import com.qpidnetwork.dating.setting.SettingPerfence;
 import com.qpidnetwork.dating.setting.SettingPerfence.NotificationItem;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.StringUtil;
-import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.livechat.LCEmotionItem;
 import com.qpidnetwork.livechat.LCMessageItem;
 import com.qpidnetwork.livechat.LCMessageItem.MessageType;
@@ -45,6 +44,7 @@ import com.qpidnetwork.livechat.LiveChatManagerMessageListener;
 import com.qpidnetwork.livechat.LiveChatManagerOtherListener;
 import com.qpidnetwork.livechat.LiveChatManagerPhotoListener;
 import com.qpidnetwork.livechat.LiveChatManagerTryTicketListener;
+import com.qpidnetwork.livechat.LiveChatManagerVideoListener;
 import com.qpidnetwork.livechat.LiveChatManagerVoiceListener;
 import com.qpidnetwork.livechat.jni.LiveChatClient.UserStatusType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
@@ -53,6 +53,7 @@ import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TryTicketEventType;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnLadyRecentContactListCallback;
+import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.Coupon;
 import com.qpidnetwork.request.item.LadyDetail;
@@ -70,23 +71,11 @@ public class ContactManager implements OnLoginManagerCallback {
 	 */
 	private enum RequestFlag {
 		REQUEST_LIVECHAT_NOTIFICATION_SUCCESS,
+		REQUEST_LIVECHAT_EMF_CONATCT_UPDATE,
+		REQUEST_LIVECHAT_MESSAGE_CONATCT_UPDATE,
 		REQUEST_LIVECHAT_KICK_OFF
 	}
 	
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * 
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 */
-		public MessageCallbackItem(
-				) {
-		}
-		public LCMessageItem lCMessageItem;
-	}
 	
 	protected final String tag = getClass().getName();
 
@@ -116,11 +105,11 @@ public class ContactManager implements OnLoginManagerCallback {
 		// TODO Auto-generated method stub
 		mHandler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_LIVECHAT_NOTIFICATION_SUCCESS:{
 					// 非当前在聊女士
-					LCMessageItem item = (LCMessageItem) obj.lCMessageItem;
+					RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+					LCMessageItem item = (LCMessageItem) obj.body;
 					LiveChatNotification nt = LiveChatNotification.newInstance(QpidApplication.getContext());
 					NotificationItem ni = SettingPerfence.GetNotificationItem(QpidApplication.getContext());
 					
@@ -146,11 +135,11 @@ public class ContactManager implements OnLoginManagerCallback {
 					}break;
 					}
 					
-					ExpressionImageGetter imageGetter = new ExpressionImageGetter(
-							QpidApplication.getContext(), 
-							UnitConversion.dip2px(QpidApplication.getContext(), 28),
-							UnitConversion.dip2px(QpidApplication.getContext(), 28)
-							);
+//					ExpressionImageGetter imageGetter = new ExpressionImageGetter(
+//							QpidApplication.getContext(), 
+//							UnitConversion.dip2px(QpidApplication.getContext(), 28),
+//							UnitConversion.dip2px(QpidApplication.getContext(), 28)
+//							);
 					String tips = "";
 					if(item.msgType != MessageType.Text){
 						tips = item.getUserItem().userName + ": " + generateMsgHint(item);
@@ -173,6 +162,27 @@ public class ContactManager implements OnLoginManagerCallback {
 					intent.setAction(GAFragmentActivity.LIVECHAT_KICKOFF_ACTION);
 					intent.putExtra(LIVE_CHAT_KICK_OFF, msg.arg1);
 					QpidApplication.getContext().sendBroadcast(intent);
+				}break;
+				case REQUEST_LIVECHAT_EMF_CONATCT_UPDATE:{
+					/*EMF 等更新联系人*/
+					String usrId = (String)msg.obj;
+					LadyDetailManager.getInstance().QueryLadyDetail(usrId, new OnLadyDetailManagerQueryLadyDetailCallback() {
+						
+						@Override
+						public void OnQueryLadyDetailCallback(boolean isSuccess, String errno,
+								String errmsg, LadyDetail item) {
+							// TODO Auto-generated method stub
+							if(isSuccess){
+								updateBySendEMF(item);
+							}
+						}
+					});
+				}break;
+				case REQUEST_LIVECHAT_MESSAGE_CONATCT_UPDATE:{
+					/*EMF 等更新联系人*/
+					LCUserItem userItem = (LCUserItem)msg.obj;
+					boolean isInvite = msg.arg1 == 1? true: false;
+					updateByMessage(userItem, isInvite);
 				}break;
 				default:
 					break;
@@ -732,7 +742,7 @@ public class ContactManager implements OnLoginManagerCallback {
 	 * @param lady
 	 * @param localFlag 是否添加到本地存储（男士邀请联系人需要，防止刷新后聊天对象找不到）
 	 */
-	public void updateBySendEMF(LadyDetail lady, boolean localFlag) {
+	public void updateBySendEMF(LadyDetail lady) {
 		ContactBean bean = null;
 		Log.d("contact", "ContactManager::updateBySendEMF() synchronized mContactList begin");
 		synchronized (mContactList) {
@@ -759,6 +769,78 @@ public class ContactManager implements OnLoginManagerCallback {
 		Log.d("contact", "ContactManager::updateBySendEMF() synchronized mContactList end");
 		onContactListUpdateCallback();
 	}
+	
+	/**
+	 * 收到消息，不在好友列表，根据女士详情获取信息后，添加到联系人
+	 * @param userItem
+	 * @param isInvite 是否男士主动邀请，需保存到本地联系人
+	 */
+	public void updateByMessage(final LCUserItem userItem, final boolean isInvite){
+
+		/* 在聊或者试聊时，添加到联系人列表,没有女士头像及firstname，需获取后添加 */
+		LadyDetailManager.getInstance().QueryLadyDetail(userItem.userId, new OnLadyDetailManagerQueryLadyDetailCallback() {
+			
+			@Override
+			public void OnQueryLadyDetailCallback(boolean isSuccess, String errno,
+					String errmsg, LadyDetail item) {
+				// TODO Auto-generated method stub
+				if(isSuccess){
+					ContactBean bean = new ContactBean();
+					bean.womanid = userItem.userId;
+					bean.firstname = item.firstname;
+					bean.age = item.age;
+					bean.photoURL = item.photoMinURL;
+					bean.isfavorite = item.isfavorite;
+					bean.isOnline = item.isonline;
+					if (item.videoList != null) {
+						bean.videoCount = item.videoList.size();
+					}
+					bean.isInchating = true;
+					if (userItem.getMsgList().size() > 0) {
+						/* 生成联系人列表最后一条提示消息 */
+						for (int i = userItem.getMsgList().size() - 1; i >= 0; i--) {
+							LCMessageItem msgItem = userItem.getMsgList().get(i);
+							if (msgItem.msgType == MessageType.Text
+									|| msgItem.msgType == MessageType.Emotion
+									|| msgItem.msgType == MessageType.Photo
+									|| msgItem.msgType == MessageType.Voice
+									|| msgItem.msgType == MessageType.Video) {
+								/* 通过最后一条正常通讯消息生成提示，否则界面使用默认最后更新时间提示 */
+								if (msgItem.createTime > bean.lasttime) {
+									bean.lasttime = msgItem.createTime;
+									bean.msgHint = generateMsgHint(msgItem);
+								}
+								break;
+							}
+						}
+					} else {
+						bean.lasttime = (int) (System.currentTimeMillis() / 1000);
+						Log.w(tag, "Something wrong womanid: "
+								+ userItem.userId);
+					}
+					/*添加到现有联系人*/
+					synchronized (mContactList) {
+						/*防止异步回调多次导致添加联系人重复*/
+						if(!mContactsMap.containsKey(bean.womanid)){
+							mContactList.add(bean);
+							mContactsMap.put(bean.womanid, bean);
+							if(isInvite){
+								String localKey = getLocalContactKey();
+								if (mLocalContactMap.containsKey(localKey)) {
+									mLocalContactMap.get(localKey).add(bean);
+								} else {
+									List<ContactBean> localList = new ArrayList<ContactBean>();
+									localList.add(bean);
+									mLocalContactMap.put(localKey, localList);
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+	
 
 	/**
 	 * livechat聊天信息与列表提示转换
@@ -810,6 +892,13 @@ public class ContactManager implements OnLoginManagerCallback {
 				msg = String.format(msgs_[4], msgItem.getUserItem().userName);
 			}
 			break;
+		case Video:
+			if (msgItem.sendType == SendType.Send) {
+				msg = msgs_[7];
+			} else {
+				msg = String.format(msgs_[8], msgItem.getUserItem().userName);
+			}
+			break;
 		case System: // 系统消息
 		case Custom: // 自定义消息
 		case Unknow:
@@ -825,20 +914,12 @@ public class ContactManager implements OnLoginManagerCallback {
 	 * EMF 推送， onlinelady makecall， inchat 男士发起试聊（只有女士Id，无其他需先获取女士详情，成功再添加）
 	 * 
 	 * @param userId
-	 * @param localFlag 是否添加到本地存储（男士邀请联系人需要，防止刷新后聊天对象找不到）
 	 */
-	public void updateOrAddContact(String userId, final boolean localFlag) {
-		LadyDetailManager.getInstance().QueryLadyDetail(userId, new OnLadyDetailManagerQueryLadyDetailCallback() {
-			
-			@Override
-			public void OnQueryLadyDetailCallback(boolean isSuccess, String errno,
-					String errmsg, LadyDetail item) {
-				// TODO Auto-generated method stub
-				if(isSuccess){
-					updateBySendEMF(item, localFlag);
-				}
-			}
-		});
+	public void updateOrAddContact(String userId) {
+		Message msg = Message.obtain();
+		msg.what = RequestFlag.REQUEST_LIVECHAT_EMF_CONATCT_UPDATE.ordinal();
+		msg.obj = userId;
+		mHandler.sendMessage(msg);
 	}
 
 	/**
@@ -891,7 +972,8 @@ public class ContactManager implements OnLoginManagerCallback {
 							if (item.msgType == MessageType.Text
 									|| item.msgType == MessageType.Emotion
 									|| item.msgType == MessageType.Photo
-									|| item.msgType == MessageType.Voice) {
+									|| item.msgType == MessageType.Voice
+									|| item.msgType == MessageType.Video) {
 								/* 通过最后一条正常通讯消息生成提示，否则界面使用默认最后更新时间提示 */
 								if (item.createTime > bean.lasttime) {
 									bean.lasttime = item.createTime;
@@ -910,68 +992,11 @@ public class ContactManager implements OnLoginManagerCallback {
 				} else if ((userItem.chatType == ChatType.InChatCharge)
 						|| (userItem.chatType == ChatType.InChatUseTryTicket)||
 						isInvite) {
-					/* 在聊或者试聊时，添加到联系人列表,没有女士头像及firstname，需获取后添加 */
-					LadyDetailManager.getInstance().QueryLadyDetail(userItem.userId, new OnLadyDetailManagerQueryLadyDetailCallback() {
-						
-						@Override
-						public void OnQueryLadyDetailCallback(boolean isSuccess, String errno,
-								String errmsg, LadyDetail item) {
-							// TODO Auto-generated method stub
-							if(isSuccess){
-								ContactBean bean = new ContactBean();
-								bean.womanid = userItem.userId;
-								bean.firstname = item.firstname;
-								bean.age = item.age;
-								bean.photoURL = item.photoMinURL;
-								bean.isfavorite = item.isfavorite;
-								bean.isOnline = item.isonline;
-								if (item.videoList != null) {
-									bean.videoCount = item.videoList.size();
-								}
-								bean.isInchating = true;
-								if (userItem.getMsgList().size() > 0) {
-									/* 生成联系人列表最后一条提示消息 */
-									for (int i = userItem.getMsgList().size() - 1; i >= 0; i--) {
-										LCMessageItem msgItem = userItem.getMsgList().get(i);
-										if (msgItem.msgType == MessageType.Text
-												|| msgItem.msgType == MessageType.Emotion
-												|| msgItem.msgType == MessageType.Photo
-												|| msgItem.msgType == MessageType.Voice) {
-											/* 通过最后一条正常通讯消息生成提示，否则界面使用默认最后更新时间提示 */
-											if (msgItem.createTime > bean.lasttime) {
-												bean.lasttime = msgItem.createTime;
-												bean.msgHint = generateMsgHint(msgItem);
-											}
-											break;
-										}
-									}
-								} else {
-									bean.lasttime = (int) (System.currentTimeMillis() / 1000);
-									Log.w(tag, "Something wrong womanid: "
-											+ userItem.userId);
-								}
-								/*添加到现有联系人*/
-								synchronized (mContactList) {
-									/*防止异步回调多次导致添加联系人重复*/
-									if(!mContactsMap.containsKey(bean.womanid)){
-										mContactList.add(bean);
-										mContactsMap.put(bean.womanid, bean);
-										if(isInvite){
-											String localKey = getLocalContactKey();
-											if (mLocalContactMap.containsKey(localKey)) {
-												mLocalContactMap.get(localKey).add(bean);
-											} else {
-												List<ContactBean> localList = new ArrayList<ContactBean>();
-												localList.add(bean);
-												mLocalContactMap.put(localKey, localList);
-											}
-										}
-									}
-								}
-							}
-						}
-					});
-					
+					Message msg = Message.obtain();
+					msg.what = RequestFlag.REQUEST_LIVECHAT_MESSAGE_CONATCT_UPDATE.ordinal();
+					msg.arg1 = isInvite?1:0;
+					msg.obj = userItem;
+					mHandler.sendMessage(msg);
 				}
 			}
 			Log.d("contact", "ContactManager::updateOrAddContact() synchronized mContactList end");
@@ -1031,9 +1056,9 @@ public class ContactManager implements OnLoginManagerCallback {
 					if( item.getUserItem().userId.compareTo(mWomanId) != 0 ) {
 						// 非当前在聊女士
 						Message msg = Message.obtain();
-						MessageCallbackItem obj = new MessageCallbackItem();
+						RequestBaseResponse obj = new RequestBaseResponse();
+						obj.body = item;
 						msg.obj = obj;
-						obj.lCMessageItem = item;
 						msg.what = RequestFlag.REQUEST_LIVECHAT_NOTIFICATION_SUCCESS.ordinal();
 						mHandler.sendMessage(msg);
 					}
@@ -1099,7 +1124,7 @@ public class ContactManager implements OnLoginManagerCallback {
 
 				@Override
 				public void run() {
-					updateOrAddContact(fromId, false);
+					updateOrAddContact(fromId);
 				}
 			};
 			handler.post(task);
@@ -1436,6 +1461,47 @@ public class ContactManager implements OnLoginManagerCallback {
 
 					}
 				});
+		
+		mLiveChatManager.RegisterVideoListener(new LiveChatManagerVideoListener() {
+			
+			@Override
+			public void OnVideoFee(boolean success, String errno, String errmsg,
+					LCMessageItem item) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void OnRecvVideo(LCMessageItem item) {
+				/* 获取小视频信息，更新联系人 */
+				onReceiveMessage(item);
+			}
+
+			@Override
+			public void OnGetVideoPhoto(LiveChatErrType errType, String errno,
+					String errmsg, String userId, String inviteId,
+					String videoId, VideoPhotoType type, String filePath,
+					ArrayList<LCMessageItem> msgList) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void OnStartGetVideo(String userId,
+					String videoId, String inviteId, String videoPath,
+					ArrayList<LCMessageItem> msgList) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void OnGetVideo(LiveChatErrType errType, String userId,
+					String videoId, String inviteId, String videoPath,
+					ArrayList<LCMessageItem> msgList) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 
 		mLiveChatManager
 				.RegisterVoiceListener(new LiveChatManagerVoiceListener() {
@@ -1529,7 +1595,7 @@ public class ContactManager implements OnLoginManagerCallback {
 	}
 
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		resetContact();
 		onLogoutDataUpdate();
 	}

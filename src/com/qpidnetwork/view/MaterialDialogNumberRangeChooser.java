@@ -16,10 +16,7 @@ package com.qpidnetwork.view;
  */
 
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.framework.base.BaseDialog;
-import com.qpidnetwork.view.RangeSeekBar.OnRangeSeekBarChangeListener;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -31,6 +28,11 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseDialog;
+import com.qpidnetwork.view.RangeSeekBar.OnRangeSeekBarChangeListener;
+
+@SuppressLint("RtlHardcoded")
 public class MaterialDialogNumberRangeChooser extends BaseDialog{
 	
 	
@@ -251,7 +253,8 @@ public class MaterialDialogNumberRangeChooser extends BaseDialog{
     	return (TextView)contentView.findViewById(android.R.id.text2);
     }
     
-    public RangeSeekBar<Integer> getSeekBar(){
+    @SuppressWarnings("unchecked")
+	public RangeSeekBar<Integer> getSeekBar(){
     	return (RangeSeekBar<Integer>)contentView.findViewById(android.R.id.custom);
     }
     

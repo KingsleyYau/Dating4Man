@@ -137,7 +137,7 @@ public class RequestJniEMF {
     /**
      * 回复类型
      */
-    public enum ReplyType {
+    static public enum ReplyType {
     	EMF,
     	ADMIRE,
     	DEFAULT,

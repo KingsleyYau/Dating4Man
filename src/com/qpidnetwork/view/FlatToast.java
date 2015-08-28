@@ -1,7 +1,5 @@
 package com.qpidnetwork.view;
 
-import com.qpidnetwork.dating.R;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
@@ -10,17 +8,19 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.Toast;
+
+import com.qpidnetwork.dating.R;
 
 public class FlatToast{
 	
 	public static String TAG = "FlatToast";
 
 	private boolean isProgreesed = false;
-	private View mParent;
+//	private View mParent;
 	private PopupWindow mPopupWindow;
 	private Context mContext;
 	private View mContentView;

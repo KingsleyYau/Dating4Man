@@ -1,13 +1,6 @@
 package com.qpidnetwork.dating.emf;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.framework.widget.CircleImageView;
-import com.qpidnetwork.manager.FileCacheManager;
-import com.qpidnetwork.request.item.EMFBlockListItem;
-import com.qpidnetwork.tool.ImageViewLoader;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,6 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.widget.CircleImageView;
+import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.request.item.EMFBlockListItem;
+import com.qpidnetwork.tool.ImageViewLoader;
 
 public class EMFBlockedListAdapter extends BaseAdapter{
 	

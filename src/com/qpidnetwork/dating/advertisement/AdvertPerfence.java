@@ -12,8 +12,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
-import com.qpidnetwork.dating.advertisement.AdMainAdvertItem;
-import com.qpidnetwork.dating.advertisement.AdWomanListAdvertItem;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.item.AdPushAdvert;
 

@@ -34,6 +34,7 @@ public class BaseDialog extends Dialog{
 		return dialogSize;
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void setupDialogWindow(){
 		float density = this.getContext().getResources().getDisplayMetrics().density;
 		Display display = this.getWindow().getWindowManager().getDefaultDisplay();

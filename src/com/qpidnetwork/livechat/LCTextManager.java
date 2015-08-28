@@ -3,6 +3,7 @@ package com.qpidnetwork.livechat;
 import java.util.HashMap;
 
 import android.annotation.SuppressLint;
+
 import com.qpidnetwork.framework.util.Log;
 
 /**

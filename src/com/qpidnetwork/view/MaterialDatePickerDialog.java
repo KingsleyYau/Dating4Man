@@ -1,22 +1,22 @@
 package com.qpidnetwork.view;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.framework.base.BaseDialog;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
-import android.view.View.OnClickListener;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseDialog;
 
 
 public class MaterialDatePickerDialog extends BaseDialog implements OnClickListener{
 	
-	private float density = this.getContext().getResources().getDisplayMetrics().density;
+//	private float density = this.getContext().getResources().getDisplayMetrics().density;
 	
 	private Context mContext;
 	DateSelectCallback dateSelectCallback;

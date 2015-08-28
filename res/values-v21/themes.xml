@@ -44,5 +44,6 @@
     <style name="QpidAppTheme.Translucent" parent="QpidAppTheme">
  	    <item name="android:windowIsTranslucent">true</item>
     </style>
+    
 
 </resources>

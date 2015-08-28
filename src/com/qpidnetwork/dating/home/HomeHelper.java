@@ -1,10 +1,10 @@
 package com.qpidnetwork.dating.home;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.framework.util.SystemUtil;
-
 import android.content.Context;
 import android.util.DisplayMetrics;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.util.SystemUtil;
 
 public class HomeHelper {
 	

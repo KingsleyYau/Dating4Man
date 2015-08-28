@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -33,7 +34,7 @@ public class TicketDetailAdapter extends BaseAdapter{
 	
 	private Context mContext;
 	private TicketDetailItem mTicketDetailItem;
-	private OnResolveClickListener mOnResolveClickListener;
+//	private OnResolveClickListener mOnResolveClickListener;
 	
 	public TicketDetailAdapter(Context context, TicketDetailItem ticketDeatilItem){
 		mContext = context;
@@ -61,6 +62,8 @@ public class TicketDetailAdapter extends BaseAdapter{
 		return position;
 	}
 
+	@SuppressLint("InflateParams")
+	@SuppressWarnings("deprecation")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder = null;
@@ -187,9 +190,9 @@ public class TicketDetailAdapter extends BaseAdapter{
 		}
 	}
 	
-	public void setOnResolveClickListener(OnResolveClickListener listener){
-		this.mOnResolveClickListener = listener;
-	}
+//	public void setOnResolveClickListener(OnResolveClickListener listener){
+//		this.mOnResolveClickListener = listener;
+//	}
 	
 	public interface OnResolveClickListener{
 		public void onResolveClick();

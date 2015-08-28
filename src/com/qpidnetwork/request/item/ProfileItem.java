@@ -3,10 +3,19 @@ package com.qpidnetwork.request.item;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import android.view.View;
-
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.request.RequestEnum.*;
+import com.qpidnetwork.request.RequestEnum.Children;
+import com.qpidnetwork.request.RequestEnum.Country;
+import com.qpidnetwork.request.RequestEnum.Drink;
+import com.qpidnetwork.request.RequestEnum.Education;
+import com.qpidnetwork.request.RequestEnum.Ethnicity;
+import com.qpidnetwork.request.RequestEnum.Height;
+import com.qpidnetwork.request.RequestEnum.Income;
+import com.qpidnetwork.request.RequestEnum.Language;
+import com.qpidnetwork.request.RequestEnum.Marry;
+import com.qpidnetwork.request.RequestEnum.Profession;
+import com.qpidnetwork.request.RequestEnum.Religion;
+import com.qpidnetwork.request.RequestEnum.Smoke;
+import com.qpidnetwork.request.RequestEnum.Weight;
 
 public class ProfileItem implements Serializable {
 	/**

@@ -2,6 +2,7 @@ package com.qpidnetwork.dating.lady;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,7 +11,6 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import com.qpidnetwork.framework.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,12 +31,14 @@ import com.qpidnetwork.dating.authorization.LoginParam;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.bean.EMFAttachmentBean;
 import com.qpidnetwork.dating.bean.EMFAttachmentBean.AttachType;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.contacts.ContactManager;
 import com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity;
 import com.qpidnetwork.dating.emf.MailEditActivity;
 import com.qpidnetwork.dating.lady.LadyDetailManager.OnLadyDetailManagerQueryLadyDetailCallback;
 import com.qpidnetwork.dating.livechat.ChatActivity;
 import com.qpidnetwork.dating.lovecall.DirectCallManager;
+import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.SystemUtil;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnQueryLadyCallCallback;
@@ -52,6 +54,7 @@ import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialDropDownMenu;
 import com.qpidnetwork.view.MaterialThreeButtonDialog;
 
+@SuppressLint({ "SetJavaScriptEnabled", "RtlHardcoded" })
 public class LadyDetailActivity extends BaseActivity {
 	/**
 	 * 其他界面进入参数
@@ -110,26 +113,6 @@ public class LadyDetailActivity extends BaseActivity {
 		REQUEST_WEBVIEW_FINISH,
 	}
 	
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-		}
-		public String errno;
-		public String errmsg;
-		public LadyDetail item;
-		public LadyCall ladyCall;
-	}
 	
 	/**
 	 * 界面控件
@@ -150,14 +133,14 @@ public class LadyDetailActivity extends BaseActivity {
 	 * Javascript调用java方法交互类
 	 * @see 暂时没用
 	 */
-    private class JavascriptInterface {  
-  
-        private Context mContext;  
-  
-        public JavascriptInterface(Context context) {  
-            mContext = context; 
-        }
-    }  
+//    private class JavascriptInterface {  
+//  
+//        private Context mContext;  
+//  
+//        public JavascriptInterface(Context context) {  
+//            mContext = context; 
+//        }
+//    }  
         
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -300,7 +283,7 @@ public class LadyDetailActivity extends BaseActivity {
 				// TODO Auto-generated method stub
 				super.onPageStarted(view, url, favicon);
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem("", "");
+				RequestBaseResponse obj = new RequestBaseResponse(true, "", "", null);
 				msg.what = RequestFlag.REQUEST_WEBVIEW_START.ordinal();
 				msg.obj = obj;
 				mHandler.sendMessage(msg);
@@ -311,7 +294,7 @@ public class LadyDetailActivity extends BaseActivity {
 				// TODO Auto-generated method stub
 				super.onPageFinished(view, url);
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem("", "");
+				RequestBaseResponse obj = new RequestBaseResponse(true, "", "", null);
 				msg.what = RequestFlag.REQUEST_WEBVIEW_FINISH.ordinal();
 				msg.obj = obj;
 				mHandler.sendMessage(msg);
@@ -319,7 +302,7 @@ public class LadyDetailActivity extends BaseActivity {
 			
 		    @Override  
 		    public boolean shouldOverrideUrlLoading(WebView view, String url) {
-		    	Log.d("LadyDetailActivity", "shouldOverrideUrlLoading : " + url);
+		    	Log.d("LadyDetailActivity", "shouldOverrideUrlLoading : %s",  url);
 		    	boolean bFlag = false;
 		    	bFlag = StartActivityByUrl(url);
 		    	
@@ -354,10 +337,11 @@ public class LadyDetailActivity extends BaseActivity {
 				// 收起菊花
 				hideProgressDialog();
 				// 处理消息
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
-				if( obj.item != null ) {
+				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+				if((obj.body != null) && (obj.body instanceof LadyDetail)){
+					LadyDetail ladyDetail = (LadyDetail)obj.body;
 					// 是否在线
-					if( obj.item.isonline ) {
+					if( ladyDetail.isonline ) {
 						appbar.changeIconById(R.id.common_button_online, R.drawable.ic_chat_grey600_24dp);
 						appbar.getButtonById(R.id.common_button_online).setEnabled(true);
 						appbar.pushBadgeById(R.id.common_button_online, Color.parseColor("#228B22"));
@@ -369,7 +353,7 @@ public class LadyDetailActivity extends BaseActivity {
 					
 					
 					// 是否允许打电话
-					if( obj.item.show_lovecall == ShowLoveCall.CallMeNow) {
+					if( ladyDetail.show_lovecall == ShowLoveCall.CallMeNow) {
 						appbar.getButtonById(R.id.common_button_call).setVisibility(View.VISIBLE);
 					} else {
 						appbar.getButtonById(R.id.common_button_call).setVisibility(View.GONE);
@@ -378,23 +362,24 @@ public class LadyDetailActivity extends BaseActivity {
 					
 					if(!mShowButtons){
 						appbar.getButtonById(R.id.common_button_call).setVisibility(View.GONE);
-						appbar.setTitle(obj.item.firstname, getResources().getColor(R.color.text_color_dark));
+						appbar.setTitle(ladyDetail.firstname, getResources().getColor(R.color.text_color_dark));
 					}
 					
-					ReloadFavorite(obj.item.isfavorite);
+					ReloadFavorite(ladyDetail.isfavorite);
 				}
 				
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_DETAIL_SUCCESS:{
-					item = obj.item;
+					item = (LadyDetail)obj.body;
 				}break;
 				case REQUEST_PHOTO_SUCCESS:{
 					// 判断是否登录
 					if( CheckLogin() ) {
 						// 获取图片成功
 						ArrayList<EMFAttachmentBean> attachList = new ArrayList<EMFAttachmentBean>();
-						if( obj.item != null && obj.item.photoList != null ) {
-							for(String photo : obj.item.photoList) {
+						LadyDetail photoLadyDetail = (LadyDetail)obj.body;
+						if( photoLadyDetail != null && photoLadyDetail.photoList != null ) {
+							for(String photo : photoLadyDetail.photoList) {
 								EMFAttachmentBean normalItem = new EMFAttachmentBean();
 								normalItem.type = AttachType.NORAML_PICTURE;
 								normalItem.photoUrl = photo;
@@ -411,7 +396,8 @@ public class LadyDetailActivity extends BaseActivity {
 					// 判断是否登录
 					if( CheckLogin() ) {
 						// 打开预览视频
-						VideoDetailActivity.launchLadyVideoDetailActivity(mContext, obj.item.womanid, obj.item.firstname);
+						LadyDetail videoLadyDetail = (LadyDetail)obj.body;
+						VideoDetailActivity.launchLadyVideoDetailActivity(mContext, videoLadyDetail.womanid, videoLadyDetail.firstname);
 					}
 				}break;
 				case REQUEST_FAIL:{
@@ -425,7 +411,7 @@ public class LadyDetailActivity extends BaseActivity {
 						ReloadFavorite(item.isfavorite);
 					}
 					/*添加favorite成功，添加到现有联系人或更新联系人*/
-					ContactManager.getInstance().updateBySendEMF(item, false);
+					ContactManager.getInstance().updateBySendEMF(item);
 					
 					appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
 				}break;
@@ -453,7 +439,10 @@ public class LadyDetailActivity extends BaseActivity {
 				case REQUEST_GET_LOVE_CALL_SUCCESS:{
 					// 请求lovecall成功
 					showToastDone("Finish!");
-					makeCall(obj.ladyCall.lc_centernumber, obj.ladyCall.lovecallid);
+					LadyCall ladyCall = (LadyCall)obj.body;
+					if(ladyCall != null){
+						makeCall(ladyCall.lc_centernumber, ladyCall.lovecallid);
+					}
 				}break;
 				case REQUEST_GET_LOVE_CALL_FAIL:{
 					// 请求lovecall失败
@@ -513,11 +502,11 @@ public class LadyDetailActivity extends BaseActivity {
 					String errmsg, LadyDetail item) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 				if( isSuccess ) {
 					// 获取个人信息成功
 					msg.what = RequestFlag.REQUEST_DETAIL_SUCCESS.ordinal();
-					obj.item = item;
+					obj.body = item;
 				} else {
 					// 获取个人信息失败
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
@@ -565,11 +554,11 @@ public class LadyDetailActivity extends BaseActivity {
 						String errmsg, LadyDetail item) {
 					// TODO Auto-generated method stub
 					Message msg = Message.obtain();
-					MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+					RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 					if( isSuccess ) {
 						// 获取个人信息成功
 						msg.what = RequestFlag.REQUEST_PHOTO_SUCCESS.ordinal();
-						obj.item = item;
+						obj.body = item;
 					} else {
 						// 获取个人信息失败
 						msg.what = RequestFlag.REQUEST_FAIL.ordinal();
@@ -590,11 +579,11 @@ public class LadyDetailActivity extends BaseActivity {
 						String errmsg, LadyDetail item) {
 					// TODO Auto-generated method stub
 					Message msg = Message.obtain();
-					MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+					RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 					if( isSuccess ) {
 						// 获取个人信息成功
 						msg.what = RequestFlag.REQUEST_VIDEO_SUCCESS.ordinal();
-						obj.item = item;
+						obj.body = item;
 					} else {
 						// 获取个人信息失败
 						msg.what = RequestFlag.REQUEST_FAIL.ordinal();
@@ -706,7 +695,7 @@ public class LadyDetailActivity extends BaseActivity {
 			public void OnRequest(boolean isSuccess, String errno, String errmsg) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 				if( isSuccess ) {
 					// 获取个人信息成功
 					msg.what = RequestFlag.REQUEST_ADD_FAVOUR_SUCCESS.ordinal();
@@ -731,7 +720,7 @@ public class LadyDetailActivity extends BaseActivity {
 			public void OnRequest(boolean isSuccess, String errno, String errmsg) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 				if( isSuccess ) {
 					// 获取个人信息成功
 					msg.what = RequestFlag.REQUEST_REMOVE_FAVOUR_SUCCESS.ordinal();
@@ -761,11 +750,11 @@ public class LadyDetailActivity extends BaseActivity {
 					LadyCall item) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 				if( isSuccess ) {
 					// 获取个人信息成功
 					msg.what = RequestFlag.REQUEST_GET_LOVE_CALL_SUCCESS.ordinal();
-					obj.ladyCall = item;
+					obj.body = item;
 				} else {
 					// 获取个人信息失败
 					msg.what = RequestFlag.REQUEST_GET_LOVE_CALL_FAIL.ordinal();

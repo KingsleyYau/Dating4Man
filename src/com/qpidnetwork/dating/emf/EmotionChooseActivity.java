@@ -48,6 +48,7 @@ public class EmotionChooseActivity extends BaseActivity {
 	
 	private class EMFVirtualGiftAdapter extends UpdateableAdapter<Gift> {
 		
+		@SuppressWarnings("deprecation")
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub

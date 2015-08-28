@@ -24,10 +24,6 @@ import com.qpidnetwork.tool.Arithmetic;
  */
 public class LCPhotoManager {
 	/**
-	 * id与item的map表(photoId, photoItem)（记录发送成功或收到的item）
-	 */
-	private HashMap<String, LCMessageItem> mPhotoIdMap;
-	/**
 	 * msgId与item的待发送map表(msgId, photoItem)（记录未发送成功的item，发送成功则移除）
 	 */
 	private HashMap<Integer, LCMessageItem> mMsgIdMap;
@@ -46,10 +42,10 @@ public class LCPhotoManager {
 	
 	@SuppressLint("UseSparseArrays")
 	public LCPhotoManager() {
-		mPhotoIdMap = new HashMap<String, LCMessageItem>();
 		mMsgIdMap = new HashMap<Integer, LCMessageItem>();
 		mRequestMap = new HashMap<Long, LCMessageItem>();
 		mPhotoRequestMap = new HashMap<LCMessageItem, Long>();
+		mDirPath = "";
 	}
 	
 	/**
@@ -258,10 +254,28 @@ public class LCPhotoManager {
 	}
 	
 	/**
+	 * 清除所有图片
+	 */
+	public void removeAllPhotoFile()
+	{
+		if (!mDirPath.isEmpty())
+		{
+			String dirPath = mDirPath + "*";
+			String cmd = "rm -f " + dirPath;
+			try {
+				Runtime.getRuntime().exec(cmd);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
 	 * 合并图片消息记录（把女士发出及男士已购买的图片记录合并为一条聊天记录）
 	 * @param msgList
 	 */
-	public void combinePhotoMessageItem(ArrayList<LCMessageItem> msgList)
+	public void combineMessageItem(ArrayList<LCMessageItem> msgList)
 	{
 		if (null != msgList && msgList.size() > 0) 
 		{
@@ -294,7 +308,8 @@ public class LCPhotoManager {
 						for (LCMessageItem womanItem : womanPhotoList) {
 							LCPhotoItem manPhotoItem = manItem.getPhotoItem();
 							LCPhotoItem womanPhotoItem = womanItem.getPhotoItem();
-							if (manPhotoItem.photoId.compareTo(womanPhotoItem.photoId) == 0) 
+							if (manPhotoItem.photoId.compareTo(womanPhotoItem.photoId) == 0
+								&& manPhotoItem.sendId.compareTo(womanPhotoItem.sendId) == 0) 
 							{
 								// 男士发出的图片ID与女士发出的图片ID一致，需要合并
 								msgList.remove(manItem);
@@ -355,58 +370,6 @@ public class LCPhotoManager {
 		synchronized (mMsgIdMap)
 		{
 			mMsgIdMap.clear();
-		}
-	}
-	
-	// ------------------------- finish photo（接收/已发送） ---------------------------
-	/**
-	 * 获取指定图片ID的item
-	 * @param photoId	图片ID
-	 * @return
-	 */
-	public LCMessageItem getPhotoItem(String photoId) {
-		LCMessageItem item = null;
-		synchronized (mPhotoIdMap)
-		{
-			item = mPhotoIdMap.get(photoId);
-			if (null == item) {
-				Log.e("livechat", String.format("%s::%s() fail photoId: %s", "LCPhotoManager", "getPhotoItem", photoId));
-			}
-		}
-		return item;
-	}
-	
-	/**
-	 * 添加到已完成的map中
-	 * @param photoId	图片ID
-	 * @param item		图片item
-	 * @return
-	 */
-	public boolean addPhotoItem(String photoId, LCMessageItem item) {
-		boolean result = false;
-		synchronized (mPhotoIdMap)
-		{
-			if (item.msgType == MessageType.Photo
-					&& null != item.getPhotoItem()
-					&& null == mPhotoIdMap.get(photoId)) 
-			{
-				mPhotoIdMap.put(photoId, item);
-				result = true;
-			}
-			else {
-				Log.e("livechat", String.format("%s::%s() fail photoId: %s", "LCPhotoManager", "addPhotoItem", photoId));
-			}
-		}
-		return result;
-	} 
-	
-	/**
-	 * 清除所有收到或已发送完成的item
-	 */
-	public void clearAllPhotoItems() {
-		synchronized (mPhotoIdMap)
-		{
-			mPhotoIdMap.clear();
 		}
 	}
 	

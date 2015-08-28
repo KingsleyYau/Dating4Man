@@ -36,6 +36,7 @@
 #define AUTHORIZATION_MODEL 			"model"
 #define AUTHORIZATION_DEVICEID 			"deviceId"
 #define AUTHORIZATION_MANUFACTURER 		"manufacturer"
+#define AUTHORIZATION_UTMREFERRER 		"utm_referrer"
 #define AUTHORIZATION_LOGIN				"login"
 #define AUTHORIZATION_ERRNO				"errno"
 #define	AUTHORIZATION_ERRTEXT			"errtext"
@@ -58,6 +59,7 @@
 #define AUTHORIZATION_CSMAIL_TICKETID	"csmail_ticketid"
 #define AUTHORIZATION_PHOTOSEND			"photosend"
 #define AUTHORIZATION_PHOTORECEIVED		"photoreceived"
+#define AUTHORIZATION_VIDEORECEIVED		"videoreceived"
 #define AUTHORIZATION_PREMIT			"premit"
 
 #define AUTHORIZATION_PERMISSION		"permission"

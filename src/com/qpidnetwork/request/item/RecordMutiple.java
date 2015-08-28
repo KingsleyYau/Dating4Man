@@ -1,6 +1,5 @@
 package com.qpidnetwork.request.item;
 
-import java.util.ArrayList;
 
 public class RecordMutiple {
 	public RecordMutiple() {

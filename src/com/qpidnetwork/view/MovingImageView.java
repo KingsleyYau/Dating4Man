@@ -87,6 +87,7 @@ public class MovingImageView extends ImageView{
 	}
 	
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void createPath(){
 		
 		path = new ArrayList<Map<String, Object>>();
@@ -147,6 +148,7 @@ public class MovingImageView extends ImageView{
 		timer.schedule(task, delay, (int)frequency);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void translate(){
 		
 		if (path == null) return;

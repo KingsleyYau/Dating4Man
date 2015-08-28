@@ -11,7 +11,6 @@ import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.LoginParam;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.request.OnQueryChatVirtualGiftCallback;
-import com.qpidnetwork.request.RequestJniLiveChat;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.Gift;
 import com.qpidnetwork.request.item.LoginErrorItem;
@@ -203,7 +202,7 @@ public class VirtualGiftManager implements OnLoginManagerCallback {
 	}
 	
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,12 +1,12 @@
 package com.qpidnetwork.framework.widget.wrap;
 
-import com.qpidnetwork.framework.widget.wrap.WrapListView.OnItemClickListener;
-import com.qpidnetwork.framework.widget.wrap.WrapListView.OnItemLongClickListener;
-
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+
+import com.qpidnetwork.framework.widget.wrap.WrapListView.OnItemClickListener;
+import com.qpidnetwork.framework.widget.wrap.WrapListView.OnItemLongClickListener;
 
 public abstract class WrapBaseAdapter {
 	

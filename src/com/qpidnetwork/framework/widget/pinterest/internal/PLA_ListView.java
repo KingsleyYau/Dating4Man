@@ -18,9 +18,6 @@ package com.qpidnetwork.framework.widget.pinterest.internal;
 
 import java.util.ArrayList;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.framework.widget.pinterest.DebugUtil;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -38,6 +35,9 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ListAdapter;
 import android.widget.WrapperListAdapter;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.widget.pinterest.DebugUtil;
 
 
 /*

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
-import com.qpidnetwork.framework.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +22,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.util.Log;
 
 public class MaterialDropDownMenu {
 

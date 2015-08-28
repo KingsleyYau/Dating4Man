@@ -197,6 +197,7 @@ void RequestAuthorizationController::onFail(long requestId, string url) {
  * @param birthday_y		生日的年
  * @param birthday_m		生日的月
  * @param birthday_d		生日的日
+ * @param referrer			app推广参数（安装成功app第一次运行时GooglePlay返回）
  * @return					请求唯一标识
  */
 long RequestAuthorizationController::LoginWithFacebook(
@@ -210,7 +211,8 @@ long RequestAuthorizationController::LoginWithFacebook(
 		string prevcode,
 		string birthday_y,
 		string birthday_m,
-		string birthday_d
+		string birthday_d,
+		string referrer
 		) {
 	char temp[16];
 
@@ -253,6 +255,10 @@ long RequestAuthorizationController::LoginWithFacebook(
 		entiy.AddContent(AUTHORIZATION_BIRTHDAY, birthday.c_str());
 	}
 
+	if (referrer.length() > 0) {
+		entiy.AddContent(AUTHORIZATION_UTMREFERRER, referrer.c_str());
+	}
+
 	string url = FACEBOOK_LOGIN_PATH;
 	FileLog("httprequest", "RequestAuthorizationController::LoginWithFacebook( "
 			"url : %s, "
@@ -267,6 +273,7 @@ long RequestAuthorizationController::LoginWithFacebook(
 			"birthday_y : %s, "
 			"birthday_m : %s, "
 			"birthday_d : %s"
+			"referrer : %s"
 			" )",
 			url.c_str(),
 			token.c_str(),
@@ -279,7 +286,8 @@ long RequestAuthorizationController::LoginWithFacebook(
 			prevcode.c_str(),
 			birthday_y.c_str(),
 			birthday_m.c_str(),
-			birthday_d.c_str()
+			birthday_d.c_str(),
+			referrer.c_str()
 			);
 
 	return StartRequest(url, entiy, this);
@@ -300,6 +308,7 @@ long RequestAuthorizationController::LoginWithFacebook(
  * @param model				移动设备型号
  * @param deviceId			设备唯一标识
  * @param manufacturer		制造厂商
+ * @param referrer			app推广参数（安装成功app第一次运行时GooglePlay返回）
  * @return					请求唯一标识
  */
 long RequestAuthorizationController::Register(
@@ -315,7 +324,8 @@ long RequestAuthorizationController::Register(
 		bool weeklymail,
 		string model,
 		string deviceId,
-		string manufacturer
+		string manufacturer,
+		string referrer
 		) {
 	char temp[16];
 
@@ -377,6 +387,10 @@ long RequestAuthorizationController::Register(
 		entiy.AddContent(AUTHORIZATION_MANUFACTURER, manufacturer.c_str());
 	}
 
+	if (referrer.length() > 0) {
+		entiy.AddContent(AUTHORIZATION_UTMREFERRER, referrer.c_str());
+	}
+
 	string url = REGISTER_PATH;
 	FileLog("httprequest", "RequestAuthorizationController::Register( "
 			"url : %s, "
@@ -392,6 +406,7 @@ long RequestAuthorizationController::Register(
 			"model : %s, "
 			"deviceId : %s, "
 			"manufacturer : %s "
+			"referrer : %s "
 			")",
 			url.c_str(),
 			email.c_str(),
@@ -405,7 +420,8 @@ long RequestAuthorizationController::Register(
 			weeklymail?"true":"false",
 			model.c_str(),
 			deviceId.c_str(),
-			manufacturer.c_str()
+			manufacturer.c_str(),
+			referrer.c_str()
 			);
 
 	return StartRequest(url, entiy, this);

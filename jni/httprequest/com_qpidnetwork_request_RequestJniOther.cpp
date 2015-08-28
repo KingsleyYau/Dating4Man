@@ -12,6 +12,8 @@
 #include <common/KZip.h>
 #include <common/command.h>
 
+#define OS_TYPE "Android"
+
 void OnEmotionConfig(long requestId, bool success, const string& errnum, const string& errmsg, const OtherEmotionConfigItem& item);
 void OnGetCount(long requestId, bool success, const string& errnum, const string& errmsg, const OtherGetCountItem& item);
 void OnPhoneInfo(long requestId, bool success, const string& errnum, const string& errmsg);
@@ -20,6 +22,7 @@ void OnVersionCheck(long requestId, bool success, const string& errnum, const st
 void OnSynConfig(long requestId, bool success, const string& errnum, const string& errmsg, const OtherSynConfigItem& item);
 void OnOnlineCount(long requestId, bool success, const string& errnum, const string& errmsg, const OtherOnlineCountList& countList);
 void OnUploadCrashLog(long requestId, bool success, const string& errnum, const string& errmsg);
+void OnInstallLogs(long requestId, bool success, const string& errnum, const string& errmsg);
 static RequestOtherControllerCallback gRequestControllerCallback {
 	OnEmotionConfig,
 	OnGetCount,
@@ -29,6 +32,7 @@ static RequestOtherControllerCallback gRequestControllerCallback {
 	OnSynConfig,
 	OnOnlineCount,
 	OnUploadCrashLog,
+	OnInstallLogs
 };
 static RequestOtherController gRequestController(&gHttpRequestManager, gRequestControllerCallback);
 
@@ -466,10 +470,19 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_PhoneInfo
 		env->ReleaseStringUTFChars(deviceId, cpTemp);
 	}
 
+	string strDensityDpi = GetPhoneDensityDPI();
+	string strModel = GetPhoneModel();
+	string strManufacturer = GetPhoneManufacturer();
+	string strOS = OS_TYPE;
+	string strRelease = GetPhoneBuildVersion();
+	string strSDK = GetPhoneBuildSDKVersion();
+	string strLanguage = GetPhoneLocalLanguage();
+	string strCountry = GetPhoneLocalRegion();
+
 	// 发出请求
 	requestId = gRequestController.PhoneInfo(strManId, verCode, strVerName, action, siteId
-			, density, width, height, strLineNumber
-			, strSimOptName, strSimOpt, strSimCountryIso, strSimState
+			, density, width, height, strDensityDpi, strModel, strManufacturer, strOS, strRelease, strSDK, strLanguage, strCountry
+			, strLineNumber , strSimOptName, strSimOpt, strSimCountryIso, strSimState
 			, phoneType, networkType, strDeviceId);
 
 	if (requestId != -1) {
@@ -820,9 +833,11 @@ void CreateSynConfigSiteJItem(JNIEnv* env, const OtherSynConfigItem::SiteItem& i
 				env->DeleteLocalRef(country);
 			}
 
+			jstring host = env->NewStringUTF(item.host.c_str());
+
 			// create jItem
 			jItem = env->NewObject(jItemCls, itemInit,
-						env->NewStringUTF(item.host.c_str()),
+						host,
 						jProxyHostArray,
 						item.port,
 						item.minChat,
@@ -835,9 +850,9 @@ void CreateSynConfigSiteJItem(JNIEnv* env, const OtherSynConfigItem::SiteItem& i
 			// delete country list
 			env->DeleteLocalRef(jCountryArray);
 			// delete jStringCls
-			env->DeleteLocalRef(jStringCls);
+			env->DeleteLocalRef(host);
 			// delete jItemCls
-			env->DeleteLocalRef(jItemCls);
+//			env->DeleteLocalRef(jItemCls);
 		}
 	}
 }
@@ -866,23 +881,37 @@ void CreateSynConfigPublicJItem(JNIEnv* env, const OtherSynConfigItem::PublicIte
 					"Ljava/lang/String;"	// addCredits2Url
 					")V");
 
+			jstring apkVerName = env->NewStringUTF(item.apkVerName.c_str());
+			jstring apkFileVerify = env->NewStringUTF(item.apkFileVerify.c_str());
+			jstring apkVerURL = env->NewStringUTF(item.apkVerURL.c_str());
+			jstring apkStoreURL = env->NewStringUTF(item.apkStoreURL.c_str());
+			jstring chatVoiceHostUrl = env->NewStringUTF(item.chatVoiceHostUrl.c_str());
+			jstring addCreditsUrl = env->NewStringUTF(item.addCreditsUrl.c_str());
+			jstring addCredits2Url = env->NewStringUTF(item.addCredits2Url.c_str());
+
 			// create jItem
 			jItem = env->NewObject(jItemCls, itemInit,
 						item.vgVer,
 						item.apkVerCode,
-						env->NewStringUTF(item.apkVerName.c_str()),
+						apkVerName,
 						item.apkForceUpdate,
 						item.facebook_enable,
-						env->NewStringUTF(item.apkFileVerify.c_str()),
-						env->NewStringUTF(item.apkVerURL.c_str()),
-						env->NewStringUTF(item.apkStoreURL.c_str()),
-						env->NewStringUTF(item.chatVoiceHostUrl.c_str()),
-						env->NewStringUTF(item.addCreditsUrl.c_str()),
-						env->NewStringUTF(item.addCredits2Url.c_str())
+						apkFileVerify,
+						apkVerURL,
+						apkStoreURL,
+						chatVoiceHostUrl,
+						addCreditsUrl,
+						addCredits2Url
 						);
 
 			// delete jItemCls
-			env->DeleteLocalRef(jItemCls);
+			env->DeleteLocalRef(apkVerName);
+			env->DeleteLocalRef(apkFileVerify);
+			env->DeleteLocalRef(apkVerURL);
+			env->DeleteLocalRef(apkStoreURL);
+			env->DeleteLocalRef(chatVoiceHostUrl);
+			env->DeleteLocalRef(addCreditsUrl);
+			env->DeleteLocalRef(addCredits2Url);
 		}
 	}
 }
@@ -959,7 +988,7 @@ void OnSynConfig(long requestId, bool success, const string& errnum, const strin
 				env->DeleteLocalRef(jIdaItem);
 				env->DeleteLocalRef(jClItem);
 				env->DeleteLocalRef(jPublicItem);
-				env->DeleteLocalRef(jItemCls);
+//				env->DeleteLocalRef(jItemCls);
 			}
 		}
 	}
@@ -1109,6 +1138,8 @@ void OnOnlineCount(long requestId, bool success, const string& errnum, const str
 	ReleaseEnv(isAttachThread);
 }
 
+// ------------------------------ UploadCrashLog ---------------------------------
+
 void OnUploadCrashLog(long requestId, bool success, const string& errnum, const string& errmsg) {
 	FileLog("httprequest", "Other.Native::OnUploadCrashLog( success : %s )", success?"true":"false");
 
@@ -1194,6 +1225,80 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_UploadCrash
 	env->ReleaseStringUTFChars(deviceId, cpDeviceId);
 	env->ReleaseStringUTFChars(directory, cpDirectory);
 	env->ReleaseStringUTFChars(tmpDirectory, cpTmpDirectory);
+
+	return requestId;
+}
+
+// ------------------------------ InstallLogs ---------------------------------
+void OnInstallLogs(long requestId, bool success, const string& errnum, const string& errmsg) {
+	FileLog("httprequest", "Other.Native::OnInstallLogs( success : %s )", success?"true":"false");
+
+	/* turn object to java object here */
+	JNIEnv* env;
+	jint iRet = JNI_ERR;
+	gJavaVM->GetEnv((void**)&env, JNI_VERSION_1_4);
+	if( env == NULL ) {
+		iRet = gJavaVM->AttachCurrentThread((JNIEnv **)&env, NULL);
+	}
+
+	/* real callback java */
+	jobject callbackObj = gCallbackMap.Erase(requestId);
+	jclass callbackCls = env->GetObjectClass(callbackObj);
+
+	string signure = "(ZLjava/lang/String;Ljava/lang/String;)V";
+	jmethodID callback = env->GetMethodID(callbackCls, "OnRequest", signure.c_str());
+	FileLog("httprequest", "Other.Native::OnInstallLogs( callbackCls : %p, callback : %p, signure : %s )",
+			callbackCls, callback, signure.c_str());
+
+	if( callbackObj != NULL && callback != NULL ) {
+		jstring jerrno = env->NewStringUTF(errnum.c_str());
+		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+
+		FileLog("httprequest", "Other.Native::OnInstallLogs( CallObjectMethod )");
+
+		env->CallVoidMethod(callbackObj, callback, success, jerrno, jerrmsg);
+
+		env->DeleteGlobalRef(callbackObj);
+
+		env->DeleteLocalRef(jerrno);
+		env->DeleteLocalRef(jerrmsg);
+	}
+
+	if( iRet == JNI_OK ) {
+		gJavaVM->DetachCurrentThread();
+	}
+}
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJniOther
+ * Method:    InstallLogs
+ * Signature: (Ljava/lang/String;IIJJILjava/lang/String;Lcom/qpidnetwork/request/OnRequestCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_InstallLogs
+  (JNIEnv *env, jclass cls, jstring deviceId, jint width, jint height, jlong installTime, jlong submitTime, jint verCode, jstring referrer, jobject callback)
+{
+	jlong requestId = -1;
+
+	const char *cpDeviceId = env->GetStringUTFChars(deviceId, 0);
+	const char *cpReferrer = env->GetStringUTFChars(referrer, 0);
+
+	string model = GetPhoneModel();
+	string manufacturer = GetPhoneManufacturer();
+	string os = OS_TYPE;
+	string release = GetPhoneBuildVersion();
+	string sdk = GetPhoneBuildSDKVersion();
+
+	requestId = gRequestController.InstallLogs(
+					cpDeviceId, installTime, submitTime, verCode
+					, model, manufacturer, os, release, sdk, width, height, cpReferrer);
+	if (requestId != -1) {
+		// callback
+		jobject jObj = env->NewGlobalRef(callback);
+		gCallbackMap.Insert(requestId, jObj);
+	}
+
+	env->ReleaseStringUTFChars(deviceId, cpDeviceId);
+	env->ReleaseStringUTFChars(referrer, cpReferrer);
 
 	return requestId;
 }

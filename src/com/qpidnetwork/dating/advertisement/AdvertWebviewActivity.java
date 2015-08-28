@@ -18,12 +18,12 @@ import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.R.color;
 import com.qpidnetwork.dating.home.AppUrlHandler;
-import com.qpidnetwork.dating.WebViewActivity;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.item.AdMainAdvert.OpenType;
 import com.qpidnetwork.view.MaterialAppBar;
 
+@SuppressWarnings("deprecation")
 public class AdvertWebviewActivity extends BaseActivity{
 
 	
@@ -88,11 +88,11 @@ public class AdvertWebviewActivity extends BaseActivity{
 		// 域名
 		String domain = WebSiteManager.newInstance(this).GetWebSite().getAppSiteHost();
 		// Cookie 认证
+		CookieSyncManager.createInstance(this);
 		CookieManager cookieManager = CookieManager.getInstance();
 		cookieManager.setAcceptCookie(true);
 		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
-		cookieManager.setCookie(domain, phpSession);
-		CookieSyncManager.createInstance(this);
+		cookieManager.setCookie(domain, phpSession);	
 		CookieSyncManager.getInstance().sync();
 		
 		mWebView.setWebViewClient(new WebViewClient() { 

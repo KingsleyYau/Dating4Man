@@ -25,8 +25,11 @@ public class LoginItem implements Serializable {
 		this.sessionid = "";
 		this.ga_uid = "";
 		this.ticketid = "";
-		this.photosend = false;
-		this.photoreceived = false;
+		
+		this.photosend = true;
+		this.photoreceived = true;
+		this.videoreceived = true;
+		
 		this.premit = false;
 		this.ladyprofile = false;
 		this.livechat = false;
@@ -48,13 +51,17 @@ public class LoginItem implements Serializable {
 	 * @param sessionid			跨服务器的唯一标识
 	 * @param ga_uid			Google Analytics UserID参数
 	 * @param ticketid			客服邮件强制阅读的事项ID
+	 * 
 	 * @param photosend			私密照片发送权限
 	 * @param photoreceived		私密照片接收权限
+	 * @param videoreceived		微视频接收权限（true：允许，false：不能）
+	 * 
 	 * @param premit			帐号可用状态
 	 * @param ladyprofile		女士详细信息风控标识（true：有风控，false：无）
 	 * @param livechat			LiveChat详细风控标识（true：有风控，false：无）
 	 * @param admirer			意向信风控标识（true：有风控，false：无）
 	 * @param bpemf				EMF风控标识（true：有风控，false：无）
+	 * 
 	 */
 	public LoginItem(
 			String manid,
@@ -70,8 +77,11 @@ public class LoginItem implements Serializable {
 			String sessionid,
 			String ga_uid,
 			String ticketid,
+			
 			boolean photosend,
 			boolean photoreceived,
+			boolean videoreceived,
+			
 			boolean premit,
 			boolean ladyprofile,
 			boolean livechat,
@@ -103,8 +113,11 @@ public class LoginItem implements Serializable {
 		this.sessionid = sessionid;
 		this.ga_uid = ga_uid;
 		this.ticketid = ticketid;
+		
 		this.photosend = photosend;
 		this.photoreceived = photoreceived;
+		this.videoreceived = videoreceived;
+		
 		this.premit = premit;
 		this.ladyprofile = ladyprofile;
 		this.livechat = livechat;
@@ -125,13 +138,17 @@ public class LoginItem implements Serializable {
 	public String sessionid;
 	public String ga_uid;
 	public String ticketid;
+	
 	public boolean photosend;
 	public boolean photoreceived;
+	public boolean videoreceived;
+	
 	public boolean premit;
 	public boolean ladyprofile;
 	public boolean livechat;
 	public boolean admirer;
 	public boolean bpemf;
+	
 	
 	public LoginItem(RegisterItem item) {
 		if( item != null ) { 
@@ -143,8 +160,10 @@ public class LoginItem implements Serializable {
 			this.reg_step = item.reg_step;
 			this.sessionid = item.sessionid;
 			this.ga_uid = item.ga_uid;
+			
 			this.photosend = item.photosend;
 			this.photoreceived = item.photoreceived;
+			this.videoreceived = item.videoreceived;
 		}
 	}
 	
@@ -164,8 +183,11 @@ public class LoginItem implements Serializable {
 			this.sessionid = item.sessionid;
 			this.ga_uid = item.ga_uid;
 			this.ticketid = item.ticketid;
+			
 			this.photosend = item.photosend;
 			this.photoreceived = item.photoreceived;
+			this.videoreceived = item.videoreceived;
+			
 			this.premit = item.premit;
 			this.ladyprofile = item.ladyprofile;
 			this.livechat = item.livechat;

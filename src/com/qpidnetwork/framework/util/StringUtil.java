@@ -6,18 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.http.util.CharArrayBuffer;
 
+@SuppressWarnings("deprecation")
 public class StringUtil {
 
 	/**
@@ -182,6 +181,7 @@ public class StringUtil {
 	 * @param map
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static String formateUriFromMapFields(Map<String, ?> map) {
 		StringBuffer buff = new StringBuffer();
 		Set<?> entrySet = map.entrySet();
@@ -209,6 +209,7 @@ public class StringUtil {
 	 * @param map
 	 * @return
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static String formateMapToJson(Map map) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("{");

@@ -5,11 +5,12 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import com.qpidnetwork.framework.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.qpidnetwork.framework.util.Log;
 
 public class TouchImageView extends ImageView {
 
@@ -38,7 +39,6 @@ public class TouchImageView extends ImageView {
 
     private ScaleGestureDetector mScaleDetector;
 
-    private Context context;
 
     private boolean mCanScale = false;
     
@@ -54,7 +54,6 @@ public class TouchImageView extends ImageView {
     
     private void sharedConstructing(Context context) {
         super.setClickable(true);
-        this.context = context;
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         matrix = new Matrix();
         m = new float[9];

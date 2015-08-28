@@ -21,7 +21,7 @@ RequestLiveChatController::~RequestLiveChatController() {
 /* IhttprequestManagerCallback */
 void RequestLiveChatController::onSuccess(long requestId, string url, const char* buf, int size) {
 	FileLog("httprequest", "RequestLiveChatController::onSuccess( url : %s, buf( size : %d ), requestId:%ld)", url.c_str(), size, requestId);
-	if (size < MAX_LOG_BUFFER) {
+	if ( size < MAX_LOG_BUFFER && size > 0 ) {
 		FileLog("httprequest", "RequestLiveChatController::onSuccess(), buf: %s", buf);
 	}
 
@@ -444,8 +444,16 @@ void RequestLiveChatController::onSuccess(long requestId, string url, const char
 		}
 	} else if( url.compare(LC_GET_VIDEO_PATH) == 0 ) {
 		/* 6.14.获取微视频文件URL（http post）（New） */
+		TiXmlDocument doc;
+		string url = "";
+
+		bFlag = HandleResult(buf, size, errnum, errmsg, doc);
+		if( bFlag ) {
+			HandleGetVideo(doc, url);
+		}
+
 		if( mRequestLiveChatControllerCallback.onGetVideo != NULL ) {
-			mRequestLiveChatControllerCallback.onGetVideo(requestId, true, "", "", buf);
+			mRequestLiveChatControllerCallback.onGetVideo(requestId, bFlag, "", "", url);
 		}
 	}
 
@@ -1268,13 +1276,29 @@ long RequestLiveChatController::SendGift(string womanId, string vg_id, string de
  * @param womanId		女士ID
  * @return				请求唯一Id
  */
-long RequestLiveChatController::QueryRecentVideo(string womanId) {
+long RequestLiveChatController::QueryRecentVideo(
+		string user_sid,
+		string user_id,
+		string womanId
+		) {
 	HttpEntiy entiy;
 
 	string url = LC_RECENT_VIDEO_PATH;
 
-	// womanId
-	entiy.AddContent(LC_RECENT_VIDEO_TARGETID, womanId.c_str());
+	if( user_sid.length() > 0 ) {
+		// user_sid
+		entiy.AddContent(LC_RECENT_VIDEO_USER_SID, user_sid.c_str());
+	}
+
+	if( user_id.length() > 0 ) {
+		// user_id
+		entiy.AddContent(LC_RECENT_VIDEO_USER_ID, user_id.c_str());
+	}
+
+	if( womanId.length() > 0 ) {
+		// womanId
+		entiy.AddContent(LC_RECENT_VIDEO_TARGETID, womanId.c_str());
+	}
 
 	FileLog("httprequest", "RequestLiveChatController::QueryRecentVideo( "
 			"url : %s, "
@@ -1312,9 +1336,15 @@ void RequestLiveChatController::HandleQueryRecentVideo(TiXmlDocument &doc, list<
  * @param type			图片尺寸
  * @return				请求唯一Id
  */
-long RequestLiveChatController::GetVideoPhoto(string womanId, string videoid, int type, const string& filePath) {
+long RequestLiveChatController::GetVideoPhoto(
+		string user_sid,
+		string user_id,
+		string womanId,
+		string videoid,
+		int type,
+		const string& filePath
+		) {
 	HttpEntiy entiy;
-	entiy.SetGetMethod(true);
 	char temp[32] = {0};
 
 	// delete file
@@ -1322,6 +1352,16 @@ long RequestLiveChatController::GetVideoPhoto(string womanId, string videoid, in
 	remove(tempPath.c_str());
 
 	string url = LC_GET_VIDEO_PHOTO_PATH;
+
+	// user_sid
+	if( user_sid.length() > 0 ) {
+		entiy.AddContent(LC_GET_VIDEO_PHOTO_USER_SID, user_sid.c_str());
+	}
+
+	// user_id
+	if( user_id.length() > 0 ) {
+		entiy.AddContent(LC_GET_VIDEO_PHOTO_USER_ID, user_id.c_str());
+	}
 
 	// womanId
 	if( womanId.length() > 0 ) {
@@ -1367,6 +1407,23 @@ long RequestLiveChatController::GetVideoPhoto(string womanId, string videoid, in
 	return requestId;
 }
 
+void RequestLiveChatController::HandleGetVideo(TiXmlDocument &doc, string &url) {
+	const char *p = NULL;
+	TiXmlElement* itemElement;
+	TiXmlNode *rootNode = doc.FirstChild(COMMON_ROOT);
+	if( rootNode != NULL ) {
+		TiXmlNode *videoNode = rootNode->FirstChild(LC_GET_VIDEO_VIDEO_URL);
+		if( videoNode != NULL ) {
+			TiXmlElement* itemElement = videoNode->ToElement();
+			if ( itemElement != NULL ) {
+				const char* p = itemElement->GetText();
+				if( p != NULL ) {
+					url = p;
+				}
+			}
+		}
+	}
+}
 /**
  * 6.14.获取微视频文件URL（http post）（New）
  * @param womanId		女士ID
@@ -1377,6 +1434,8 @@ long RequestLiveChatController::GetVideoPhoto(string womanId, string videoid, in
  * @return				请求唯一Id
  */
 long RequestLiveChatController::GetVideo(
+		string user_sid,
+		string user_id,
 		string womanId,
 		string videoid,
 		string inviteid,
@@ -1387,6 +1446,16 @@ long RequestLiveChatController::GetVideo(
 	char temp[32] = {0};
 
 	string url = LC_GET_VIDEO_PATH;
+
+	if( user_sid.length() > 0 ) {
+		// user_sid
+		entiy.AddContent(LC_GET_VIDEO_USER_SID, user_sid.c_str());
+	}
+
+	if( user_id.length() > 0 ) {
+		// user_id
+		entiy.AddContent(LC_GET_VIDEO_USER_ID, user_id.c_str());
+	}
 
 	// womanId
 	if( womanId.length() > 0 ) {

@@ -1,9 +1,9 @@
 package com.qpidnetwork.dating.bean;
 
-import com.qpidnetwork.request.item.EMFPrivatePhotoItem;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.qpidnetwork.request.item.EMFPrivatePhotoItem;
 
 public class PrivatePhotoBean extends EMFPrivatePhotoItem implements Parcelable{
 	

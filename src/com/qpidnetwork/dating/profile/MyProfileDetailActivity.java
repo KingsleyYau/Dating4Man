@@ -13,8 +13,8 @@ import android.os.Message;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.framework.widget.wrap.WrapBaseAdapter;
 import com.qpidnetwork.framework.widget.wrap.WrapListView;
 import com.qpidnetwork.manager.FileCacheManager;
@@ -120,7 +121,7 @@ public class MyProfileDetailActivity extends BaseActivity {
 	 * 兴趣爱好
 	 */
 	private WrapListView wrapListView;
-	private List<String> mList = new ArrayList<>();
+	private List<String> mList = new ArrayList<String>();
 	private InterestLabelAdapter interestLabelAdapter = new InterestLabelAdapter(this, mList);
 	
 	/**
@@ -143,29 +144,6 @@ public class MyProfileDetailActivity extends BaseActivity {
 		REQUEST_FAIL,
 	}
 	
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * 
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 * @param profileItem		登录正常返回
-		 * @param loginErlady		登录错误返回
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-		}
-		public String errno;
-		public String errmsg;
-		public ProfileItem profileItem = null;
-		public LadyMatch ladyMatch = null;
-	}
 	
 	/**
 	 * 上下文
@@ -182,6 +160,7 @@ public class MyProfileDetailActivity extends BaseActivity {
 	 */
 	private LadyMatch mLadyMatch;
 	
+	private View rootView;
 	/**
 	 * 用户头像
 	 */
@@ -249,6 +228,11 @@ public class MyProfileDetailActivity extends BaseActivity {
 
 		// 创建界面时候，获取缓存数据
 		mProfileItem = MyProfilePerfence.GetProfileItem(mContext);
+		if( mProfileItem != null ) {
+			setEnabledAll(rootView, true);
+		} else {
+			setEnabledAll(rootView, false);
+		}
 		
 		// 请求个人资料
 		GetMyProfile();
@@ -258,6 +242,18 @@ public class MyProfileDetailActivity extends BaseActivity {
 		
 		// 刷新界面
 		ReloadData();
+	}
+	
+	public static void setEnabledAll(View v, boolean enabled) {
+	    v.setEnabled(enabled);
+	    v.setFocusable(enabled);
+
+	    if(v instanceof ViewGroup) {
+	        ViewGroup vg = (ViewGroup) v;
+	        for (int i = 0; i < vg.getChildCount(); i++) {
+	            setEnabledAll(vg.getChildAt(i), enabled);
+	        }
+	    }
 	}
 	
 	@Override
@@ -290,6 +286,7 @@ public class MyProfileDetailActivity extends BaseActivity {
 	 */
 	public void InitView() {
 		setContentView(R.layout.activity_my_profile_detail);
+		rootView = findViewById(R.id.rootView);
 		
 		//APP BAR
 		MaterialAppBar appbar = (MaterialAppBar)findViewById(R.id.appbar);
@@ -1021,12 +1018,12 @@ public class MyProfileDetailActivity extends BaseActivity {
 		mHandler = new Handler() {
 			@Override
 			public void handleMessage(android.os.Message msg) {
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_PROFILE_SUCCESS:
 					hideProgressDialog();
 					// 缓存数据
-					mProfileItem = obj.profileItem;
+					mProfileItem = (ProfileItem)obj.body;
 					MyProfilePerfence.SaveProfileItem(mContext, mProfileItem);
 					
 					// 刷新界面
@@ -1045,7 +1042,7 @@ public class MyProfileDetailActivity extends BaseActivity {
 
 					// 获取匹配女士成功
 					// 缓存数据
-					mLadyMatch = obj.ladyMatch;
+					mLadyMatch = (LadyMatch)obj.body;
 					MyProfilePerfence.SaveLadyMatch(mContext, mLadyMatch);
 					
 					ReloadData();
@@ -1114,11 +1111,10 @@ public class MyProfileDetailActivity extends BaseActivity {
 					ProfileItem item) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, item);
 				if( isSuccess ) {
 					// 获取个人信息成功
 					msg.what = RequestFlag.REQUEST_PROFILE_SUCCESS.ordinal();
-					obj.profileItem = item;
 				} else {
 					// 获取个人信息失败
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
@@ -1140,11 +1136,10 @@ public class MyProfileDetailActivity extends BaseActivity {
 					String errmsg, LadyMatch item) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, item);
 				if( isSuccess ) {
 					// 获取配皮女士成功
 					msg.what = RequestFlag.REQUEST_QUERYLADYMATCH_SUCCESS.ordinal();
-					obj.ladyMatch = item;
 				} else {
 					// 获取个人信息失败
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
@@ -1182,7 +1177,7 @@ public class MyProfileDetailActivity extends BaseActivity {
 							String errmsg, boolean rsModified) {
 						// TODO Auto-generated method stub
 						Message msg = Message.obtain();
-						MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+						RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 						if( isSuccess ) {
 							// 上传个人信息成功
 							msg.what = RequestFlag.REQUEST_UPDATE_PROFILE_SUCCESS.ordinal();
@@ -1260,8 +1255,12 @@ public class MyProfileDetailActivity extends BaseActivity {
 			layoutPrimaryLanguage.textViewValue.setText(getResources().getStringArray(R.array.language)[mProfileItem.language.ordinal()]);
 			layoutHaveChildren.textViewValue.setText(getResources().getStringArray(R.array.children)[mProfileItem.children.ordinal()]);
 			layoutCurrentIncome.textViewValue.setText(getResources().getStringArray(R.array.income)[mProfileItem.income.ordinal()]);
-			
-			
+		}
+		
+		if( mProfileItem != null ) {
+			setEnabledAll(rootView, true);
+		} else {
+			setEnabledAll(rootView, false);
 		}
 	}
 	

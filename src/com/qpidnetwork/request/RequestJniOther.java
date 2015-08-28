@@ -109,6 +109,7 @@ public class RequestJniOther {
 	
 	/**
 	 * 上传错误日志
+	 * @param deviceId		设备ID
 	 * @param directory		错误日志目录
 	 * @param tmpDicectory	临时目录
 	 * @param callback	
@@ -118,6 +119,29 @@ public class RequestJniOther {
 			String deviceId, 
 			String directory, 
 			String tmpDicectory, 
+			OnRequestCallback callback
+			);
+	
+	/**
+	 * 提交app安装记录
+	 * @param deviceId		设备ID
+	 * @param width			屏幕宽度
+	 * @param height		屏幕高度
+	 * @param installTime	安装的本地时间(Unix Timestamp)
+	 * @param submitTime	提交的本地时间(Unix Timestamp)
+	 * @param verCode		客户端内部版本号
+	 * @param referrer		推广参数（安装成功app第一次启动时，GooglePlay返回的参数）
+	 * @param callback
+	 * @return
+	 */
+	static public native long InstallLogs(
+			String deviceId, 
+			int width,
+			int height,
+			long installTime,
+			long submitTime,
+			int verCode,
+			String referrer,
 			OnRequestCallback callback
 			);
 }

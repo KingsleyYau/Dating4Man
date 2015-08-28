@@ -16,15 +16,15 @@
 
 package com.qpidnetwork.framework.widget.pinterest;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.framework.widget.pinterest.internal.PLA_ListView;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.SparseIntArray;
 import android.view.View;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.widget.pinterest.internal.PLA_ListView;
 
 
 

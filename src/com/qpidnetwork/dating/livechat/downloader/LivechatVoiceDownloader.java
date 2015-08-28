@@ -11,9 +11,9 @@ import android.widget.ImageButton;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.livechat.LCMessageItem;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.LiveChatManagerVoiceListener;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialProgressBar;
 

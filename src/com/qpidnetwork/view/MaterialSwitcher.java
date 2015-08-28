@@ -1,15 +1,15 @@
 package com.qpidnetwork.view;
 
-import com.qpidnetwork.dating.R;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.view.View.OnClickListener;
+
+import com.qpidnetwork.dating.R;
 
 public class MaterialSwitcher extends LinearLayout implements OnClickListener{
 

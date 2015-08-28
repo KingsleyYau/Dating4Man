@@ -223,6 +223,19 @@ public class LiveChatClient {
 	static public native boolean ShowPhoto(String userId, String inviteId, String photoId, String sendId, boolean charget, String photoDesc, int ticket);
 	
 	/**
+	 * 播放微视频
+	 * @param userId	对方用户ID
+	 * @param inviteId	邀请ID
+	 * @param videoId	视频ID
+	 * @param sendId	发送ID
+	 * @param charget	是否已付费
+	 * @param videoDesc	视频描述
+	 * @param ticket	票根
+	 * @return
+	 */
+	static public native boolean PlayVideo(String userId, String inviteId, String videoId, String sendId, boolean charget, String videoDesc, int ticket);
+	
+	/**
 	 * 获取用户信息
 	 * @param userId	对方用户ID
 	 * @return

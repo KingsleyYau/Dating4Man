@@ -1,13 +1,13 @@
 package com.qpidnetwork.view;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.framework.base.BaseDialog;
-import com.qpidnetwork.framework.util.UnitConversion;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseDialog;
+import com.qpidnetwork.framework.util.UnitConversion;
 
 public class MaterialProgressDialog extends BaseDialog{
 	

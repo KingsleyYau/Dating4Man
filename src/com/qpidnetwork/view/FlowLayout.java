@@ -1,5 +1,8 @@
 package com.qpidnetwork.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -10,10 +13,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
-import com.qpidnetwork.dating.R;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.qpidnetwork.dating.R;
 
 public class FlowLayout extends ViewGroup {
     public static final int HORIZONTAL = 0;
@@ -48,7 +49,7 @@ public class FlowLayout extends ViewGroup {
         final int controlMaxLength = this.config.getOrientation() == HORIZONTAL ? sizeWidth : sizeHeight;
         final int controlMaxThickness = this.config.getOrientation() == HORIZONTAL ? sizeHeight : sizeWidth;
         final int modeLength = this.config.getOrientation() == HORIZONTAL ? modeWidth : modeHeight;
-        final int modeThickness = this.config.getOrientation() == HORIZONTAL ? modeHeight : modeWidth;
+//        final int modeThickness = this.config.getOrientation() == HORIZONTAL ? modeHeight : modeWidth;
 
         lines.clear();
         LineDefinition currentLine = new LineDefinition(controlMaxLength, config);

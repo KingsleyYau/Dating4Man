@@ -5,9 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -17,8 +15,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
@@ -29,14 +27,13 @@ import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestEnum.Country;
-import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.CheckButton;
 import com.qpidnetwork.view.CheckButton.OnCheckLinstener;
-import com.qpidnetwork.view.ChoosePhotoDialog;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDatePickerDialog;
 import com.qpidnetwork.view.MaterialTextField;
 import com.qpidnetwork.view.MaterialTextField.OnFocuseChangedCallback;
+import com.qpidnetwork.view.MaterialThreeButtonDialog;
 
 /**
  * 认证模块
@@ -72,7 +69,7 @@ public class RegisterByEmailActivity extends BaseActivity  {
 	private MaterialTextField editTextLastName;
 	private MaterialTextField editTextViewCountry;
 	private MaterialTextField editTextViewBirthday;
-	private ButtonRaised buttonCoutinue;
+//	private ButtonRaised buttonCoutinue;
 	private WebSiteManager siteManager;
 	
 	private RegisterParam mRegisterParam = new RegisterParam();
@@ -101,7 +98,7 @@ public class RegisterByEmailActivity extends BaseActivity  {
 	 * @param v
 	 */
 	public void onClickImageHeader(View v) {
-		final ChoosePhotoDialog dialog = new ChoosePhotoDialog(this, R.style.ChoosePhotoDialog);
+		/*final ChoosePhotoDialog dialog = new ChoosePhotoDialog(this, R.style.ChoosePhotoDialog);
         dialog.show();
         dialog.setOnTakePhotoClickListerner(new OnClickListener() {
 			@Override
@@ -131,7 +128,38 @@ public class RegisterByEmailActivity extends BaseActivity  {
 				// TODO Auto-generated method stub
 				dialog.dismiss();
 			}
+		});*/
+		
+		
+		MaterialThreeButtonDialog dialog = new MaterialThreeButtonDialog(this, new MaterialThreeButtonDialog.OnClickCallback() {
+			
+			@Override
+			public void OnSecondButtonClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
+				startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+			}
+			
+			@Override
+			public void OnFirstButtonClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+				intent.putExtra(
+						android.provider.MediaStore.EXTRA_OUTPUT, 
+						Uri.fromFile(new File(FileCacheManager.getInstance().GetTempCameraImageUrl()))
+								);
+				
+				startActivityForResult(intent, RESULT_LOAD_IMAGE_CAPTURE);
+			}
+			
+			@Override
+			public void OnCancelButtonClick(View v) {
+				// TODO Auto-generated method stub
+				
+			}
 		});
+		
+		dialog.show();
 	}
 	
 	/**
@@ -245,7 +273,7 @@ public class RegisterByEmailActivity extends BaseActivity  {
 		});
 		
 		imageViewHeader = (ImageView) findViewById(R.id.imageViewHeader);
-		buttonCoutinue = (ButtonRaised)findViewById(R.id.buttonCoutinue);
+//		buttonCoutinue = (ButtonRaised)findViewById(R.id.buttonCoutinue);
 		
 		checkButtonMale = (CheckButton) findViewById(R.id.buttonMale);
 		checkButtonMale.SetText("Man looking for woman");
@@ -387,6 +415,7 @@ public class RegisterByEmailActivity extends BaseActivity  {
 				    }
 				    fOut.close();
 					
+				    imageViewHeader.setScaleType(ScaleType.CENTER_CROP);
 			        imageViewHeader.setImageBitmap(BitmapFactory.decodeFile(FileCacheManager.getInstance().GetTempImageUrl()));
 			        mRegisterParam.picturePath = FileCacheManager.getInstance().GetTempImageUrl();
 				} catch (IOException e) {

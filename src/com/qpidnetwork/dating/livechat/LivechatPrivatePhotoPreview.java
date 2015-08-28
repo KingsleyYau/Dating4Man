@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,7 +24,6 @@ import com.qpidnetwork.dating.R;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.livechat.LCMessageItem;
-import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.view.ViewPagerFixed;
 
 public class LivechatPrivatePhotoPreview extends BaseFragmentActivity implements OnPageChangeListener{
@@ -37,7 +35,7 @@ public class LivechatPrivatePhotoPreview extends BaseFragmentActivity implements
 	
 	private ViewPagerFixed mViewPager;
 	private PrivatePhotoAdapter mAdapter;
-	private LiveChatManager mLiveChatManager;
+//	private LiveChatManager mLiveChatManager;
 
 
 	public static Intent getIntent(Context context, PrivatePhotoPriviewBean bean) {
@@ -55,7 +53,7 @@ public class LivechatPrivatePhotoPreview extends BaseFragmentActivity implements
 		this.getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
 		
 		mMessageList = new ArrayList<LCMessageItem>();
-		mLiveChatManager = LiveChatManager.newInstance(this);
+//		mLiveChatManager = LiveChatManager.newInstance(this);
 		Bundle bundle = getIntent().getExtras();
 		if ((bundle != null) && (bundle.containsKey(LIVECHAT_PRIVATEPHOTO))) {
 			PrivatePhotoPriviewBean bean = (PrivatePhotoPriviewBean) bundle
@@ -70,6 +68,7 @@ public class LivechatPrivatePhotoPreview extends BaseFragmentActivity implements
 		initViews();
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void initViews(){
 		/*cancel*/
 		ImageButton buttonCancel = (ImageButton)findViewById(R.id.buttonCancel);

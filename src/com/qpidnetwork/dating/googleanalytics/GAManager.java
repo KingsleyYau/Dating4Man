@@ -1,11 +1,11 @@
 package com.qpidnetwork.dating.googleanalytics;
 
+import android.app.Activity;
+import android.app.Application;
+
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-
-import android.app.Activity;
-import android.app.Application;
 
 /**
  * GoogleAnalytics管理类

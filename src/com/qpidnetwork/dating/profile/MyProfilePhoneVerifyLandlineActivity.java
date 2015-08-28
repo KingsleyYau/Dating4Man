@@ -14,13 +14,13 @@ import android.widget.Toast;
 
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestEnum.Country;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestJniAuthorization;
 import com.qpidnetwork.request.item.ProfileItem;
-import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialTextField;
 
@@ -40,30 +40,11 @@ public class MyProfilePhoneVerifyLandlineActivity extends BaseActivity {
 		REQUEST_FAIL,
 	}
 
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * 
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-		}
-		public String errno;
-		public String errmsg;
-	}
 	
 	private MaterialTextField editTextUnitedStates;
 	private MaterialTextField editTextAreaCode;
 	private MaterialTextField editTextPhoneNumber;
-	private ButtonRaised btnContinue;
+//	private ButtonRaised btnContinue;
 
 	private String[] countries;
 	private ProfileItem mProfileItem;
@@ -147,7 +128,7 @@ public class MyProfilePhoneVerifyLandlineActivity extends BaseActivity {
 			
 		});
 		
-		btnContinue = (ButtonRaised)findViewById(R.id.btn_continue);
+//		btnContinue = (ButtonRaised)findViewById(R.id.btn_continue);
 		editTextAreaCode = (MaterialTextField) findViewById(R.id.editTextAreaCode);
 		editTextUnitedStates = (MaterialTextField) findViewById(R.id.editTextUnitedStates);
 		editTextPhoneNumber = (MaterialTextField) findViewById(R.id.editTextPhoneNumber);
@@ -212,7 +193,7 @@ public class MyProfilePhoneVerifyLandlineActivity extends BaseActivity {
 					public void OnRequest(boolean isSuccess, String errno, String errmsg) {
 						// TODO Auto-generated method stub
 						Message msg = Message.obtain();
-						MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+						RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 						if( isSuccess ) {
 							// 获取个人信息成功
 							msg.what = RequestFlag.REQUEST_GET_SMS_SUCCESS.ordinal();
@@ -232,7 +213,7 @@ public class MyProfilePhoneVerifyLandlineActivity extends BaseActivity {
 		mHandler = new Handler() {
 			@Override
 			public void handleMessage(android.os.Message msg) {
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
 				// 收起菊花
 				hideProgressDialog();
 				switch ( RequestFlag.values()[msg.what] ) {

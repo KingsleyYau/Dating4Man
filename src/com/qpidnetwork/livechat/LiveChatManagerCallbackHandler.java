@@ -8,6 +8,7 @@ import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TryTicketEventType;
+import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
 import com.qpidnetwork.request.item.Coupon;
 import com.qpidnetwork.request.item.OtherEmotionConfigItem;
 
@@ -21,6 +22,7 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 													 , LiveChatManagerMessageListener
 													 , LiveChatManagerEmotionListener
 													 , LiveChatManagerPhotoListener
+													 , LiveChatManagerVideoListener
 													 , LiveChatManagerVoiceListener
 {
 	/**
@@ -44,6 +46,10 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 	 */
 	private ArrayList<LiveChatManagerPhotoListener> mPhotoListeners;
 	/**
+	 * 回调VideoListener的object列表
+	 */
+	private ArrayList<LiveChatManagerVideoListener> mVideoListeners;
+	/**
 	 * 回调VoiceListener的object列表
 	 */
 	private ArrayList<LiveChatManagerVoiceListener> mVoiceListeners;
@@ -55,6 +61,7 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 		mMessageListeners = new ArrayList<LiveChatManagerMessageListener>();
 		mEmotionListeners = new ArrayList<LiveChatManagerEmotionListener>();
 		mPhotoListeners = new ArrayList<LiveChatManagerPhotoListener>();
+		mVideoListeners = new ArrayList<LiveChatManagerVideoListener>();
 		mVoiceListeners = new ArrayList<LiveChatManagerVoiceListener>();
 	}
 	
@@ -325,6 +332,60 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 
 		if (!result) {
 			Log.e("livechat", String.format("%s::%s() fail, listener:%s", "LiveChatManagerCallbackHandler", "UnregisterPhotoListener", listener.getClass().getSimpleName()));
+		}
+		return result;
+	}
+	
+	/**
+	 * 注册微视频(Video)回调
+	 * @param listener
+	 * @return
+	 */
+	public boolean RegisterVideoListener(LiveChatManagerVideoListener listener) 
+	{
+		boolean result = false;
+		synchronized(mVideoListeners) 
+		{
+			if (null != listener) {
+				boolean isExist = false;
+				
+				for (Iterator<LiveChatManagerVideoListener> iter = mVideoListeners.iterator(); iter.hasNext(); ) {
+					LiveChatManagerVideoListener theListener = iter.next();
+					if (theListener == listener) {
+						isExist = true;
+						break;
+					}
+				}
+				
+				if (!isExist) {
+					result = mVideoListeners.add(listener);
+				}
+				else {
+					Log.d("livechat", String.format("%s::%s() fail, listener:%s is exist", "LiveChatManagerCallbackHandler", "RegisterVideoListener", listener.getClass().getSimpleName()));
+				}
+			}
+			else {
+				Log.e("livechat", String.format("%s::%s() fail, listener is null", "LiveChatManagerCallbackHandler", "RegisterListener"));
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * 注销私密照(Video)回调
+	 * @param listener
+	 * @return
+	 */
+	public boolean UnregisterVideoListener(LiveChatManagerVideoListener listener) 
+	{
+		boolean result = false;
+		synchronized(mVideoListeners)
+		{
+			result = mVideoListeners.remove(listener);
+		}
+
+		if (!result) {
+			Log.e("livechat", String.format("%s::%s() fail, listener:%s", "LiveChatManagerCallbackHandler", "UnregisterVideoListener", listener.getClass().getSimpleName()));
 		}
 		return result;
 	}
@@ -971,6 +1032,119 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 			for (Iterator<LiveChatManagerVoiceListener> iter = mVoiceListeners.iterator(); iter.hasNext(); ) {
 				LiveChatManagerVoiceListener listener = iter.next();
 				listener.OnRecvVoice(item);
+			}
+		}
+	}
+	
+	// ---------------- 微视频回调函数(Video) ----------------
+	/**
+	 * 获取视频图片文件回调
+	 * @param errType	处理结果错误代码
+	 * @param errno		下载请求失败的错误代码
+	 * @param errmsg	处理结果描述
+	 * @param userId	用户ID
+	 * @param inviteId	邀请ID
+	 * @param videoId	视频ID
+	 * @param type		视频图片类型
+	 * @param filePath	视频图片文件路径
+	 * @param msgList	视频相关的聊天消息列表
+	 * @return
+	 */
+	public void OnGetVideoPhoto(LiveChatErrType errType
+									, String errno
+									, String errmsg
+									, String userId
+									, String inviteId
+									, String videoId
+									, VideoPhotoType type
+									, String filePath
+									, ArrayList<LCMessageItem> msgList)
+	{
+		synchronized(mVideoListeners) 
+		{
+			for (Iterator<LiveChatManagerVideoListener> iter = mVideoListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerVideoListener listener = iter.next();
+				listener.OnGetVideoPhoto(errType, errno, errmsg, userId, inviteId, videoId, type, filePath, msgList);
+			}
+		}
+	}
+	
+	/**
+	 * 购买视频（包括付费购买视频(php)）
+	 * @param errno		请求错误代码
+	 * @param errmsg	错误描述
+	 * @param item		消息item
+	 */
+	public void OnVideoFee(boolean success, String errno, String errmsg, LCMessageItem item)
+	{
+		synchronized(mVideoListeners) 
+		{
+			for (Iterator<LiveChatManagerVideoListener> iter = mVideoListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerVideoListener listener = iter.next();
+				listener.OnVideoFee(success, errno, errmsg, item);
+			}
+		}
+	}
+	
+	/**
+	 * 开始获取视频文件回调
+	 * @param userId	用户ID
+	 * @param videoId	视频ID
+	 * @param inviteId	邀请ID
+	 * @param videoPath	视频文件路径
+	 * @param msgList	视频相关的聊天消息列表
+	 */
+	public void OnStartGetVideo(String userId
+							, String videoId
+							, String inviteId
+							, String videoPath
+							, ArrayList<LCMessageItem> msgList)
+	{
+		synchronized(mVideoListeners) 
+		{
+			for (Iterator<LiveChatManagerVideoListener> iter = mVideoListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerVideoListener listener = iter.next();
+				listener.OnStartGetVideo(userId, videoId, inviteId, videoPath, msgList);
+			}
+		}
+	}
+	
+	/**
+	 * 获取视频文件回调
+	 * @param errType	处理结果错误代码
+	 * @param userId	用户ID
+	 * @param videoId	视频ID
+	 * @param inviteId	邀请ID
+	 * @param videoPath	视频文件路径
+	 * @param msgList	视频相关的聊天消息列表
+	 */
+	public void OnGetVideo(LiveChatErrType errType
+							, String userId
+							, String videoId
+							, String inviteId
+							, String videoPath
+							, ArrayList<LCMessageItem> msgList)
+	{
+		synchronized(mVideoListeners) 
+		{
+			for (Iterator<LiveChatManagerVideoListener> iter = mVideoListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerVideoListener listener = iter.next();
+				listener.OnGetVideo(errType, userId, videoId, inviteId, videoPath, msgList);
+			}
+		}
+	}
+	
+	/**
+	 * 接收图片消息回调
+	 * @param item		消息item
+	 */
+	public void OnRecvVideo(LCMessageItem item)
+	{
+		synchronized(mVideoListeners) 
+		{
+			for (Iterator<LiveChatManagerVideoListener> iter = mVideoListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerVideoListener listener = iter.next();
+				listener.OnRecvVideo(item);
 			}
 		}
 	}

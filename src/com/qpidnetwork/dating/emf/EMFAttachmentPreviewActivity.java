@@ -3,14 +3,10 @@ package com.qpidnetwork.dating.emf;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import android.app.ActivityManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +23,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -36,7 +31,6 @@ import android.widget.Toast;
 
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.R.color;
 import com.qpidnetwork.dating.bean.EMFAttachmentBean;
 import com.qpidnetwork.dating.bean.PrivatePhotoBean;
 import com.qpidnetwork.dating.emf.EMFAttachmentPrivatePhotoFragment.OnClickBuy;
@@ -72,7 +66,7 @@ public class EMFAttachmentPreviewActivity extends BaseActivity implements OnPage
 	public static final String ATTACH_DIRECTION = "attachment_direction";
 	private PrivatePhotoDirection privatePhotoDirection;
 	
-	private HashMap<String, Long> requestMap = new HashMap<>();
+//	private HashMap<String, Long> requestMap = new HashMap<String, Long>();
 	/**
 	 * 分页适配器
 	 */
@@ -408,6 +402,7 @@ public class EMFAttachmentPreviewActivity extends BaseActivity implements OnPage
 		finish();
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void InitView() {
 		// TODO Auto-generated method stub
@@ -510,7 +505,8 @@ public class EMFAttachmentPreviewActivity extends BaseActivity implements OnPage
 //			requestMap.remove(localPhotoPath);
 //		}
 		
-		long requestId = RequestOperator.getInstance().PrivatePhotoView(
+//		long requestId = RequestOperator.getInstance().PrivatePhotoView(
+		RequestOperator.getInstance().PrivatePhotoView(
 				item.womanid, 
 				item.photoId,
 				item.sendId, 
@@ -674,6 +670,7 @@ public class EMFAttachmentPreviewActivity extends BaseActivity implements OnPage
 	 * 保存图片到系统相册
 	 * @param filePath		文件路径
 	 */
+	@SuppressWarnings("deprecation")
 	public void SaveImageToGallery(String thumb, String filePath, String fileName) {
 		// 此处应有菊花
 //		showProgressDialog("Loading...");

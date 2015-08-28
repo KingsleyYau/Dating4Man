@@ -1,6 +1,5 @@
 package com.qpidnetwork.dating.lady;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -23,11 +21,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Html;
-import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -35,7 +30,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -45,12 +39,8 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import com.facebook.internal.ImageDownloader;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager;
-import com.qpidnetwork.dating.authorization.LoginParam;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
-import com.qpidnetwork.dating.authorization.LoginManager.LoginStatus;
 import com.qpidnetwork.dating.bean.RequestFailBean;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.DateUtil;
@@ -61,7 +51,6 @@ import com.qpidnetwork.request.OnVSPlayVideoCallback;
 import com.qpidnetwork.request.OnVSSaveVideoCallback;
 import com.qpidnetwork.request.OnVSVideoDetailCallback;
 import com.qpidnetwork.request.RequestOperator;
-import com.qpidnetwork.request.item.LadyDetail;
 import com.qpidnetwork.request.item.VSPlayVideoItem;
 import com.qpidnetwork.request.item.VSVideoDetailItem;
 import com.qpidnetwork.tool.ImageViewLoader;
@@ -69,7 +58,6 @@ import com.qpidnetwork.view.FlatToast;
 import com.qpidnetwork.view.FlatToast.StikyToastType;
 import com.qpidnetwork.view.GetMoreCreditDialog;
 import com.qpidnetwork.view.MaterialDialogAlert;
-import com.qpidnetwork.view.MaterialProgressBar;
 import com.qpidnetwork.view.QpidGallery;
 import com.qpidnetwork.view.VideoView;
 import com.qpidnetwork.view.VideoView.MySizeChangeLinstener;
@@ -97,15 +85,15 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 	private static final String INPUT_LADY_ID = "inputLadyId";
 	private static final String INPUT_LADY_NAME = "inputLadyName";
 	
-	private LinearLayout bottomArea;
+//	private LinearLayout bottomArea;
 
-	private RelativeLayout videoDetailRoot;
+//	private RelativeLayout videoDetailRoot;
 	private RelativeLayout videoViewLayout;
 	private RelativeLayout noPlayLayout;
 	private ImageView background_img;
 	private ImageButton btnPlay;
 	private TextView time_tips;
-	private TextView replay_tips;
+//	private TextView replay_tips;
 	private RelativeLayout prepareProgressLayout;
 	private RelativeLayout videoViewTop;
 	private ImageButton btnBack;
@@ -116,7 +104,7 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 	private TextView totalTime;
 	private ImageView fullImageBtn;
 	private LinearLayout video_detail_progress_layout;
-	private TextView progress_layout_sudu;
+//	private TextView progress_layout_sudu;
 	private TextView progress_layout_buff;
 	private RelativeLayout titleLayout;
 	private TextView tv_video_title;
@@ -126,19 +114,19 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 	private TextView galleryLable;
 	private SeekBar seekBar;
 	private VideoView videoView;
-	private Handler mainHandler;
+//	private Handler mainHandler;
 
-	private AudioManager mAudioManager;
-	private int mMaxVolume;
-	private int mVolume = -1;
-	private float mBrightness = -1f;
+//	private AudioManager mAudioManager;
+//	private int mMaxVolume;
+//	private int mVolume = -1;
+//	private float mBrightness = -1f;
 	private boolean isPlay;
 	private boolean isPlayComplete = true;
 	private upDateSeekBar update;
 	private boolean isFinish;
 	private long pauseSize;
-	private long size;
-	private ArrayList<String> urls;
+//	private long size;
+//	private ArrayList<String> urls;
 	private boolean istouched;
 	private boolean isCanPlay;
 	private boolean isbuffering;
@@ -204,7 +192,7 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 
 		
 		
-		videoDetailRoot = (RelativeLayout) findViewById(R.id.video_detail_root);
+//		videoDetailRoot = (RelativeLayout) findViewById(R.id.video_detail_root);
 		videoViewLayout = (RelativeLayout) findViewById(R.id.video_detail_video_view_layout);
 		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
 				RelativeLayout.LayoutParams.MATCH_PARENT, videoLayoutHeight);
@@ -217,7 +205,7 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 		background_img.setVisibility(View.VISIBLE);
 		btnPlay = (ImageButton) findViewById(R.id.btnPlay);
 		time_tips = (TextView) findViewById(R.id.time_tips);
-		replay_tips = (TextView) findViewById(R.id.replay_tips);
+//		replay_tips = (TextView) findViewById(R.id.replay_tips);
 		
 		/*加载控制*/
 		prepareProgressLayout = (RelativeLayout) findViewById(R.id.video_prepare_progress_layout);
@@ -243,7 +231,7 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 
 		/*加载缓存提示*/
 		video_detail_progress_layout = (LinearLayout) findViewById(R.id.video_detail_progress_layout);
-		progress_layout_sudu = (TextView) findViewById(R.id.progress_layout_sudu);
+//		progress_layout_sudu = (TextView) findViewById(R.id.progress_layout_sudu);
 		progress_layout_buff = (TextView) findViewById(R.id.progress_layout_buff);
 		
 		
@@ -253,15 +241,15 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 		tv_video_interest = (TextView) findViewById(R.id.tv_video_interest);
 		ll_gallery_lable = (LinearLayout) findViewById(R.id.ll_gallery_lable);
 		galleryLable = (TextView) findViewById(R.id.tv_video_gallery_lable);
-		bottomArea = (LinearLayout) findViewById(R.id.bottomArea);
+//		bottomArea = (LinearLayout) findViewById(R.id.bottomArea);
 
 
 		galleryLadyVideos = (QpidGallery) findViewById(R.id.galleryLadyVideos);
-		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+//		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
 		videoGalleryAdapter = new VideoGalleryAdapter(this);
-		mMaxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-		mainHandler = new Handler();
+//		mMaxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+//		mainHandler = new Handler();
 		
 	}
 
@@ -548,6 +536,7 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 		return source;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void getScreenSize() {
 
 
@@ -876,6 +865,7 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 		return super.onKeyDown(keyCode, event);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub

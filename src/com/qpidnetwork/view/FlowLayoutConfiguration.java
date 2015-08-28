@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.Gravity;
+
 import com.qpidnetwork.dating.R;
 
 class LayoutConfiguration {

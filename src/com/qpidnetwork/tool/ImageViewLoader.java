@@ -1,7 +1,12 @@
 package com.qpidnetwork.tool;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,13 +29,14 @@ import com.qpidnetwork.view.ProgressImageView;
  * @author Max.Chiu
  *
  */
+@SuppressLint("HandlerLeak")
 public class ImageViewLoader {
 	public interface ImageViewLoaderCallback {
 		public void OnDisplayNewImageFinish();
 		public void OnLoadPhotoFailed();
 	}
 	
-	private enum DownLoadFlag {
+	private enum DownloadFlag {
 		SET_DEFAULT_IMAGE,
 		SUCCESS,
 		SUCCESS_IMAGEVIEW,
@@ -62,10 +68,9 @@ public class ImageViewLoader {
 		mFileDownloader = new FileDownloader(mContext);
 		
 		mHandler = new Handler() {
-			@SuppressWarnings("deprecation")
 			@Override
             public void handleMessage(final Message msg) {
-				DownLoadFlag flag = DownLoadFlag.values()[msg.what];
+				DownloadFlag flag = DownloadFlag.values()[msg.what];
 				switch (flag) {
 				case SET_DEFAULT_IMAGE: {
 					if ( null != imageView && null != mDefaultImage ) {
@@ -91,20 +96,12 @@ public class ImageViewLoader {
 					}
 				}break;
 				case SUCCESS_IMAGEVIEW:{
-					Bitmap bitmap = null;
-					String localPath = (String) msg.obj;
-					File file = new File(localPath);
-					if( file.exists() && file.isFile() ) {
-//						drawable = Drawable.createFromPath(localPath);
-						bitmap = ImageUtil.decodeSampledBitmapFromFile(
-								localPath, 
-								SystemUtil.getDisplayMetrics(mContext).widthPixels, 
-								SystemUtil.getDisplayMetrics(mContext).heightPixels
-								);
+					if (msg.obj instanceof Bitmap) 
+					{
+						// 动作开始
+						Bitmap bitmap = (Bitmap)msg.obj;
+						AlphaAnimationStart(bitmap);
 					}
-
-					// 动作开始
-					AlphaAnimationStart(bitmap);
 				}break;
 				case SUCCESS_IMAGEVIEW_FILLET:{
 					// 显示已处理的缓存
@@ -127,97 +124,26 @@ public class ImageViewLoader {
 	
 	public void Stop() {
 		mFileDownloader.Stop();
-		mHandler.removeMessages(DownLoadFlag.SET_DEFAULT_IMAGE.ordinal());
-		mHandler.removeMessages(DownLoadFlag.SUCCESS.ordinal());
-		mHandler.removeMessages(DownLoadFlag.SUCCESS_IMAGEVIEW.ordinal());
-		mHandler.removeMessages(DownLoadFlag.SUCCESS_IMAGEVIEW_FILLET.ordinal());
-		mHandler.removeMessages(DownLoadFlag.FAIL.ordinal());
+		mHandler.removeMessages(DownloadFlag.SET_DEFAULT_IMAGE.ordinal());
+		mHandler.removeMessages(DownloadFlag.SUCCESS.ordinal());
+		mHandler.removeMessages(DownloadFlag.SUCCESS_IMAGEVIEW.ordinal());
+		mHandler.removeMessages(DownloadFlag.SUCCESS_IMAGEVIEW_FILLET.ordinal());
+		mHandler.removeMessages(DownloadFlag.FAIL.ordinal());
 	}
 	
-	public boolean DisplayImage(final ProgressImageView view, final String url, final String localPath, 
-			final ImageViewLoaderCallback callback) {
-		Stop();
-		
-		if( view == null || view.progressBar == null || view.imageView == null ) {
-			return false;
-		}
-		
-		this.view = view;
-		
-//		BitmapDrawable drawable = null;
-		Bitmap bitmap = null;
-		
-		File file = new File(localPath);
-		if( file.exists() && file.isFile() ) {
-//			drawable = Drawable.createFromPath(localPath);
-			bitmap = ImageUtil.decodeSampledBitmapFromFile(
-					localPath, 
-					SystemUtil.getDisplayMetrics(mContext).widthPixels, 
-					SystemUtil.getDisplayMetrics(mContext).heightPixels
-					);
-		}
-		
-		if( bitmap != null ) {
-			// 显示缓存 
-//			view.imageView.setImageDrawable(drawable);
-			view.imageView.setImageBitmap(bitmap);
-			view.progressBar.setVisibility(View.INVISIBLE);
-			view.imageView.setVisibility(View.VISIBLE);
-			
-			if( callback != null ) {
-				callback.OnDisplayNewImageFinish();
-			}
-		} else {
-			if( mDefaultImage != null ) {
-				view.imageView.setImageDrawable(mDefaultImage);
-			}
-			
-			view.progressBar.setVisibility(View.VISIBLE);
-			view.imageView.setVisibility(View.INVISIBLE);
-			
-			// 下载 
-			mFileDownloader.SetBigFile(mbBigFileDontUseCache);
-			mFileDownloader.SetUseCache(!mbBigFileDontUseCache);
-			mFileDownloader.StartDownload(url, localPath, new FileDownloaderCallback() {
-				@Override
-				public void onUpdate(FileDownloader loader, int progress) {
-					// TODO Auto-generated method stub
-					// 下载中显示小菊花 
-				}
-				
-				@Override
-				public void onSuccess(FileDownloader loader) {
-					// TODO Auto-generated method stub
-					// 下载成功显示 
-					Message msg = Message.obtain();
-					msg.what = DownLoadFlag.SUCCESS.ordinal();
-					msg.obj = localPath;
-					mHandler.sendMessage(msg);
-					
-					if( callback != null ) {
-						callback.OnDisplayNewImageFinish();
-					}
-				}
-				
-				@Override
-				public void onFail(FileDownloader loader) {
-					// TODO Auto-generated method stub
-					// 下载失败显示X
-					Message msg = Message.obtain();
-					msg.what = DownLoadFlag.FAIL.ordinal();
-					mHandler.sendMessage(msg);
-					if (callback != null) { 
-						callback.OnLoadPhotoFailed();
-					}
-				}
-			});
-		}
-		
-		return true;
-	}
-	
-	public boolean DisplayImage(final ImageView imageView, final String url, final String localPath, 
-			final ImageViewLoaderCallback callback) {
+	/**
+	 * 尝试加载文件，若不成功则下载图片，等比缩放至目标大小并显示
+	 * @param imageView
+	 * @param url
+	 * @param localPath
+	 * @param width
+	 * @param height
+	 * @param callback
+	 * @return
+	 */
+	public boolean DisplayImage(final ImageView imageView, final String url, final String localPath,
+			final int width, final int height, final ImageViewLoaderCallback callback) 
+	{
 		Stop();
 		
 		if( localPath == null ) {
@@ -228,31 +154,28 @@ public class ImageViewLoader {
 			return false;
 		}
 		
+		if (width <= 0 || height <= 0) {
+			return false;
+		}
+		
 		this.imageView = imageView;
 		
-//		Drawable drawable = null;
 		Bitmap tmpBitmap = null;
 		
 		File file = new File(localPath);
 		if( file.exists() && file.isFile() ) {
-//			drawable = Drawable.createFromPath(localPath);
-			
 			tmpBitmap = ImageUtil.decodeSampledBitmapFromFile(
 					localPath, 
-					SystemUtil.getDisplayMetrics(mContext).widthPixels, 
-					SystemUtil.getDisplayMetrics(mContext).heightPixels
+					width, 
+					height
 					);
 		}
 		
 		if( tmpBitmap != null ) {
 			// 显示缓存 
-//			imageView.setImageDrawable(drawable);
 			imageView.setImageBitmap(tmpBitmap);
 			imageView.setVisibility(View.VISIBLE);
 			
-//			if( callback != null ) {
-//				callback.OnDisplayNewImageFinish();
-//			}
 		} else {
 			// 显示默认
 			if( mDefaultImage != null ) {
@@ -277,11 +200,20 @@ public class ImageViewLoader {
 			public void onSuccess(FileDownloader loader) {
 				// TODO Auto-generated method stub
 				if( !loader.notModified || bitmap == null ) {
-					// 下载成功显示 
-					Message msg = Message.obtain();
-					msg.what = DownLoadFlag.SUCCESS_IMAGEVIEW.ordinal();
-					msg.obj = localPath;
-					mHandler.sendMessage(msg);
+					// 下载成功
+					Bitmap tempBitmap = ImageUtil.decodeSampledBitmapFromFile(
+												localPath, 
+												SystemUtil.getDisplayMetrics(mContext).widthPixels, 
+												SystemUtil.getDisplayMetrics(mContext).heightPixels
+												);
+					if (null != tempBitmap) 
+					{
+						// 显示图片
+						Message msg = Message.obtain();
+						msg.what = DownloadFlag.SUCCESS_IMAGEVIEW.ordinal();
+						msg.obj = tempBitmap;
+						mHandler.sendMessage(msg);
+					}
 				}
 				
 				if( callback != null ) {
@@ -294,7 +226,7 @@ public class ImageViewLoader {
 				// TODO Auto-generated method stub
 				// 下载失败显示X
 				Message msg = Message.obtain();
-				msg.what = DownLoadFlag.FAIL.ordinal();
+				msg.what = DownloadFlag.FAIL.ordinal();
 				mHandler.sendMessage(msg);
 			}
 		});
@@ -303,8 +235,30 @@ public class ImageViewLoader {
 	}
 	
 	/**
+	 * 尝试加载文件，若不成功则下载图片，等比缩放至屏幕大小并显示
+	 * @param imageView
+	 * @param url
+	 * @param localPath
+	 * @param callback
+	 * @return
+	 */
+	public boolean DisplayImage(final ImageView imageView, final String url, final String localPath, 
+			final ImageViewLoaderCallback callback) 
+	{
+		return DisplayImage(
+				imageView
+				, url
+				, localPath
+				, SystemUtil.getDisplayMetrics(mContext).widthPixels
+				, SystemUtil.getDisplayMetrics(mContext).heightPixels
+				, callback);
+	}
+
+	
+	/**
 	 * 下载图片、等比缩放并把图片变圆，再把set到ImageView
 	 * @param imageView		ImageView
+	 * @param setDefault	 若ImageView已存在图片，是否先替换成默认图片（一般情况下填true）
 	 * @param url			图片下载URL
 	 * @param desWidth		等 比缩放后的宽度
 	 * @param desHeight		等 比缩放后的高度
@@ -314,7 +268,7 @@ public class ImageViewLoader {
 	 * @param callback
 	 * @return
 	 */
-	public boolean DisplayImage(final ImageView imageView, final String url, final int desWidth, final int desHeight, 
+	public boolean DisplayImage(final ImageView imageView, final boolean setDefault, final String url, final int desWidth, final int desHeight, 
 			final int topRadius, final int bottomRadius, final String localPath, 
 			final ImageViewLoaderCallback callback) 
 	{
@@ -330,15 +284,11 @@ public class ImageViewLoader {
 		
 		this.imageView = imageView;
 		
-		Bitmap bitmap = getBitmapWithFile(localPath);
-		if ( null != bitmap ) {
-			// 显示图片
-			imageView.setImageBitmap(bitmap);
-		} else {
-			// 需要下载，先画默认图
-			if( mDefaultImage != null ) {
-				imageView.setImageDrawable(mDefaultImage);
-			}
+		// 先显示默认图
+		if( (this.imageView.getDrawable() == null || setDefault) 
+				&& mDefaultImage != null ) 
+		{
+			imageView.setImageDrawable(mDefaultImage);
 		}
 		
 		new Thread(new Runnable() {
@@ -346,6 +296,27 @@ public class ImageViewLoader {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
+				
+				// 显示默认图片
+//				if( (imageView.getDrawable() == null || setDefault) 
+//						&& mDefaultImage != null ) 
+//				{
+//					Message msg = Message.obtain();
+//					msg.what = DownloadFlag.SET_DEFAULT_IMAGE.ordinal();
+//					mHandler.sendMessage(msg);
+//				}
+				
+				// 显示图片
+				Bitmap bitmap = getBitmapWithFile(localPath, desWidth, desHeight);
+				if ( null != bitmap ) {
+					// 显示图片 
+					Message msg = Message.obtain();
+					msg.what = DownloadFlag.SUCCESS_IMAGEVIEW_FILLET.ordinal();
+					msg.obj = bitmap;
+					mHandler.sendMessage(msg);
+				}
+				
+				// 没有url，不下载
 				if( null == url
 					|| url.length() == 0 ) 
 				{
@@ -370,9 +341,8 @@ public class ImageViewLoader {
 						// TODO Auto-generated method stub
 						Bitmap bitmap = getBitmapWithFile(localPath);
 						if( !loader.notModified || bitmap == null ) {
-							// 重新裁剪
+							// localPath图片加载不成功或图片已经更新
 							boolean result = false;
-//							long startTime = System.currentTimeMillis();
 							// 处理下载图片
 							Bitmap bitmapBig = ImageUtil.decodeSampledBitmapFromFile(srcFilePath, desWidth, desHeight);
 							if ( null != bitmapBig ) {
@@ -388,11 +358,11 @@ public class ImageViewLoader {
 							{
 								// 显示图片 
 								Message msg = Message.obtain();
-								msg.what = DownLoadFlag.SUCCESS_IMAGEVIEW_FILLET.ordinal();
+								msg.what = DownloadFlag.SUCCESS_IMAGEVIEW_FILLET.ordinal();
 								msg.obj = bitmapBig;
 								mHandler.sendMessage(msg);
 							}
-						} 
+						}
 						
 						// 回调
 						if( callback != null ) {
@@ -405,7 +375,7 @@ public class ImageViewLoader {
 						// TODO Auto-generated method stub
 						// 下载失败显示X
 						Message msg = Message.obtain();
-						msg.what = DownLoadFlag.FAIL.ordinal();
+						msg.what = DownloadFlag.FAIL.ordinal();
 						mHandler.sendMessage(msg);
 					}
 				});
@@ -418,8 +388,6 @@ public class ImageViewLoader {
 	/**
 	 * 加载图片文件
 	 * @param filePath		图片路径
-	 * @param topRadius		顶部圆角半径(0:不变)
-	 * @param bottomRadius	底部圆角半径(0:不变)
 	 * @return
 	 */
 	private Bitmap getBitmapWithFile(String filePath)
@@ -432,6 +400,45 @@ public class ImageViewLoader {
 			options.inJustDecodeBounds = false;
 		    bitmap = BitmapFactory.decodeFile(filePath, options);
 		}
+		return bitmap;
+	}
+	
+	/**
+	 * 加载图片文件（仅当图片尺寸不大于目标尺寸时，才能加载成功）
+	 * @param filePath		图片路径
+	 * @param desWidth		目标宽度
+	 * @param desHeight		目标高度
+	 * @return
+	 */
+	private Bitmap getBitmapWithFile(String filePath, int desWidth, int desHeight)
+	{
+		Bitmap bitmap = null;
+		try {
+			// 读取图片大小
+			BufferedInputStream in = new BufferedInputStream(new FileInputStream(
+					new File(filePath)));
+			BitmapFactory.Options headOptions = new BitmapFactory.Options();
+			headOptions.inJustDecodeBounds = true;
+			BitmapFactory.decodeStream(in, null, headOptions);
+			if (headOptions.outWidth <= desWidth && headOptions.outHeight <= desHeight)
+		    {
+				// 读取图片
+		    	final BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inJustDecodeBounds = false;
+			    bitmap = BitmapFactory.decodeFile(filePath, options);
+		    }
+			
+			try {
+				in.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return bitmap;
 	}
 

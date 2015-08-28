@@ -139,7 +139,7 @@ public:
 	 * @param womanId		女士ID
 	 * @return				请求唯一Id
 	 */
-	long QueryRecentVideo(string womanId);
+	long QueryRecentVideo(string user_sid, string user_id, string womanId);
 
 	/**
 	 * 6.13.获取微视频图片（http get）（New）
@@ -148,7 +148,14 @@ public:
 	 * @param type			图片尺寸
 	 * @return				请求唯一Id
 	 */
-	long GetVideoPhoto(string womanId, string videoid, int type, const string& filePath);
+	long GetVideoPhoto(
+			string user_sid,
+			string user_id,
+			string womanId,
+			string videoid,
+			int type,
+			const string& filePath
+			);
 
 	/**
 	 * 6.14.获取微视频文件URL（http post）（New）
@@ -160,6 +167,8 @@ public:
 	 * @return				请求唯一Id
 	 */
 	long GetVideo(
+			string user_sid,
+			string user_id,
 			string womanId,
 			string videoid,
 			string inviteid,
@@ -181,6 +190,7 @@ private:
 	void HandleQueryChatVirtualGift(TiXmlDocument &doc, list<Gift> &giftList, int &totalCount,
 			string &path, string &version);
 	void HandleQueryRecentVideo(TiXmlDocument &doc, list<LCVideoItem> &itemList);
+	void HandleGetVideo(TiXmlDocument &doc, string &url);
 };
 
 #endif /* REQUESTLIVECHATCONTROLLER_H_ */

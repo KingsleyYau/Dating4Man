@@ -16,6 +16,7 @@ import android.util.Base64;
 import com.qpidnetwork.manager.WebSiteManager.WebSite;
 import com.qpidnetwork.request.item.QuickMatchLady;
 
+@SuppressWarnings("deprecation")
 public class QuickMatchPerfence {
 	/**
 	 * 清空缓存

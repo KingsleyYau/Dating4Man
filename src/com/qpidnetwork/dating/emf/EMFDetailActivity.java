@@ -3,9 +3,9 @@ package com.qpidnetwork.dating.emf;
 import java.io.File;
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.Html;
@@ -34,13 +34,11 @@ import com.qpidnetwork.framework.widget.CircleImageView;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.manager.VirtualGiftManager;
 import com.qpidnetwork.request.OnEMFAdmirerViewerCallback;
-import com.qpidnetwork.request.OnEMFBlockCallback;
 import com.qpidnetwork.request.OnEMFDeleteMsgCallback;
 import com.qpidnetwork.request.OnEMFInboxMsgCallback;
 import com.qpidnetwork.request.OnEMFOutboxMsgCallback;
 import com.qpidnetwork.request.OnEMFPrivatePhotoViewCallback;
 import com.qpidnetwork.request.RequestErrorCode;
-import com.qpidnetwork.request.RequestJniEMF.BlockReasonType;
 import com.qpidnetwork.request.RequestJniEMF.MailType;
 import com.qpidnetwork.request.RequestJniEMF.PrivatePhotoType;
 import com.qpidnetwork.request.RequestJniEMF.ReplyType;
@@ -53,10 +51,10 @@ import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.FitTopImageView;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogAlert;
-import com.qpidnetwork.view.MaterialDialogSingleChoice;
 import com.qpidnetwork.view.MaterialDropDownMenu;
 
 
+@SuppressLint("InflateParams")
 public class EMFDetailActivity extends BaseFragmentActivity implements OnClickListener {
 
 	public static final int REQUEST_CODE = 0;
@@ -327,9 +325,9 @@ public class EMFDetailActivity extends BaseFragmentActivity implements OnClickLi
 				}
 				
 			}));
-			
-			dialog.show();
-			
+			if(isActivityVisible()){
+				dialog.show();
+			}
 			break;
 		case REQUEST_GET_PHOTO_SUCCESS:{
 			initAttachment();
@@ -668,29 +666,29 @@ public class EMFDetailActivity extends BaseFragmentActivity implements OnClickLi
 		}
 	}
 	
-	/**
-	 * 添加到黑名单
-	 */
-	private void addToBlock(String womanid, BlockReasonType blockReasonType){
-		showToastProgressing("Loading");
-		RequestOperator.getInstance().Block(womanid, blockReasonType, new OnEMFBlockCallback() {
-			
-			@Override
-			public void OnEMFBlock(boolean isSuccess, String errno, String errmsg) {
-				/*添加女士到黑名单*/
-				Message msg = Message.obtain();
-				if(isSuccess){
-					msg.what = BLOCK_WOMAN_SUCCESS;
-				}else{
-					msg.what = BLOCK_WOMAN_FAILED;
-					RequestFailBean bean = new RequestFailBean(errno,
-							errmsg);
-					msg.obj = bean;
-				}
-				sendUiMessage(msg);
-			}
-		});
-	}
+//	/**
+//	 * 添加到黑名单
+//	 */
+//	private void addToBlock(String womanid, BlockReasonType blockReasonType){
+//		showToastProgressing("Loading");
+//		RequestOperator.getInstance().Block(womanid, blockReasonType, new OnEMFBlockCallback() {
+//			
+//			@Override
+//			public void OnEMFBlock(boolean isSuccess, String errno, String errmsg) {
+//				/*添加女士到黑名单*/
+//				Message msg = Message.obtain();
+//				if(isSuccess){
+//					msg.what = BLOCK_WOMAN_SUCCESS;
+//				}else{
+//					msg.what = BLOCK_WOMAN_FAILED;
+//					RequestFailBean bean = new RequestFailBean(errno,
+//							errmsg);
+//					msg.obj = bean;
+//				}
+//				sendUiMessage(msg);
+//			}
+//		});
+//	}
 
 	/**
 	 * 删除邮件
@@ -770,7 +768,7 @@ public class EMFDetailActivity extends BaseFragmentActivity implements OnClickLi
 
 				llAttachment.addView(v);
 
-				new ImageViewLoader(this).DisplayImage(iv, url, UnitConversion.dip2px(this, 150), UnitConversion.dip2px(this, 110), 0, 0, localPath, null);
+				new ImageViewLoader(this).DisplayImage(iv, url, localPath, null);
 			}
 		}
 	}
@@ -783,11 +781,11 @@ public class EMFDetailActivity extends BaseFragmentActivity implements OnClickLi
 		setResult(RESULT_OK, intent);
 	}
 
-	private void removeAttachments() {
-		if (llAttachment != null) {
-			llAttachment.removeAllViews();
-		}
-	}
+//	private void removeAttachments() {
+//		if (llAttachment != null) {
+//			llAttachment.removeAllViews();
+//		}
+//	}
 
 	private OnClickListener attachmentClickListener = new OnClickListener() {
 

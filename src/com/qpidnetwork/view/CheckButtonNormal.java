@@ -1,15 +1,14 @@
 package com.qpidnetwork.view;
 
-import com.qpidnetwork.dating.R;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.qpidnetwork.dating.R;
 
 public class CheckButtonNormal extends RelativeLayout implements View.OnClickListener {
 	

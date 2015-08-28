@@ -15,6 +15,7 @@ import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.framework.util.Log;
+import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.livechat.LCInviteManager.HandleInviteMsgType;
 import com.qpidnetwork.livechat.LCMessageItem.MessageType;
 import com.qpidnetwork.livechat.LCMessageItem.SendType;
@@ -22,14 +23,14 @@ import com.qpidnetwork.livechat.LCMessageItem.StatusType;
 import com.qpidnetwork.livechat.LCUserItem.ChatType;
 import com.qpidnetwork.livechat.LCWarningLinkItem.LinkOptType;
 import com.qpidnetwork.livechat.jni.LiveChatClient;
+import com.qpidnetwork.livechat.jni.LiveChatClient.ClientType;
+import com.qpidnetwork.livechat.jni.LiveChatClient.UserSexType;
+import com.qpidnetwork.livechat.jni.LiveChatClient.UserStatusType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener;
 import com.qpidnetwork.livechat.jni.LiveChatTalkListInfo;
 import com.qpidnetwork.livechat.jni.LiveChatTalkSessionListItem;
 import com.qpidnetwork.livechat.jni.LiveChatTalkUserListItem;
 import com.qpidnetwork.livechat.jni.LiveChatUserStatus;
-import com.qpidnetwork.livechat.jni.LiveChatClient.ClientType;
-import com.qpidnetwork.livechat.jni.LiveChatClient.UserSexType;
-import com.qpidnetwork.livechat.jni.LiveChatClient.UserStatusType;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
 import com.qpidnetwork.manager.FileCacheManager;
@@ -37,6 +38,7 @@ import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.manager.WebSiteManager.WebSite;
 import com.qpidnetwork.manager.WebSiteManager.WebSiteType;
 import com.qpidnetwork.request.OnCheckCouponCallCallback;
+import com.qpidnetwork.request.OnGetVideoCallback;
 import com.qpidnetwork.request.OnLCGetPhotoCallback;
 import com.qpidnetwork.request.OnLCPhotoFeeCallback;
 import com.qpidnetwork.request.OnLCPlayVoiceCallback;
@@ -47,13 +49,17 @@ import com.qpidnetwork.request.OnOtherEmotionConfigCallback;
 import com.qpidnetwork.request.OnOtherGetCountCallback;
 import com.qpidnetwork.request.OnQueryChatRecordCallback;
 import com.qpidnetwork.request.OnQueryChatRecordMutipleCallback;
+import com.qpidnetwork.request.OnRequestFileCallback;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestJniLiveChat;
 import com.qpidnetwork.request.RequestJniLiveChat.PhotoModeType;
 import com.qpidnetwork.request.RequestJniLiveChat.PhotoSizeType;
+import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
+import com.qpidnetwork.request.RequestJniLiveChat.VideoToFlagType;
 import com.qpidnetwork.request.RequestJniOther;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.Coupon;
+import com.qpidnetwork.request.item.Coupon.CouponStatus;
 import com.qpidnetwork.request.item.LCSendPhotoItem;
 import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
@@ -62,7 +68,7 @@ import com.qpidnetwork.request.item.OtherGetCountItem;
 import com.qpidnetwork.request.item.OtherSynConfigItem;
 import com.qpidnetwork.request.item.Record;
 import com.qpidnetwork.request.item.RecordMutiple;
-import com.qpidnetwork.request.item.Coupon.CouponStatus;
+import com.qpidnetwork.tool.FileDownloader;
 
 /**
  * LiveChat管理类
@@ -92,6 +98,10 @@ public class LiveChatManager
 	 * 是否风控
 	 */
 	private boolean mRiskControl;
+	/**
+	 * 是否接收视频消息
+	 */
+	private boolean mIsRecvVideoMsg;
 	/**
 	 * 是否已登录的标志
 	 */
@@ -126,6 +136,10 @@ public class LiveChatManager
 	 * 图片管理器
 	 */
 	private LCPhotoManager mPhotoMgr;
+	/**
+	 * 视频管理器
+	 */
+	private LCVideoManager mVideoMgr;
 	/**
 	 * 用户管理器
 	 */
@@ -191,6 +205,7 @@ public class LiveChatManager
 		mSid = "";
 		mDeviceId = "";
 		mRiskControl = false;
+		mIsRecvVideoMsg = true;
 		mIsLogin = false;
 		mIsAutoRelogin = false;
 		mGetUsersHistoryMsgRequestId =  RequestJni.InvalidRequestId;
@@ -198,6 +213,7 @@ public class LiveChatManager
 		mEmotionMgr = new LCEmotionManager();
 		mVoiceMgr = new LCVoiceManager();
 		mPhotoMgr = new LCPhotoManager();
+		mVideoMgr = new LCVideoManager();
 		mUserMgr = new LCUserManager();
 		mBlockMgr = new LCBlockManager();
 		mContactMgr = new LCContactManager();
@@ -404,6 +420,26 @@ public class LiveChatManager
 	}
 	
 	/**
+	 * 注册微视频(Video)回调
+	 * @param listener
+	 * @return
+	 */
+	public boolean RegisterVideoListener(LiveChatManagerVideoListener listener) 
+	{
+		return mCallbackHandler.RegisterVideoListener(listener);
+	}
+	
+	/**
+	 * 注销微视频(Video)回调
+	 * @param listener
+	 * @return
+	 */
+	public boolean UnregisterVideoListener(LiveChatManagerVideoListener listener) 
+	{
+		return mCallbackHandler.UnregisterVideoListener(listener);
+	}
+	
+	/**
 	 * 注册私密照(Photo)回调
 	 * @param listener
 	 * @return
@@ -479,6 +515,10 @@ public class LiveChatManager
 			String voicePath = FileCacheManager.getInstance().GetLCVoicePath();
 			result = result && mVoiceMgr.init(voicePath);
 			
+			// 初始化视频管理器
+			String videoPath = FileCacheManager.getInstance().GetLCVideoPath();
+			result = result && mVideoMgr.init(videoPath);
+			
 			// 初始化LiveChatClient
 			result = result && LiveChatClient.Init(this, ips, port);
 			
@@ -486,8 +526,83 @@ public class LiveChatManager
 			LiveChatClient.SetLogDirectory(logPath);
 		}
 		
+		if (result) 
+		{
+			// 初始化成功
+			// 清除资源文件
+			removeSourceFile();
+		}
+		
 		Log.d("livechat", "LiveChatManager::Init() end, result:%b", result);
 		return result;
+	}
+	
+	/**
+	 * 重置参数（用于注销后或登录前）
+	 */
+	private void ResetParam()
+	{
+		mUserId = null;
+		mSid = null;
+		mDeviceId = null;
+		mRiskControl = false;
+		mIsRecvVideoMsg = true;
+		mMsgIdIndex.set(MsgIdIndexBegin);
+		
+		Log.d("livechat", "ResetParam() clear emotion begin");
+		// 停止获取高级表情配置请求
+		if (RequestJni.InvalidRequestId != mEmotionMgr.mEmotionConfigReqId) {
+//			RequestJni.StopRequest(mEmotionMgr.mEmotionConfigReqId);
+			mEmotionMgr.mEmotionConfigReqId = RequestJni.InvalidRequestId;
+		}
+		Log.d("livechat", "ResetParam() clear emotion StopAllDownload3gp");
+		mEmotionMgr.StopAllDownload3gp();
+		Log.d("livechat", "ResetParam() clear emotion StopAllDownloadImage");
+		mEmotionMgr.StopAllDownloadImage();
+		Log.d("livechat", "ResetParam() clear emotion removeAllSendingItems");
+		mEmotionMgr.removeAllSendingItems();
+		
+		Log.d("livechat", "ResetParam() clear photo begin");
+		// 停止所有图片请求
+		mPhotoMgr.clearAllRequestItems();
+//		ArrayList<Long> photoRequestIds = mPhotoMgr.clearAllRequestItems();
+//		if (null != photoRequestIds) {
+//			for (Iterator<Long> iter = photoRequestIds.iterator(); iter.hasNext(); ) {
+//				long requestId = iter.next();
+//				RequestJni.StopRequest(requestId);
+//			}
+//		}
+		Log.d("livechat", "ResetParam() clear photo clearAllSendingItems");
+		mPhotoMgr.clearAllSendingItems();
+		
+		Log.d("livechat", "ResetParam() clear voice begin");
+		// 停止所有语音请求
+		mVoiceMgr.clearAllRequestItem();
+//		ArrayList<Long> voiceRequestIds = mVoiceMgr.clearAllRequestItem();
+//		if (null != voiceRequestIds) {
+//			for (Iterator<Long> iter = voiceRequestIds.iterator(); iter.hasNext(); ) {
+//				long requestId = iter.next();
+//				RequestJni.StopRequest(requestId);
+//			}
+//		}
+		Log.d("livechat", "ResetParam() clear voice clearAllSendingItems");
+		mVoiceMgr.clearAllSendingItems();
+		
+		Log.d("livechat", "ResetParam() clear other begin");
+		mTextMgr.removeAllSendingItems();
+		Log.d("livechat", "ResetParam() clear other removeAllUserItem");
+		mUserMgr.removeAllUserItem();
+	}
+	
+	/**
+	 * 清除所有图片、视频等资源文件
+	 */
+	private void removeSourceFile()
+	{
+		// 清除图片文件
+		mPhotoMgr.removeAllPhotoFile();
+		// 清除视频文件
+		mVideoMgr.removeAllVideoFile();
 	}
 	
 	/**
@@ -497,7 +612,7 @@ public class LiveChatManager
 	 * @param deviceId	设备唯一标识
 	 * @return
 	 */
-	public synchronized boolean Login(String userId, String sid, String deviceId) 
+	public synchronized boolean Login(String userId, String sid, String deviceId, boolean isRecvVideoMsg) 
 	{
 		Log.d("livechat", "LiveChatManager::Login() begin, userId:%s, mIsLogin:%s", userId, String.valueOf(mIsLogin));
 		
@@ -517,6 +632,7 @@ public class LiveChatManager
 				mUserId = userId;
 				mSid = sid;
 				mDeviceId = deviceId;
+				mIsRecvVideoMsg = isRecvVideoMsg;
 			}
 		}
 		
@@ -548,7 +664,7 @@ public class LiveChatManager
 			&& null != mSid && !mSid.isEmpty()
 			&& null != mDeviceId && !mDeviceId.isEmpty())
 		{
-			Login(mUserId, mSid, mDeviceId);
+			Login(mUserId, mSid, mDeviceId, mIsRecvVideoMsg);
 		}
 		
 		Log.d("livechat", "LiveChatManager::AutoRelogin() end");
@@ -910,15 +1026,20 @@ public class LiveChatManager
 										mMsgIdIndex.getAndIncrement(), 
 										mUserId, 
 										userItem.userId,
+										userItem.inviteId,
 										recordList[i], 
 										mEmotionMgr, 
 										mVoiceMgr, 
-										mPhotoMgr)) 
+										mPhotoMgr,
+										mVideoMgr)) 
 								{
 									userItem.insertSortMsgList(item);
 								}
 							}
-							
+							// 合并图片聊天记录
+							mPhotoMgr.combineMessageItem(userItem.msgList);
+							// 合并视频聊天记录
+							mVideoMgr.combineMessageItem(userItem.msgList);
 						}
 						mCallbackHandler.OnGetHistoryMessage(isSuccess, errno, errmsg, userItem);
 					}
@@ -985,17 +1106,21 @@ public class LiveChatManager
 											mMsgIdIndex.getAndIncrement(), 
 											mUserId, 
 											userItem.userId,
+											userItem.inviteId,
 											record.recordList[k],
 											mEmotionMgr, 
 											mVoiceMgr, 
-											mPhotoMgr)) 
+											mPhotoMgr, 
+											mVideoMgr)) 
 									{
 										userItem.insertSortMsgList(item);
 									}
 								}
 								
 								// 合并图片聊天记录
-								mPhotoMgr.combinePhotoMessageItem(userItem.msgList);
+								mPhotoMgr.combineMessageItem(userItem.msgList);
+								// 合并视频聊天记录
+								mVideoMgr.combineMessageItem(userItem.msgList);
 								// 添加到用户数组
 								userList.add(userItem);
 							}
@@ -1201,6 +1326,7 @@ public class LiveChatManager
 					, SendType.Send
 					, mUserId
 					, userId
+					, userItem.inviteId
 					, StatusType.Processing);
 			// 生成TextItem
 			LCTextItem textItem = new LCTextItem();
@@ -1281,7 +1407,7 @@ public class LiveChatManager
 			}
 			// 生成message消息
 			LCMessageItem item = new LCMessageItem();
-			item.init(mMsgIdIndex.getAndIncrement(), SendType.System, userItem.userId, mUserId, StatusType.Finish);
+			item.init(mMsgIdIndex.getAndIncrement(), SendType.System, userItem.userId, mUserId, userItem.inviteId, StatusType.Finish);
 			item.setWarningItem(warningItem);
 			// 插入到聊天记录列表中
 			userItem.insertSortMsgList(item);
@@ -1305,7 +1431,7 @@ public class LiveChatManager
 			LCSystemItem systemItem = new LCSystemItem();
 			systemItem.message = message; 
 			LCMessageItem item = new LCMessageItem();
-			item.init(mMsgIdIndex.getAndIncrement(), SendType.System, "", mUserId, StatusType.Finish);
+			item.init(mMsgIdIndex.getAndIncrement(), SendType.System, "", mUserId, userItem.inviteId, StatusType.Finish);
 			item.setSystemItem(systemItem);
 			userItem.insertSortMsgList(item);
 			mCallbackHandler.OnRecvSystemMsg(item);
@@ -1402,6 +1528,7 @@ public class LiveChatManager
 					, SendType.Send
 					, mUserId
 					, userId
+					, userItem.inviteId
 					, StatusType.Processing);
 			// 获取EmotionItem
 			LCEmotionItem emotionItem = mEmotionMgr.getEmotion(emotionId);
@@ -1566,6 +1693,7 @@ public class LiveChatManager
 				, SendType.Send
 				, mUserId
 				, userId
+				, userItem.inviteId
 				, StatusType.Processing);
 		// 生成PhotoItem
 		LCPhotoItem photoItem = new LCPhotoItem();
@@ -1677,19 +1805,19 @@ public class LiveChatManager
 		// 判断参数是否有效
 		if (item.msgType != MessageType.Photo
 			|| item.fromId.isEmpty()
-			|| item.getUserItem().inviteId.isEmpty()
+			|| item.inviteId.isEmpty()
 			|| item.getPhotoItem().photoId.isEmpty()
 			|| item.statusType != StatusType.Finish) 
 		{
 			Log.e("livechat", String.format("%s::%s() param error, msgType:%s, fromId:%s, inviteId%s, photoId:%s, statusType:%s", "LiveChatManager", "PhotoFee"
-					, item.msgType.name(), item.fromId, item.getUserItem().inviteId, item.getPhotoItem().photoId, item.statusType.name()));
+					, item.msgType.name(), item.fromId, item.inviteId, item.getPhotoItem().photoId, item.statusType.name()));
 			return false;
 		}
 		
 		// 请求付费获取图片
 		long requestId = RequestOperator.getInstance().PhotoFee(
 				item.fromId
-				, item.getUserItem().inviteId
+				, item.inviteId
 				, mUserId
 				, mSid, item.getPhotoItem().photoId
 				, new OnLCPhotoFeeCallback() {
@@ -1778,11 +1906,10 @@ public class LiveChatManager
 	{
 		if (item.msgType != MessageType.Photo
 			|| item.fromId.isEmpty()
-			|| item.getUserItem().inviteId.isEmpty()
 			|| item.getPhotoItem().photoId.isEmpty()) 
 		{
-			Log.e("livechat", String.format("%s::%s() param error, msgType:%s, fromId:%s, inviteId%s, photoId:%s, statusType:%s", "LiveChatManager", "GetPhoto"
-					, item.msgType.name(), item.fromId, item.getUserItem().inviteId, item.getPhotoItem().photoId, item.statusType.name()));
+			Log.e("livechat", String.format("%s::%s() param error, msgType:%s, fromId:%s, photoId:%s, statusType:%s", "LiveChatManager", "GetPhoto"
+					, item.msgType.name(), item.fromId, item.getPhotoItem().photoId, item.statusType.name()));
 			return false;
 		}
 		
@@ -1903,6 +2030,7 @@ public class LiveChatManager
 				, SendType.Send
 				, mUserId
 				, userId
+				, userItem.inviteId
 				, StatusType.Processing);
 		// 生成VoiceItem
 		LCVoiceItem voiceItem = new LCVoiceItem();
@@ -2025,63 +2153,432 @@ public class LiveChatManager
 		return percent;
 	}
 	
+	// ---------------- 视频操作函数(Video) ----------------
 	/**
-	 * 重置参数（用于注销后或登录前）
+	 * 获取微视频图片
+	 * @param item	消息item
+	 * @param type	视频图片类型
+	 * @return
 	 */
-	private void ResetParam()
+	public boolean GetVideoPhoto(final LCMessageItem item, final VideoPhotoType type)
 	{
-		mUserId = null;
-		mSid = null;
-		mDeviceId = null;
-		mMsgIdIndex.set(MsgIdIndexBegin);
-		
-		Log.d("livechat", "ResetParam() clear emotion begin");
-		// 停止获取高级表情配置请求
-		if (RequestJni.InvalidRequestId != mEmotionMgr.mEmotionConfigReqId) {
-//			RequestJni.StopRequest(mEmotionMgr.mEmotionConfigReqId);
-			mEmotionMgr.mEmotionConfigReqId = RequestJni.InvalidRequestId;
+		boolean result = false;
+		LCUserItem userItem = item.getUserItem();
+		LCVideoItem videoItem = item.getVideoItem();
+		if (null != userItem
+			&& !StringUtil.isEmpty(userItem.userId)
+			&& !StringUtil.isEmpty(item.inviteId)
+			&& null != videoItem
+			&& !StringUtil.isEmpty(videoItem.videoId))
+		{
+			result = GetVideoPhoto(userItem.userId, videoItem.videoId, userItem.inviteId, type);
 		}
-		Log.d("livechat", "ResetParam() clear emotion StopAllDownload3gp");
-		mEmotionMgr.StopAllDownload3gp();
-		Log.d("livechat", "ResetParam() clear emotion StopAllDownloadImage");
-		mEmotionMgr.StopAllDownloadImage();
-		Log.d("livechat", "ResetParam() clear emotion removeAllSendingItems");
-		mEmotionMgr.removeAllSendingItems();
+		return result;
+	}
+	
+	/**
+	 * 获取微视频图片
+	 * @param userId	女士ID
+	 * @param videoItem	视频列表item
+	 * @param type		视频图片类型
+	 * @return
+	 */
+	public boolean GetVideoPhoto(final String userId, final com.qpidnetwork.request.item.LCVideoItem videoItem, final VideoPhotoType type)
+	{
+		boolean result = false;
+		if (!StringUtil.isEmpty(userId)
+			&& null != videoItem
+			&& !StringUtil.isEmpty(videoItem.videoid)
+			&& !StringUtil.isEmpty(videoItem.inviteid))
+		{
+			result = GetVideoPhoto(userId, videoItem.videoid, videoItem.inviteid, type);
+		}
+		return result;
+	}
+	
+	/**
+	 * 获取微视频图片
+	 * @param userId	用户ID
+	 * @param videoId	视频ID
+	 * @param inviteId	邀请ID
+	 * @param type		视频图片类型
+	 * @return
+	 */
+	private boolean GetVideoPhoto(final String userId, final String videoId, final String inviteId, final VideoPhotoType type)
+	{
+		boolean result = false;
 		
-		Log.d("livechat", "ResetParam() clear photo begin");
-		// 停止所有图片请求
-		mPhotoMgr.clearAllRequestItems();
-//		ArrayList<Long> photoRequestIds = mPhotoMgr.clearAllRequestItems();
-//		if (null != photoRequestIds) {
-//			for (Iterator<Long> iter = photoRequestIds.iterator(); iter.hasNext(); ) {
-//				long requestId = iter.next();
-//				RequestJni.StopRequest(requestId);
-//			}
-//		}
-		Log.d("livechat", "ResetParam() clear photo clearAllSendingItems");
-		mPhotoMgr.clearAllSendingItems();
-		Log.d("livechat", "ResetParam() clear photo clearAllPhotoItems");
-		mPhotoMgr.clearAllPhotoItems();
+		// 判断是否已经在下载
+		if (mVideoMgr.isVideoPhotoRequest(videoId)) {
+			result = true;
+		}
+		else {
+			// 还没请求下载，现在下载
+			String filePath = mVideoMgr.getVideoPhotoTempPath(userId, videoId, inviteId, type);
+			long requestId = RequestOperator.getInstance().GetVideoPhoto(mSid, mUserId, userId, videoId, type, filePath, new OnRequestFileCallback() {
+				
+				@Override
+				public void OnRequestFile(long requestId, boolean isSuccess, String errno,
+						String errmsg, String filePath) 
+				{
+					boolean result = false;
+					ArrayList<LCMessageItem> videoMsgList = null;
+					String desPath = "";
+					
+					// 下载成功
+					if (isSuccess) {
+						// 把临时文件复制到正式文件目录 
+						desPath = mVideoMgr.getVideoPhotoPath(userId, videoId, inviteId, type);
+						result = mVideoMgr.tempFileToDesFile(filePath, desPath);
+					}
+					
+					// 更新视频消息
+					LCUserItem userItem = mUserMgr.getUserItem(userId);
+					if (null != userItem) {
+						videoMsgList = mVideoMgr.getMessageItem(videoId, userItem.getMsgList());
+						for (LCMessageItem item : videoMsgList) {
+							// 更新视频图片路径
+							if (result) {
+								item.getVideoItem().updatePhotoPathWithType(desPath, type);
+							}
+							// 重置下载标志
+							item.getVideoItem().updatePhotoDownloadSign(type, false);
+						}
+					}
+					
+					// 从正在下载列表中移除
+					mVideoMgr.getAndRemoveRequestVideoPhoto(requestId);
+					
+					// callback
+					LiveChatErrType errType = result ? LiveChatErrType.Success : LiveChatErrType.Fail;
+					mCallbackHandler.OnGetVideoPhoto(errType
+													, errno
+													, errmsg
+													, userId
+													, inviteId
+													, videoId
+													, type
+													, desPath
+													, videoMsgList);
+				}
+			});
+			
+			// 添加到requestId对照表
+			if (requestId != RequestJni.InvalidRequestId)
+			{
+				result = true;
+				
+				// 设置视频相关的所有聊天消息下载标志位为true
+				LCUserItem userItem = mUserMgr.getUserItem(userId);
+				if (null != userItem) {
+					ArrayList<LCMessageItem> videoMsgList = mVideoMgr.getMessageItem(videoId, userItem.getMsgList());
+					for (LCMessageItem item : videoMsgList) {
+						item.getVideoItem().updatePhotoDownloadSign(type, true);
+					}
+				}
+				
+				// 添加到对照表
+				mVideoMgr.addRequestVideoPhoto(requestId, videoId);
+			}
+		}
+	
+		return result;
+	}
+	
+	/**
+	 * 购买微视频
+	 * @param item	消息item
+	 * @return
+	 */
+	public boolean VideoFee(final LCMessageItem item)
+	{
+		boolean result = false;
+		if (null != item
+			&& null != item.getUserItem()
+			&& item.msgType == MessageType.Video
+			&& null != item.getVideoItem())
+		{
+			final LCUserItem userItem = item.getUserItem();
+			final LCVideoItem videoItem = item.getVideoItem();
+			
+			if (videoItem.isVideoFeeding) {
+				// 已在下载
+				result = true;
+			}
+			else {
+				long requestId = RequestOperator.getInstance().GetVideo(
+										mSid
+										, mUserId 
+										, userItem.userId
+										, videoItem.videoId
+										, item.inviteId
+										, VideoToFlagType.Man
+										, videoItem.sendId
+										, new OnGetVideoCallback() {
+					
+					@Override
+					public void OnLCGetVideo(long requestId, boolean isSuccess, String errno,
+							String errmsg, String url) {
+						// TODO Auto-generated method stub
+						videoItem.isVideoFeeding = false;
+						if (isSuccess) {
+							videoItem.charget = true;
+							videoItem.videoUrl = url;
+							
+							// 通知LiveChat服务器已经购买视频
+							LiveChatClient.PlayVideo(
+									userItem.userId
+									, item.inviteId
+									, videoItem.videoId
+									, videoItem.sendId
+									, videoItem.charget
+									, videoItem.videoDesc
+									, item.msgId);
+						} 
+						
+						// callback
+						mCallbackHandler.OnVideoFee(isSuccess, errno, errmsg, item);
+					}
+				});
+				
+				if (RequestJni.InvalidRequestId != requestId) 
+				{
+					videoItem.isVideoFeeding = true;
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * 获取微视频播放文件
+	 * @param item	消息item
+	 * @return
+	 */
+	public boolean GetVideo(LCMessageItem item)
+	{
+		boolean result = false;
+		LCUserItem userItem = item.getUserItem();
+		LCVideoItem videoItem = item.getVideoItem();
+		if (null != userItem
+			&& !StringUtil.isEmpty(userItem.userId)
+			&& !StringUtil.isEmpty(item.inviteId)
+			&& null != videoItem
+			&& !StringUtil.isEmpty(videoItem.videoId)
+			&& videoItem.charget
+			&& !StringUtil.isEmpty(videoItem.videoUrl))
+		{
+			result = GetVideo(userItem.userId, videoItem.videoId, userItem.inviteId, videoItem.videoUrl);
+		}
+		return result;
+	}
+	
+	/**
+	 * 获取微视频播放文件
+	 * @param userId	用户ID
+	 * @param videoItem	视频列表item	
+	 * @return
+	 */
+	public boolean GetVideo(final String userId, final com.qpidnetwork.request.item.LCVideoItem videoItem)
+	{
+		boolean result = false;
+		if (!StringUtil.isEmpty(userId)
+			&& null != videoItem
+			&& !StringUtil.isEmpty(videoItem.videoid)
+			&& !StringUtil.isEmpty(videoItem.inviteid)
+			&& !StringUtil.isEmpty(videoItem.video_url))
+		{
+			result = GetVideo(userId, videoItem.videoid, videoItem.inviteid, videoItem.video_url);
+		}
+		return result;
+	}
+	
+	/**
+	 * 获取微视频播放文件
+	 * @param userId	用户ID
+	 * @param videoId	视频ID
+	 * @param inviteId	邀请ID
+	 * @param videoUrl	视频文件下载URL
+	 * @return
+	 */
+	private boolean GetVideo(final String userId, final String videoId, final String inviteId, final String videoUrl)
+	{
+		boolean result = false;
 		
-		Log.d("livechat", "ResetParam() clear voice begin");
-		// 停止所有语音请求
-		mVoiceMgr.clearAllRequestItem();
-//		ArrayList<Long> voiceRequestIds = mVoiceMgr.clearAllRequestItem();
-//		if (null != voiceRequestIds) {
-//			for (Iterator<Long> iter = voiceRequestIds.iterator(); iter.hasNext(); ) {
-//				long requestId = iter.next();
-//				RequestJni.StopRequest(requestId);
-//			}
-//		}
-		Log.d("livechat", "ResetParam() clear voice clearAllSendingItems");
-		mVoiceMgr.clearAllSendingItems();
-		Log.d("livechat", "ResetParam() clear voice clearAllVoiceItems");
-		mVoiceMgr.clearAllVoiceItems();
-		
-		Log.d("livechat", "ResetParam() clear other begin");
-		mTextMgr.removeAllSendingItems();
-		Log.d("livechat", "ResetParam() clear other removeAllUserItem");
-		mUserMgr.removeAllUserItem();
+		// 判断是否已在下载
+		if (mVideoMgr.isVideoDownload(videoId)) {
+			result = true;
+		}
+		else {
+			// 还没请求下载，现在下载
+			final String tempPath = mVideoMgr.getVideoTempPath(userId, videoId, inviteId);
+			FileDownloader fileDownloader = new FileDownloader();
+			fileDownloader.SetBigFile(true);
+			fileDownloader.SetUseCache(false);
+			fileDownloader.StartDownload(videoUrl, tempPath, new FileDownloader.FileDownloaderCallback() {
+				
+				@Override
+				public void onUpdate(FileDownloader loader, int progress) {
+					// TODO Auto-generated method stub
+					// 获取所有与该视频相关的所有聊天消息
+					LCUserItem userItem = mUserMgr.getUserItem(userId);
+					if (null != userItem) {
+						ArrayList<LCMessageItem> videoMsgList = mVideoMgr.getMessageItem(videoId, userItem.getMsgList());
+						for (LCMessageItem item : videoMsgList) {
+							// 更新视频下载进度
+							item.getVideoItem().videoDownloadProgress = progress;
+						}
+					}
+				}
+				
+				@Override
+				public void onSuccess(FileDownloader loader) {
+					// TODO Auto-generated method stub
+					boolean result = false;
+					// 把临时文件复制到正式文件目录 
+					String videoPath = mVideoMgr.getVideoPath(userId, videoId, inviteId);
+					result = mVideoMgr.tempFileToDesFile(tempPath, videoPath);
+					
+					ArrayList<LCMessageItem> videoMsgList = null;
+					if (result) {
+						// 获取所有与该视频相关的所有聊天消息
+						LCUserItem userItem = mUserMgr.getUserItem(userId);
+						if (null != userItem) {
+							videoMsgList = mVideoMgr.getMessageItem(videoId, userItem.getMsgList());
+							for (LCMessageItem item : videoMsgList) {
+								// 更新视频消息的图片路径
+								item.getVideoItem().videoFilePath = videoPath;
+								// 重置下载标志位
+								item.getVideoItem().isVideoDownloading = false;
+								item.getVideoItem().videoDownloadProgress = 0;
+							}
+						}
+					}
+					
+					// 移除下载对照表
+					mVideoMgr.getAndRemoveDownloadVideo(loader);
+					
+					// callback
+					LiveChatErrType errType = result ? LiveChatErrType.Success : LiveChatErrType.Fail;
+					mCallbackHandler.OnGetVideo(errType
+												, userId
+												, videoId
+												, inviteId
+												, videoPath
+												, videoMsgList);
+				}
+				
+				@Override
+				public void onFail(FileDownloader loader) {
+					// TODO Auto-generated method stub
+					ArrayList<LCMessageItem> videoMsgList = null;
+					// 获取所有与该视频相关的聊天消息
+					LCUserItem userItem = mUserMgr.getUserItem(userId);
+					if (null != userItem) {
+						videoMsgList = mVideoMgr.getMessageItem(videoId, userItem.getMsgList());
+						for (LCMessageItem item : videoMsgList) {
+							// 重置下载标志位
+							item.getVideoItem().isVideoDownloading = false;
+							item.getVideoItem().videoDownloadProgress = 0;
+						}
+					}
+					
+					// 移除下载对照表
+					mVideoMgr.getAndRemoveDownloadVideo(loader);
+					
+					// callback
+					mCallbackHandler.OnGetVideo(LiveChatErrType.Fail
+												, userId
+												, videoId
+												, inviteId
+												, ""
+												, videoMsgList);
+				}
+			});
+			
+			result = true;
+			
+			ArrayList<LCMessageItem> videoMsgList = null;
+			// 设置视频相关的所有聊天消息下载标志位为true
+			LCUserItem userItem = mUserMgr.getUserItem(userId);
+			if (null != userItem) {
+				videoMsgList = mVideoMgr.getMessageItem(videoId, userItem.getMsgList());
+				for (LCMessageItem item : videoMsgList) {
+					item.getVideoItem().isVideoDownloading = true;
+					item.getVideoItem().videoDownloadProgress = 0;
+				}
+			}
+			
+			// 添加到下载对照表
+			mVideoMgr.addDownloadVideo(fileDownloader, videoId);
+			
+			if (null != videoMsgList) {
+				// 通知回调开始下载视频
+				mCallbackHandler.OnStartGetVideo(userId
+											, videoId
+											, inviteId
+											, ""
+											, videoMsgList);
+			}
+		}
+	
+		return result;
+	}
+	
+	/**
+	 * 获取视频下载状态
+	 * @param videoId	视频ID
+	 * @return true为正在下载，否则为不在下载状态
+	 */
+	public boolean isGetVideoNow(final String videoId)
+	{
+		return mVideoMgr.isVideoDownload(videoId);
+	}
+	
+	/**
+	 * 获取视频图片文件路径，若文件已存在
+	 * @param userId	用户ID
+	 * @param videoId	视频ID
+	 * @param inviteId	邀请ID
+	 * @param type		图片类型
+	 * @return
+	 */
+	public String GetVideoPhotoPathWithExist(final String userId, final String inviteId, final String videoId, final VideoPhotoType type)
+	{
+		String path = "";
+		String localPath = mVideoMgr.getVideoPhotoPath(userId, videoId, inviteId, type);
+		if (!localPath.isEmpty())
+		{
+			File file = new File(localPath);
+			if (file.exists())
+			{
+				path = localPath;
+			}
+		}
+		return path;
+	}
+	
+	/**
+	 * 获取视频文件路径，若文件已存在
+	 * @param userId	用户ID
+	 * @param inviteId	邀请ID
+	 * @param videoId	视频ID
+	 * @return
+	 */
+	public String GetVideoPathWithExist(final String userId, final String inviteId, final String videoId)
+	{
+		String path = "";
+		String localPath = mVideoMgr.getVideoPath(userId, videoId, inviteId);
+		if (!localPath.isEmpty())
+		{
+			File file = new File(localPath);
+			if (file.exists())
+			{
+				path = localPath;
+			}
+		}
+		return path;
 	}
 	
 	// ------------- LiveChatClientListener abstract function -------------
@@ -2162,18 +2659,18 @@ public class LiveChatManager
 	@Override
 	public void OnLogout(LiveChatErrType errType, String errmsg)
 	{
-		Log.d("livechat", "OnLogout() begin");
+		Log.d("livechat", "OnLogout(boolean bActive) begin");
 		
 		// 重置参数
 		mIsLogin = false;
 		
 		// callback
 		boolean isAutoLogin = IsAutoRelogin(errType);
-		Log.d("livechat", "OnLogout() callback OnLogout");
+		Log.d("livechat", "OnLogout(boolean bActive) callback OnLogout");
 		mCallbackHandler.OnLogout(errType, errmsg, isAutoLogin);
 		if (isAutoLogin) {
 			// 自动重登录
-			Log.d("livechat", "OnLogout() AutoRelogin");
+			Log.d("livechat", "OnLogout(boolean bActive) AutoRelogin");
 			Message msgAutoRelogin = Message.obtain();
 			msgAutoRelogin.what = LiveChatRequestOptType.AutoRelogin.ordinal();
 			mHandler.sendMessageDelayed(msgAutoRelogin, mAutoReloginTime);
@@ -2183,7 +2680,7 @@ public class LiveChatManager
 			ResetParam();
 		}
 		
-		Log.d("livechat", "OnLogout() end");
+		Log.d("livechat", "OnLogout(boolean bActive) end");
 	}
 	
 	/**
@@ -2693,6 +3190,17 @@ public class LiveChatManager
 //			}
 //		}
 	}
+	
+	/**
+	 * 播放微视频回调
+	 * @param errType	处理结果类型
+	 * @param errmsg	处理结果描述
+	 */
+	@Override
+	public void OnPlayVideo(LiveChatErrType errType, String errmsg, int ticket)
+	{
+		
+	}
 
 	/**
 	 * 获取用户信息
@@ -2803,6 +3311,7 @@ public class LiveChatManager
 					, SendType.Recv
 					, fromId
 					, toId
+					, userItem.inviteId
 					, StatusType.Finish);
 			// 生成TextItem
 			LCTextItem textItem = new LCTextItem();
@@ -2865,6 +3374,7 @@ public class LiveChatManager
 				, SendType.Recv
 				, fromId
 				, toId
+				, userItem.inviteId
 				, StatusType.Finish);
 		// 获取EmotionItem
 		LCEmotionItem emotionItem = mEmotionMgr.getEmotion(emotionId);
@@ -2920,6 +3430,7 @@ public class LiveChatManager
 				, SendType.Recv
 				, fromId
 				, toId
+				, userItem.inviteId
 				, StatusType.Finish);
 		// 生成VoiceItem
 		LCVoiceItem voiceItem = new LCVoiceItem();
@@ -2983,6 +3494,7 @@ public class LiveChatManager
 				, SendType.Recv
 				, fromId
 				, toId
+				, userItem.inviteId
 				, StatusType.Finish);
 		// 生成WarningItem
 		LCWarningItem warningItem = new LCWarningItem();
@@ -3125,18 +3637,22 @@ public class LiveChatManager
 	@Override
 	public void OnRecvKickOffline(KickOfflineType kickType) 
 	{
-		Log.d("livechat", "LiveChatManager::OnRecvKickOffline() begin");
+		Log.d("livechat", "LiveChatManager::OnRecvKickOffline() kickType:%s", kickType.name());
 		
-		// 设置不自动重登录
-		mIsAutoRelogin = false;
-		
-		// LoginManager注销 
-		Message msg = Message.obtain();
-		msg.what = LiveChatRequestOptType.LoginManagerLogout.ordinal();
-		mHandler.sendMessage(msg);
-
-		// 回调
-		mCallbackHandler.OnRecvKickOffline(kickType);
+		// 用户在其它地方登录，被踢下线
+		if (kickType == KickOfflineType.OtherLogin)
+		{
+			// 设置不自动重登录
+			mIsAutoRelogin = false;
+			
+			// LoginManager注销 
+			Message msg = Message.obtain();
+			msg.what = LiveChatRequestOptType.LoginManagerLogout.ordinal();
+			mHandler.sendMessage(msg);
+	
+			// 回调
+			mCallbackHandler.OnRecvKickOffline(kickType);
+		}
 		
 		Log.d("livechat", "LiveChatManager::OnRecvKickOffline() end");
 	}
@@ -3185,6 +3701,7 @@ public class LiveChatManager
 				, SendType.Recv
 				, fromId
 				, toId
+				, userItem.inviteId
 				, StatusType.Finish);
 		// 生成PhotoItem
 		LCPhotoItem photoItem = new LCPhotoItem();
@@ -3205,6 +3722,76 @@ public class LiveChatManager
 		
 		// callback
 		mCallbackHandler.OnRecvPhoto(item);
+	}
+	
+	/**
+	 * 接收微视频消息回调
+	 * @param toId		接收者ID
+	 * @param fromId	发送者ID
+	 * @param fromName	发送者用户名
+	 * @param inviteId	邀请ID
+	 * @param videoId	视频ID
+	 * @param sendId	发送ID
+	 * @param charget	是否已付费
+	 * @param videoDesc	视频描述
+	 * @param ticket	票根
+	 */
+	@Override
+	public void OnRecvVideo(
+			String toId			
+			, String fromId
+			, String fromName
+			, String inviteId
+			, String videoId
+			, String sendId
+			, boolean charget
+			, String videoDesc
+			, int ticket)
+	{
+		// 返回票根给服务器
+		LiveChatClient.UploadTicket(fromId, ticket);
+		
+		// 不允许接收视频消息
+		if (!mIsRecvVideoMsg) {
+			return;
+		}
+		
+		// 添加用户到列表中（若列表中用户不存在）
+		LCUserItem userItem = mUserMgr.getUserItem(fromId);
+		if (null == userItem) {
+			Log.e("livechat", String.format("%s::%s() getUserItem fail, fromId:%s", "LiveChatManager", "OnRecvVideo", fromId));
+			return;
+		}
+		userItem.inviteId = inviteId;
+		userItem.userName = fromName;
+		SetUserOnlineStatus(userItem, UserStatusType.USTATUS_ONLINE);
+		
+		// 生成MessageItem
+		LCMessageItem item = new LCMessageItem();
+		item.init(mMsgIdIndex.getAndIncrement()
+				, SendType.Recv
+				, fromId
+				, toId
+				, userItem.inviteId
+				, StatusType.Finish);
+		// 生成VideoItem
+		LCVideoItem videoItem = new LCVideoItem();
+		videoItem.init(videoId
+				, sendId
+				, videoDesc
+				, ""
+				, ""
+				, ""
+				, ""
+				, charget);
+		// 把PhotoItem添加到MessageItem
+		item.setVideoItem(videoItem);
+		
+		// 添加到用户聊天记录中
+		userItem.insertSortMsgList(item);
+		
+		// callback
+		mCallbackHandler.OnRecvVideo(item);
 	}
 	
 	// --------------- 高级表情下载回调 ---------------
@@ -3258,7 +3845,7 @@ public class LiveChatManager
 				// TODO Auto-generated method stub
 				
 				// livechat站点
-				final ArrayList<String> ipList = new ArrayList<>();
+				final ArrayList<String> ipList = new ArrayList<String>();
 				// livechat port
 				int port = -1;
 				
@@ -3318,7 +3905,8 @@ public class LiveChatManager
 						Login(
 							loginItem.manid, 
 							loginItem.sessionid, 
-							RequestJni.GetDeviceId(tm)
+							RequestJni.GetDeviceId(tm),
+							loginItem.videoreceived
 							);
 					}
 				}
@@ -3352,8 +3940,10 @@ public class LiveChatManager
 	 * LoginManager注销回调（php注销回调）
 	 */
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
-		Logout();
+		if (bActive) { 
+			Logout();
+		}
 	}
 }

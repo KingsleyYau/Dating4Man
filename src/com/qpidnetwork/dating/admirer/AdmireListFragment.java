@@ -5,19 +5,14 @@ import java.util.List;
 
 import android.os.Bundle;
 import android.os.Message;
-import android.view.View;
-import android.widget.ListView;
 
 import com.qpidnetwork.dating.bean.PageBean;
-import com.qpidnetwork.dating.emf.EMFInboxFragment;
-import com.qpidnetwork.dating.emf.EMFBaseAdapter.ViewHolder;
 import com.qpidnetwork.framework.base.BaseListFragment;
 import com.qpidnetwork.framework.util.ToastUtil;
 import com.qpidnetwork.request.OnEMFAdmirerListCallback;
 import com.qpidnetwork.request.RequestJniEMF;
 import com.qpidnetwork.request.RequestJniEMF.SortType;
 import com.qpidnetwork.request.item.EMFAdmirerListItem;
-import com.qpidnetwork.request.item.EMFInboxListItem;
 
 public class AdmireListFragment extends BaseListFragment{
 	
@@ -77,7 +72,8 @@ public class AdmireListFragment extends BaseListFragment{
 			}
 		});
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub

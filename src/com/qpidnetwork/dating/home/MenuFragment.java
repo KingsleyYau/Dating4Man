@@ -1,5 +1,6 @@
 package com.qpidnetwork.dating.home;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -13,7 +14,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -52,6 +52,7 @@ import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.view.ChooseWebSiteDialog;
 import com.qpidnetwork.view.ViewTools;
 
+@SuppressLint("InflateParams")
 public class MenuFragment extends BaseFragment implements OnLoginManagerCallback {
 	private ListView lvMainmenu;
 	private MenuItemAdapter menuAdapter;
@@ -425,6 +426,7 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 	/**
 	 * 刷新界面
 	 */
+	@SuppressWarnings("deprecation")
 	public void ReloadData() {
 		switch (LoginManager.getInstance().GetLoginStatus()) {
 		case NONE: {
@@ -450,10 +452,6 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 				loader.DisplayImage(
 						ivPhoto, 
 						url, 
-						ivPhoto.getWidth(),
-						ivPhoto.getHeight(),
-						0,
-						0,
 						localPath,
 						null
 						);
@@ -481,7 +479,7 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 	}
 
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		ReloadData();
 	}

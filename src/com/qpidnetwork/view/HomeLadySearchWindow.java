@@ -1,31 +1,36 @@
 package com.qpidnetwork.view;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.request.RequestJniLady.OnlineType;
-import com.qpidnetwork.view.CheckButtonNormal.OnCheckLinstener;
-import com.qpidnetwork.view.RangeSeekBar.OnRangeSeekBarChangeListener;
-
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Vibrator;
+import android.os.Build;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup.LayoutParams;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-public class HomeLadySearchWindow extends PopupWindow{
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.util.UnitConversion;
+import com.qpidnetwork.view.CheckButtonNormal.OnCheckLinstener;
+import com.qpidnetwork.view.RangeSeekBar.OnRangeSeekBarChangeListener;
+
+public class HomeLadySearchWindow extends PopupWindow implements OnTouchListener{
 	
 	private static int defaultHeight = LayoutParams.WRAP_CONTENT;
 	private static int defaultWidth = LayoutParams.MATCH_PARENT;
 	
+	
 	private Context context;
+	public View contentView;
 	public CheckButtonNormal buttonNoMatter;
 	public CheckButtonNormal buttonOnline;
 	public ButtonRaised buttonSearch;
@@ -53,11 +58,18 @@ public class HomeLadySearchWindow extends PopupWindow{
 		this.context = context;
 		this.setContentView(createContentView());
 		this.setFocusable(true);
-		this.setTouchable(true);
+
 		this.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		this.setHeight(defaultHeight);
 		this.setWidth(defaultWidth);
-		this.setAnimationStyle(R.style.DropDownListAnimation);
+
+		if (Build.VERSION.SDK_INT < 21){
+			this.setTouchable(true);
+			this.setAnimationStyle(R.style.DropDownListAnimation);	
+		}else{
+			this.setOutsideTouchable(true);
+			this.setTouchInterceptor(this);
+		}
 		
 	}
 	
@@ -65,9 +77,9 @@ public class HomeLadySearchWindow extends PopupWindow{
 	
 	
 	public View createContentView(){
-		View view = LayoutInflater.from(context).inflate(R.layout.layout_online_search, null);
+		contentView = LayoutInflater.from(context).inflate(R.layout.layout_online_search, null);
 		
-		buttonNoMatter = (CheckButtonNormal) view.findViewById(R.id.buttonNoMatter);
+		buttonNoMatter = (CheckButtonNormal) contentView.findViewById(R.id.buttonNoMatter);
 		buttonNoMatter.SetText("No matter");
 		buttonNoMatter.SetOnCheckChangeListener(new OnCheckLinstener() {
 			
@@ -82,7 +94,7 @@ public class HomeLadySearchWindow extends PopupWindow{
 		
 		
 		
-		buttonOnline = (CheckButtonNormal) view.findViewById(R.id.buttonOnline);
+		buttonOnline = (CheckButtonNormal) contentView.findViewById(R.id.buttonOnline);
 		buttonOnline.SetOnCheckChangeListener(new OnCheckLinstener() {
 			
 			@Override
@@ -95,13 +107,13 @@ public class HomeLadySearchWindow extends PopupWindow{
 		});
 		
 
-		buttonSearch = (ButtonRaised) view.findViewById(R.id.buttonSearch);
+		buttonSearch = (ButtonRaised) contentView.findViewById(R.id.buttonSearch);
 		buttonSearch.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				dismiss();
+				doAnimationalDismiss();
 				if( callback != null ) {
 					callback.OnClickSearch(v, miMin, miMax, mbOnline);
 				}
@@ -112,7 +124,7 @@ public class HomeLadySearchWindow extends PopupWindow{
 		buttonOnline.SetText(context.getResources().getString(R.string.common_btn_yes));
 		buttonNoMatter.setBackgroundResource(R.drawable.round_left_rect_green);
 		
-		buttonGo = (ButtonRaised) view.findViewById(R.id.buttonGo);
+		buttonGo = (ButtonRaised) contentView.findViewById(R.id.buttonGo);
 		buttonGo.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -124,7 +136,7 @@ public class HomeLadySearchWindow extends PopupWindow{
 					return;
 				}
 				
-				dismiss();
+				doAnimationalDismiss();
 				if( callback != null ) {
 					callback.OnClickGo(v, editTextId.getText().toString());
 				}
@@ -133,12 +145,12 @@ public class HomeLadySearchWindow extends PopupWindow{
 			}
 		});
 		
-		editTextId = (MaterialTextField) view.findViewById(R.id.editTextId);
+		editTextId = (MaterialTextField) contentView.findViewById(R.id.editTextId);
 		editTextId.setHint(context.getString(R.string.ladys_id));
 		
-		textViewMin = (TextView) view.findViewById(R.id.textViewMin);
-		textViewMax = (TextView) view.findViewById(R.id.textViewMax);
-		layoutAge = (LinearLayout) view.findViewById(R.id.layoutAge);
+		textViewMin = (TextView) contentView.findViewById(R.id.textViewMin);
+		textViewMax = (TextView) contentView.findViewById(R.id.textViewMax);
+		layoutAge = (LinearLayout) contentView.findViewById(R.id.layoutAge);
 		rangeSeekBar = new RangeSeekBar<Integer>(
 				18, 
 				99, 
@@ -165,15 +177,77 @@ public class HomeLadySearchWindow extends PopupWindow{
 		});
 		layoutAge.addView(rangeSeekBar);
 		
-		
-		return view;
+		return contentView;
+	}
+	
+	
+	private void setCircularRevealAnimation(final View view){
+
+		int initialRadius = view.getWidth();
+		Animator anim = ViewAnimationUtils.createCircularReveal(view, view.getRight() - UnitConversion.dip2px(context, 72), 0, 0, initialRadius);
+		anim.setDuration(150);
+		contentView.setVisibility(View.VISIBLE);
+		anim.start();
 	}
 	
 	public void setCallback(Callback callback){
 		this.callback = callback;
 	}
 	
+	@Override
+	public void showAsDropDown(View anchor){
+		super.showAsDropDown(anchor);
+		if (Build.VERSION.SDK_INT < 21 ) return;
+		
+		contentView.setVisibility(View.INVISIBLE);
+		contentView.postDelayed(new Runnable(){
 
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				setCircularRevealAnimation(contentView);
+			}
+			
+		}, 100);
+		
 	
+	}
+
+	public void doAnimationalDismiss() {
+		// TODO Auto-generated method stub
+		if (Build.VERSION.SDK_INT < 21){
+			dismiss();
+			return;
+		}
+		
+		int initialRadius = contentView.getWidth();
+		Animator anim = ViewAnimationUtils.createCircularReveal(contentView, contentView.getRight() - UnitConversion.dip2px(context, 72), 0, initialRadius, 0);
+		anim.setDuration(150);
+		anim.addListener(new AnimatorListenerAdapter() {
+		    @Override
+		    public void onAnimationEnd(Animator animation) {
+		        super.onAnimationEnd(animation);
+		        dismiss();
+		    }
+		});
+		
+		anim.start();
+	}
+
+
+
+	@SuppressLint("ClickableViewAccessibility")
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		// TODO Auto-generated method stub
+		if (event.getAction() == MotionEvent.ACTION_DOWN){
+			if (event.getX() < 0 || event.getY() < 0 || event.getY() > contentView.getHeight()){
+				doAnimationalDismiss();
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
 }

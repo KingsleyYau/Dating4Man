@@ -33,14 +33,14 @@ public class LCVoiceManager {
 	/**
 	 * id与itemmap表(voiceId, item)（记录发送成功或收到的item）
 	 */
-	private HashMap<String, LCMessageItem> mVoiceIdMap;
+//	private HashMap<String, LCMessageItem> mVoiceIdMap;
 	private String mDirPath;
 	
 	public LCVoiceManager() {
 		mMsgIdMap = new HashMap<Integer, LCMessageItem>();
 		mRequestIdMap = new HashMap<Long, LCMessageItem>();
 		mVoiceRequestMap = new HashMap<LCMessageItem, Long>();
-		mVoiceIdMap = new HashMap<String, LCMessageItem>();
+//		mVoiceIdMap = new HashMap<String, LCMessageItem>();
 	}
 	
 	/**
@@ -247,56 +247,5 @@ public class LCVoiceManager {
 			}
 		}
 		return list;
-	}
-	// -------------------------- Finish Process（已完成处理） -----------------------------
-	/**
-	 * 获取指语音ID的item
-	 * @param voiceId	语音ID
-	 * @return
-	 */
-	public LCMessageItem getVoiceItem(String voiceId) {
-		LCMessageItem item = null;
-		synchronized (mVoiceIdMap)
-		{
-			item = mVoiceIdMap.get(voiceId);
-			if (null == item) {
-				Log.e("livechat", String.format("%s::%s() fail voiceId:%s", "LCVoiceManager", "getVoiceItem", voiceId));
-			}
-		}
-		return item;
-	}
-	
-	/**
-	 * 添加语音到已处理完成的map
-	 * @param voiceId	语音ID
-	 * @param item		语音item
-	 * @return
-	 */
-	public boolean addVoiceItem(String voiceId, LCMessageItem item) {
-		boolean result = false;
-		synchronized (mVoiceIdMap)
-		{
-			if (item.msgType == MessageType.Voice
-					&& null != item.getVoiceItem()
-					&& null == mVoiceIdMap.get(voiceId)) 
-			{
-				mVoiceIdMap.put(voiceId, item);
-				result = true;
-			}
-			else {
-				Log.e("livechat", String.format("%s::%s() fail voiceId:%s, item.msgType:%s", "LCVoiceManager", "setVoiceItem", voiceId, item.msgType.name()));
-			}
-		}
-		return result;
-	} 
-	
-	/**
-	 * 移除所有已处理完成的语音
-	 */
-	public void clearAllVoiceItems() {
-		synchronized (mVoiceIdMap)
-		{
-			mVoiceIdMap.clear();
-		}
 	}
 }

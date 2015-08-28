@@ -1,7 +1,6 @@
 package com.qpidnetwork.view;
 
-import com.qpidnetwork.dating.R;
-
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -12,25 +11,28 @@ import android.os.Bundle;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.qpidnetwork.dating.R;
+
 public class ChooseWebSiteDialog extends Dialog {
 	
-	private TextView textViewTitle;
+//	private TextView textViewTitle;
 	private LinearLayout layoutContent;
 	private float density = this.getContext().getResources().getDisplayMetrics().density;
 	
+	@SuppressWarnings("deprecation")
 	public ChooseWebSiteDialog(Context context) {
 		super(context);
 		// TODO Auto-generated constructor stub
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         this.setContentView(R.layout.dialog_choose_website);
-        textViewTitle = (TextView)findViewById(R.id.textViewTitle);
+//        textViewTitle = (TextView)findViewById(R.id.textViewTitle);
         layoutContent = (LinearLayout) findViewById(R.id.layoutContent);
         
         Display display = this.getWindow().getWindowManager().getDefaultDisplay();
@@ -61,7 +63,8 @@ public class ChooseWebSiteDialog extends Dialog {
         super.onCreate(savedInstanceState);
     }
     
-    public View AddItem(int imageId, String tips, String desc, boolean selected) {
+    @SuppressLint("InflateParams")
+	public View AddItem(int imageId, String tips, String desc, boolean selected) {
     	LayoutInflater layoutInfalter = LayoutInflater.from(getContext());
     	View view = layoutInfalter.inflate(R.layout.layout_website_item, null);
     	layoutContent.addView(view, 

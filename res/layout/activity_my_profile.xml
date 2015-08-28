@@ -22,8 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/default_profile_photo_bg"
-                android:paddingBottom="16dp"
-                android:paddingLeft="16dp" >
+                android:paddingBottom="16dp" >
                 
                     <ImageButton
             android:id="@+id/buttonCancel"
@@ -32,9 +31,13 @@
             android:background="@drawable/touch_feedback_holo_dark_circle"
             android:onClick="onClickCancel"
             android:src="@drawable/ic_arrow_back_white_24dp" 
-            android:layout_marginTop="0dp"
-            android:layout_marginLeft="-16dp"/>
+            android:layout_marginTop="0dp"/>
 
+            <RelativeLayout android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
+                    
                 <RelativeLayout
                     android:id="@+id/layoutImageHeader"
                     android:layout_width="wrap_content"
@@ -111,6 +114,7 @@
                         android:textColor="#FFFFFF" 
                         android:textSize="14sp"
                         android:textStyle="bold" />
+                </RelativeLayout>
                 </RelativeLayout>
             </RelativeLayout>
 

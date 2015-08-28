@@ -3,25 +3,19 @@ package com.qpidnetwork.dating.livechat.picture;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
-import com.qpidnetwork.framework.util.UnitConversion;
 
 public class PictureSelectActivity extends BaseFragmentActivity{
 	
 	public static final String SELECT_PICTURE_PATH = "picturePath";
 	private GridView gvAlbum;
 	private ImageView ivClose;
-	private ImageView ivScale;
-	
 	private AlbumGridAdapter mAdapter;
 	
 	@Override

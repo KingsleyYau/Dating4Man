@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +21,14 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.advertisement.AdvertisementManager;
 import com.qpidnetwork.dating.advertisement.AdWomanListAdvertItem;
+import com.qpidnetwork.dating.advertisement.AdvertisementManager;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.emf.MailEditActivity;
 import com.qpidnetwork.dating.lady.LadyDetailActivity;
@@ -36,6 +37,7 @@ import com.qpidnetwork.dating.lady.LadyListManager;
 import com.qpidnetwork.dating.lady.VideoDetailActivity;
 import com.qpidnetwork.dating.livechat.ChatActivity;
 import com.qpidnetwork.framework.util.Log;
+import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.manager.FileCacheManager.LadyFileType;
 import com.qpidnetwork.request.RequestEnum.OnlineStatus;
@@ -163,6 +165,7 @@ public class LadyListAdapter extends BaseAdapter {
 		loader.SetDefaultImage(mDefaultDrawableList.get(0));
 		loader.DisplayImage(
 			imageView, 
+			true,
 			mAdvert.adWomanListAdvert.image,
 			advertWidth,
 			advertHeight,
@@ -214,21 +217,9 @@ public class LadyListAdapter extends BaseAdapter {
 		}
 		
 		if (isNewConvertView) {
-			holder = new ViewHolder();
 			convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_lady_list_item, null);
-			holder.flPhoto = (FrameLayout)convertView.findViewById(R.id.flPhoto);
-			holder.ivLadyPhoto = (FitTopImageView)convertView.findViewById(R.id.ivLadyPhoto);
-			holder.tvLadyName = (TextView)convertView.findViewById(R.id.tvLadyName);
-			holder.cvCard = (CardView)convertView.findViewById(R.id.cardView);
-			holder.tvLadyAge = (TextView)convertView.findViewById(R.id.tvLadyAge);
+			holder = new ViewHolder(convertView);
 			
-			holder.buttonChat = (ImageButton)convertView.findViewById(R.id.buttonChat);
-			holder.buttonMail = (ImageButton)convertView.findViewById(R.id.buttonMail);
-			holder.imageViewOverFlow = (ImageButton)convertView.findViewById(R.id.imageViewOverFlow);
-			holder.onlineIndicator = (View)convertView.findViewById(R.id.online_indicator);
-			
-			holder.loader = null;
-			convertView.setTag(holder);
 		}
 		
 		long startTime = System.currentTimeMillis();
@@ -279,6 +270,7 @@ public class LadyListAdapter extends BaseAdapter {
 		holder.loader.SetDefaultImage(mDefaultDrawableList.get(item.backgroundColorType));
 		holder.loader.DisplayImage(
 				holder.ivLadyPhoto, 
+				holder.womanId.compareTo(item.lady.womanid) != 0,
 				item.lady.photoURL,
 				LadyListManager.getLadyListItemWidth(),
 				LadyListManager.getMaxLadyListItemHeight(),
@@ -287,6 +279,7 @@ public class LadyListAdapter extends BaseAdapter {
 				localPath, 
 				null
 		);
+		holder.womanId = item.lady.womanid;
 		
 		// 第一个按钮
 		switch (mChatButtonType) {
@@ -390,6 +383,8 @@ public class LadyListAdapter extends BaseAdapter {
 				, params.height
 				, diffTime
 				, String.valueOf(holder));
+		
+
 		return convertView;
 	}
 	
@@ -400,11 +395,49 @@ public class LadyListAdapter extends BaseAdapter {
 		public CardView cvCard;
 		public TextView tvLadyAge;
 		public ImageViewLoader loader;
+		public String womanId;
 		
 		public ImageButton buttonChat;
 		public ImageButton buttonMail;
 		public ImageButton imageViewOverFlow;
 		public View onlineIndicator;
+		
+		public ViewHolder(View convertView){
+			
+			flPhoto = (FrameLayout)convertView.findViewById(R.id.flPhoto);
+			ivLadyPhoto = (FitTopImageView)convertView.findViewById(R.id.ivLadyPhoto);
+			tvLadyName = (TextView)convertView.findViewById(R.id.tvLadyName);
+			cvCard = (CardView)convertView.findViewById(R.id.cardView);
+			tvLadyAge = (TextView)convertView.findViewById(R.id.tvLadyAge);
+			
+			buttonChat = (ImageButton)convertView.findViewById(R.id.buttonChat);
+			buttonMail = (ImageButton)convertView.findViewById(R.id.buttonMail);
+			imageViewOverFlow = (ImageButton)convertView.findViewById(R.id.imageViewOverFlow);
+			onlineIndicator = (View)convertView.findViewById(R.id.online_indicator);
+			
+			loader = null;
+			womanId = "";
+			
+			if (Build.VERSION.SDK_INT < 21){
+				buttonChat.getLayoutParams().height = UnitConversion.dip2px(mContext, 48);
+				buttonChat.getLayoutParams().width = UnitConversion.dip2px(mContext, 48);
+				((RelativeLayout.LayoutParams)buttonChat.getLayoutParams()).leftMargin = 0;
+				
+				buttonMail.getLayoutParams().height = UnitConversion.dip2px(mContext, 48);
+				buttonMail.getLayoutParams().width = UnitConversion.dip2px(mContext, 48);
+				((RelativeLayout.LayoutParams)buttonMail.getLayoutParams()).leftMargin = 0;
+				
+				imageViewOverFlow.getLayoutParams().height = UnitConversion.dip2px(mContext, 48);
+				imageViewOverFlow.getLayoutParams().width = UnitConversion.dip2px(mContext, 48);
+				((RelativeLayout.LayoutParams)imageViewOverFlow.getLayoutParams()).rightMargin = UnitConversion.dip2px(mContext, -6);
+			}
+			
+			if (mChatButtonType != ChatButtonType.Default){
+				((RelativeLayout.LayoutParams)buttonMail.getLayoutParams()).leftMargin = 0;
+			}
+			
+			convertView.setTag(this);
+		}
 	}
 
 	

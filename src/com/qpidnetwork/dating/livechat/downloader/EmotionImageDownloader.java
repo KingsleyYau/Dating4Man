@@ -14,9 +14,9 @@ import com.qpidnetwork.dating.R;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.livechat.LCEmotionItem;
 import com.qpidnetwork.livechat.LCMessageItem;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.LiveChatManagerEmotionListener;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.request.item.OtherEmotionConfigItem;
 
 public class EmotionImageDownloader implements LiveChatManagerEmotionListener{

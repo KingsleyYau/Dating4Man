@@ -1,7 +1,6 @@
 package com.qpidnetwork.view;
 
 
-import com.qpidnetwork.dating.R;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -17,6 +16,8 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 
+import com.qpidnetwork.dating.R;
+
 /**
  * A Material style progress wheel, compatible up to 2.2.
  * Todd Davies' Progress Wheel https://github.com/Todd-Davies/ProgressWheel
@@ -27,7 +28,6 @@ import android.view.View;
  *         http://www.apache.org/licenses/LICENSE-2.0
  */
 public class MaterialProgressBar extends View {
-    private static final String TAG = MaterialProgressBar.class.getSimpleName();
 
     /**
      * *********
@@ -314,11 +314,11 @@ public class MaterialProgressBar extends View {
                 runCallback();
             }
 
-            float offset = 0.0f;
+//            float offset = 0.0f;
             float progress = mProgress;
             if (!linearProgress) {
                 float factor = 2.0f;
-                offset = (float) (1.0f - Math.pow(1.0f - mProgress / 360.0f, 2.0f * factor)) * 360.0f;
+//                offset = (float) (1.0f - Math.pow(1.0f - mProgress / 360.0f, 2.0f * factor)) * 360.0f;
                 progress = (float) (1.0f - Math.pow(1.0f - mProgress / 360.0f, factor)) * 360.0f;
             }
 

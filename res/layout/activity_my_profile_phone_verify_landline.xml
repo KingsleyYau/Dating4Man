@@ -18,7 +18,6 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             card_view:cardBackgroundColor="#FFFFFF"
             card_view:cardCornerRadius="2dp"
             card_view:cardElevation="2dp"
@@ -33,7 +32,7 @@
                 android:layout_gravity="center_horizontal"
                 android:text="@string/landline_verify_tips"
                 android:textColor="@color/text_color_dark"
-                android:layout_margin="16dp" 
+                android:padding="16dp" 
                 android:textSize="16sp"/>
             
         </android.support.v7.widget.CardView>
@@ -55,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_margin="16dp" >
+            android:padding="16dp" >
 
             <TextView
                 android:id="@+id/textViewLandline"

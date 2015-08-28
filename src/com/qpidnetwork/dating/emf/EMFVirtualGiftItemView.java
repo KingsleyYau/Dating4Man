@@ -1,10 +1,5 @@
 package com.qpidnetwork.dating.emf;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.framework.util.SystemUtil;
-import com.qpidnetwork.framework.util.UnitConversion;
-import com.qpidnetwork.tool.ImageViewLoader;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -12,6 +7,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.util.SystemUtil;
+import com.qpidnetwork.framework.util.UnitConversion;
+import com.qpidnetwork.tool.ImageViewLoader;
 
 public class EMFVirtualGiftItemView extends RelativeLayout {
 

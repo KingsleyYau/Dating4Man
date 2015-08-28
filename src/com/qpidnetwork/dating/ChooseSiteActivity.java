@@ -17,6 +17,7 @@ import android.widget.TextView;
 import at.technikum.mti.fancycoverflow.FancyCoverFlow;
 import at.technikum.mti.fancycoverflow.FancyCoverFlowAdapter;
 
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.home.HomeActivity;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.manager.WebSiteManager;
@@ -89,7 +90,7 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
 	    }
 	}
 	
-	private ChooseSitePagerAdapter mAdapter;
+//	private ChooseSitePagerAdapter mAdapter;
 	private FancyCoverFlow fancyCoverFlow;
 	private TextView textViewOnline;
 	public TextView textViewSiteName;
@@ -106,26 +107,6 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
 		REQUEST_ONLINE_FAIL,
 	}
 	
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * 
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-		}
-		public String errno;
-		public String errmsg;
-		public OtherOnlineCountItem[] otherOnlineCountItem = null;
-	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +118,7 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
 	/**
 	 * 初始化界面
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	public void InitView() {
 		setContentView(R.layout.activity_choose_site);
@@ -222,7 +204,7 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
 			public void handleMessage(Message msg) {
 				// 收起菊花
 				hideProgressDialog();
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+//				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_ONLINE_SUCCESS:{
 					// 获取站点在线人数成功
@@ -271,11 +253,11 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
 							String errmsg, OtherOnlineCountItem[] item) {
 						// TODO Auto-generated method stub
 						Message msg = Message.obtain();
-						MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+						RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 						if( isSuccess ) {
 							// 获取站点在线人数成功
 							msg.what = RequestFlag.REQUEST_ONLINE_SUCCESS.ordinal();
-							obj.otherOnlineCountItem = item;
+							obj.body = item;
 						} else {
 							// 获取验证码失败
 							msg.what = RequestFlag.REQUEST_ONLINE_FAIL.ordinal();

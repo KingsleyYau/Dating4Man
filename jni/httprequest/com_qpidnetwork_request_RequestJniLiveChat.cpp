@@ -327,6 +327,10 @@ jobjectArray GetArrayWithListRecord(JNIEnv* env, const list<Record>& recordList)
 						"Ljava/lang/String;"	// voiceId
 						"Ljava/lang/String;"	// voiceType
 						"I"						// voiceTime
+						"Ljava/lang/String;"	// videoId
+						"Ljava/lang/String;"	// videoSendId
+						"Ljava/lang/String;"	// videoDesc
+						"Z"						// videoCharge
 						")V");
 
 				jstring textMsg = env->NewStringUTF(itr->textMsg.c_str());
@@ -338,6 +342,9 @@ jobjectArray GetArrayWithListRecord(JNIEnv* env, const list<Record>& recordList)
 				jstring photoDesc = env->NewStringUTF(itr->photoDesc.c_str());
 				jstring voiceId = env->NewStringUTF(itr->voiceId.c_str());
 				jstring voiceType = env->NewStringUTF(itr->voiceType.c_str());
+				jstring videoId = env->NewStringUTF(itr->videoId.c_str());
+				jstring videoSendId = env->NewStringUTF(itr->videoSendId.c_str());
+				jstring videoDesc = env->NewStringUTF(itr->videoDesc.c_str());
 
 				jobject item = env->NewObject(cls, init,
 						itr->toflag,
@@ -353,7 +360,11 @@ jobjectArray GetArrayWithListRecord(JNIEnv* env, const list<Record>& recordList)
 						itr->photoCharge,
 						voiceId,
 						voiceType,
-						itr->voiceTime
+						itr->voiceTime,
+						videoId,
+						videoSendId,
+						videoDesc,
+						itr->videoCharge
 						);
 
 				env->SetObjectArrayElement(jItemArray, i, item);
@@ -367,6 +378,9 @@ jobjectArray GetArrayWithListRecord(JNIEnv* env, const list<Record>& recordList)
 				env->DeleteLocalRef(photoDesc);
 				env->DeleteLocalRef(voiceId);
 				env->DeleteLocalRef(voiceType);
+				env->DeleteLocalRef(videoId);
+				env->DeleteLocalRef(videoSendId);
+				env->DeleteLocalRef(videoDesc);
 
 				env->DeleteLocalRef(item);
 			}
@@ -1164,6 +1178,7 @@ void onQueryRecentVideoList(long requestId, bool success, list<LCVideoItem> item
 				"Ljava/lang/String;"
 				"Ljava/lang/String;"
 				"Ljava/lang/String;"
+				"Ljava/lang/String;"
 				")V");
 
 		if( itemList.size() > 0 ) {
@@ -1236,10 +1251,14 @@ void onQueryRecentVideoList(long requestId, bool success, list<LCVideoItem> item
  * Signature: (Ljava/lang/String;Lcom/qpidnetwork/request/OnQueryRecentVideoListCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_QueryRecentVideo
-  (JNIEnv *env, jclass, jstring womanId, jobject callback) {
+  (JNIEnv *env, jclass, jstring user_sid, jstring user_id, jstring womanId, jobject callback) {
 	jlong requestId = -1;
 
-	requestId = gRequestLiveChatController.QueryRecentVideo(JString2String(env, womanId));
+	requestId = gRequestLiveChatController.QueryRecentVideo(
+			JString2String(env, user_sid),
+			JString2String(env, user_id),
+			JString2String(env, womanId)
+			);
 
 	jobject obj = env->NewGlobalRef(callback);
 	gCallbackMap.Insert(requestId, obj);
@@ -1254,10 +1273,12 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_QueryRec
  * Signature: (Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Lcom/qpidnetwork/request/OnRequestFileCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetVideoPhoto
-  (JNIEnv *env, jclass, jstring womanId, jstring videoid, jint size, jstring filePath, jobject callback) {
+  (JNIEnv *env, jclass, jstring user_sid, jstring user_id, jstring womanId, jstring videoid, jint size, jstring filePath, jobject callback) {
 	jlong requestId = -1;
 
 	requestId = gRequestLiveChatController.GetVideoPhoto(
+			JString2String(env, user_sid),
+			JString2String(env, user_id),
 			JString2String(env, womanId),
 			JString2String(env, videoid),
 			size,
@@ -1317,10 +1338,12 @@ void onGetVideoPhoto(long requestId, bool success, const string& errnum, const s
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Lcom/qpidnetwork/request/OnGetVideoCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetVideo
-  (JNIEnv *env, jclass, jstring womanId, jstring videoid, jstring inviteid, jint toflag, jstring sendid, jobject callback) {
+  (JNIEnv *env, jclass, jstring user_sid, jstring user_id, jstring womanId, jstring videoid, jstring inviteid, jint toflag, jstring sendid, jobject callback) {
 	jlong requestId = -1;
 
 	requestId = gRequestLiveChatController.GetVideo(
+			JString2String(env, user_sid),
+			JString2String(env, user_id),
 			JString2String(env, womanId),
 			JString2String(env, videoid),
 			JString2String(env, inviteid),
@@ -1346,9 +1369,9 @@ void onGetVideo(long requestId, bool success, const string& errnum, const string
 	jclass jCallbackCls = env->GetObjectClass(jCallbackObj);
 
 	string signure = "(JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
-	jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnGetVideo", signure.c_str());
+	jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnLCGetVideo", signure.c_str());
 
-	FileLog("httprequest", "LiveChat.Native::onGetVideo(), errnum:%s, errmsg:%s, filePath:%s", errnum.c_str(), errmsg.c_str(), url.c_str());
+	FileLog("httprequest", "LiveChat.Native::onGetVideo(), errnum:%s, errmsg:%s, url:%s", errnum.c_str(), errmsg.c_str(), url.c_str());
 	if( jCallbackObj != NULL && jCallback != NULL ) {
 		jstring jerrno = env->NewStringUTF(errnum.c_str());
 		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());

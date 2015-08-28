@@ -40,7 +40,7 @@ public class WrapListView extends RelativeLayout {
 	protected void onLayout(boolean arg0, int argLeft, int argTop,
 			int argRight, int argBottom) {
 		int count = getChildCount();
-		int row = 0;
+//		int row = 0;
 		int lengthX = 0;
 		int lengthY = 0;
 		for (int i = 0; i < count; ++i) {
@@ -61,7 +61,7 @@ public class WrapListView extends RelativeLayout {
 			if (lengthX > argRight) {
 				lengthX = width;
 				lengthY += getDividerHeight() + height;
-				++row;
+//				++row;
 				child.layout(lengthX - width, lengthY - height, lengthX,
 						lengthY);
 			} else {

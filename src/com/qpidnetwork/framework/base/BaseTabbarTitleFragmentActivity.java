@@ -7,8 +7,8 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.view.TitleTabBar;
-import com.qpidnetwork.view.ViewPagerFixed;
 import com.qpidnetwork.view.TitleTabBar.TitleTabBarListener;
+import com.qpidnetwork.view.ViewPagerFixed;
 
 /**
  * TabBar title activty(注意FragmentPagerAdapter 与 tab数目匹配问题，否则会异常)
@@ -21,6 +21,7 @@ public class BaseTabbarTitleFragmentActivity extends BaseActionBarFragmentActivi
 	private ViewPagerFixed mViewpager;
 	private int index = 0;
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub

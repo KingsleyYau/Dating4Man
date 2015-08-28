@@ -18,6 +18,7 @@ import com.qpidnetwork.dating.home.HomeActivity;
  * @author Max.Chiu
  *
  */
+@SuppressWarnings("deprecation")
 public class EMFNotification {
 
 	private static int mCurNotificationId = 30000;
@@ -115,7 +116,8 @@ public class EMFNotification {
     	intent.putExtra(HomeActivity.START_EMF_LIST, true);
     	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
     	
-        PendingIntent pt = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    	PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//      PendingIntent pt = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 //    	notification.contentIntent = pt;
         
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);

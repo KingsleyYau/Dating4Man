@@ -74,6 +74,7 @@ public class EMFOutboxFragment extends BaseListFragment{
 		});
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub

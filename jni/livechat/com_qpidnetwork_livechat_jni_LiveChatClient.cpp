@@ -767,6 +767,33 @@ public:
 
 		ReleaseEnv(isAttachThread);
 	}
+	virtual void OnPlayVideo(LCC_ERR_TYPE err, const string& errmsg, int ticket)
+	{
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnPlayVideo() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(ILjava/lang/String;I)V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnPlayVideo", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnPlayVideo() callback now");
+
+			int errType = LccErrTypeToInt(err);
+			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, errType, jerrmsg, ticket);
+
+			env->DeleteLocalRef(jerrmsg);
+
+			FileLog("LiveChatClient", "OnPlayVideo() callback ok");
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
 	virtual void OnGetUserInfo(const string& inUserId, LCC_ERR_TYPE err, const string& errmsg, const UserInfoItem& item)
 	{
 		JNIEnv* env = NULL;
@@ -933,7 +960,6 @@ public:
 	{
 		// 仅女士端
 	}
-
 	// --------------------- 服务器主动请求 -------------------------------
 	virtual void OnRecvMessage(const string& toId, const string& fromId, const string& fromName, const string& inviteId, bool charge, int ticket, TALK_MSG_TYPE msgType, const string& message) {
 		JNIEnv* env = NULL;
@@ -1327,12 +1353,48 @@ public:
 
 		ReleaseEnv(isAttachThread);
 	}
+	virtual void OnRecvVideo(const string& toId, const string& fromId, const string& fromName, const string& inviteId, const string& videoId, const string& sendId, bool charge, const string& videoDesc, int ticket)
+	{
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
 
+		FileLog("LiveChatClient", "OnRecvVideo() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;I)V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnRecvVideo", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnRecvVideo() callback now");
+
+			jstring jtoId = env->NewStringUTF(toId.c_str());
+			jstring jfromId = env->NewStringUTF(fromId.c_str());
+			jstring jfromName = env->NewStringUTF(fromName.c_str());
+			jstring jinviteId = env->NewStringUTF(inviteId.c_str());
+			jstring jvideoId = env->NewStringUTF(videoId.c_str());
+			jstring jsendId = env->NewStringUTF(sendId.c_str());
+			jstring jvideoDesc = env->NewStringUTF(videoDesc.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, jtoId, jfromId, jfromName, jinviteId, jvideoId, jsendId, charge, jvideoDesc, ticket);
+
+			env->DeleteLocalRef(jtoId);
+			env->DeleteLocalRef(jfromId);
+			env->DeleteLocalRef(jfromName);
+			env->DeleteLocalRef(jinviteId);
+			env->DeleteLocalRef(jvideoId);
+			env->DeleteLocalRef(jsendId);
+			env->DeleteLocalRef(jvideoDesc);
+
+			FileLog("LiveChatClient", "OnRecvVideo() callback ok");
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
 	virtual void OnRecvLadyVoiceCode(const string& voiceCode)
 	{
 		// 仅女士端
 	}
-
 	virtual void OnRecvIdentifyCode(const unsigned char* data, long dataLen)
 	{
 		// 仅女士端
@@ -1764,6 +1826,26 @@ JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_Show
 	string strSendId = GetJString(env, sendId);
 	string strPhotoDesc = GetJString(env, photoDesc);
 	return g_liveChatClient->ShowPhoto(strUserId, strInviteId, strPhotoId, strSendId, charge, strPhotoDesc, ticket);
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    PlayVideo
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_PlayVideo
+  (JNIEnv *env, jclass cls, jstring userId, jstring inviteId, jstring videoId, jstring sendId, jboolean charge, jstring videoDesc, jint ticket)
+{
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+
+	string strUserId = GetJString(env, userId);
+	string strInviteId = GetJString(env, inviteId);
+	string strVideoId = GetJString(env, videoId);
+	string strSendId = GetJString(env, sendId);
+	string strVideoDesc = GetJString(env, videoDesc);
+	return g_liveChatClient->PlayVideo(strUserId, strInviteId, strVideoId, strSendId, charge, strVideoDesc, ticket);
 }
 
 /*

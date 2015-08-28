@@ -49,6 +49,7 @@ import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.MaterialProgressBar;
 
+@SuppressLint("InflateParams")
 public class HomeContactViewController {
 
 	private static final int GET_CONTACTLIST_SUCCESS = 0;
@@ -217,6 +218,7 @@ public class HomeContactViewController {
 	}
 
 	private Handler uiMessageHandler = new Handler() {
+		@SuppressWarnings("unchecked")
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);

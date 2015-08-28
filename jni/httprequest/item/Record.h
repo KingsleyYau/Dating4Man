@@ -14,7 +14,7 @@ using namespace std;
 
 
 #include <json/json/json.h>
-#include "../common/Arithmetic.h"
+#include <common/Arithmetic.h>
 #include "../RequestLiveChatDefine.h"
 
 class Record {
@@ -64,6 +64,13 @@ public:
 					ParsingPhotoMsg(message, photoId, photoSendId, photoDesc, photoCharge);
 					messageType = LRM_PHOTO;
 				}break;
+				case LRPM_VIDEO:{
+					ParsingVideoMsg(message, videoId, videoSendId, videoDesc, videoCharge);
+					messageType = LRM_VIDEO;
+				}break;
+				case LRPM_MAGIC_ICON:{
+
+				}break;
 				default:{
 					messageType = LRM_UNKNOW;
 				}break;
@@ -82,10 +89,14 @@ public:
 		photoId = "";
 		photoSendId = "";
 		photoDesc = "";
-		photoCharge = 0;
+		photoCharge = false;
 		voiceId = "";
 		voiceType = "";
 		voiceTime = 0;
+		videoId = "";
+		videoSendId = "";
+		videoDesc = "";
+		videoCharge = false;
 	}
 
 	virtual ~Record() {
@@ -93,6 +104,7 @@ public:
 	}
 
 private:
+	// 解析语音ID
 	inline void ParsingVoiceMsg(const string& voiceId, string& fileType, int& timeLen)
 	{
 		char buffer[512] = {0};
@@ -115,6 +127,7 @@ private:
 		}
 	}
 
+	// 解析img（图片信息）
 	inline void ParsingPhotoMsg(const string& message, string& photoId, string& sendId, string& photoDesc, bool& charge)
 	{
 		size_t begin = 0;
@@ -131,7 +144,7 @@ private:
 			else if (i == 1) {
 				// charget
 				string strCharget = message.substr(begin, end - begin);
-				charge = (strCharget==LIVECHAT_PHOTO_CHARGE_YES ? true : false);
+				charge = (strCharget==LIVECHAT_CHARGE_YES ? true : false);
 				begin = end + strlen(LIVECHAT_PHOTO_DELIMIT);
 			}
 			else if (i == 2) {
@@ -144,6 +157,45 @@ private:
 					photoDesc = buffer;
 				}
 				begin = end + strlen(LIVECHAT_PHOTO_DELIMIT);
+
+				// sendId
+				sendId = message.substr(begin);
+				break;
+			}
+			i++;
+		}
+	}
+
+	// 解析video（视频信息）
+	inline void ParsingVideoMsg(const string& message, string& videoId, string& sendId, string& videoDesc, bool& charge)
+	{
+		size_t begin = 0;
+		size_t end = 0;
+		int i = 0;
+
+		while (string::npos != (end = message.find_first_of(LIVECHAT_VIDEO_DELIMIT, begin)))
+		{
+			if (i == 0) {
+				// videoId
+				videoId = message.substr(begin, end - begin);
+				begin = end + strlen(LIVECHAT_VIDEO_DELIMIT);
+			}
+			else if (i == 1) {
+				// charget
+				string strCharget = message.substr(begin, end - begin);
+				charge = (strCharget==LIVECHAT_CHARGE_YES ? true : false);
+				begin = end + strlen(LIVECHAT_VIDEO_DELIMIT);
+			}
+			else if (i == 2) {
+				// videoDesc
+				videoDesc = message.substr(begin, end - begin);
+				const int bufferSize = 1024;
+				char buffer[bufferSize] = {0};
+				if (!videoDesc.empty() && videoDesc.length() < bufferSize) {
+					Arithmetic::Base64Decode(videoDesc.c_str(), videoDesc.length(), buffer);
+					videoDesc = buffer;
+				}
+				begin = end + strlen(LIVECHAT_VIDEO_DELIMIT);
 
 				// sendId
 				sendId = message.substr(begin);
@@ -170,6 +222,10 @@ public:
 	 * @param voiceId		语音ID
 	 * @param voiceType		语音文件类型
 	 * @param voiceTime		语音时长
+	 * @param videoId		视频ID
+	 * @param videoSendId	视频发送ID
+	 * @param videoDesc		视频描述
+	 * @param videoCharge	视频是否已付费
 	 */
 	int toflag;
 	long adddate;
@@ -185,6 +241,10 @@ public:
 	string voiceId;
 	string voiceType;
 	int voiceTime;
+	string videoId;
+	string videoSendId;
+	string videoDesc;
+	bool videoCharge;
 };
 
 #endif /* RECORD_H_ */

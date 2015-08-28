@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 

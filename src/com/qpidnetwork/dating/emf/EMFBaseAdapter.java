@@ -1,5 +1,6 @@
 package com.qpidnetwork.dating.emf;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.qpidnetwork.tool.ImageViewLoader;
  * @author Hunter
  * @since 2015.5.13
  */
+@SuppressLint("InflateParams")
 public abstract class EMFBaseAdapter<T> extends UpdateableAdapter<T>{
 	
 	public Activity mContext;
@@ -27,6 +29,7 @@ public abstract class EMFBaseAdapter<T> extends UpdateableAdapter<T>{
 		this.mContext = context;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub

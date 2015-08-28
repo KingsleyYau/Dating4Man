@@ -1,9 +1,9 @@
 package com.qpidnetwork.view;
 
-import android.view.View;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import android.view.View;
 
 class LineDefinition {
     private final List<View> views = new ArrayList<View>();

@@ -16,6 +16,8 @@
 
 package com.android.volley.toolbox;
 
+import java.io.File;
+
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -25,8 +27,7 @@ import android.os.Build;
 import com.android.volley.Network;
 import com.android.volley.RequestQueue;
 
-import java.io.File;
-
+@SuppressWarnings("deprecation")
 public class Volley {
 
     /** Default on-disk cache directory. */

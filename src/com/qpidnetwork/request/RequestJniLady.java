@@ -1,6 +1,8 @@
 package com.qpidnetwork.request;
 
-import com.qpidnetwork.request.RequestEnum.*;
+import com.qpidnetwork.request.RequestEnum.Children;
+import com.qpidnetwork.request.RequestEnum.Education;
+import com.qpidnetwork.request.RequestEnum.Marry;
 
 /**
  * 4.女士信息

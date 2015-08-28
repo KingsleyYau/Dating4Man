@@ -3,6 +3,7 @@ package com.qpidnetwork.dating.lovecall;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -36,6 +37,8 @@ public class LoveCallListAdapter extends UpdateableAdapter<LoveCallBean>{
 		this.mContext = context;
 	}
 
+	@SuppressLint("InflateParams")
+	@SuppressWarnings("deprecation")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
@@ -108,6 +111,7 @@ public class LoveCallListAdapter extends UpdateableAdapter<LoveCallBean>{
 	}
 	
 	
+	@SuppressLint("RtlHardcoded")
 	private void makeCall(final LoveCallBean lovecallBean) {
 		/* 检测有无Sim卡 */
 		if (SystemUtil.isSimCanUse(mContext)) {

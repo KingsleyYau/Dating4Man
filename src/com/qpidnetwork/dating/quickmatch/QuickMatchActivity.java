@@ -1,13 +1,5 @@
 package com.qpidnetwork.dating.quickmatch;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.profile.MyProfileMatchCriteriaActivity;
-import com.qpidnetwork.framework.base.BaseTabbarTitleFragmentActivity;
-import com.qpidnetwork.manager.WebSiteManager;
-import com.qpidnetwork.view.TitleTabBar;
-import com.qpidnetwork.view.TitleTabBar.TitleTabBarListener;
-
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,7 +7,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
-import android.view.View.OnClickListener;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseTabbarTitleFragmentActivity;
+import com.qpidnetwork.manager.WebSiteManager;
+import com.qpidnetwork.view.TitleTabBar;
+import com.qpidnetwork.view.TitleTabBar.TitleTabBarListener;
 
 
 /**
@@ -65,6 +62,7 @@ public class QuickMatchActivity extends BaseTabbarTitleFragmentActivity implemen
 	
 	private QuickMatchActivityPagerAdapter pageAdapter;
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

@@ -3,7 +3,6 @@ package com.qpidnetwork.dating.profile;
 import java.io.File;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -22,10 +21,8 @@ import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.WebViewActivity;
 import com.qpidnetwork.dating.authorization.LoginManager;
-import com.qpidnetwork.dating.authorization.LoginParam;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.credit.BuyCreditActivity;
-import com.qpidnetwork.dating.lady.LadyListManager;
 import com.qpidnetwork.framework.util.CompatUtil;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.StringUtil;
@@ -36,14 +33,10 @@ import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnGetMyProfileCallback;
 import com.qpidnetwork.request.OnOtherGetCountCallback;
 import com.qpidnetwork.request.OnRequestCallback;
-import com.qpidnetwork.request.RequestJniOther;
-import com.qpidnetwork.request.RequestJniProfile;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.OtherGetCountItem;
 import com.qpidnetwork.request.item.ProfileItem;
-import com.qpidnetwork.request.item.ProfileItem.Photo;
 import com.qpidnetwork.tool.ImageViewLoader;
-import com.qpidnetwork.view.ChoosePhotoDialog;
 import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialThreeButtonDialog;
 import com.qpidnetwork.view.ViewTools;
@@ -96,29 +89,6 @@ public class MyProfileActivity extends BaseActivity {
 	private ProfileItem mProfileItem;
 	private OtherGetCountItem mOtherGetCountItem;
 	
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * 
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 * @param profileItem		登录正常返回
-		 * @param loginErlady		登录错误返回
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-		}
-		public String errno;
-		public String errmsg;
-		public ProfileItem profileItem = null;
-		public OtherGetCountItem otItem = null;
-	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -255,11 +225,10 @@ public class MyProfileActivity extends BaseActivity {
 					ProfileItem item) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, item);
 				if( isSuccess ) {
 					// 获取个人信息成功
 					msg.what = RequestFlag.REQUEST_PROFILE_SUCCESS.ordinal();
-					obj.profileItem = item;
 				} else {
 					// 获取个人信息失败
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
@@ -283,12 +252,10 @@ public class MyProfileActivity extends BaseActivity {
 					OtherGetCountItem item) {
 				// TODO Auto-generated method stub
 				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, item);
 				if( isSuccess ) {
 					// 统计男士数据成功
 					msg.what = RequestFlag.REQUEST_COUNT_SUCCESS.ordinal();
-					obj.otItem = item;
-					
 				} else {
 					// 统计男士数据失败
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
@@ -351,7 +318,7 @@ public class MyProfileActivity extends BaseActivity {
 					public void OnRequest(boolean isSuccess, String errno, String errmsg) {
 						// TODO Auto-generated method stub
 						Message msg = Message.obtain();
-						MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+						RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 						if( isSuccess ) {
 							// 上传头像成功
 							msg.what = RequestFlag.REQUEST_UPLOAD_SUCCESS.ordinal();
@@ -525,7 +492,7 @@ public class MyProfileActivity extends BaseActivity {
 			public void handleMessage(android.os.Message msg) {
 				// 收起菊花
 				hideProgressDialog();
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_UPLOAD_SUCCESS:{
 					// 上传头像成功
@@ -537,7 +504,7 @@ public class MyProfileActivity extends BaseActivity {
 					// 获取个人信息成功
 					
 					// 缓存个人信息
-					mProfileItem = obj.profileItem;
+					mProfileItem = (ProfileItem)obj.body;
 					MyProfilePerfence.SaveProfileItem(mContext, mProfileItem);
 
 					// 刷新界面
@@ -553,10 +520,6 @@ public class MyProfileActivity extends BaseActivity {
 							loader.DisplayImage(
 									imageViewHeader, 
 									url, 
-									imageViewHeader.getWidth(),
-									imageViewHeader.getHeight(),
-									0,
-									0,
 									localPath,
 									null
 									);
@@ -577,7 +540,7 @@ public class MyProfileActivity extends BaseActivity {
 				case REQUEST_COUNT_SUCCESS:{
 					// 统计男士数据成功
 					// 缓存信用点
-					mOtherGetCountItem = obj.otItem;
+					mOtherGetCountItem = (OtherGetCountItem)obj.body;
 					MyProfilePerfence.SaveOtherGetCountItem(mContext, mOtherGetCountItem);
 					
 					// 刷新界面

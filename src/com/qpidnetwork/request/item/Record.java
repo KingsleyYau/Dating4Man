@@ -21,6 +21,10 @@ public class Record {
 	 * @param voiceId		语音ID
 	 * @param voiceType		语音文件类型
 	 * @param voiceTime		语音时长
+	 * @param videoId		视频ID
+	 * @param videoSendId	视频发送ID
+	 * @param videoDesc		视频描述
+	 * @param videoCharge	视频是否已付费
 	 */
 	public Record(
 			int toflag,
@@ -36,7 +40,11 @@ public class Record {
 			boolean photoCharge,
 			String voiceId,
 			String voiceType,
-			int voiceTime
+			int voiceTime,
+			String videoId,
+			String videoSendId,
+			String videoDesc,
+			boolean videoCharge
 			) {
 		
 		if( toflag < 0 || toflag >= ToFlag.values().length ) {
@@ -70,6 +78,11 @@ public class Record {
 		this.voiceId = voiceId;
 		this.voiceType = voiceType;
 		this.voiceTime = voiceTime;
+		// -- video --
+		this.videoId = videoId;
+		this.videoSendId = videoSendId;
+		this.videoDesc = videoDesc;
+		this.videoCharge = videoCharge;
 	}
 	
 	public enum ToFlag {
@@ -82,7 +95,8 @@ public class Record {
 		Warning,
 		Emotion,
 		Voice,
-		Photo
+		Photo,
+		Video
 	}
 	
 	public ToFlag toflag;
@@ -105,4 +119,9 @@ public class Record {
 	public String voiceId;
 	public String voiceType;
 	public int voiceTime;
+	// -- video --
+	public String videoId;
+	public String videoSendId;
+	public String videoDesc;
+	public boolean videoCharge;
 }

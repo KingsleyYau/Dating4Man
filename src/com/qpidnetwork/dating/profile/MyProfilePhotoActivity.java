@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.channels.FileLock;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -18,28 +17,25 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.framework.util.CompatUtil;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.request.OnRequestCallback;
-import com.qpidnetwork.request.RequestJniProfile;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.ProfileItem;
 import com.qpidnetwork.request.item.ProfileItem.Photo;
 import com.qpidnetwork.request.item.ProfileItem.VType;
 import com.qpidnetwork.tool.ImageViewLoader;
-import com.qpidnetwork.view.ChoosePhotoDialog;
 import com.qpidnetwork.view.MaterialThreeButtonDialog;
 
 /**
@@ -76,32 +72,12 @@ public class MyProfilePhotoActivity extends BaseActivity {
 	}
 	
 	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * 
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-		}
-		public String errno;
-		public String errmsg;
-	}
-	
-	/**
 	 * 用户头像
 	 */
 	private ImageView imageViewHeader;
 	private ImageViewLoader loader = new ImageViewLoader(this);
 	
-	private LinearLayout imageViewChangePhoto;
+//	private LinearLayout imageViewChangePhoto;
 	private ImageButton buttonChange;
 	
 	/**
@@ -255,7 +231,7 @@ public class MyProfilePhotoActivity extends BaseActivity {
 						public void OnRequest(boolean isSuccess, String errno, String errmsg) {
 							// TODO Auto-generated method stub
 							Message msg = Message.obtain();
-							MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+							RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 							if( isSuccess ) {
 								// 上传头像成功
 								msg.what = RequestFlag.REQUEST_UPLOAD_SUCCESS.ordinal();
@@ -312,7 +288,7 @@ public class MyProfilePhotoActivity extends BaseActivity {
 		setContentView(R.layout.activity_my_profile_photo);
 		
 		imageViewHeader = (ImageView) findViewById(R.id.imageViewHeader);
-		imageViewChangePhoto = (LinearLayout ) findViewById(R.id.imageViewChangePhoto);
+//		imageViewChangePhoto = (LinearLayout ) findViewById(R.id.imageViewChangePhoto);
 		textViewTips = (TextView) findViewById(R.id.textViewTips);
 		buttonChange = (ImageButton) findViewById(R.id.buttonChange);
 		buttonChange.setVisibility(View.GONE);
@@ -332,7 +308,7 @@ public class MyProfilePhotoActivity extends BaseActivity {
 			@Override
 			public void handleMessage(android.os.Message msg) {
 				// 收起菊花
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_UPLOAD_SUCCESS:{
 					// 上传头像成功

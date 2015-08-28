@@ -1,11 +1,11 @@
 package com.qpidnetwork.dating.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.qpidnetwork.request.item.EMFAdmirerListItem;
 import com.qpidnetwork.request.item.EMFInboxListItem;
 import com.qpidnetwork.request.item.EMFOutboxListItem;
-
-import android.os.Parcel;
-import android.os.Parcelable;
 
 /**
  * 接口二次封装，用于界面数据传输显示使用

@@ -3,18 +3,15 @@ package com.qpidnetwork.framework.base;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.view.ButtonFloat;
-import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.MaterialAppBar;
-
-import android.view.ViewGroup.LayoutParams;
-import android.view.animation.TranslateAnimation;
 
 /**
  * 添加基础ActionBar

@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import com.qpidnetwork.framework.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -16,6 +15,8 @@ import android.widget.Toast;
 
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.request.OnFindPasswordCallback;
 import com.qpidnetwork.request.OnRequestOriginalCallback;
 import com.qpidnetwork.request.RequestErrorCode;
@@ -32,29 +33,6 @@ public class RegisterResetPasswordActivity extends BaseActivity {
 		REQUEST_CHECKCODE_FAIL,
 	}
 	
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * 
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 * @param bitmap			验证码
-		 * @param loginItem			登录正常返回
-		 * @param loginErrorItem	登录错误返回
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-		}
-		public String errno;
-		public String errmsg;
-		public Bitmap bitmap = null;
-	}
 	
 	private MaterialTextField editTextEmail;
 	
@@ -106,12 +84,12 @@ public class RegisterResetPasswordActivity extends BaseActivity {
 				// TODO Auto-generated method stub
 				if( isSuccess ) {
 					Message msg = Message.obtain();
-					MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+					RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 					if( isSuccess ) {
 						// 获取验证码成功
 						msg.what = RequestFlag.REQUEST_CHECKCODE_SUCCESS.ordinal();
 						if( data.length != 0 ) {
-							obj.bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+							obj.body = BitmapFactory.decodeByteArray(data, 0, data.length);
 						}
 					} else {
 						// 获取验证码失败
@@ -153,7 +131,7 @@ public class RegisterResetPasswordActivity extends BaseActivity {
 							String tips) {
 						// TODO Auto-generated method stub
 						Message msg = Message.obtain();
-						MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+						RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 						if( isSuccess ) {
 							// 成功
 							msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
@@ -214,7 +192,7 @@ public class RegisterResetPasswordActivity extends BaseActivity {
 			public void handleMessage(android.os.Message msg) {
 				// 收起菊花
 				hideProgressDialog();
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_SUCCESS:{
 					// 收起菊花
@@ -246,8 +224,8 @@ public class RegisterResetPasswordActivity extends BaseActivity {
 				}break;
 				case REQUEST_CHECKCODE_SUCCESS:{
 					// 获取验证码成功
-					if( obj != null && obj.bitmap != null ) {
-						Bitmap bitmap = obj.bitmap;
+					if( obj != null && obj.body != null ) {
+						Bitmap bitmap = (Bitmap)obj.body;
 						imageViewCheckCode.setImageBitmap(bitmap);
 						layoutCheckCode.setVisibility(View.VISIBLE);
 //						textViewSep3.setVisibility(View.VISIBLE);

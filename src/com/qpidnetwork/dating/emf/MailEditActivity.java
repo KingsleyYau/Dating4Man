@@ -14,7 +14,6 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -71,6 +70,7 @@ import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.EMFSendMsgErrorItem;
 import com.qpidnetwork.request.item.EMFSendMsgItem;
 import com.qpidnetwork.request.item.LadyDetail;
+import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.request.item.OtherIntegralCheckItem;
 import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.view.ChooseRemoveAttachmentDialog;
@@ -177,6 +177,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 	/**
 	 * 界面消息
 	 */
+	@SuppressWarnings("unused")
 	private class MessageCallbackItem {
 		/**
 		 * 
@@ -222,7 +223,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 		if(LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED){
 			LoginParam loginParam = LoginPerfence.GetLoginParam(context);
 			if(loginParam.item.premit){
-				if(((replayType == replayType.ADMIRE)&&loginParam.item.admirer)||
+				if(((replayType == ReplyType.ADMIRE)&&loginParam.item.admirer)||
 							loginParam.item.ladyprofile){
 					isCanEnter = false;
 				}
@@ -261,7 +262,8 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 
 		getCustomActionBar().addButtonToRight(R.id.common_button_gift, "",
 				R.drawable.ic_wallet_giftcard_grey600_24dp);
-		if(LoginPerfence.GetLoginParam(this).item.photosend){
+		LoginItem item = LoginPerfence.GetLoginParam(this).item;
+		if((item != null)&& (item.photosend)){
 			/*私密照发送风控，当允许发送时才显示添加附件按钮，否则直接隐藏*/
 			getCustomActionBar().addButtonToRight(R.id.common_button_attachments,
 					"", R.drawable.ic_attachment_grey600_24dp);
@@ -1152,6 +1154,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
@@ -1167,7 +1170,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 		case REQUEST_SUCCESS: {
 			/* 发送成功，添加到现有联系人 */
 			FlatToast.showStickToast(mContext, "Sent!", FlatToast.StikyToastType.DONE);
-			ContactManager.getInstance().updateBySendEMF(mCurrentLady, false);
+			ContactManager.getInstance().updateBySendEMF(mCurrentLady);
 
 			// 发送成功
 			if (callbackItem.sendItem != null
@@ -1440,6 +1443,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 				Context.MODE_PRIVATE);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		@SuppressWarnings("unused")
 		ObjectOutputStream oos = null;
 		try {
 			oos = new ObjectOutputStream(baos);
@@ -1485,7 +1489,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 	/**
 	 * 清空临时附件目录
 	 */
-	private void ClearCaceh() {
+//	private void ClearCaceh() {
 //		String cmd = "rm -rf " + EMFHelper.getEMFPath();
 //		try {
 //			Runtime.getRuntime().exec(cmd);
@@ -1493,7 +1497,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-	}
+//	}
 
 	/**
 	 * #########################################################################

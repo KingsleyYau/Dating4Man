@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
@@ -35,9 +36,9 @@ import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.util.SystemUtil;
 import com.qpidnetwork.livechat.LCMessageItem;
 import com.qpidnetwork.livechat.LCMessageItem.SendType;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.LiveChatManagerPhotoListener;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.request.RequestJniLiveChat.PhotoSizeType;
 import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.FlatToast;
@@ -45,6 +46,7 @@ import com.qpidnetwork.view.GetMoreCreditDialog;
 import com.qpidnetwork.view.MaterialProgressBar;
 import com.qpidnetwork.view.TouchImageView;
 
+@SuppressLint("InflateParams")
 public class PrivatePhotoPreviewFragment extends BaseFragment implements
 		LiveChatManagerPhotoListener {
 
@@ -440,6 +442,7 @@ public class PrivatePhotoPreviewFragment extends BaseFragment implements
 	 * 保存图片到系统相册
 	 * @param filePath		文件路径
 	 */
+	@SuppressWarnings("deprecation")
 	public void SaveImageToGallery(String thumb, String filePath, String fileName) {
 		
 		// 插入图库

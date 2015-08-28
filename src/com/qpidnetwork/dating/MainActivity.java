@@ -1,80 +1,15 @@
 package com.qpidnetwork.dating;
 
-import java.util.ArrayList;
-
-import javax.security.auth.callback.Callback;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.widget.ImageView;
 
-import com.facebook.internal.PlatformServiceClient;
-import com.qpidnetwork.dating.authorization.LoginParam;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.authorization.RegisterActivity;
-import com.qpidnetwork.dating.authorization.LoginManager.LoginStatus;
-import com.qpidnetwork.dating.authorization.LoginParam.LoginType;
-import com.qpidnetwork.dating.emf.EMFAttachmentUploader;
 import com.qpidnetwork.dating.profile.MyProfileActivity;
 import com.qpidnetwork.dating.quickmatch.QuickMatchActivity;
-import com.qpidnetwork.framework.util.Log;
-import com.qpidnetwork.livechat.LCMessageItem;
-import com.qpidnetwork.livechat.LCUserItem;
-import com.qpidnetwork.livechat.LCEmotionItem;
-import com.qpidnetwork.livechat.LCUserItem.ChatType;
-import com.qpidnetwork.livechat.LiveChatManager;
-import com.qpidnetwork.livechat.LiveChatManagerEmotionListener;
-import com.qpidnetwork.livechat.LiveChatManagerMessageListener;
-import com.qpidnetwork.livechat.LiveChatManagerOtherListener;
-import com.qpidnetwork.livechat.LiveChatManagerPhotoListener;
-import com.qpidnetwork.livechat.LiveChatManagerTryTicketListener;
-import com.qpidnetwork.livechat.LiveChatManagerVoiceListener;
-import com.qpidnetwork.livechat.jni.LiveChatTalkListInfo;
-import com.qpidnetwork.livechat.jni.LiveChatUserStatus;
-import com.qpidnetwork.livechat.jni.LiveChatClient.UserStatusType;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.TryTicketEventType;
-import com.qpidnetwork.manager.FileCacheManager;
-import com.qpidnetwork.manager.FileCacheManager.LadyFileType;
-import com.qpidnetwork.manager.WebSiteManager;
-import com.qpidnetwork.request.OnLoginCallback;
-import com.qpidnetwork.request.OnOtherSynConfigCallback;
-import com.qpidnetwork.request.OnQueryLadyListCallback;
-import com.qpidnetwork.request.OnRequestCallback;
-import com.qpidnetwork.request.OnTicketDetailCallback;
-import com.qpidnetwork.request.OnTicketListCallback;
 import com.qpidnetwork.request.RequestJni;
-import com.qpidnetwork.request.RequestJniAuthorization;
-import com.qpidnetwork.request.RequestJniLady;
-import com.qpidnetwork.request.RequestJniLady.OnlineType;
-import com.qpidnetwork.request.RequestJniLady.OrderType;
-import com.qpidnetwork.request.RequestJniLady.SearchType;
-import com.qpidnetwork.request.RequestJniLiveChat.PhotoSizeType;
-import com.qpidnetwork.request.RequestJniOther;
-import com.qpidnetwork.request.RequestJniTicket;
-import com.qpidnetwork.request.item.Coupon;
-import com.qpidnetwork.request.item.Coupon.CouponStatus;
-import com.qpidnetwork.request.item.Lady;
-import com.qpidnetwork.request.item.OtherEmotionConfigItem;
-import com.qpidnetwork.request.item.OtherSynConfigItem;
-import com.qpidnetwork.request.item.LoginItem;
-import com.qpidnetwork.request.item.TicketDetailItem;
-import com.qpidnetwork.request.item.TicketListItem;
-import com.qpidnetwork.tool.ImageViewLoader;
-import com.qpidnetwork.tool.ImageViewLoader.ImageViewLoaderCallback;
 
 @SuppressLint("HandlerLeak")
 public class MainActivity extends FragmentActivity {
@@ -133,7 +68,7 @@ public class MainActivity extends FragmentActivity {
 //				}
 //			});
 
-//		RequestJniAuthorization.Login("CM28171208", "123456", "000000000000000", "1", "Android",
+//		RequestJniAuthorization.Login("CM28171208", "1234", "123", "000000000000000", "1", "Android",
 ////		RequestJniAuthorization.Login("samson.fan@qpidnetwork.com", "123456", "000000000000000", "1", "Android",
 //				"samsung", new OnLoginCallback() {
 //					
@@ -203,10 +138,10 @@ public class MainActivity extends FragmentActivity {
 //		testLiveChatManager();
 //		testImageView();
 //		testRequest();
-		testTicket();
+//		testTicket();
 	}
 	
-	protected void testEMFRequest() {
+//	protected void testEMFRequest() {
 		// Samson test OK 2015-04-21 
 //		RequestJniEMF.InboxList(0, 15, SortType.READ, "", new OnEMFInboxListCallback() {
 //			@Override
@@ -448,10 +383,10 @@ public class MainActivity extends FragmentActivity {
 //						+ " )");
 //			}
 //		});
-	}	
+//	}	
 	
 	
-	protected void testVideoShowRequest() {
+//	protected void testVideoShowRequest() {
 		// Samson test OK 2015-03-13
 //		RequestJniVideoShow.VideoList(0, 15, 1, 99, OrderByType.NEWEST, new OnVSVideoListCallback() {
 //			
@@ -552,9 +487,9 @@ public class MainActivity extends FragmentActivity {
 //					+ " )");				
 //			}
 //		});
-	}
+//	}
 	
-	protected void testOther() {
+//	protected void testOther() {
 		// Samson test OK 2015-03-18
 //		RequestJniOther.EmotionConfig(new OnOtherEmotionConfigCallback() {
 //			
@@ -626,18 +561,18 @@ public class MainActivity extends FragmentActivity {
 //		});
 		
 		// Samson test OK 2015-03-18
-		RequestJniOther.SynConfig(new OnOtherSynConfigCallback() {
-			
-			@Override
-			public void OnOtherSynConfig(boolean isSuccess, String errno,
-					String errmsg, OtherSynConfigItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.Other", "OnOtherSynConfig( isSuccess : " + String.valueOf(isSuccess) + "" 
-					+ ", errno : " + errno 
-					+ ", errmsg : " + errmsg
-					+ " )");
-			}
-		});
+//		RequestJniOther.SynConfig(new OnOtherSynConfigCallback() {
+//			
+//			@Override
+//			public void OnOtherSynConfig(boolean isSuccess, String errno,
+//					String errmsg, OtherSynConfigItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.Other", "OnOtherSynConfig( isSuccess : " + String.valueOf(isSuccess) + "" 
+//					+ ", errno : " + errno 
+//					+ ", errmsg : " + errmsg
+//					+ " )");
+//			}
+//		});
 		
 		// Samson test OK 2015-04-23
 //		RequestJniOther.OnlineCount(RequestJniOther.SiteTypeAll, new OnOtherOnlineCountCallback() {
@@ -652,9 +587,9 @@ public class MainActivity extends FragmentActivity {
 //					+ " )");
 //			}
 //		});
-	}
+//	}
 	
-	protected void testLady() {
+//	protected void testLady() {
 		// Samson test OK 2015-04-21
 //		RequestJniLady.QueryLadyList(0, 30, SearchType.NEWEST, "", false, 0, 0, "", new OnQueryLadyListCallback() {
 //			
@@ -713,10 +648,10 @@ public class MainActivity extends FragmentActivity {
 //					+ " )");
 //			}
 //		});
-	}
+//	}
 	
-	public void testAdvert()
-	{
+//	public void testAdvert()
+//	{
 		// Samson test OK 2015-04-22
 //		RequestJniAdvert.MainAdvert("123456", "321654", 1, 2, new OnAdMainAdvertCallback() {
 //			
@@ -772,9 +707,9 @@ public class MainActivity extends FragmentActivity {
 //					+ " )");
 //			}
 //		});
-	}
+//	}
 	
-	public void testLiveChat() {
+//	public void testLiveChat() {
 		// Samson test OK 2015-04-23
 //		String sdPath = "/sdcard/image1.png";
 //		RequestJniLiveChat.SendPhoto("123456", "321654", sdPath, new OnLCSendPhotoCallback() {
@@ -824,469 +759,543 @@ public class MainActivity extends FragmentActivity {
 //							+ " )");
 //					}
 //				});
-	}
-	
-	private enum LiveChatOpt {
-		CheckCoupon,
-		UseTryTicket,
-		GetPhoto,
-		PhotoFee,
-		SendPhoto,
-		GetVoice,
-		SendVoice,
-	}
-	
-	private HandlerThread mHandlerThread = null;
-	private Handler mHandler = null;
-	static private LiveChatManager liveChatMgr = LiveChatManager.newInstance(null);
-	static private int mRecvMsgCount = 0;
-	static private String lastEmotionId = "";
-	static private boolean isGetEmotionConfig = false;
-	public void testLiveChatManager() {
-		String[] ips = {"58.64.141.117", "97.74.124.191", "50.62.144.124", "95.211.9.37"};
-		int port = 5000;
-		String emotionPath = "/sdcard";
-		String photoPath = "/sdcard";
-		String voicePath = "/sdcard";
+//	}
+//	
+//	private enum LiveChatOpt {
+//		SendMsg,
+//		GetPhoto,
+//		PhotoFee,
+//		SendPhoto,
+//		GetVoice,
+//		SendVoice,
+//		GetVideoPhoto,
+//		VideoFee,
+//		GetVideo,
+//	}
+//	
+//	private HandlerThread mHandlerThread = null;
+//	private Handler mHandler = null;
+//	static private LiveChatManager liveChatMgr = LiveChatManager.newInstance(null);
+//	static private int mRecvMsgCount = 0;
+//	static private String lastEmotionId = "";
+//	static private boolean isGetEmotionConfig = false;
+//	public void testLiveChatManager() {
+//		String[] ips = {"58.64.141.117", "97.74.124.191", "50.62.144.124", "95.211.9.37"};
+//		int port = 5000;
+//		String emotionPath = "/sdcard";
+//		String photoPath = "/sdcard";
+//		String voicePath = "/sdcard";
 //		liveChatMgr.Init(getApplicationContext(), ips, port, "http://demo.chnlove.com", emotionPath, photoPath, voicePath);
-		liveChatMgr.RegisterOtherListener(new LiveChatManagerOtherListener() {
-			
-			@Override
-			public void OnUpdateStatus(LCUserItem userItem) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnUpdateStatus() userId:%s, status:%s", userItem.userId, userItem.statusType.name()));
-			}
-			
-			@Override
-			public void OnChangeOnlineStatus(LCUserItem userItem) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			// test by samson 2015-05-04
-			public void OnSetStatus(LiveChatErrType errType, String errmsg) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnSetStatus() errType:%s, errmsg:%s", errType.name(), errmsg));
-			}
-			
-			@Override
-			// test by samson 2015-05-05
-			public void OnRecvKickOffline(KickOfflineType kickType) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnRecvKickOffline() kickType:%s", kickType.name()));
-			}
-			
-			@Override
-			public void OnRecvEMFNotice(String fromId, TalkEmfNoticeType noticeType) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnRecvEMFNotice() fromId:%s, noticeType:%s", fromId, noticeType));
-			}
-			
-			@Override
-			// test by samson 2015-05-04
-			public void OnLogout(LiveChatErrType errType, String errmsg, boolean isAutoLogin) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnLogout() errType:%s, errmsg:%s", errType.name(), errmsg));
+//		liveChatMgr.RegisterOtherListener(new LiveChatManagerOtherListener() {
+//			
+//			@Override
+//			public void OnUpdateStatus(LCUserItem userItem) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnUpdateStatus() userId:%s, status:%s", userItem.userId, userItem.statusType.name()));
+//			}
+//			
+//			@Override
+//			public void OnChangeOnlineStatus(LCUserItem userItem) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-04
+//			public void OnSetStatus(LiveChatErrType errType, String errmsg) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnSetStatus() errType:%s, errmsg:%s", errType.name(), errmsg));
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-05
+//			public void OnRecvKickOffline(KickOfflineType kickType) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnRecvKickOffline() kickType:%s", kickType.name()));
+//			}
+//			
+//			@Override
+//			public void OnRecvEMFNotice(String fromId, TalkEmfNoticeType noticeType) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnRecvEMFNotice() fromId:%s, noticeType:%s", fromId, noticeType));
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-04
+//			public void OnLogout(LiveChatErrType errType, String errmsg, boolean isAutoLogin) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnLogout() errType:%s, errmsg:%s", errType.name(), errmsg));
 //				if (errType == LiveChatErrType.ConnectFail) {
 //					liveChatMgr.Login("CM28171208", "lmlhh5f4gg11obunk27tv0617j", "000000000000000");
 //				}
-				isToLogin = true;
-			}
-			
-			@Override
-			// test by samson 2015-05-04
-			public void OnLogin(LiveChatErrType errType, String errmsg, boolean isAutoLogin) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnLogin() errType:%s, errmsg:%s", errType.name(), errmsg));
-				if (errType == LiveChatErrType.Success) {
-					liveChatMgr.SetStatus(UserStatusType.USTATUS_ONLINE);
-					synchronized(isToLogin) {
-						isToLogin = false;
-					}
-				}
-			}
-			
-			@Override
-			// test by samson 2015-05-05
-			public void OnGetUserStatus(LiveChatErrType errType, String errmsg,
-					LCUserItem[] userList) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnGetUserStatus() errType:%s, errmsg:%s", errType.name(), errmsg));
-			}
-			
-			@Override
-			public void OnGetTalkList(LiveChatErrType errType, String errmsg) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnGetTalkList() errType:%s, errmsg:%s", errType.name(), errmsg));
-				if (errType == LiveChatErrType.Success) {
-					ArrayList<LCUserItem> chatingUsers = liveChatMgr.GetChatingUsers();
-					ArrayList<LCUserItem> inviteUsers = liveChatMgr.GetInviteUsers();
-					Log.d("MainActivity.LiveChat", String.format("OnGetTalkList() chatingUsers.size:%d, inviteUsers:%d", chatingUsers.size(), inviteUsers.size()));
-					
-					if (inviteUsers.size() > 0) {
-						Message msg = new Message();
-						msg.what = LiveChatOpt.CheckCoupon.ordinal();
-						msg.obj = inviteUsers.get(0).userId;
-						mHandler.sendMessage(msg);
-					}
-				}
-			}
-			
-			@Override
-			public void OnGetHistoryMessage(boolean success, String errno, String errmsg, LCUserItem userItem)
-			{
-				Log.d("MainActivity.LiveChat", String.format("OnGetHistoryMessage() errno:%s, errmsg:%s", errno, errmsg));
-			}
-			
-			@Override
-			public void OnGetUsersHistoryMessage(boolean success, String errno, String errmsg,
-					LCUserItem[] userItems) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnGetUsersHistoryMessage() errno:%s, errmsg:%s", errno, errmsg));
-			}
-		});
-		
-		liveChatMgr.RegisterTryTicketListener(new LiveChatManagerTryTicketListener() {
-			
-			@Override
-			public void OnUseTryTicket(LiveChatErrType errType, String errno, String errmsg,
-					String userId, TryTicketEventType eventType) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnUseTryTicket() errType:%s, errno:%s, errmsg:%s, userId:%s, eventType:%s"
-						, errType.name(), errno, errmsg, userId, eventType.name()));
-				if (errType == LiveChatErrType.Success) {
-					if (eventType == TryTicketEventType.Normal) {
-						liveChatMgr.SendMessage(userId, "hi");
-					}
-				}
-			}
-			
-			@Override
-			public void OnRecvTryTalkEnd(LCUserItem userItem) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnRecvTryTalkEnd()"));
-			}
-			
-			@Override
-			public void OnRecvTryTalkBegin(LCUserItem userItem, int time) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnRecvTryTalkBegin()"));
-			}
-			
-			@Override
-			// test by samson 2015-05-06
-			public void OnRecvTalkEvent(LCUserItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnRecvTalkEvent()"));
-			}
-			
-			@Override
-			// test by samson 2015-05-06
-			public void OnEndTalk(LiveChatErrType errType, String errmsg,
-					LCUserItem userItem) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnEndTalk() errType:%s, errmsg:%s", errType.name(), errmsg));
-				if (errType == LiveChatErrType.Success) {
+//				isToLogin = true;
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-04
+//			public void OnLogin(LiveChatErrType errType, String errmsg, boolean isAutoLogin) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnLogin() errType:%s, errmsg:%s", errType.name(), errmsg));
+//				if (errType == LiveChatErrType.Success) {
+//					liveChatMgr.SetStatus(UserStatusType.USTATUS_ONLINE);
+//					synchronized(isToLogin) {
+//						isToLogin = false;
+//					}
+//				}
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-05
+//			public void OnGetUserStatus(LiveChatErrType errType, String errmsg,
+//					LCUserItem[] userList) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnGetUserStatus() errType:%s, errmsg:%s", errType.name(), errmsg));
+//			}
+//			
+//			@Override
+//			public void OnGetTalkList(LiveChatErrType errType, String errmsg) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnGetTalkList() errType:%s, errmsg:%s", errType.name(), errmsg));
+//				if (errType == LiveChatErrType.Success) {
+//					ArrayList<LCUserItem> chatingUsers = liveChatMgr.GetChatingUsers();
+//					ArrayList<LCUserItem> inviteUsers = liveChatMgr.GetInviteUsers();
+//					Log.d("MainActivity.LiveChat", String.format("OnGetTalkList() chatingUsers.size:%d, inviteUsers:%d", chatingUsers.size(), inviteUsers.size()));
+//					
+//					if (inviteUsers.size() > 0) {
+//						Message msg = new Message();
+//						msg.what = LiveChatOpt.CheckCoupon.ordinal();
+//						msg.obj = inviteUsers.get(0).userId;
+//						mHandler.sendMessage(msg);
+//					}
+//				}
+//			}
+//			
+//			@Override
+//			public void OnGetHistoryMessage(boolean success, String errno, String errmsg, LCUserItem userItem)
+//			{
+//				Log.d("MainActivity.LiveChat", String.format("OnGetHistoryMessage() errno:%s, errmsg:%s", errno, errmsg));
+//			}
+//			
+//			@Override
+//			public void OnGetUsersHistoryMessage(boolean success, String errno, String errmsg,
+//					LCUserItem[] userItems) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnGetUsersHistoryMessage() errno:%s, errmsg:%s", errno, errmsg));
+//			}
+//		});
+//		
+//		liveChatMgr.RegisterTryTicketListener(new LiveChatManagerTryTicketListener() {
+//			
+//			@Override
+//			public void OnUseTryTicket(LiveChatErrType errType, String errno, String errmsg,
+//					String userId, TryTicketEventType eventType) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnUseTryTicket() errType:%s, errno:%s, errmsg:%s, userId:%s, eventType:%s"
+//						, errType.name(), errno, errmsg, userId, eventType.name()));
+//				if (errType == LiveChatErrType.Success) {
+//					if (eventType == TryTicketEventType.Normal) {
+//						liveChatMgr.SendMessage(userId, "hi");
+//					}
+//				}
+//			}
+//			
+//			@Override
+//			public void OnRecvTryTalkEnd(LCUserItem userItem) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnRecvTryTalkEnd()"));
+//			}
+//			
+//			@Override
+//			public void OnRecvTryTalkBegin(LCUserItem userItem, int time) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnRecvTryTalkBegin()"));
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-06
+//			public void OnRecvTalkEvent(LCUserItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnRecvTalkEvent()"));
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-06
+//			public void OnEndTalk(LiveChatErrType errType, String errmsg,
+//					LCUserItem userItem) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnEndTalk() errType:%s, errmsg:%s", errType.name(), errmsg));
+//				if (errType == LiveChatErrType.Success) {
 //					liveChatMgr.GetTalkList();
-				}
-			}
-			
-			@Override
-			// test by samson 2015-05-05
-			public void OnCheckCoupon(boolean success, String errno, String errmsg, Coupon item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnCheckCoupon() errno:%s errmsg:%s", errno, errmsg));
-				if (item.status == CouponStatus.Yes) {
-//					liveChatMgr.UseTryTicket(item.userId);
-					Message msg = new Message();
-					msg.what = LiveChatOpt.UseTryTicket.ordinal();
-					msg.obj = item.userId;
-					mHandler.sendMessage(msg);
-				}
-				else {
-					liveChatMgr.SendMessage(item.userId, "hi");
-				}
-			}
-		});
-		liveChatMgr.RegisterMessageListener(new LiveChatManagerMessageListener() {
-			
-			@Override
-			// test by samson 2015-05-06
-			public void OnSendMessage(LiveChatErrType errType, String errmsg,
-					LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnSendMessage() errType:%s, errmsg:%s", errType.name(), errmsg));
-			}
-			
-			@Override
-			public void OnRecvWarning(LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnRecvWarning()"));
-			}
-			
-			@Override
-			// test by samson 2015-05-04
-			public void OnRecvMessage(LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnRecvMessage()"));
+//				}
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-05
+//			public void OnCheckCoupon(boolean success, String errno, String errmsg, Coupon item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnCheckCoupon() errno:%s errmsg:%s", errno, errmsg));
+//				if (item.status == CouponStatus.Yes) {
+////					liveChatMgr.UseTryTicket(item.userId);
+//					Message msg = new Message();
+//					msg.what = LiveChatOpt.UseTryTicket.ordinal();
+//					msg.obj = item.userId;
+//					mHandler.sendMessage(msg);
+//				}
+//				else {
+//					liveChatMgr.SendMessage(item.userId, "hi");
+//				}
+//			}
+//		});
+//		liveChatMgr.RegisterMessageListener(new LiveChatManagerMessageListener() {
+//			
+//			@Override
+//			// test by samson 2015-05-06
+//			public void OnSendMessage(LiveChatErrType errType, String errmsg,
+//					LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnSendMessage() errType:%s, errmsg:%s", errType.name(), errmsg));
+//			}
+//			
+//			@Override
+//			public void OnRecvWarning(LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnRecvWarning()"));
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-04
+//			public void OnRecvMessage(LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnRecvMessage()"));
+//				
+//				Message msg = new Message();
+//				msg.what = LiveChatOpt.SendMsg.ordinal();
+//				msg.obj = item;
+//				mHandler.sendMessage(msg);
 				
-				if (item.getUserItem().chatType == ChatType.InChatCharge
-					|| item.getUserItem().chatType == ChatType.InChatUseTryTicket)
-				{
-					mRecvMsgCount++;
-					liveChatMgr.SendMessage(item.fromId, item.getTextItem().message);
-					
-					if (mRecvMsgCount % 3 == 0) {
-						if (!isGetEmotionConfig) {
-							liveChatMgr.GetEmotionConfig();
-						}					
-						else if (!lastEmotionId.isEmpty()) {
-							liveChatMgr.SendEmotion(item.fromId, lastEmotionId);
-						}
-					}
-					
-					if (mRecvMsgCount % 5 == 0) {
-//						liveChatMgr.GetTalkList();
-					}
-					
-					if (mRecvMsgCount % 8 == 0) {
-						String[] userIds = {item.fromId, "P580502"};
-						liveChatMgr.GetUserStatus(userIds);
-					}
-					
-					if (mRecvMsgCount % 10 == 0) {
-						liveChatMgr.GetHistoryMessage(item.fromId);
-					}
-					
-					if (mRecvMsgCount % 15 == 0) {
-						boolean endResult = liveChatMgr.EndTalk(item.fromId);
-						Log.d("MainActivity.LiveChat", String.format("OnRecvMessage() endResult:%s", String.valueOf(endResult)));
-					}
-					
-					if (mRecvMsgCount % 30 == 0) {
-						liveChatMgr.Logout();
-					}
-				}
-				else if (item.getUserItem().chatType == ChatType.Invite) {
-					liveChatMgr.CheckCoupon(item.getUserItem().userId);
-				}
-			}
-			
-			@Override
-			public void OnRecvSystemMsg(LCMessageItem item) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			// test by samson 2015-05-04
-			public void OnRecvEditMsg(String fromId) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnRecvEditMsg() fromId:%s", fromId));
-			}
-
-			@Override
-			public void OnSendMessageListFail(LiveChatErrType errType,
-					ArrayList<LCMessageItem> msgList) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
-		liveChatMgr.RegisterEmotionListener(new LiveChatManagerEmotionListener() {
-			
-			@Override
-			// test by samson 2015-05-06
-			public void OnSendEmotion(LiveChatErrType errType, String errmsg,
-					LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnSendEmotion() errType:%s, errmsg:%s", errType.name(), errmsg));
-				liveChatMgr.GetEmotionImage(item.getEmotionItem().emotionId);
-			}
-			
-			@Override
-			// test by samson 2015-05-04
-			public void OnRecvEmotion(LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnRecvEmotion()"));
-				liveChatMgr.GetEmotionPlayImage(item.getEmotionItem().emotionId);
-			}
-			
-			@Override
-			// test by samson 2015-05-06
-			public void OnGetEmotionConfig(boolean success, String errno, String errmsg, OtherEmotionConfigItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnGetEmotionConfig() errno:%s, errmsg:%s", errno, errmsg));
-				if (errno.isEmpty()) {
-					isGetEmotionConfig = true;
-					if (item.manEmotionList.length > 0) {
-						lastEmotionId = item.manEmotionList[item.manEmotionList.length-1].fileName;
-						LCEmotionItem emotionItem = liveChatMgr.GetEmotionInfo(lastEmotionId);
-						if (null == emotionItem || emotionItem.imagePath.isEmpty()) {
-							liveChatMgr.GetEmotionImage(lastEmotionId);
-						}
-					}
-				}
-			}
-			
-			@Override
-			// test by samson 2015-05-06
-			public void OnGetEmotionImage(boolean success, LCEmotionItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnGetEmotionImage() success:%b, item.imagePath:%s"
-						, success, item.imagePath));
-			}
-			
-			@Override
-			// test by samson 2015-05-06
-			public void OnGetEmotion3gp(boolean success, LCEmotionItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnGetEmotion3gp() success:%b, item.f3gpPath:%s"
-						, success, item.f3gpPath));
-			}
-
-			@Override
-			public void OnGetEmotionPlayImage(boolean success,
-					LCEmotionItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnGetEmotionPlayImage() success:%b, item.playBigImages.size():%d"
-						, success, item.playBigImages.size()));				
-			}
-		});
-		liveChatMgr.RegisterPhotoListener(new LiveChatManagerPhotoListener() {
-			
-			@Override
-			public void OnSendPhoto(LiveChatErrType errType, String errno,
-					String errmsg, LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnSendPhoto() errType:%s, errmsg:%s", errType.name(), errmsg));
-			}
-			
-			@Override
-			public void OnRecvPhoto(LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnRecvPhoto()"));
-//				liveChatMgr.SendPhoto(item.fromId, item.getPhotoItem().filePath);
-//				liveChatMgr.PhotoFee(item);
-//				liveChatMgr.GetPhoto(item);
-				Message msg = new Message();
-				msg.what = LiveChatOpt.GetPhoto.ordinal();
-				msg.obj = item;
-				mHandler.sendMessage(msg);
-			}
-			
-			@Override
-			public void OnPhotoFee(boolean success, String errno, String errmsg, LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnPhotoFee() errno:%s, errmsg:%s", errno, errmsg));
-//				liveChatMgr.GetPhoto(item);
-				Message msg = new Message();
-				msg.what = LiveChatOpt.GetPhoto.ordinal();
-				msg.obj = item;
-				mHandler.sendMessage(msg);
-			}
-			
-			@Override
-			public void OnGetPhoto(LiveChatErrType errType, String errno,
-					String errmsg, LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnGetPhoto() errType:%s, errmsg:%s"
-						, errType.name(), errmsg));
-				if (item.getPhotoItem().charge) {
-//					liveChatMgr.SendPhoto(item.fromId, item.getPhotoItem().filePath);
-					Message msg = new Message();
-					msg.what = LiveChatOpt.SendPhoto.ordinal();
-					msg.obj = item;
-					mHandler.sendMessage(msg);
-				}
-				else {
-//					liveChatMgr.PhotoFee(item);
-					Message msg = new Message();
-					msg.what = LiveChatOpt.PhotoFee.ordinal();
-					msg.obj = item;
-					mHandler.sendMessage(msg);
-				}
-			}
-		});
-		liveChatMgr.RegisterVoiceListener(new LiveChatManagerVoiceListener() {
-			
-			@Override
-			// test by samson 2015-05-04
-			public void OnSendVoice(LiveChatErrType errType, String errno,
-					String errmsg, LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnSendVoice() errType:%s, errmsg:%s", errType.name(), errmsg));
-			}
-			
-			@Override
-			// test by samson 2015-05-04
-			public void OnRecvVoice(LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnRecvVoice()"));
-//				liveChatMgr.GetVoice(item);
-				Message msg = new Message();
-				msg.what = LiveChatOpt.GetVoice.ordinal();
-				msg.obj = item;
-				mHandler.sendMessage(msg);
-			}
-			
-			@Override
-			// test by samson 2015-05-04
-			public void OnGetVoice(LiveChatErrType errType, String errmsg,
-					LCMessageItem item) {
-				// TODO Auto-generated method stub
-				Log.d("MainActivity.LiveChat", String.format("OnGetVoice() errType:%s, errmsg:%s", errType.name(), errmsg));
-				if (errType == LiveChatErrType.Success) {
-//					liveChatMgr.SendVoice(item.fromId, item.getVoiceItem().filePath, item.getVoiceItem().fileType, item.getVoiceItem().timeLength);
-					Message msg = new Message();
-					msg.what = LiveChatOpt.SendVoice.ordinal();
-					msg.obj = item;
-					mHandler.sendMessage(msg);
-				}
-			}
-		});
-		
-		mHandlerThread = new HandlerThread("livechat handler");
-		mHandlerThread.start();
-		
-		mHandler = new Handler(mHandlerThread.getLooper()) {
-			@Override
-            public void handleMessage(Message msg) {
-            	LiveChatManager liveChatManager = LiveChatManager.newInstance(null);
-            	LiveChatOpt opt = LiveChatOpt.values()[msg.what];
-                switch (opt) {
-                case GetPhoto: {
-                	LCMessageItem item = (LCMessageItem)msg.obj;
-//                	liveChatManager.GetPhoto(item, PhotoSizeType.Middle);
-                }break;
-                case PhotoFee: {
-                	LCMessageItem item = (LCMessageItem)msg.obj;
-                	liveChatManager.PhotoFee(item);
-                }break;
-                case SendPhoto: {
-                	LCMessageItem item = (LCMessageItem)msg.obj;
-                	liveChatManager.SendPhoto(item.fromId, item.getPhotoItem().srcFilePath);
-                }break;
-                case CheckCoupon: {
-                	String userId = (String)msg.obj;
-                	liveChatMgr.CheckCoupon(userId);
-                }break;
-                case UseTryTicket: {
-                	String userId = (String)msg.obj;
-                }break;
-                case GetVoice: {
-                	LCMessageItem item = (LCMessageItem)msg.obj;
-                	liveChatMgr.GetVoice(item);
-                }break;
-                case SendVoice: {
-                	LCMessageItem item = (LCMessageItem)msg.obj;
-                	liveChatMgr.SendVoice(item.fromId, item.getVoiceItem().filePath, item.getVoiceItem().fileType, item.getVoiceItem().timeLength);
-                }break;
-                }
-            }
-		};
-	}
+//				if (item.getUserItem().chatType == ChatType.InChatCharge
+//					|| item.getUserItem().chatType == ChatType.InChatUseTryTicket)
+//				{
+//					mRecvMsgCount++;
+//					liveChatMgr.SendMessage(item.fromId, item.getTextItem().message);
+//					
+//					if (mRecvMsgCount % 3 == 0) {
+//						if (!isGetEmotionConfig) {
+//							liveChatMgr.GetEmotionConfig();
+//						}					
+//						else if (!lastEmotionId.isEmpty()) {
+//							liveChatMgr.SendEmotion(item.fromId, lastEmotionId);
+//						}
+//					}
+//					
+//					if (mRecvMsgCount % 5 == 0) {
+////						liveChatMgr.GetTalkList();
+//					}
+//					
+//					if (mRecvMsgCount % 8 == 0) {
+//						String[] userIds = {item.fromId, "P580502"};
+//						liveChatMgr.GetUserStatus(userIds);
+//					}
+//					
+//					if (mRecvMsgCount % 10 == 0) {
+//						liveChatMgr.GetHistoryMessage(item.fromId);
+//					}
+//					
+//					if (mRecvMsgCount % 15 == 0) {
+//						boolean endResult = liveChatMgr.EndTalk(item.fromId);
+//						Log.d("MainActivity.LiveChat", String.format("OnRecvMessage() endResult:%s", String.valueOf(endResult)));
+//					}
+//					
+//					if (mRecvMsgCount % 30 == 0) {
+//						liveChatMgr.Logout();
+//					}
+//				}
+//				else if (item.getUserItem().chatType == ChatType.Invite) {
+//					liveChatMgr.CheckCoupon(item.getUserItem().userId);
+//				}
+//			}
+//			
+//			@Override
+//			public void OnRecvSystemMsg(LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-04
+//			public void OnRecvEditMsg(String fromId) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnRecvEditMsg() fromId:%s", fromId));
+//			}
+//
+//			@Override
+//			public void OnSendMessageListFail(LiveChatErrType errType,
+//					ArrayList<LCMessageItem> msgList) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+//		
+//		liveChatMgr.RegisterEmotionListener(new LiveChatManagerEmotionListener() {
+//			
+//			@Override
+//			// test by samson 2015-05-06
+//			public void OnSendEmotion(LiveChatErrType errType, String errmsg,
+//					LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnSendEmotion() errType:%s, errmsg:%s", errType.name(), errmsg));
+//				liveChatMgr.GetEmotionImage(item.getEmotionItem().emotionId);
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-04
+//			public void OnRecvEmotion(LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnRecvEmotion()"));
+//				liveChatMgr.GetEmotionPlayImage(item.getEmotionItem().emotionId);
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-06
+//			public void OnGetEmotionConfig(boolean success, String errno, String errmsg, OtherEmotionConfigItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnGetEmotionConfig() errno:%s, errmsg:%s", errno, errmsg));
+//				if (errno.isEmpty()) {
+//					isGetEmotionConfig = true;
+//					if (item.manEmotionList.length > 0) {
+//						lastEmotionId = item.manEmotionList[item.manEmotionList.length-1].fileName;
+//						LCEmotionItem emotionItem = liveChatMgr.GetEmotionInfo(lastEmotionId);
+//						if (null == emotionItem || emotionItem.imagePath.isEmpty()) {
+//							liveChatMgr.GetEmotionImage(lastEmotionId);
+//						}
+//					}
+//				}
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-06
+//			public void OnGetEmotionImage(boolean success, LCEmotionItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnGetEmotionImage() success:%b, item.imagePath:%s"
+//						, success, item.imagePath));
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-06
+//			public void OnGetEmotion3gp(boolean success, LCEmotionItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnGetEmotion3gp() success:%b, item.f3gpPath:%s"
+//						, success, item.f3gpPath));
+//			}
+//
+//			@Override
+//			public void OnGetEmotionPlayImage(boolean success,
+//					LCEmotionItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnGetEmotionPlayImage() success:%b, item.playBigImages.size():%d"
+//						, success, item.playBigImages.size()));				
+//			}
+//		});
+//		liveChatMgr.RegisterPhotoListener(new LiveChatManagerPhotoListener() {
+//			
+//			@Override
+//			public void OnSendPhoto(LiveChatErrType errType, String errno,
+//					String errmsg, LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnSendPhoto() errType:%s, errmsg:%s", errType.name(), errmsg));
+//			}
+//			
+//			@Override
+//			public void OnRecvPhoto(LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnRecvPhoto()"));
+////				liveChatMgr.SendPhoto(item.fromId, item.getPhotoItem().filePath);
+////				liveChatMgr.PhotoFee(item);
+////				liveChatMgr.GetPhoto(item);
+//				Message msg = new Message();
+//				msg.what = LiveChatOpt.GetPhoto.ordinal();
+//				msg.obj = item;
+//				mHandler.sendMessage(msg);
+//			}
+//			
+//			@Override
+//			public void OnPhotoFee(boolean success, String errno, String errmsg, LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnPhotoFee() errno:%s, errmsg:%s", errno, errmsg));
+////				liveChatMgr.GetPhoto(item);
+//				Message msg = new Message();
+//				msg.what = LiveChatOpt.GetPhoto.ordinal();
+//				msg.obj = item;
+//				mHandler.sendMessage(msg);
+//			}
+//			
+//			@Override
+//			public void OnGetPhoto(LiveChatErrType errType, String errno,
+//					String errmsg, LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnGetPhoto() errType:%s, errmsg:%s"
+//						, errType.name(), errmsg));
+//				if (item.getPhotoItem().charge) {
+////					liveChatMgr.SendPhoto(item.fromId, item.getPhotoItem().filePath);
+//					Message msg = new Message();
+//					msg.what = LiveChatOpt.SendPhoto.ordinal();
+//					msg.obj = item;
+//					mHandler.sendMessage(msg);
+//				}
+//				else {
+////					liveChatMgr.PhotoFee(item);
+//					Message msg = new Message();
+//					msg.what = LiveChatOpt.PhotoFee.ordinal();
+//					msg.obj = item;
+//					mHandler.sendMessage(msg);
+//				}
+//			}
+//		});
+//		liveChatMgr.RegisterVoiceListener(new LiveChatManagerVoiceListener() {
+//			
+//			@Override
+//			// test by samson 2015-05-04
+//			public void OnSendVoice(LiveChatErrType errType, String errno,
+//					String errmsg, LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnSendVoice() errType:%s, errmsg:%s", errType.name(), errmsg));
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-04
+//			public void OnRecvVoice(LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnRecvVoice()"));
+////				liveChatMgr.GetVoice(item);
+//				Message msg = new Message();
+//				msg.what = LiveChatOpt.GetVoice.ordinal();
+//				msg.obj = item;
+//				mHandler.sendMessage(msg);
+//			}
+//			
+//			@Override
+//			// test by samson 2015-05-04
+//			public void OnGetVoice(LiveChatErrType errType, String errmsg,
+//					LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnGetVoice() errType:%s, errmsg:%s", errType.name(), errmsg));
+//				if (errType == LiveChatErrType.Success) {
+////					liveChatMgr.SendVoice(item.fromId, item.getVoiceItem().filePath, item.getVoiceItem().fileType, item.getVoiceItem().timeLength);
+//					Message msg = new Message();
+//					msg.what = LiveChatOpt.SendVoice.ordinal();
+//					msg.obj = item;
+//					mHandler.sendMessage(msg);
+//				}
+//			}
+//		});
+//		
+//		liveChatMgr.RegisterVideoListener(new LiveChatManagerVideoListener() {
+//			
+//			@Override
+//			public void OnVideoFee(boolean success, String errno, String errmsg,
+//					LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", String.format("OnVideoFee() success:%s, errno:%s, errmsg:%s, videoId:%s"
+//						, String.valueOf(success), errno, errmsg, item.getVideoItem().videoId));
+//				Message msg = new Message();
+//				msg.what = LiveChatOpt.GetVideo.ordinal();
+//				msg.obj = item;
+//				mHandler.sendMessage(msg);
+//			}
+//			
+//			@Override
+//			public void OnStartGetVideo(String userId, String videoId, String inviteId,
+//					String videoPath, ArrayList<LCMessageItem> msgList) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", "OnStartGetVideo() videoId:%s", msgList.get(0).getVideoItem().videoId);
+//			}
+//			
+//			@Override
+//			public void OnRecvVideo(LCMessageItem item) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", "OnRecvVideo() videoId:%s", item.getVideoItem().videoId);
+//				Message msg = new Message();
+//				msg.what = LiveChatOpt.GetVideoPhoto.ordinal();
+//				msg.obj = item;
+//				mHandler.sendMessage(msg);
+//			}
+//			
+//			@Override
+//			public void OnGetVideoPhoto(LiveChatErrType errType, String errno,
+//					String errmsg, String userId, String inviteId, String videoId,
+//					VideoPhotoType type, String filePath,
+//					ArrayList<LCMessageItem> msgList) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", "OnGetVideoPhoto() errType:%s, errno:%s, errmsg:%s, videoId:%s"
+//						, errType.name(), errno, errmsg, videoId);
+//				Message msg = new Message();
+//				msg.what = LiveChatOpt.VideoFee.ordinal();
+//				msg.obj = msgList.get(0);
+//				mHandler.sendMessage(msg);
+//			}
+//			
+//			@Override
+//			public void OnGetVideo(LiveChatErrType errType, String userId,
+//					String videoId, String inviteId, String videoPath,
+//					ArrayList<LCMessageItem> msgList) {
+//				// TODO Auto-generated method stub
+//				Log.d("MainActivity.LiveChat", "OnGetVideoPhoto() errType:%s, videoId:%s, videoPath:%s"
+//						, errType.name(), videoId, videoPath);
+//			}
+//		});
+//		
+//		mHandlerThread = new HandlerThread("livechat handler");
+//		mHandlerThread.start();
+//		
+//		mHandler = new Handler(mHandlerThread.getLooper()) {
+//			@Override
+//            public void handleMessage(Message msg) {
+//            	LiveChatManager liveChatManager = LiveChatManager.newInstance(null);
+//            	LiveChatOpt opt = LiveChatOpt.values()[msg.what];
+//                switch (opt) {
+//                case SendMsg: {
+//                	LCMessageItem item = (LCMessageItem)msg.obj;
+//                	liveChatManager.SendMessage(item.getUserItem().userId, item.getTextItem().message);
+//                }break;
+//                case GetPhoto: {
+//                	LCMessageItem item = (LCMessageItem)msg.obj;
+////                	liveChatManager.GetPhoto(item, PhotoSizeType.Middle);
+//                }break;
+//                case PhotoFee: {
+//                	LCMessageItem item = (LCMessageItem)msg.obj;
+//                	liveChatManager.PhotoFee(item);
+//                }break;
+//                case SendPhoto: {
+//                	LCMessageItem item = (LCMessageItem)msg.obj;
+//                	liveChatManager.SendPhoto(item.fromId, item.getPhotoItem().srcFilePath);
+//                }break;
+////                case CheckCoupon: {
+////                	String userId = (String)msg.obj;
+////                	liveChatMgr.CheckCoupon(userId);
+////                }break;
+////                case UseTryTicket: {
+////                	String userId = (String)msg.obj;
+////                }break;
+//                case GetVoice: {
+//                	LCMessageItem item = (LCMessageItem)msg.obj;
+//                	liveChatMgr.GetVoice(item);
+//                }break;
+//                case SendVoice: {
+//                	LCMessageItem item = (LCMessageItem)msg.obj;
+//                	liveChatMgr.SendVoice(item.fromId, item.getVoiceItem().filePath, item.getVoiceItem().fileType, item.getVoiceItem().timeLength);
+//                }break;
+//                case GetVideoPhoto: {
+//                	LCMessageItem item = (LCMessageItem)msg.obj;
+//                	liveChatMgr.GetVideoPhoto(item, VideoPhotoType.Big);
+//                }break;
+//                case VideoFee: {
+//                	LCMessageItem item = (LCMessageItem)msg.obj;
+//                	liveChatMgr.VideoFee(item);
+//                }break;
+//                }
+//            }
+//		};
+//	}
 	
 	public void onClickRegister(View v) {
 		startActivity(new Intent(this, RegisterActivity.class));
@@ -1300,62 +1309,67 @@ public class MainActivity extends FragmentActivity {
 		startActivity(new Intent(this, MyProfileActivity.class));
 	}
 
-	private Boolean isToLogin = true;
+//	private Boolean isToLogin = true;
 	public void onClickLiveChat(View v) {
-		synchronized(isToLogin) 
-		{
-			if (isToLogin) {
-				Log.d("MainActivity.LiveChat", "onClickLiveChat() Login");
-				liveChatMgr.Login("CM28171208", "lmlhh5f4gg11obunk27tv0617j", "000000000000000");
-			}
-			else {
-				Log.d("MainActivity.LiveChat", "onClickLiveChat() Logout");
-				liveChatMgr.Logout();
-			}
-		}
-	}
-	
-	private ImageViewLoader mLoader = null;
-	public void testImageView() {
-		mLoader = new ImageViewLoader(getApplicationContext());
-		
-	    final BitmapFactory.Options options = new BitmapFactory.Options();
-	    options.inJustDecodeBounds = false;
+//		synchronized(isToLogin) 
+//		{
+//			if (isToLogin) {
+//				Log.d("MainActivity.LiveChat", "onClickLiveChat() Login");
+//				liveChatMgr.Login("CM28171208", "ibtvrdibdqs63cc4ppmo9jia3r", "000000000000000");
+				// iDateAsia
+//				LoginManager.getInstance().Login("CM28171208", "oqjb210orb43nt5q7sijjt37f8");
+				// ChinaLove
+//				LoginManager.getInstance().Login("CM28171208", "u3h2dkb2a634rbsop507j85f84");
+//			}
+//			else {
+//				Log.d("MainActivity.LiveChat", "onClickLiveChat() Logout");
+//				liveChatMgr.Logout();
+//				LoginManager.getInstance().Logout();
+//			}
+//		}
+//	}
+//	
+//	private ImageViewLoader mLoader = null;
+//	public void testImageView() {
+//		mLoader = new ImageViewLoader(getApplicationContext());
+//		
+//	    final BitmapFactory.Options options = new BitmapFactory.Options();
+//	    options.inJustDecodeBounds = false;
 //	    Bitmap src = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.test1, options);
 //		mLoader.SetDefaultImage(new BitmapDrawable(src));
+//	}
+//	
+//	public void onClickTestImageView(View v) {
+//		if (null != mLoader ) {
+//			String filePath = FileCacheManager.getInstance().CacheLadyPathFromUrl("GZA881", LadyFileType.LADY_PHOTO);
+//			mLoader.DisplayImage((ImageView)v, "http://demo.chnlove.com/woman_photo/GZA/33/GZA881-b.jpg"
+//					, 300, 300, 2, 0, filePath
+//					, new ImageViewLoaderCallback(){
+//
+//				@Override
+//				public void OnDisplayNewImageFinish()
+//				{
+//					
+//				}
+//
+//				@Override
+//				public void OnLoadPhotoFailed() {
+//					// TODO Auto-generated method stub
+//					
+//				}
+//			});
+//		}
 	}
-	
-	public void onClickTestImageView(View v) {
-		if (null != mLoader ) {
-			String filePath = FileCacheManager.getInstance().CacheLadyPathFromUrl("GZA881", LadyFileType.LADY_PHOTO);
-			mLoader.DisplayImage((ImageView)v, "http://demo.chnlove.com/woman_photo/GZA/33/GZA881-b.jpg"
-					, 300, 300, 2, 0, filePath
-					, new ImageViewLoaderCallback(){
-
-				@Override
-				public void OnDisplayNewImageFinish()
-				{
-					
-				}
-
-				@Override
-				public void OnLoadPhotoFailed() {
-					// TODO Auto-generated method stub
-					
-				}
-			});
-		}
-	}
-	
-	private long requestTime = 0;
-	private long time = 0;
-	private int requestCount = 0;
-	public void testRequest() 
-	{
-		mHandler = new Handler() {
-			@Override
-            public void handleMessage(Message msg) {
-				switch (msg.what) {
+//	
+//	private long requestTime = 0;
+//	private long time = 0;
+//	private int requestCount = 0;
+//	public void testRequest() 
+//	{
+//		mHandler = new Handler() {
+//			@Override
+//            public void handleMessage(Message msg) {
+//				switch (msg.what) {
 //				case 0: {
 //					requestCount++;
 //					RequestJniAuthorization.Login(
@@ -1382,46 +1396,46 @@ public class MainActivity extends FragmentActivity {
 //								}
 //							});
 //				}break;
-				case 0: {
-					requestCount++;
-					Log.d("MainActivity", "RequestJniLady requestCount:%d", requestCount);
-					requestTime = System.currentTimeMillis();
-					RequestJniLady.QueryLadyList(0, 100, SearchType.DEFAULT, null, OnlineType.DEFAULT, -1, -1, null, OrderType.NEWST, "00000000000", new OnQueryLadyListCallback() {
-						
-						@Override
-						public void OnQueryLadyList(boolean isSuccess, String errno, String errmsg,
-								Lady[] ladyList, int totalCount) {
-							// TODO Auto-generated method stub
-							long procTime = System.currentTimeMillis() - requestTime; 
-							if (requestCount <= 1000) {
-								time = System.currentTimeMillis();
-								mHandler.sendEmptyMessage(1);
-								
-								Log.d("MainActivity", "QueryLadyList() ok, procTime:%d, requestCount:%d, success:%s", procTime, requestCount, String.valueOf(isSuccess));
-							}
-							else {
-								Log.d("MainActivity", "QueryLadyList() finish, procTime:%d, requestCount:%d, success:%s", procTime, requestCount, String.valueOf(isSuccess));
-							}
-						}
-					});
-				}break;
-				case 1: {
-					final long second = 3 * 1000;
-					if (time + second <= System.currentTimeMillis()) {
-						mHandler.sendEmptyMessage(0);
-					}
-					else {
-						mHandler.sendEmptyMessage(1);
-					}
-				}break;
-				}
-			}
-		};
-		mHandler.sendEmptyMessage(0);
-	}
+//				case 0: {
+//					requestCount++;
+//					Log.d("MainActivity", "RequestJniLady requestCount:%d", requestCount);
+//					requestTime = System.currentTimeMillis();
+//					RequestJniLady.QueryLadyList(0, 100, SearchType.DEFAULT, null, OnlineType.DEFAULT, -1, -1, null, OrderType.NEWST, "00000000000", new OnQueryLadyListCallback() {
+//						
+//						@Override
+//						public void OnQueryLadyList(boolean isSuccess, String errno, String errmsg,
+//								Lady[] ladyList, int totalCount) {
+//							// TODO Auto-generated method stub
+//							long procTime = System.currentTimeMillis() - requestTime; 
+//							if (requestCount <= 1000) {
+//								time = System.currentTimeMillis();
+//								mHandler.sendEmptyMessage(1);
+//								
+//								Log.d("MainActivity", "QueryLadyList() ok, procTime:%d, requestCount:%d, success:%s", procTime, requestCount, String.valueOf(isSuccess));
+//							}
+//							else {
+//								Log.d("MainActivity", "QueryLadyList() finish, procTime:%d, requestCount:%d, success:%s", procTime, requestCount, String.valueOf(isSuccess));
+//							}
+//						}
+//					});
+//				}break;
+//				case 1: {
+//					final long second = 3 * 1000;
+//					if (time + second <= System.currentTimeMillis()) {
+//						mHandler.sendEmptyMessage(0);
+//					}
+//					else {
+//						mHandler.sendEmptyMessage(1);
+//					}
+//				}break;
+//				}
+//			}
+//		};
+//		mHandler.sendEmptyMessage(0);
+//	}
 	
-	private void testTicket()
-	{
+//	private void testTicket()
+//	{
 //		RequestJniTicket.TicketList(0, 20, new OnTicketListCallback() {
 //			
 //			@Override
@@ -1473,6 +1487,6 @@ public class MainActivity extends FragmentActivity {
 //						, String.valueOf(isSuccess), errno, errmsg);
 //			}
 //		});
-	}
+//	}
 }
 

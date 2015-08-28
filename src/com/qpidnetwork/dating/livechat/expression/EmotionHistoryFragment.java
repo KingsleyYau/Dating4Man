@@ -22,9 +22,9 @@ import com.qpidnetwork.dating.livechat.expression.NormalEmotionFragment.OnItemCl
 import com.qpidnetwork.framework.base.BaseFragment;
 import com.qpidnetwork.livechat.LCEmotionItem;
 import com.qpidnetwork.livechat.LCMessageItem;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.LiveChatManagerEmotionListener;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.item.OtherEmotionConfigEmotionItem;
 import com.qpidnetwork.request.item.OtherEmotionConfigItem;

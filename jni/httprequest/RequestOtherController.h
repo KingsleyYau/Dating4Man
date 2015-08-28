@@ -19,6 +19,7 @@ typedef void (*OnRequestOtherVersionCheck)(long requestId, bool success, const s
 typedef void (*OnRequestOtherSynConfig)(long requestId, bool success, const string& errnum, const string& errmsg, const OtherSynConfigItem& item);
 typedef void (*OnRequestOtherOnlineCount)(long requestId, bool success, const string& errnum, const string& errmsg, const OtherOnlineCountList& countList);
 typedef void (*OnRequestOtherUploadCrashLog)(long requestId, bool success, const string& errnum, const string& errmsg);
+typedef void (*OnRequestOtherInstallLogs)(long requestId, bool success, const string& errnum, const string& errmsg);
 typedef struct _tagRequestOtherControllerCallback {
 	OnRequestOtherEmotionConfig onRequestOtherEmotionConfig;
 	OnRequestOtherGetCount onRequestOtherGetCount;
@@ -28,6 +29,7 @@ typedef struct _tagRequestOtherControllerCallback {
 	OnRequestOtherSynConfig onRequestOtherSynConfig;
 	OnRequestOtherOnlineCount onRequestOtherOnlineCount;
 	OnRequestOtherUploadCrashLog onRequestOtherUploadCrashLog;
+	OnRequestOtherInstallLogs onRequestOtherInstallLogs;
 } RequestOtherControllerCallback;
 
 
@@ -40,7 +42,8 @@ public:
 	long EmotionConfig();
 	long GetCount(bool money, bool coupon, bool regStep, bool allowAlbum, bool admirerUr, bool integral);
 	long PhoneInfo(const string& manId, int verCode, const string& verName, int action, int siteId
-			, double density, int width, int height
+			, double density, int width, int height, const string& densityDpi, const string& model, const string& manufacturer, const string& os
+			, const string& release, const string& sdk, const string& language, const string& region
 			, const string& lineNumber, const string& simOptName, const string& simOpt, const string& simCountryIso, const string& simState
 			, int phoneType, int networkType, const string& deviceId);
 	long IntegralCheck(const string& womanId);
@@ -48,6 +51,9 @@ public:
 	long SynConfig();
 	long OnlineCount(int site);
 	long UploadCrashLog(const string& deviceId, const string& file);
+	long InstallLogs(const string& deviceId, long installtime, long submittime, int verCode
+			, const string& model, const string& manufacturer, const string& os, const string& release
+			, const string& sdk, int width, int height, const string& referrer);
 
 private:
 	void EmotionConfigCallbackHandle(long requestId, const string& url, bool requestRet, const char* buf, int size);
@@ -58,6 +64,7 @@ private:
 	void SynConfigCallbackHandle(long requestId, const string& url, bool requestRet, const char* buf, int size);
 	void OnlineCountCallbackHandle(long requestId, const string& url, bool requestRet, const char* buf, int size);
 	void UploadCrashLogCallbackHandle(long requestId, const string& url, bool requestRet, const char* buf, int size);
+	void InstallLogsCallbackHandle(long requestId, const string& url, bool requestRet, const char* buf, int size);
 protected:
 	void onSuccess(long requestId, string path, const char* buf, int size);
 	void onFail(long requestId, string path);

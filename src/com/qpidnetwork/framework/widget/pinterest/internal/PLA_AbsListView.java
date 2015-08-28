@@ -606,7 +606,8 @@ ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnTouchModeChangeListe
         }
     }
 
-    private void useDefaultSelector() {
+    @SuppressWarnings("deprecation")
+	private void useDefaultSelector() {
         setSelector(getResources().getDrawable(
                 android.R.drawable.list_selector_background));
     }
@@ -1044,7 +1045,8 @@ ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnTouchModeChangeListe
      *
      * @attr ref android.R.styleable#AbsListView_listSelector
      */
-    public void setSelector(int resID) {
+    @SuppressWarnings("deprecation")
+	public void setSelector(int resID) {
         setSelector(getResources().getDrawable(resID));
     }
 

@@ -23,9 +23,10 @@ public class DirectCallManager {
 	 * @param callCenter callcenter号码
 	 * @param tokenId 
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void makeCall(String callCenter, String tokenId){
 		
-		Intent localIntent = new Intent("android.intent.action.CALL");
+//		Intent localIntent = new Intent("android.intent.action.CALL");
 		String packedCallNumber = generatePhoneNumber(callCenter, tokenId);
 		PackageManager localPackageManager = mContext.getPackageManager();
 		List localList1 = phoneClients(localPackageManager, packedCallNumber);
@@ -63,6 +64,7 @@ public class DirectCallManager {
 	    return paramPackageManager.queryIntentActivities(callIntent(paramString, null), 0);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private ResolveInfo findDefaultClient(List<ResolveInfo> paramList){
 	    if (paramList != null){
 	        Iterator localIterator = paramList.iterator();

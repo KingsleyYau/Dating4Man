@@ -6,13 +6,12 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import com.qpidnetwork.framework.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.qpidnetwork.dating.R;
-import com.qpidnetwork.tool.FileDownloader;
+import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.tool.ImageViewLoader.ImageViewLoaderCallback;
 import com.qpidnetwork.view.IndexFragment;

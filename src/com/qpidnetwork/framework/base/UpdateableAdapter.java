@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.qpidnetwork.request.item.EMFAdmirerListItem;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;

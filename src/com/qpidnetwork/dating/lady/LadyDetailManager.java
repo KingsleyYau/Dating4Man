@@ -65,12 +65,12 @@ public class LadyDetailManager implements LiveChatManagerOtherListener {
 	/**
 	 * 缓存女士香型Map表
 	 */
-	private Map<String, LadyDetail> mLadyDetailMap = new HashMap<>();
+	private Map<String, LadyDetail> mLadyDetailMap = new HashMap<String, LadyDetail>();
 	
 	/**
 	 * 当前请求Id
 	 */
-	private long mRequestId = -1;
+//	private long mRequestId = -1;
 	
 	/**
 	 * 获取女士详情
@@ -84,7 +84,8 @@ public class LadyDetailManager implements LiveChatManagerOtherListener {
 				callback.OnQueryLadyDetailCallback(true, "", "", item);
 			} else {
 				// 调用接口
-				mRequestId = RequestOperator.getInstance().QueryLadyDetail(womanIdUpCase, new OnQueryLadyDetailCallback() {
+//				mRequestId = RequestOperator.getInstance().QueryLadyDetail(womanIdUpCase, new OnQueryLadyDetailCallback() {
+				RequestOperator.getInstance().QueryLadyDetail(womanIdUpCase, new OnQueryLadyDetailCallback() {
 					
 					@Override
 					public void OnQueryLadyDetail(boolean isSuccess, String errno,
@@ -98,7 +99,7 @@ public class LadyDetailManager implements LiveChatManagerOtherListener {
 							new FileDownloader(mContext).StartDownload(item.photoURL, localPath, null);
 						}
 						
-						mRequestId = -1;
+//						mRequestId = -1;
 						callback.OnQueryLadyDetailCallback(isSuccess, errno, errmsg, item);
 					}
 				});

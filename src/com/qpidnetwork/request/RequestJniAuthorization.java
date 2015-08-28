@@ -22,6 +22,7 @@ public class RequestJniAuthorization {
      * @param birthday_y		生日的年
      * @param birthday_m		生日的月
      * @param birthday_d		生日的日
+     * @param referrer			app推广参数（安装成功app第一次启动时GooglePlay返回）
      * @param callback
      * @return					请求唯一标识
      */
@@ -37,6 +38,7 @@ public class RequestJniAuthorization {
     		String birthday_y, 
     		String birthday_m, 
     		String birthday_d,
+    		String referrer,
     		OnLoginWithFacebookCallback callback
     		);
     
@@ -55,6 +57,7 @@ public class RequestJniAuthorization {
      * @param model				移动设备型号
      * @param deviceId			设备唯一标识
      * @param manufacturer		制造厂商
+     * @param referrer			app推广参数（安装成功app第一次启动时GooglePlay返回）
      * @param callback
      * @return					请求唯一标识
      */
@@ -72,10 +75,11 @@ public class RequestJniAuthorization {
 			String model, 
 			String deviceId, 
 			String manufacturer, 
+			String referrer,
 			OnRegisterCallback callback
 			) {
 		return Register(email, password, male, first_name, last_name, country.ordinal(), birthday_y, birthday_m, 
-				birthday_d, weeklymail, model, deviceId, manufacturer, callback);
+				birthday_d, weeklymail, model, deviceId, manufacturer, referrer, callback);
 	}
     static protected native long Register(
     		String email, 
@@ -91,6 +95,7 @@ public class RequestJniAuthorization {
 			String model, 
 			String deviceId, 
 			String manufacturer, 
+			String referrer,
 			OnRegisterCallback callback
 			);
     

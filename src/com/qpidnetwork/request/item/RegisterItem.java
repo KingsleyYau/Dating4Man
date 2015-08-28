@@ -2,7 +2,22 @@ package com.qpidnetwork.request.item;
 
 public class RegisterItem {
 	public RegisterItem() {
+		login = false;
+		manid = "";
+		email = "";
+		firstname = "";
+		lastname = "";	
+		sid = "";
+		reg_step = "";
+		errno = "";
+		errtext = "";
+		photoURL = "";
+		sessionid = "";
+		ga_uid = "";
 		
+		photosend = true;
+		photoreceived = true;
+		videoreceived = true;
 	}
 
 	/**
@@ -19,8 +34,11 @@ public class RegisterItem {
 	 * @param photoURL			头像URL
 	 * @param sessionid			跨服务器的唯一标识
 	 * @param ga_uid			Google Analytics UserID参数
+	 * 
 	 * @param photosend			私密照片发送权限
 	 * @param photoreceived		私密照片接收权限
+	 * @param videoreceived     微视频接收权限（true：允许，false：不能）
+	 * 
 	 */
 	public RegisterItem(
 		 boolean login,
@@ -36,7 +54,8 @@ public class RegisterItem {
 		 String sessionid,
 		 String ga_uid,
 		 boolean photosend,
-		 boolean photoreceived
+		 boolean photoreceived,
+		 boolean videoreceived
 			) {
 		this.login = login;
 		this.manid = manid;
@@ -52,6 +71,7 @@ public class RegisterItem {
 		this.ga_uid = ga_uid;
 		this.photosend = photosend;
 		this.photoreceived = photoreceived;
+		this.videoreceived = videoreceived;
 	}
 	
 	public boolean login;
@@ -68,4 +88,5 @@ public class RegisterItem {
 	public String ga_uid;
 	public boolean photosend;
 	public boolean photoreceived;
+	public boolean videoreceived;
 }

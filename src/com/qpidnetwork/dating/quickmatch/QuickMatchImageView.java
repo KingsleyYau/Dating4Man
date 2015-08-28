@@ -1,5 +1,6 @@
 package com.qpidnetwork.dating.quickmatch;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -21,6 +22,7 @@ import com.qpidnetwork.framework.util.Log;
  * @author Max.Chiu
  *
  */
+@SuppressLint("RtlHardcoded")
 public class QuickMatchImageView extends ImageView {
 
 	static final int CLICK = 3;
@@ -59,7 +61,7 @@ public class QuickMatchImageView extends ImageView {
 	/**
 	 * 释放时候即时速度方向
 	 */
-	private ClickArea mUpSpeed = ClickArea.FIRST;		
+//	private ClickArea mUpSpeed = ClickArea.FIRST;		
 	
 	private enum Mode {
 		NONE,
@@ -142,7 +144,8 @@ public class QuickMatchImageView extends ImageView {
     	this.listener = listener;
     }
     
-    public void CenterImage() {
+    @SuppressWarnings("deprecation")
+	public void CenterImage() {
     	if( mMode == Mode.RELEASE ) {
     		return;
     	}
@@ -342,15 +345,15 @@ public class QuickMatchImageView extends ImageView {
                             }
                             
                             // 重新计算释放时候即时方向
-                            if( deltaX > 0 && deltaY < 0 ) {
-                            	mUpSpeed = ClickArea.FIRST;
-                            } else if( deltaX > 0 && deltaY > 0 ) {
-                            	mUpSpeed = ClickArea.SECOND;
-                            } else if( deltaX < 0 && deltaY > 0 ) {
-                            	mUpSpeed = ClickArea.THIRD;
-                            } else if( deltaX < 0 && deltaY < 0 ) {
-                            	mUpSpeed = ClickArea.FOURTH;
-                            }
+//                            if( deltaX > 0 && deltaY < 0 ) {
+//                            	mUpSpeed = ClickArea.FIRST;
+//                            } else if( deltaX > 0 && deltaY > 0 ) {
+//                            	mUpSpeed = ClickArea.SECOND;
+//                            } else if( deltaX < 0 && deltaY > 0 ) {
+//                            	mUpSpeed = ClickArea.THIRD;
+//                            } else if( deltaX < 0 && deltaY < 0 ) {
+//                            	mUpSpeed = ClickArea.FOURTH;
+//                            }
                             
                             // 重新计算释放象限
                             mUpArea = GetImageArea();

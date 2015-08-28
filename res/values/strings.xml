@@ -221,6 +221,12 @@
     <string name="livechat_kickoff_by_sever_update">You have been disconnected due to the server is now under maintenance.</string>
     <string name="livechat_emotion_preview_title">Sticker preview</string>
     <string name="livechat_emotion_preview_price">%s credits</string>
+    <string name="livechat_recent_watched_videos">Recent watched</string>
+    <string name="livechat_receive_a_video">%s sent a video</string>
+    <string name="livechat_video_charge_tips">2.5 credits will be charged for downloading this video.</string>
+    <string name="livechat_donot_ask_again">Don\'t ask me again.</string>
+    <string name="livechat_recent_video_empty_tips">No recent watched videos.</string>
+    <string name="livechat_recent_video_error">Trouble  loading the videos, please check your internet connection.</string>
     
     
     <string name="livechat_lady_illeage_message">Your message may contain prohibited information which has violated our Terms of Use. Your message will not be delivered.</string>
@@ -233,6 +239,8 @@
         <item name="receive_a_photo">%s sent a photo</item>
         <item name="receive_a_premium_sticker">%s sent a premium sticker</item>
         <item name="receive_a_voice_message">%s sent a voice message</item>
+        <item name="send_a_video">You sent a video</item>
+        <item name="receive_a_video">%s sent a video</item>
     </string-array>
     
     

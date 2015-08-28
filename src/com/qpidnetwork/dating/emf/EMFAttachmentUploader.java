@@ -13,7 +13,6 @@ import com.qpidnetwork.framework.util.ImageUtil;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.request.OnEMFUploadAttachCallback;
 import com.qpidnetwork.request.RequestJni;
-import com.qpidnetwork.request.RequestJniEMF;
 import com.qpidnetwork.request.RequestJniEMF.UploadAttachType;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.view.ProgressImageHorizontalView;
@@ -87,8 +86,8 @@ public class EMFAttachmentUploader implements OnClickListener {
 //							view.progressBar.setProgress(++progress);
 //						}
 						mHandler.sendEmptyMessageDelayed(RequestFlag.REQUEST_UPLOADING.ordinal(), 100);
-					} else if( false/* progress != view.progressBar.getMax() */ ) {
-						// 最后冲刺
+//					} else if( false/* progress != view.progressBar.getMax() */ ) {
+//						// 最后冲刺
 //						if( progress < view.progressBar.getMax() ) {
 //							progress += view.progressBar.getMax() / 30;
 //							view.progressBar.setProgress(progress);

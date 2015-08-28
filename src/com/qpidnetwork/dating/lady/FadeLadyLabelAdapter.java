@@ -3,10 +3,6 @@ package com.qpidnetwork.dating.lady;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.request.item.LadySignItem;
-import com.qpidnetwork.view.FlowLayout;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
@@ -15,6 +11,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.request.item.LadySignItem;
+import com.qpidnetwork.view.FlowLayout;
 
 public class FadeLadyLabelAdapter {
 	

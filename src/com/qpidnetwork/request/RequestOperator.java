@@ -31,6 +31,8 @@ import com.qpidnetwork.request.RequestJniLiveChat.PhotoModeType;
 import com.qpidnetwork.request.RequestJniLiveChat.PhotoSizeType;
 import com.qpidnetwork.request.RequestJniLiveChat.ToFlagType;
 import com.qpidnetwork.request.RequestJniLiveChat.UseType;
+import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
+import com.qpidnetwork.request.RequestJniLiveChat.VideoToFlagType;
 import com.qpidnetwork.request.RequestJniLoveCall.ConfirmType;
 import com.qpidnetwork.request.RequestJniOther.ActionType;
 import com.qpidnetwork.request.RequestJniVideoShow.OrderByType;
@@ -47,6 +49,7 @@ import com.qpidnetwork.request.item.EMFSendMsgErrorItem;
 import com.qpidnetwork.request.item.EMFSendMsgItem;
 import com.qpidnetwork.request.item.Gift;
 import com.qpidnetwork.request.item.LCSendPhotoItem;
+import com.qpidnetwork.request.item.LCVideoItem;
 import com.qpidnetwork.request.item.Lady;
 import com.qpidnetwork.request.item.LadyCall;
 import com.qpidnetwork.request.item.LadyDetail;
@@ -59,9 +62,6 @@ import com.qpidnetwork.request.item.LoveCall;
 import com.qpidnetwork.request.item.OtherEmotionConfigItem;
 import com.qpidnetwork.request.item.OtherGetCountItem;
 import com.qpidnetwork.request.item.OtherIntegralCheckItem;
-import com.qpidnetwork.request.item.OtherOnlineCountItem;
-import com.qpidnetwork.request.item.OtherSynConfigItem;
-import com.qpidnetwork.request.item.OtherVersionCheckItem;
 import com.qpidnetwork.request.item.ProfileItem;
 import com.qpidnetwork.request.item.QuickMatchLady;
 import com.qpidnetwork.request.item.Record;
@@ -81,7 +81,7 @@ import com.qpidnetwork.request.item.VSWatchedVideoListItem;
  * 		1.session错误自动重登陆
  */
 public class RequestOperator {
-	private Context mContext = null;
+//	private Context mContext = null;
 	private Handler mHandler = null;
 	private static RequestOperator gRequestOperator;
 	
@@ -120,17 +120,17 @@ public class RequestOperator {
 				) {
 			this.isSuccess = isSuccess;
 			this.errno = errno;
-			this.errmsg = errmsg;
+//			this.errmsg = errmsg;
 			this.callbackLogin = callbackLogin;
 		}
 		public String errno;
-		public String errmsg;
+//		public String errmsg;
 		public boolean isSuccess;
 		public OnLoginManagerCallback callbackLogin;
 	}
 	
 	private RequestOperator(Context context) {
-		mContext = context;
+//		mContext = context;
 		
 		mHandler = new Handler() {
 			@Override
@@ -221,7 +221,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -249,7 +249,7 @@ public class RequestOperator {
 			@Override
 			public void OnRequest(boolean isSuccess, String errno, String errmsg) {
 				// TODO Auto-generated method stub
-				// 公共处理
+				// 公共处理VerifySms
 				boolean bFlag = HandleRequestCallback(isSuccess, errno, errmsg, callbackLogin);
 				if( bFlag ) {
 					// 已经匹配处理, 等待回调
@@ -275,7 +275,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -341,7 +341,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -399,7 +399,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -476,7 +476,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -554,7 +554,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -615,7 +615,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -677,7 +677,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -738,7 +738,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -800,7 +800,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -883,7 +883,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -962,7 +962,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1018,7 +1018,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1073,7 +1073,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1128,7 +1128,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1179,7 +1179,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1231,7 +1231,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1283,7 +1283,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1339,7 +1339,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1401,7 +1401,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1455,7 +1455,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1511,7 +1511,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1567,7 +1567,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1622,7 +1622,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1683,7 +1683,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1743,7 +1743,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1809,7 +1809,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1880,7 +1880,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -1959,7 +1959,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2026,7 +2026,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2082,6 +2082,179 @@ public class RequestOperator {
 		});
 	}
 	
+	/**
+	 * 6.12.获取最近已看微视频列表（http post）（New）
+	 * @param womanId			女士ID
+	 * @param callback			
+	 * @return					请求唯一标识
+	 */
+	public long QueryRecentVideo(
+			final String user_sid,
+			final String user_id,
+			final String womanId, 
+			final OnQueryRecentVideoListCallback callback
+			) {
+    	// 登录状态改变重新调用接口
+		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
+			
+			@Override
+			public void OnLogout(boolean bActive) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void OnLogin(boolean isSuccess, String errno, String errmsg,
+					LoginItem item, LoginErrorItem errItem) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				HandleRequestCallback(isSuccess, errno, errmsg, this);
+				if( isSuccess ) {
+					// 登录成功
+					// 再次调用jni接口
+					RequestJniLiveChat.QueryRecentVideo(user_sid, user_id, womanId, callback);
+				} else {
+					// 登录不成功, 回调失败
+					callback.OnQueryRecentVideoList(isSuccess, errno, errmsg, null);
+				}
+			}
+		};
+		
+		// 调用jni接口
+    	return RequestJniLiveChat.QueryRecentVideo(user_sid, user_id, womanId, new OnQueryRecentVideoListCallback() {
+			@Override
+			public void OnQueryRecentVideoList(boolean isSuccess,
+					String errno, String errmsg, LCVideoItem[] itemList) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				boolean bFlag = HandleRequestCallback(isSuccess, errno, errmsg, callbackLogin);
+				if( bFlag ) {
+					// 已经匹配处理, 等待回调
+				} else {
+					// 没有匹配处理, 直接回调
+					callback.OnQueryRecentVideoList(isSuccess, errno, errmsg, itemList);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 6.13.获取微视频图片（http get）（New）
+	 * @param womanId			女士ID
+	 * @param callback			
+	 * @return					请求唯一标识
+	 */
+	public long GetVideoPhoto(
+			final String user_sid,
+			final String user_id,
+			final String womanId, 
+			final String videoid,
+			final VideoPhotoType type,
+			final String filePath,
+			final OnRequestFileCallback callback) {
+    	// 登录状态改变重新调用接口
+		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
+			
+			@Override
+			public void OnLogout(boolean bActive) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void OnLogin(boolean isSuccess, String errno, String errmsg,
+					LoginItem item, LoginErrorItem errItem) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				HandleRequestCallback(isSuccess, errno, errmsg, this);
+				if( isSuccess ) {
+					// 登录成功
+					// 再次调用jni接口
+					RequestJniLiveChat.GetVideoPhoto(user_sid, user_id, womanId, videoid, type, filePath, callback);
+				} else {
+					// 登录不成功, 回调失败
+					callback.OnRequestFile(-1, isSuccess, errno, errmsg, null);
+				}
+			}
+		};
+		
+		// 调用jni接口
+    	return RequestJniLiveChat.GetVideoPhoto(user_sid, user_id, womanId, videoid, type, filePath, new OnRequestFileCallback() {
+			@Override
+			public void OnRequestFile(long requestId, boolean isSuccess,
+					String errno, String errmsg, String filePath) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				boolean bFlag = HandleRequestCallback(isSuccess, errno, errmsg, callbackLogin);
+				if( bFlag ) {
+					// 已经匹配处理, 等待回调
+				} else {
+					// 没有匹配处理, 直接回调
+					callback.OnRequestFile(requestId, isSuccess, errno, errmsg, filePath);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 6.14.获取微视频文件URL（http post）（New）
+	 * @param womanId			女士ID
+	 * @param callback			
+	 * @return					请求唯一标识
+	 */
+	public long GetVideo(
+			final String user_sid,
+			final String user_id,
+			final String womanId, 
+			final String videoid,
+			final String inviteid,
+			final VideoToFlagType toflag,
+			final String sendid,
+			final OnGetVideoCallback callback) {
+    	// 登录状态改变重新调用接口
+		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
+			
+			@Override
+			public void OnLogout(boolean bActive) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void OnLogin(boolean isSuccess, String errno, String errmsg,
+					LoginItem item, LoginErrorItem errItem) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				HandleRequestCallback(isSuccess, errno, errmsg, this);
+				if( isSuccess ) {
+					// 登录成功
+					// 再次调用jni接口
+					RequestJniLiveChat.GetVideo(user_sid, user_id, womanId, videoid, inviteid, toflag, sendid, callback);
+				} else {
+					// 登录不成功, 回调失败
+					callback.OnLCGetVideo(-1, isSuccess, errno, errmsg, null);
+				}
+			}
+		};
+		
+		// 调用jni接口
+    	return RequestJniLiveChat.GetVideo(user_sid, user_id, womanId, videoid, inviteid, toflag, sendid, new OnGetVideoCallback() {
+			@Override
+			public void OnLCGetVideo(long requestId, boolean isSuccess,
+					String errno, String errmsg, String url) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				boolean bFlag = HandleRequestCallback(isSuccess, errno, errmsg, callbackLogin);
+				if( bFlag ) {
+					// 已经匹配处理, 等待回调
+				} else {
+					// 没有匹配处理, 直接回调
+					callback.OnLCGetVideo(requestId, isSuccess, errno, errmsg, url);
+				}
+			}
+		});
+	}
+	
 	/**************************************************************************************
 	 * LiveChat模块end
 	 **************************************************************************************/
@@ -2109,7 +2282,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2162,7 +2335,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2222,7 +2395,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2277,7 +2450,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2334,7 +2507,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2397,7 +2570,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2453,7 +2626,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2509,7 +2682,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2564,7 +2737,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2624,7 +2797,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2678,7 +2851,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2735,7 +2908,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2791,7 +2964,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2844,7 +3017,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2903,7 +3076,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -2964,7 +3137,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3029,7 +3202,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3082,7 +3255,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3136,7 +3309,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3200,7 +3373,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3257,7 +3430,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3310,7 +3483,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3379,7 +3552,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3433,7 +3606,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3488,7 +3661,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3543,7 +3716,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3597,7 +3770,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3650,7 +3823,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3705,7 +3878,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3770,7 +3943,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3827,7 +4000,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3885,7 +4058,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3938,7 +4111,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -3994,7 +4167,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -4053,7 +4226,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -4117,7 +4290,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -4216,7 +4389,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -4302,7 +4475,7 @@ public class RequestOperator {
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 			
 			@Override
-			public void OnLogout() {
+			public void OnLogout(boolean bActive) {
 				// TODO Auto-generated method stub
 				
 			}

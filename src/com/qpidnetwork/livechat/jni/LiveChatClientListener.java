@@ -213,10 +213,22 @@ public abstract class LiveChatClientListener {
 	 * 显示图片回调
 	 * @param errType	处理结果类型
 	 * @param errmsg	处理结果描述
+	 * @param ticket	票根
 	 */
 	public abstract void OnShowPhoto(LiveChatErrType errType, String errmsg, int ticket);
 	public void OnShowPhoto(int errType, String errmsg, int ticket) {
 		OnShowPhoto(LiveChatErrType.values()[errType], errmsg, ticket);
+	}
+	
+	/**
+	 * 播放微视频
+	 * @param errType	处理结果类型
+	 * @param errmsg	处理结果描述
+	 * @param ticket	票根
+	 */
+	public abstract void OnPlayVideo(LiveChatErrType errType, String errmsg, int ticket);
+	public void OnPlayVideo(int errType, String errmsg, int ticket) {
+		OnPlayVideo(LiveChatErrType.values()[errType], errmsg, ticket);
 	}
 	
 	/**
@@ -336,6 +348,34 @@ public abstract class LiveChatClientListener {
 	public void OnRecvWarning(String toId, String fromId, String fromName, String inviteId, boolean charget, int ticket, int msgType, String message) {
 		OnRecvWarning(toId, fromId, fromName, inviteId, charget, ticket, TalkMsgType.values()[msgType], message);
 	}
+	
+	/**
+	 * 接收图片消息回调
+	 * @param toId		接收者ID
+	 * @param fromId	发送者ID
+	 * @param fromName	发送者用户名
+	 * @param inviteId	邀请ID
+	 * @param photoId	图片ID
+	 * @param sendId	图片发送ID
+	 * @param charget	是否已付费
+	 * @param photoDesc	图片描述
+	 * @param ticket	票根
+	 */
+	public abstract void OnRecvPhoto(String toId, String fromId, String fromName, String inviteId, String photoId, String sendId, boolean charget, String photoDesc, int ticket);
+	
+	/**
+	 * 接收微视频消息回调
+	 * @param toId		接收者ID
+	 * @param fromId	发送者ID
+	 * @param fromName	发送者用户名
+	 * @param inviteId	邀请ID
+	 * @param videoId	视频ID
+	 * @param sendId	发送ID
+	 * @param charget	是否已付费
+	 * @param videoDesc	视频描述
+	 * @param ticket	票根
+	 */
+	public abstract void OnRecvVideo(String toId, String fromId, String fromName, String inviteId, String videoId, String sendId, boolean charget, String videoDesc, int ticket);
 
 	/**
 	 * 接收更新在线状态消息回调
@@ -424,6 +464,7 @@ public abstract class LiveChatClientListener {
 	public enum KickOfflineType {
 		Unknow,		// 未知
 		Maintain,	// 服务器维护退出通知
+		Timeout,	// 心跳包超时
 		OtherLogin,	// 用户在其它地方登录
 	}
 	
@@ -435,18 +476,4 @@ public abstract class LiveChatClientListener {
 	public void OnRecvKickOffline(int kickType) {
 		OnRecvKickOffline(KickOfflineType.values()[kickType]);
 	}
-
-	/**
-	 * 接收图片消息回调
-	 * @param toId		接收者ID
-	 * @param fromId	发送者ID
-	 * @param fromName	发送者用户名
-	 * @param inviteId	邀请ID
-	 * @param photoId	图片ID
-	 * @param sendId	图片发送ID
-	 * @param charget	是否已付费
-	 * @param photoDesc	图片描述
-	 * @param ticket	票根
-	 */
-	public abstract void OnRecvPhoto(String toId, String fromId, String fromName, String inviteId, String photoId, String sendId, boolean charget, String photoDesc, int ticket);
 }

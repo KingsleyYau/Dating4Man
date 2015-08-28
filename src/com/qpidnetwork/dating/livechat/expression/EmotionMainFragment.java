@@ -1,5 +1,6 @@
 package com.qpidnetwork.dating.livechat.expression;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.view.AbilitySwapablePageView;
 
+@SuppressLint("InflateParams")
 public class EmotionMainFragment extends BaseFragment{
 	
 
@@ -36,6 +38,7 @@ public class EmotionMainFragment extends BaseFragment{
 		return view;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub

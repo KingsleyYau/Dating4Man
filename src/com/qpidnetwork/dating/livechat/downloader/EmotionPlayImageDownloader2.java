@@ -2,11 +2,12 @@ package com.qpidnetwork.dating.livechat.downloader;
 
 import android.os.Handler;
 import android.os.Message;
+
 import com.qpidnetwork.livechat.LCEmotionItem;
 import com.qpidnetwork.livechat.LCMessageItem;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.LiveChatManagerEmotionListener;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.request.item.OtherEmotionConfigItem;
 
 public class EmotionPlayImageDownloader2 implements LiveChatManagerEmotionListener{
@@ -46,22 +47,27 @@ public class EmotionPlayImageDownloader2 implements LiveChatManagerEmotionListen
 	private Handler handler = new Handler(){
 		public void handleMessage(android.os.Message msg) {
 			LCEmotionItem item = (LCEmotionItem)msg.obj;
-			if(item.emotionId.equals(msgBean.getEmotionItem().emotionId)){
-				/*下载高级表情播放图片回调*/
-				mLiveChatManager.UnregisterEmotionListener(EmotionPlayImageDownloader2.this);
-				if(msg.arg1 == 1){
-					/*下载成功*/
-					if ((item.playBigImages != null) && (item.playBigImages.size() > 0)) {
-						/* 有缩略图，直接使用 */
-						if(listener != null){
-							listener.onEmotionPlayImageDownloadSuccess(msgBean);
+			if((msgBean != null) && (msgBean.getEmotionItem() != null)){
+				/*发送高级表情，高级表情未下载成功但消息发送失败，重新发送时，由于旧消息被删除，导致请求返回成功后空指针异常*/
+				if((item != null)&&(item.emotionId.equals(msgBean.getEmotionItem().emotionId))){
+					/*下载高级表情播放图片回调*/
+					mLiveChatManager.UnregisterEmotionListener(EmotionPlayImageDownloader2.this);
+					if(msg.arg1 == 1){
+						/*下载成功*/
+						if ((item.playBigImages != null) && (item.playBigImages.size() > 0)) {
+							/* 有缩略图，直接使用 */
+							if(listener != null){
+								listener.onEmotionPlayImageDownloadSuccess(msgBean);
+							}
+							return;
 						}
-						return;
+					}
+					if(listener != null){
+						listener.onEmotionPlayImageDownloadFail(msgBean);
 					}
 				}
-				if(listener != null){
-					listener.onEmotionPlayImageDownloadFail(msgBean);
-				}
+			}else{
+				mLiveChatManager.UnregisterEmotionListener(EmotionPlayImageDownloader2.this);
 			}
 		}
 	};

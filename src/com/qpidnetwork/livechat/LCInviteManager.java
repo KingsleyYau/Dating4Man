@@ -176,28 +176,28 @@ public class LCInviteManager {
 		return result;
 	}
 	
-	/**
-	 * 用户是否已存在
-	 * @param userId
-	 * @return
-	 */
-	private boolean IsUserExist(String userId)
-	{
-		boolean result = false;
-		synchronized (mInviteUserList)
-		{
-			for (LCUserItem item : mInviteUserList)
-			{
-				if (null != item.userId
-					&& null != userId
-					&& item.userId.compareTo(userId) == 0)
-				{
-					result = true;
-				}
-			}
-		}
-		return result;
-	}
+//	/**
+//	 * 用户是否已存在
+//	 * @param userId
+//	 * @return
+//	 */
+//	private boolean IsUserExist(String userId)
+//	{
+//		boolean result = false;
+//		synchronized (mInviteUserList)
+//		{
+//			for (LCUserItem item : mInviteUserList)
+//			{
+//				if (null != item.userId
+//					&& null != userId
+//					&& item.userId.compareTo(userId) == 0)
+//				{
+//					result = true;
+//				}
+//			}
+//		}
+//		return result;
+//	}
 	
 	/**
 	 * 获取用户item（不存在不创建）
@@ -357,6 +357,7 @@ public class LCInviteManager {
 					, SendType.Recv
 					, fromId
 					, toId
+					, inviteId
 					, StatusType.Finish);
 			// 生成TextItem
 			LCTextItem textItem = new LCTextItem();

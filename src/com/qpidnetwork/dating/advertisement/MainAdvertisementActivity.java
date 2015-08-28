@@ -1,7 +1,6 @@
 package com.qpidnetwork.dating.advertisement;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -10,14 +9,11 @@ import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.advertisement.AdMainAdvertItem;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.ImageUtil;
 import com.qpidnetwork.manager.FileCacheManager;
@@ -49,6 +45,7 @@ public class MainAdvertisementActivity extends BaseFragmentActivity {
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void setWidowSize(){
 		
 		float density = this.getResources().getDisplayMetrics().density;

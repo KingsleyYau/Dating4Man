@@ -16,8 +16,6 @@
 
 package com.qpidnetwork.framework.widget.pinterest.internal;
 
-import com.qpidnetwork.framework.widget.pinterest.DebugUtil;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -33,9 +31,12 @@ import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Adapter;
+import android.widget.Gallery;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Spinner;
+
+import com.qpidnetwork.framework.widget.pinterest.DebugUtil;
 
 
 /**
@@ -45,6 +46,7 @@ import android.widget.Spinner;
  * See {@link ListView}, {@link GridView}, {@link Spinner} and
  *      {@link Gallery} for commonly used subclasses of AdapterView.
  */
+@SuppressWarnings("deprecation")
 public abstract class PLA_AdapterView<T extends Adapter> extends ViewGroup {
     
 	/**

@@ -42,11 +42,13 @@
 #define LIVECHAT_ADDDATE				"adddate"
 #define LIVECHAT_MSGTYPE				"msgtype"
 #define LIVECHAT_VOICEID_DELIMIT		"-"			// 语音ID分隔符
+// video参数的分隔符
+#define LIVECHAT_VIDEO_DELIMIT	"|||"
 // img参数的分隔符
 #define LIVECHAT_PHOTO_DELIMIT	"|||"
 // 是否已扣费值定义
-#define LIVECHAT_PHOTO_CHARGE_YES			"1"			// 是
-#define LIVECHAT_PHOTO_CHARGE_NO			"0"			// 否
+#define LIVECHAT_CHARGE_YES			"1"			// 是
+#define LIVECHAT_CHARGE_NO			"0"			// 否
 
 /* 5.5.批量查询聊天记录*/
 #define LIVECHAT_INVITEIDS				"inviteids"
@@ -141,7 +143,9 @@ typedef enum {
 	LRPM_EMOTION = 4,	// 高级表情消息
 	LRPM_AUTO_INVITE = 6,// 自动邀请（文本）
 	LRPM_VOICE = 7,		// 语音消息
-	LRPM_PHOTO = 8		// 图片消息
+	LRPM_PHOTO = 8,		// 图片消息
+	LRPM_VIDEO = 9,		// 微视频
+	LRPM_MAGIC_ICON = 10, // Magic Icon
 } LIVECHAT_RECORD_PROTOCOL_MSGTYPE;
 // 聊天记录消息内部定义类型
 typedef enum {
@@ -151,7 +155,8 @@ typedef enum {
 	LRM_WARNING,
 	LRM_EMOTION,
 	LRM_VOICE,
-	LRM_PHOTO
+	LRM_PHOTO,
+	LRM_VIDEO,
 } LIVECHAT_RECORD_MSGTYPE;
 
 // 发送私密照片类型
@@ -201,6 +206,8 @@ static const char* USET_TYPE_ARRAY[] = {
  * 请求
  */
 #define	LC_RECENT_VIDEO_TARGETID		"targetid"
+#define	LC_RECENT_VIDEO_USER_SID		"user_sid"
+#define	LC_RECENT_VIDEO_USER_ID			"user_id"
 
 /**
  * 返回
@@ -215,25 +222,34 @@ static const char* USET_TYPE_ARRAY[] = {
 
 /* ########################	6.13.获取微视频图片（http get）（New）  ######################## */
 /* 接口路径  */
-#define LC_GET_VIDEO_PHOTO_PATH 	"/livechat/setstatus.php?action=viewed_short_video_photo"
+#define LC_GET_VIDEO_PHOTO_PATH 	"/livechat/setstatus.php?action=view_short_video_photo"
 
 /**
  * 请求
  */
-#define	LC_GET_VIDEO_PHOTO_TARGETID		"targetid"
-#define	LC_GET_VIDEO_PHOTO_VIDEOID		"videoid"
-#define	LC_GET_VIDEO_PHOTO_SIZE			"size"
+#define	LC_GET_VIDEO_PHOTO_USER_SID			"user_sid"
+#define	LC_GET_VIDEO_PHOTO_USER_ID			"user_id"
+#define	LC_GET_VIDEO_PHOTO_TARGETID			"targetid"
+#define	LC_GET_VIDEO_PHOTO_VIDEOID			"videoid"
+#define	LC_GET_VIDEO_PHOTO_SIZE				"size"
 
 /* ######################## 6.14.	获取微视频文件URL（http post）（New）  ######################## */
 /* 接口路径  */
-#define LC_GET_VIDEO_PATH 	"/livechat/setstatus.php?action=viewed_short_video"
+#define LC_GET_VIDEO_PATH 	"/livechat/setstatus.php?action=view_short_video"
 
 /**
  * 请求
  */
+#define	LC_GET_VIDEO_USER_SID		"user_sid"
+#define	LC_GET_VIDEO_USER_ID		"user_id"
 #define	LC_GET_VIDEO_TARGETID		"targetid"
 #define	LC_GET_VIDEO_VIDEOID		"videoid"
 #define	LC_GET_VIDEO_INVITEID		"inviteid"
 #define	LC_GET_VIDEO_TOFLAG			"toflag"
 #define	LC_GET_VIDEO_SENDID			"sendid"
+
+/**
+ * 返回
+ */
+#define	LC_GET_VIDEO_VIDEO_URL		"video_url"
 #endif /* REQUESTLIVECHATDEFINE_H_ */

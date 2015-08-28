@@ -16,17 +16,18 @@
 
 package com.android.volley.toolbox;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
+import java.io.IOException;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 
-import java.io.IOException;
-import java.util.Map;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 
 /**
  * An HTTP stack abstraction.
  */
+@SuppressWarnings("deprecation")
 public interface HttpStack {
     /**
      * Performs an HTTP request with the given parameters.

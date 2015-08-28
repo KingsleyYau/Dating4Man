@@ -28,6 +28,7 @@ public class EMFOutboxAdapter extends EMFBaseAdapter<EMFOutboxListItem>{
 		notifyDataSetChanged();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void instantiateViews(int position, ViewHolder holder) {
 		// TODO Auto-generated method stub

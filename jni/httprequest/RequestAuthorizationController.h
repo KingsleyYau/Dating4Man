@@ -65,6 +65,7 @@ public:
      * @param birthday_y		生日的年
      * @param birthday_m		生日的月
      * @param birthday_d		生日的日
+     * @param referrer			app推广参数（安装成功app第一次运行时GooglePlay返回）
      * @return					请求唯一标识
      */
     long LoginWithFacebook(
@@ -78,7 +79,8 @@ public:
     		string prevcode,
     		string birthday_y,
     		string birthday_m,
-    		string birthday_d
+    		string birthday_d,
+    		string referrer
     		);
 
     /**
@@ -96,6 +98,7 @@ public:
      * @param model				移动设备型号
      * @param deviceId			设备唯一标识
      * @param manufacturer		制造厂商
+     * @param referrer			app推广参数（安装成功app第一次运行时GooglePlay返回）
      * @return					请求唯一标识
      */
 	long Register(
@@ -111,7 +114,8 @@ public:
 			bool weeklymail,
 			string model,
 			string deviceId,
-			string manufacturer
+			string manufacturer,
+			string referrer
 			);
 
     /**

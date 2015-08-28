@@ -83,6 +83,14 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_OnlineCount
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_UploadCrashLog
   (JNIEnv *, jclass, jstring, jstring, jstring, jobject);
 
+/*
+ * Class:     com_qpidnetwork_request_RequestJniOther
+ * Method:    InstallLogs
+ * Signature: (Ljava/lang/String;IIJJILjava/lang/String;Lcom/qpidnetwork/request/OnRequestCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_InstallLogs
+  (JNIEnv *, jclass, jstring, jint, jint, jlong, jlong, jint, jstring, jobject);
+
 #ifdef __cplusplus
 }
 #endif

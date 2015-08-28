@@ -94,7 +94,7 @@ public class MaterialDropDownList extends PopupWindow{
 
 	    	private String[] mListData;
 	    	private Context mContext;
-	    	private ArrayList<View> views;
+//	    	private ArrayList<View> views;
 	    	private int selectedItem = -1;
 	    	
 
@@ -102,7 +102,7 @@ public class MaterialDropDownList extends PopupWindow{
 	    		super(context, 0);
 	    		mListData = objects;
 	    		mContext = context;
-	    		views = new ArrayList<View>();
+//	    		views = new ArrayList<View>();
 	    	}
 
 

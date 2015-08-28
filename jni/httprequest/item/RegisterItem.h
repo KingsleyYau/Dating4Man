@@ -58,11 +58,16 @@ public:
 			}
 			if( root[AUTHORIZATION_PHOTOSEND].isString() ) {
 				string strValue = root[AUTHORIZATION_PHOTOSEND].asString();
-				photosend = atoi(strValue.c_str());
+				photosend = (atoi(strValue.c_str()) == 0)?"false":"true";
 			}
+
 			if( root[AUTHORIZATION_PHOTORECEIVED].isString() ) {
 				string strValue = root[AUTHORIZATION_PHOTORECEIVED].asString();
-				photoreceived = atoi(strValue.c_str());
+				photoreceived = (atoi(strValue.c_str()) == 0)?"false":"true";
+			}
+			if( root[AUTHORIZATION_VIDEORECEIVED].isString() ) {
+				string strValue = root[AUTHORIZATION_VIDEORECEIVED].asString();
+				videoreceived = (atoi(strValue.c_str()) == 0)?"false":"true";
 			}
 		}
 	}
@@ -79,8 +84,10 @@ public:
 		photoURL = "";
 		sessionid = "";
 		ga_uid = "";
+
 		photosend = true;
 		photoreceived = true;
+		videoreceived = true;
 	}
 	virtual ~RegisterItem() {
 
@@ -102,6 +109,7 @@ public:
 	 * @param ga_uid			Google Analytics UserID参数
 	 * @param photosend			私密照片发送权限
 	 * @param photoreceived		私密照片接收权限
+	 * @param videoreceived		微视频接收权限（true：允许，false：不能）
 	 */
 	bool login;
 	string manid;
@@ -117,6 +125,7 @@ public:
 	string ga_uid;
 	bool photosend;
 	bool photoreceived;
+	bool videoreceived;
 };
 
 #endif /* REGISTERITEM_H_ */

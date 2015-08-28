@@ -1,14 +1,14 @@
 package com.qpidnetwork.view;
 
 
-import com.qpidnetwork.framework.widget.pinterest.internal.PLA_AbsListView;
-
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AbsListView;
+
+import com.qpidnetwork.framework.widget.pinterest.internal.PLA_AbsListView;
 
 /**
  * A descendant of {@link android.support.v4.widget.SwipeRefreshLayout} which supports multiple

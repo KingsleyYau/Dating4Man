@@ -1,9 +1,9 @@
 package com.qpidnetwork.view;
 
-import com.qpidnetwork.dating.BaseFragment;
-
 import android.os.Bundle;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+
+import com.qpidnetwork.dating.BaseFragment;
 
 /**
  * 带标记的Fragment

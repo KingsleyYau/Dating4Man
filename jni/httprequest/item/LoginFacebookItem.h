@@ -90,12 +90,17 @@ public:
 
 			if( root[AUTHORIZATION_PHOTOSEND].isString() ) {
 				string strValue = root[AUTHORIZATION_PHOTOSEND].asString();
-				photosend = atoi(strValue.c_str());
+				photosend = (atoi(strValue.c_str()) == 0)?"false":"true";
 			}
 
 			if( root[AUTHORIZATION_PHOTORECEIVED].isString() ) {
 				string strValue = root[AUTHORIZATION_PHOTORECEIVED].asString();
-				photoreceived = atoi(strValue.c_str());
+				photoreceived = (atoi(strValue.c_str()) == 0)?"false":"true";
+			}
+
+			if( root[AUTHORIZATION_VIDEORECEIVED].isString() ) {
+				string strValue = root[AUTHORIZATION_VIDEORECEIVED].asString();
+				videoreceived = (atoi(strValue.c_str()) == 0)?"false":"true";
 			}
 
 			if( root[AUTHORIZATION_PREMIT].isString() ) {
@@ -144,8 +149,11 @@ public:
 		sessionid = "";
 		ga_uid = "";
 		ticketid = "";
+
 		photosend = true;
 		photoreceived = true;
+		videoreceived = true;
+
 		premit = true;
 		ladyprofile = true;
 		livechat = true;
@@ -174,6 +182,7 @@ public:
 	 * @param ticketid			客服邮件强制阅读的事项ID
 	 * @param photosend			私密照片发送权限
 	 * @param photoreceived		私密照片接收权限
+	 * @param videoreceived		微视频接收权限（true：允许，false：不能）
 	 * @param premit			帐号可用状态
 	 * @param ladyprofile		女士详细信息风控标识（true：有风控，false：无）
 	 * @param livechat			LiveChat详细风控标识（true：有风控，false：无）
@@ -195,8 +204,11 @@ public:
 	string sessionid;
 	string ga_uid;
 	string ticketid;
+
 	bool photosend;
 	bool photoreceived;
+	bool videoreceived;
+
 	bool premit;
 	bool ladyprofile;
 	bool livechat;

@@ -3,6 +3,7 @@ package com.qpidnetwork.dating.emf;
 
 import java.io.File;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -24,8 +25,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
@@ -58,7 +57,7 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment implements C
 	/**
 	 * 描述
 	 */
-	private RelativeLayout layoutInsert;
+//	private RelativeLayout layoutInsert;
 	private TextView textViewDescription;
 	private Button buttonInsert;
 	private String name = "";
@@ -115,7 +114,8 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment implements C
         super.onCreate(savedInstanceState);
     }
     
-    @Override
+    @SuppressLint("InflateParams")
+	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
                                         
@@ -125,7 +125,7 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment implements C
         imageView = (ImageView) view.findViewById(R.id.imageView);
         loader = new ImageViewLoader(getActivity());
         
-        layoutInsert = (RelativeLayout) view.findViewById(R.id.layoutInsert);
+//        layoutInsert = (RelativeLayout) view.findViewById(R.id.layoutInsert);
         textViewDescription = (TextView) view.findViewById(R.id.textViewDescription);
         buttonInsert = (Button) view.findViewById(R.id.buttonInsert);
         buttonInsert.setOnClickListener(new OnClickListener() {
@@ -300,7 +300,8 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment implements C
     /**
      * 开始播放
      */
-    public void Play() {  
+    @SuppressWarnings("deprecation")
+	public void Play() {  
         try {  
         	
     		mediaPlayer.reset(); 
@@ -498,9 +499,14 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment implements C
 		// TODO Auto-generated method stub
 		Log.d("EMFAttachmentVirtualGiftFragment", "surfaceCreated()");
         
-		// 把视频画面输出到SurfaceView
-		mediaPlayer.setDisplay(holder);
-        mediaPlayer.prepareAsync();
+		try {
+			// 把视频画面输出到SurfaceView
+			mediaPlayer.setDisplay(holder);
+	        mediaPlayer.prepareAsync();
+		} catch (Exception e) {
+			// TODO: handle exception
+			Log.d("EMFAttachmentVirtualGiftFragment", "surfaceCreated( Exception : " + e.getMessage() + ")");
+		}
 	}
 
 	@Override

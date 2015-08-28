@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -20,7 +19,6 @@ import android.widget.LinearLayout;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.livechat.ChatActivity;
-import com.qpidnetwork.framework.util.UnitConversion;
 
 /**
  * 
@@ -33,8 +31,6 @@ public class ExpressionGridAdapter extends BaseAdapter {
 	private TypedArray expressionsIcons;
 	private int[] expressionsValues;
 
-	//private int widthHeight;
-	private int pageIndex; // 页码
 	private int startItem; // 当前页起始号
 	private int itemCount; // 当前页数量
 
@@ -42,8 +38,6 @@ public class ExpressionGridAdapter extends BaseAdapter {
 		this.context = context;
 		expressionsIcons = context.getResources().obtainTypedArray(R.array.expressions);
 		expressionsValues = context.getResources().getIntArray(R.array.expressions_value);
-		//widthHeight = UnitConversion.dip2px(context, 40);
-		this.pageIndex = pageIndex;
 		this.startItem = pageIndex * itemCount;
 		this.itemCount = expressionsValues.length < (pageIndex + 1) * itemCount ? (expressionsValues.length - pageIndex * itemCount) : itemCount;
 	}
@@ -64,6 +58,7 @@ public class ExpressionGridAdapter extends BaseAdapter {
 		return 0;
 	}
 
+	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi") @Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		

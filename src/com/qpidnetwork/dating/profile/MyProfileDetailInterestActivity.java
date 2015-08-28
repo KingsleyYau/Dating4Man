@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -152,7 +151,7 @@ public class MyProfileDetailInterestActivity extends BaseActivity {
 	 * 兴趣爱好
 	 */
 	private WrapListView wrapListView;
-	private List<CheckItem> mList = new ArrayList<>();
+	private List<CheckItem> mList = new ArrayList<CheckItem>();
 	private InterestLabelAdapter intrestLabelAdapter = new InterestLabelAdapter(this, mList);
 	
 	@Override

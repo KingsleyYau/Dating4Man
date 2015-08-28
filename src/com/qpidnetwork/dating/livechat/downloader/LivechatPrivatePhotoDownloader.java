@@ -1,14 +1,16 @@
 package com.qpidnetwork.dating.livechat.downloader;
 
 import java.io.File;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.livechat.LCMessageItem;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.LiveChatManagerPhotoListener;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.request.RequestJniLiveChat.PhotoSizeType;
 
 public class LivechatPrivatePhotoDownloader implements

@@ -8,9 +8,11 @@ import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.framework.widget.CircleImageView;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.manager.WebSiteManager;
@@ -35,31 +37,6 @@ public class RegisterFacebookPasswordActivity extends BaseActivity implements On
 		REQUEST_FAIL,
 	}
 	
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * 
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 * @param bitmap			验证码
-		 * @param loginItem			登录正常返回
-		 * @param loginErrorItem	登录错误返回
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-			
-		}
-		public String errno;
-		public String errmsg;
-		public LoginItem loginItem = null;
-		public LoginErrorItem loginErrorItem = null;
-	}
 	
 	/**
 	 *  用户头像
@@ -168,7 +145,7 @@ public class RegisterFacebookPasswordActivity extends BaseActivity implements On
 			public void handleMessage(android.os.Message msg) {
 				// 收起菊花
 				hideProgressDialog();
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+//				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_SUCCESS:{
 					// 绑定成功
@@ -209,22 +186,22 @@ public class RegisterFacebookPasswordActivity extends BaseActivity implements On
 		// TODO Auto-generated method stub
 		// facebook登录状态改变
 		Message msg = Message.obtain();
-		MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+		RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 		if( isSuccess ) {
 			// 登录成功
 			msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
-			obj.loginItem = item;
+			obj.body = item;
 		} else {
 			// 登录失败
 			msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-			obj.loginErrorItem = errItem;
+			obj.body = errItem;
 		}
 		msg.obj = obj;
 		mHandler.sendMessage(msg);
 	}
 	
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
 	}

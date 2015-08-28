@@ -1,15 +1,14 @@
 package com.qpidnetwork.manager;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+
 import com.qpidnetwork.request.RequestJniEMF.PrivatePhotoType;
 import com.qpidnetwork.tool.Arithmetic;
-
-import android.content.Context;
-import android.os.Environment;
 
 /**
  * 文件缓存管理
@@ -24,6 +23,7 @@ public class FileCacheManager {
 	static String LC_EMOTION_DIR = "livechat/emotion";
 	static String LC_VOICE_DIR = "livechat/voice";
 	static String LC_PHTOT_DIR = "livechat/photo";
+	static String LC_VIDEO_DIR = "livechat/video";
 	static String LC_TAKE_PHOTO_TEM_DIR = "livechat/photo/temp";
 	static String LOG_DIR = "log";
 	static String TEMP = "temp";
@@ -195,12 +195,25 @@ public class FileCacheManager {
 	}
 	
 	/**
-	 * 获取livechat语音目录
+	 * 获取livechat图片目录
 	 * @return
 	 */
 	public String GetLCPhotoPath() {
 		/* 创建虚拟礼物路径 */
 		String path = mMainPath + "/" + LC_PHTOT_DIR + "/";
+		File file = new File(path);
+		file.mkdirs();
+		
+		return path;
+	}
+	
+	/**
+	 * 获取livechat视频目录
+	 * @return
+	 */
+	public String GetLCVideoPath() {
+		/* 创建虚拟礼物路径 */
+		String path = mMainPath + "/" + LC_VIDEO_DIR + "/";
 		File file = new File(path);
 		file.mkdirs();
 		
@@ -376,6 +389,7 @@ public class FileCacheManager {
 	 * 获取一个以时间命名EMF拍照图片的路径
 	 * @return
 	 */
+	@SuppressLint("SimpleDateFormat")
 	public String GetEMFCameraUrl() {
 		String temp ="";
 		

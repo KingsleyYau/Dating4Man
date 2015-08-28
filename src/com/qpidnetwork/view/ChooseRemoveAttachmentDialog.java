@@ -1,13 +1,13 @@
 package com.qpidnetwork.view;
 
-import com.qpidnetwork.dating.R;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.widget.TextView;
+
+import com.qpidnetwork.dating.R;
 
 public class ChooseRemoveAttachmentDialog extends Dialog {
 	

@@ -119,7 +119,8 @@ public class QuickMatchMatchesFragment extends Fragment {
         return gFragment;
     }
 	
-    @SuppressLint("NewApi") @Override
+    @SuppressWarnings("deprecation")
+	@SuppressLint("NewApi") @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         display = getActivity().getWindowManager().getDefaultDisplay();
@@ -329,6 +330,7 @@ public class QuickMatchMatchesFragment extends Fragment {
 	 * @param inflater
 	 * @param container
 	 */
+	@SuppressLint("InflateParams")
 	public View InitView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.fragment_quick_match_matches, null);
         
@@ -442,6 +444,7 @@ public class QuickMatchMatchesFragment extends Fragment {
 		imageViewLady = (QuickMatchImageView) view.findViewById(R.id.imageViewLady);
 		imageViewLady.setVisibility(View.GONE);
 		imageViewLady.SetOnQuickMatchImageViewLinstener(new OnQuickMatchImageViewLinstener() {
+			@SuppressWarnings("deprecation")
 			@Override
 			public void OnDrag() {
 				// TODO Auto-generated method stub
@@ -463,6 +466,7 @@ public class QuickMatchMatchesFragment extends Fragment {
 				layoutLady.setVisibility(View.INVISIBLE);
 			}
 			
+			@SuppressWarnings("deprecation")
 			@Override
 			public void OnRestore() {
 				Log.d("QuickMatch.QuickMatchMatchesFragment", "OnRestore()");

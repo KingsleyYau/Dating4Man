@@ -8,8 +8,7 @@
 #include "RequestOtherController.h"
 #include "RequestDefine.h"
 #include "RequestOtherDefine.h"
-#include "../common/CommonFunc.h"
-#include "../common/command.h"
+#include <../common/CommonFunc.h>
 
 RequestOtherController::RequestOtherController(HttpRequestManager *pHttpRequestManager, const RequestOtherControllerCallback& callback)
 {
@@ -55,6 +54,9 @@ void RequestOtherController::onSuccess(long requestId, string url, const char* b
 	else if( url.compare(OTHER_UPLOAD_CRASH_PATH) == 0 ) {
 		UploadCrashLogCallbackHandle(requestId, url, true, buf, size);
 	}
+	else if ( url.compare(OTHER_INSTALLLOGS_PATH) == 0 ) {
+		InstallLogsCallbackHandle(requestId, url, true, buf, size);
+	}
 	FileLog("httprequest", "RequestOtherController::onSuccess() end, url:%s", url.c_str());
 }
 
@@ -83,8 +85,11 @@ void RequestOtherController::onFail(long requestId, string url)
 	else if ( url.compare(OTHER_ONLINECOUNT_PATH) == 0 ) {
 		OnlineCountCallbackHandle(requestId, url, false, NULL, 0);
 	}
-	else if( url.compare(OTHER_UPLOAD_CRASH_PATH) == 0 ) {
+	else if ( url.compare(OTHER_UPLOAD_CRASH_PATH) == 0 ) {
 		UploadCrashLogCallbackHandle(requestId, url, false, NULL, 0);
+	}
+	else if ( url.compare(OTHER_INSTALLLOGS_PATH) == 0 ) {
+		InstallLogsCallbackHandle(requestId, url, false, NULL, 0);
 	}
 	FileLog("httprequest", "RequestOtherController::onFail() end, url:%s", url.c_str());
 }
@@ -226,8 +231,10 @@ void RequestOtherController::GetCountCallbackHandle(long requestId, const string
 }
 
 // ----------------------- PhoneInfo -----------------------
-long RequestOtherController::PhoneInfo(const string& manId, int verCode, const string& verName, int action, int siteId
-		, double density, int width, int height
+long RequestOtherController::PhoneInfo(
+		const string& manId, int verCode, const string& verName, int action, int siteId
+		, double density, int width, int height, const string& densityDpi, const string& model, const string& manufacturer, const string& os
+		, const string& release, const string& sdk, const string& language, const string& region
 		, const string& lineNumber, const string& simOptName, const string& simOpt, const string& simCountryIso, const string& simState
 		, int phoneType, int networkType, const string& deviceId)
 {
@@ -235,33 +242,12 @@ long RequestOtherController::PhoneInfo(const string& manId, int verCode, const s
 	HttpEntiy entiy;
 	string url = OTHER_PHONEINFO_PATH;
 
-	// model
-	string strModel = GetPhoneModel();
-	entiy.AddContent(OTHER_REQUEST_MODEL, strModel.c_str());
-
-	// manufacturer
-	string strManufacturer = GetPhoneManufacturer();
-	entiy.AddContent(OTHER_REQUEST_MODEL, strManufacturer.c_str());
-
-	// os
-	string strOS = "Android";
-	entiy.AddContent(OTHER_REQUEST_OS, strOS.c_str());
-
-	// release
-	string strRelease = GetPhoneBuildVersion();
-	entiy.AddContent(OTHER_REQUEST_RELEASE, strRelease.c_str());
-
-	// sdk
-	string strSDK = GetPhoneBuildSDKVersion();
-	entiy.AddContent(OTHER_REQUEST_SDK, strSDK.c_str());
-
 	// density
 	snprintf(temp, sizeof(temp), "%f", density);
 	entiy.AddContent(OTHER_REQUEST_DENSITY, temp);
 
 	// densityDpi
-	string strDensityDPI = GetPhoneDensityDPI();
-	entiy.AddContent(OTHER_REQUEST_DENSITYDPI, strDensityDPI.c_str());
+	entiy.AddContent(OTHER_REQUEST_DENSITYDPI, densityDpi.c_str());
 
 	// width
 	snprintf(temp, sizeof(temp), "%d", width);
@@ -290,14 +276,6 @@ long RequestOtherController::PhoneInfo(const string& manId, int verCode, const s
 	// NetworkType
 	snprintf(temp, sizeof(temp), "%d", networkType);
 	entiy.AddContent(OTHER_REQUEST_NETWORKTYPE, temp);
-
-	// language
-	string strLanguage = GetPhoneLocalLanguage();
-	entiy.AddContent(OTHER_REQUEST_LANGUAGE, strLanguage.c_str());
-
-	// country
-	string strCountry = GetPhoneLocalRegion();
-	entiy.AddContent(OTHER_REQUEST_COUNTRY, strCountry.c_str());
 
 	// siteid
 	string strSite("");
@@ -346,10 +324,10 @@ long RequestOtherController::PhoneInfo(const string& manId, int verCode, const s
 			"data:%s, versionCode:%d, versionName:%s, PhoneType:%d, NetworkType:%d, "
 			"language:%s, country:%s, siteid:%s, action:%s, line1Number:%s, "
 			"deviceId:%s, SimOperatorName:%s, SimOperator:%s, SimCountryIso:%s, SimState:%s)",
-			url.c_str(), strModel.c_str(), strManufacturer.c_str(), strOS.c_str(), strRelease.c_str(), strSDK.c_str()
-			, density, strDensityDPI.c_str(), width, height
+			url.c_str(), model.c_str(), manufacturer.c_str(), os.c_str(), release.c_str(), sdk.c_str()
+			, density, densityDpi.c_str(), width, height
 			, strData.c_str(), verCode, verName.c_str(), phoneType, networkType
-			, strLanguage.c_str(), strCountry.c_str(), strSite.c_str(), strAction.c_str(), lineNumber.c_str()
+			, language.c_str(), region.c_str(), strSite.c_str(), strAction.c_str(), lineNumber.c_str()
 			, deviceId.c_str(), simOptName.c_str(), simOpt.c_str(), simCountryIso.c_str(), simState.c_str());
 
 	return StartRequest(url, entiy, this);
@@ -652,5 +630,111 @@ void RequestOtherController::UploadCrashLogCallbackHandle(long requestId, const 
 
 	if( m_Callback.onRequestOtherUploadCrashLog != NULL ) {
 		m_Callback.onRequestOtherUploadCrashLog(requestId, bFlag, errnum, errmsg);
+	}
+}
+
+long RequestOtherController::InstallLogs(const string& deviceId, long installtime, long submittime, int verCode
+			, const string& model, const string& manufacturer, const string& os, const string& release
+			, const string& sdk, int width, int height, const string& referrer)
+{
+	HttpEntiy entiy;
+	char temp[32] = {0};
+
+	if ( deviceId.length() > 0 ) {
+		entiy.AddContent(OTHER_INSTALLLOGS_DEVICEID, deviceId);
+	}
+
+	snprintf(temp, sizeof(temp), "%ld", installtime);
+	entiy.AddContent(OTHER_INSTALLLOGS_INSTALLTIME, temp);
+
+	snprintf(temp, sizeof(temp), "%ld", submittime);
+	entiy.AddContent(OTHER_INSTALLLOGS_SUBMITTIME, temp);
+
+	snprintf(temp, sizeof(temp), "%d", verCode);
+	entiy.AddContent(OTHER_INSTALLLOGS_VERSIONCODE, temp);
+
+	if (!model.empty()) {
+		entiy.AddContent(OTHER_INSTALLLOGS_MODEL, model);
+	}
+
+	if (!manufacturer.empty()) {
+		entiy.AddContent(OTHER_INSTALLLOGS_MANUFACTURER, manufacturer);
+	}
+
+	if (!os.empty()) {
+		entiy.AddContent(OTHER_INSTALLLOGS_OS, os);
+	}
+
+	if (!release.empty()) {
+		entiy.AddContent(OTHER_INSTALLLOGS_RELEASE, release);
+	}
+
+	if (!sdk.empty()) {
+		entiy.AddContent(OTHER_INSTALLLOGS_SDK, sdk);
+	}
+
+	snprintf(temp, sizeof(temp), "%d", width);
+	entiy.AddContent(OTHER_INSTALLLOGS_WIDTH, temp);
+
+	snprintf(temp, sizeof(temp), "%d", height);
+	entiy.AddContent(OTHER_INSTALLLOGS_HEIGHT, temp);
+
+	if (!referrer.empty()) {
+		entiy.AddContent(OTHER_INSTALLLOGS_UTMREFERRER, referrer);
+	}
+
+	string url = OTHER_INSTALLLOGS_PATH;
+
+	FileLog("httprequest", "RequestOtherController::InstallLogs( "
+			"url : %s, "
+			"deviceId : %s, "
+			"installtime : %ld, "
+			"submittime : %ld, "
+			"verCode : %d, "
+			"model : %s, "
+			"manufacturer : %s, "
+			"os : %s, "
+			"release : %s, "
+			"sdk : %s, "
+			"width : %d, "
+			"height : %d, "
+			"referrer : %s "
+			")",
+			url.c_str(),
+			deviceId.c_str(),
+			installtime,
+			submittime,
+			verCode,
+			model.c_str(),
+			manufacturer.c_str(),
+			os.c_str(),
+			release.c_str(),
+			sdk.c_str(),
+			width,
+			height,
+			referrer.c_str()
+			);
+
+	return StartRequest(url, entiy, this);
+}
+
+void RequestOtherController::InstallLogsCallbackHandle(long requestId, const string& url, bool requestRet, const char* buf, int size) {
+	string errnum = "";
+	string errmsg = "";
+	bool bFlag = false;
+
+	if (requestRet) {
+		// request success
+		Json::Value dataJson;
+		bFlag = HandleResult(buf, size, errnum, errmsg, &dataJson);
+	}
+	else {
+		// request fail
+		errnum = LOCAL_ERROR_CODE_TIMEOUT;
+		errmsg = LOCAL_ERROR_CODE_TIMEOUT_DESC;
+	}
+
+	if( m_Callback.onRequestOtherInstallLogs != NULL ) {
+		m_Callback.onRequestOtherInstallLogs(requestId, bFlag, errnum, errmsg);
 	}
 }

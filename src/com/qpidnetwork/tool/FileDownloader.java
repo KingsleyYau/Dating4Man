@@ -207,7 +207,8 @@ public class FileDownloader {
 	        mListener.onResponse(response);
 	    }
 
-	    @Override
+	    @SuppressWarnings("deprecation")
+		@Override
 	    protected Response<FileDownloader> parseNetworkResponse(NetworkResponse response) {
 			Log.d("FileDownloader", "parseNetworkResponse( " +
 					"statusCode : " + response.statusCode + ", " + 
@@ -223,16 +224,18 @@ public class FileDownloader {
 				tmpFile = File.createTempFile("tmp", "");
 				fos = new FileOutputStream(tmpFile);
 				
-				if( mBigFile && response.entity != null && response.entity.getContent() != null ) {
+				InputStream in = null;
+				if( mBigFile && response.entity != null ) {
+					in = response.entity.getContent();
+				}
+				if( in != null ) {
 					// big file
 					// write 10k every time
 					byte buffer[] = new byte[1024 * 10];
 					int len = 0;
-					InputStream in = response.entity.getContent();
 					while ( (len = in.read(buffer)) != -1 ) {
 						fos.write(buffer, 0, len);
 		            }
-					
 				} else if( response.data != null ) {
 					fos.write(response.data, 0, response.data.length);
 				}
@@ -286,7 +289,7 @@ public class FileDownloader {
 	    
 	    @Override
 	    public Map<String, String> getHeaders() throws AuthFailureError {
-	    	Map<String, String> headers = new HashMap<>();
+	    	Map<String, String> headers = new HashMap<String, String>();
 	    	if ( QpidApplication.isDemo ) {
 	    		String basicAuth = "Basic " + new String(Base64.encode("test:5179".getBytes(), Base64.NO_WRAP));
 	    		headers.put("Authorization", basicAuth);

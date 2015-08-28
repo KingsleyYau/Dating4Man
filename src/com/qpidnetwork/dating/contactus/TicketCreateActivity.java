@@ -21,7 +21,6 @@ import com.qpidnetwork.framework.base.BaseActionBarFragmentActivity;
 import com.qpidnetwork.framework.util.CompatUtil;
 import com.qpidnetwork.framework.util.ImageUtil;
 import com.qpidnetwork.framework.util.StringUtil;
-import com.qpidnetwork.framework.util.ToastUtil;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestJniTicket;

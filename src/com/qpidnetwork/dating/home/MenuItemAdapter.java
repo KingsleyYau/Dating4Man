@@ -2,9 +2,6 @@ package com.qpidnetwork.dating.home;
 
 import java.util.List;
 
-import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.home.MenuHelper.MenuItemBean;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -19,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.home.MenuHelper.MenuItemBean;
 
 public class MenuItemAdapter extends BaseAdapter{
 	

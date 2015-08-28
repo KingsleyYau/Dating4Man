@@ -64,11 +64,12 @@ public class BaseFragmentActivity extends GAFragmentActivity implements OnClickL
 		super.onStop();
 	}
 	
-	
 
 	@Override
 	protected void onDestroy(){
 		super.onDestroy();
+		/*防止异常杀死界面重启后，dialog 失去windowDecor导致调用Dismiss IllegalArgumentException*/
+		hideProgressDialog();
 		cancelToastImmediately();
 	}
 	

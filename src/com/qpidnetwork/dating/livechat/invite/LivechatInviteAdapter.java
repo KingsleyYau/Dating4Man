@@ -2,6 +2,7 @@ package com.qpidnetwork.dating.livechat.invite;
 
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +52,8 @@ public class LivechatInviteAdapter extends BaseAdapter{
 		return 0;
 	}
 	
+	@SuppressLint("InflateParams")
+	@SuppressWarnings("deprecation")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;

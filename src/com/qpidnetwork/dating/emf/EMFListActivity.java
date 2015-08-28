@@ -13,11 +13,11 @@ import com.qpidnetwork.dating.R;
 import com.qpidnetwork.framework.base.BaseTabbarTitleFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.livechat.LCUserItem;
+import com.qpidnetwork.livechat.LiveChatManager;
+import com.qpidnetwork.livechat.LiveChatManagerOtherListener;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
-import com.qpidnetwork.livechat.LiveChatManager;
-import com.qpidnetwork.livechat.LiveChatManagerOtherListener;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJniEMF.ReplyType;
 import com.qpidnetwork.view.TitleTabBar;
@@ -38,6 +38,7 @@ public class EMFListActivity extends BaseTabbarTitleFragmentActivity implements 
 	/**
 	 * 界面消息
 	 */
+	@SuppressWarnings("unused")
 	private class MessageCallbackItem {
 		/**
 		 * 
@@ -52,6 +53,7 @@ public class EMFListActivity extends BaseTabbarTitleFragmentActivity implements 
 		public TalkEmfNoticeType noticeType;
 	}
 	
+	@SuppressWarnings("deprecation")
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);

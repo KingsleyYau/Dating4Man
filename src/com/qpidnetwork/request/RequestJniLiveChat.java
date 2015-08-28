@@ -235,6 +235,8 @@ public class RequestJniLiveChat {
 	 * @return				请求唯一Id
 	 */
 	static public native long QueryRecentVideo(
+			String user_sid,
+			String user_id,
 			String womanId, 
 			OnQueryRecentVideoListCallback callback);
 	
@@ -255,14 +257,18 @@ public class RequestJniLiveChat {
 	 * @return				请求唯一Id
 	 */
 	static public long GetVideoPhoto(
+			String user_sid,
+			String user_id,
 			String womanId, 
 			String videoid,
 			VideoPhotoType type,
 			String filePath,
 			OnRequestFileCallback callback) {
-		return GetVideoPhoto(womanId, videoid, type.ordinal(), filePath, callback);
+		return GetVideoPhoto(user_sid, user_id, womanId, videoid, type.ordinal(), filePath, callback);
 	}
 	static protected native long GetVideoPhoto(
+			String user_sid,
+			String user_id,
 			String womanId, 
 			String videoid,
 			int type,
@@ -288,15 +294,19 @@ public class RequestJniLiveChat {
 	 * @return				请求唯一Id
 	 */
 	static public long GetVideo(
+			String user_sid,
+			String user_id,
 			String womanId, 
 			String videoid,
 			String inviteid,
 			VideoToFlagType toflag,
 			String sendid,
 			OnGetVideoCallback callback) {
-		return GetVideo(womanId, videoid, inviteid, toflag.ordinal(), sendid, callback);
+		return GetVideo(user_sid, user_id, womanId, videoid, inviteid, toflag.ordinal(), sendid, callback);
 	}
 	static protected native long GetVideo(
+			String user_sid,
+			String user_id,
 			String womanId, 
 			String videoid,
 			String inviteid,

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -16,10 +15,8 @@ import com.facebook.AppEventsLogger;
 import com.facebook.Session;
 import com.facebook.SessionLoginBehavior;
 import com.qpidnetwork.dating.BaseActivity;
-import com.qpidnetwork.dating.MainActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
-import com.qpidnetwork.dating.home.HomeActivity;
 import com.qpidnetwork.dating.home.AppUrlHandler;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
@@ -39,7 +36,8 @@ import com.qpidnetwork.view.MovingImageView.TranslateMode;
  *
  */
 public class RegisterActivity extends BaseActivity implements OnLoginManagerCallback {
-	
+
+	@SuppressWarnings("unused")
 	private class LoginMessageItem {
 		public LoginMessageItem(		
 				String errno,
@@ -237,7 +235,7 @@ public class RegisterActivity extends BaseActivity implements OnLoginManagerCall
 	}
 
 	@Override
-	public void OnLogout() {
+	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
 	}

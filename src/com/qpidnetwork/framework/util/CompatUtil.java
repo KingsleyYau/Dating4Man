@@ -3,7 +3,6 @@ package com.qpidnetwork.framework.util;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;

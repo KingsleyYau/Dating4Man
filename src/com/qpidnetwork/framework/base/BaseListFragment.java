@@ -1,13 +1,12 @@
 package com.qpidnetwork.framework.base;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.PageBean;
@@ -22,6 +21,7 @@ import com.qpidnetwork.view.MaterialProgressBar;
  * @author Hunter
  * @since 2015.5.16
  */
+@SuppressLint("InflateParams")
 public class BaseListFragment extends BaseFragment implements OnPullRefreshListener{
 
 	
@@ -33,8 +33,8 @@ public class BaseListFragment extends BaseFragment implements OnPullRefreshListe
 	private LinearLayout llInitContainer;
 	private MaterialProgressBar pbLoading;
 	private View includeError;
-	private ImageView ivError;
-	private TextView tvErrorMsg;
+//	private ImageView ivError;
+//	private TextView tvErrorMsg;
 	// private Button btnRetry;
 	private ButtonRaised btnRetry;
 
@@ -54,8 +54,8 @@ public class BaseListFragment extends BaseFragment implements OnPullRefreshListe
 		pbLoading.spin();
 		// pbLoading.se
 		includeError = (View) view.findViewById(R.id.includeError);
-		ivError = (ImageView) view.findViewById(R.id.ivError);
-		tvErrorMsg = (TextView) view.findViewById(R.id.tvErrorMsg);
+//		ivError = (ImageView) view.findViewById(R.id.ivError);
+//		tvErrorMsg = (TextView) view.findViewById(R.id.tvErrorMsg);
 		btnRetry = (ButtonRaised) view.findViewById(R.id.btnRetry);
 
 		setRefreshView();

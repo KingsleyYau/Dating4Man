@@ -9,11 +9,11 @@ import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestEnum.Country;
 import com.qpidnetwork.request.RequestJni;
@@ -37,25 +37,7 @@ public class MyProfilePhoneVerifyMobileActivity extends BaseActivity {
 		REQUEST_FAIL,
 	}
 
-	/**
-	 * 界面消息
-	 */
-	private class MessageCallbackItem {
-		/**
-		 * 
-		 * @param errno				接口错误码
-		 * @param errmsg			错误提示
-		 */
-		public MessageCallbackItem(
-				String errno, 
-				String errmsg
-				) {
-			this.errno = errno;
-			this.errmsg = errmsg;
-		}
-		public String errno;
-		public String errmsg;
-	}
+
 
 	private MaterialTextField editTextUnitedStates;
 	private MaterialTextField editTextPhoneNumber;
@@ -193,7 +175,7 @@ public class MyProfilePhoneVerifyMobileActivity extends BaseActivity {
 					public void OnRequest(boolean isSuccess, String errno, String errmsg) {
 						// TODO Auto-generated method stub
 						Message msg = Message.obtain();
-						MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
+						RequestBaseResponse response = new RequestBaseResponse(isSuccess, errno, errmsg, null);
 						if( isSuccess ) {
 							// 获取个人信息成功
 							msg.what = RequestFlag.REQUEST_GET_SMS_SUCCESS.ordinal();
@@ -201,7 +183,7 @@ public class MyProfilePhoneVerifyMobileActivity extends BaseActivity {
 							// 获取个人信息失败
 							msg.what = RequestFlag.REQUEST_FAIL.ordinal();
 						}
-						msg.obj = obj;
+						msg.obj = response;
 						mHandler.sendMessage(msg);
 					}
 				});
@@ -213,7 +195,7 @@ public class MyProfilePhoneVerifyMobileActivity extends BaseActivity {
 		mHandler = new Handler() {
 			@Override
 			public void handleMessage(android.os.Message msg) {
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
 				// 收起菊花
 				hideProgressDialog();
 				switch ( RequestFlag.values()[msg.what] ) {

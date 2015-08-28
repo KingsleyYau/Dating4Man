@@ -99,7 +99,8 @@
 			        android:layout_width="40dp"
 			        android:layout_toRightOf="@id/buttonChat"
 			        android:background="@drawable/touch_feedback_holo_light_circle"
-			        android:src="@drawable/ic_email_grey600_24dp"/>
+			        android:src="@drawable/ic_email_grey600_24dp"
+			        android:layout_marginLeft="8dp"/>
 			    
 			    <ImageButton android:id="@+id/imageViewOverFlow"
 			        android:layout_height="40dp"

@@ -30,7 +30,7 @@ public class WebSiteManager {
 	/**
 	 * 切换站点
 	 */
-	private List<OnChangeWebsiteCallback> mCallbackList = new ArrayList<>();
+	private List<OnChangeWebsiteCallback> mCallbackList = new ArrayList<OnChangeWebsiteCallback>();
 	
 	/* 站点基本信息数据持久化 */
 	static String WEBSITE_MANAGER_PREFERENCES = "WEBSITE_MANAGER_PREFERENCES";
