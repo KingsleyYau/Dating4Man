@@ -25,7 +25,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.tool.ImageViewLoader;
@@ -35,15 +35,17 @@ import com.qpidnetwork.tool.ImageViewLoader;
  * 显示虚拟礼物界面
  * @author Max.Chiu
  */
-public class VideoPlayActivity extends BaseActivity implements Callback, OnSeekCompleteListener, OnCompletionListener, OnErrorListener, OnPreparedListener, OnVideoSizeChangedListener {
+public class VideoPlayActivity extends BaseFragmentActivity implements Callback, OnSeekCompleteListener, OnCompletionListener, OnErrorListener, OnPreparedListener, OnVideoSizeChangedListener {
 	private static final String PHOTOLOCALPATH = "photoLocalPath";
 	private static final String VIDEOLOCALPATH = "videoLocalPath";
+	private static final String VIDEOFINISHCLOSEACTIVITY = "videofinishcloseactivity";
 	
-	public static void launchVideoPlayActivity(Context context, String photoLocalPath, String videoLocalPath){
+	public static void launchVideoPlayActivity(Context context, String photoLocalPath, String videoLocalPath, boolean isClose){
 		Intent intent = new Intent();
 		intent.setClass(context, VideoPlayActivity.class);
 		intent.putExtra(PHOTOLOCALPATH, photoLocalPath);
 		intent.putExtra(VIDEOLOCALPATH, videoLocalPath);
+		intent.putExtra(VIDEOFINISHCLOSEACTIVITY, isClose);
 		context.startActivity(intent);
 	}
 	
@@ -60,6 +62,9 @@ public class VideoPlayActivity extends BaseActivity implements Callback, OnSeekC
 	 * 视频
 	 */
 	private String videoLocalPath = "";
+	
+	//播放结束是否关闭播放界面
+	private boolean isClose = false;
 //	private Configuration mConfiguration;
 	
 	/**
@@ -93,6 +98,9 @@ public class VideoPlayActivity extends BaseActivity implements Callback, OnSeekC
 			}
 			if (bundle.containsKey(VIDEOLOCALPATH)) {
 				videoLocalPath = bundle.getString(VIDEOLOCALPATH);
+			}
+			if (bundle.containsKey(VIDEOFINISHCLOSEACTIVITY)) {
+				isClose = bundle.getBoolean(VIDEOFINISHCLOSEACTIVITY);
 			}
 		}
 		
@@ -161,32 +169,28 @@ public class VideoPlayActivity extends BaseActivity implements Callback, OnSeekC
         
         AutoResetVideoViewSize();
     }
-	
 	@Override
-	public void InitHandler() {
+	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			public void handleMessage(android.os.Message msg) {
-				switch (PlayFlag.values()[msg.what]) {
-				case PLAY_MSG_START: {
-					if( mediaPlayer != null && mediaPlayer.isPlaying() ) {
-						textView.setVisibility(View.VISIBLE);
-						String text = String.valueOf((mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition()) / 1000);
-						textView.setText(text);
-						Message newMsg = Message.obtain();
-						newMsg.what = msg.what;
-						mHandler.sendMessageDelayed(newMsg, 1000);
-					}
-				}break;
-				case PLAY_MSG_STOP: {
-					mHandler.removeMessages(PlayFlag.PLAY_MSG_START.ordinal());
-					textView.setVisibility(View.GONE);
-				}break;
-				default:
-					break;
-				}
+		super.handleUiMessage(msg);
+		switch (PlayFlag.values()[msg.what]) {
+		case PLAY_MSG_START: {
+			if( mediaPlayer != null && mediaPlayer.isPlaying() ) {
+				textView.setVisibility(View.VISIBLE);
+				String text = String.valueOf((mediaPlayer.getDuration() - mediaPlayer.getCurrentPosition()) / 1000);
+				textView.setText(text);
+				Message newMsg = Message.obtain();
+				newMsg.what = msg.what;
+				mHandler.sendMessageDelayed(newMsg, 1000);
 			}
-		};
+		}break;
+		case PLAY_MSG_STOP: {
+			mHandler.removeMessages(PlayFlag.PLAY_MSG_START.ordinal());
+			textView.setVisibility(View.GONE);
+		}break;
+		default:
+			break;
+		}
 	}
 	
 	public void InitPlayer() {
@@ -226,7 +230,7 @@ public class VideoPlayActivity extends BaseActivity implements Callback, OnSeekC
     public void Stop() {
 		Message msg = Message.obtain();
         msg.what = PlayFlag.PLAY_MSG_STOP.ordinal();
-        mHandler.sendMessage(msg);
+        sendUiMessage(msg);
         
     	if( mediaPlayer != null && mediaPlayer.isPlaying() ) {
     		mediaPlayer.stop();
@@ -354,6 +358,9 @@ public class VideoPlayActivity extends BaseActivity implements Callback, OnSeekC
 		buttonPlay.setVisibility(View.VISIBLE);
 		imageView.setVisibility(View.VISIBLE);
 		surfaceView.setVisibility(View.GONE);
+		if(isClose){
+			finish();
+		}
 	}
 
 	@Override
@@ -364,7 +371,7 @@ public class VideoPlayActivity extends BaseActivity implements Callback, OnSeekC
 		
 		Message msg = Message.obtain();
         msg.what = PlayFlag.PLAY_MSG_STOP.ordinal();
-        mHandler.sendMessage(msg);
+        sendUiMessage(msg);
         
 		return false;
 	}
@@ -381,7 +388,7 @@ public class VideoPlayActivity extends BaseActivity implements Callback, OnSeekC
         
         Message msg = Message.obtain();
         msg.what = PlayFlag.PLAY_MSG_START.ordinal();
-        mHandler.sendMessage(msg);
+        sendUiMessage(msg);
 	}
 
 	@Override

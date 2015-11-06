@@ -119,4 +119,10 @@ public class MainAdvertisementActivity extends BaseFragmentActivity {
 			break;
 		}
 	}
+
+	@Override
+	public void InitView() {
+		// TODO Auto-generated method stub
+		
+	}
 }

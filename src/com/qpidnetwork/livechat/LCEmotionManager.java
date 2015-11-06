@@ -242,7 +242,8 @@ public class LCEmotionManager implements LCEmotionDownloader.LCEmotionDownloader
 	public boolean SaveConfigItemToFile() 
 	{
 		boolean result = false;
-		if (null != mConfigItem) 
+		if (null != mConfigItem
+			&& null != mContext) 
 		{
 			try {
 				String key = "OtherEmotionConfigItem_" + WebSiteManager.newInstance(null).GetWebSite().getSiteId();

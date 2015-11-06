@@ -370,7 +370,7 @@ public class PrivatePhotoPreviewFragment extends BaseFragment implements
 				try {
 					// 直接保存到相册
 					String fileName = mMsgItem.getPhotoItem().photoId + "-" + System.currentTimeMillis() + ".jpg";
-					SaveImageToGallery(mMsgItem.getPhotoItem().showSrcFilePath, filePath, fileName);
+					ImageUtil.SaveImageToGallery(getActivity(), mMsgItem.getPhotoItem().showSrcFilePath, filePath, fileName, null);
 					
 //					MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), filePath, mMsgItem.getPhotoItem().photoDesc , getActivity().getResources().getString(R.string.app_name));
 				} catch (NotFoundException e) {
@@ -436,56 +436,6 @@ public class PrivatePhotoPreviewFragment extends BaseFragment implements
 		if(ivCharge != null){
 			ivCharge.Reset();
 		}
-	}
-	
-	/**
-	 * 保存图片到系统相册
-	 * @param filePath		文件路径
-	 */
-	@SuppressWarnings("deprecation")
-	public void SaveImageToGallery(String thumb, String filePath, String fileName) {
-		
-		// 插入图库
-	    try {
-	    	ContentResolver cr = getActivity().getContentResolver();
-	    	String path = MediaStore.Images.Media.insertImage(cr, thumb, fileName, getString(R.string.app_name));
-	    	Uri uri = Uri.parse(path);
-	    	Log.d("SaveImageToGallery", "path : " + path + ", " + 
-	    			"getHost : " + uri.getHost() + ", " +
-	    			"getPath : " + uri.getPath()
-	    			);
-	    	String[] proj = { MediaStore.Images.Media.DATA };   
-	    	Cursor actualimagecursor = getActivity().managedQuery(uri,proj,null,null,null);  
-	    	int actual_image_column_index = actualimagecursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);   
-	    	actualimagecursor.moveToFirst();   
-	    	String img_path = actualimagecursor.getString(actual_image_column_index);  
-	    	
-			String cmd = "cp -f " + filePath + " " + img_path;
-			try {
-				Runtime.getRuntime().exec(cmd);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				if(flatToast != null){
-					flatToast.setFailed("Failed!");
-				}
-			}
-	    	
-	    } catch (FileNotFoundException e) {
-	        e.printStackTrace();
-	        if(flatToast != null){
-				flatToast.setFailed("Failed!");
-			}
-	    } catch(Throwable e){
-	    	/*添加OOM捕捉，防止异常死机问题*/
-	    	e.printStackTrace();
-	    	if(flatToast != null){
-				flatToast.setFailed("Failed!");
-			}
-	    }
-	    
-	    // 刷新图库
-	    getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filePath)));
 	}
 	
 	@Override

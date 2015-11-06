@@ -3,38 +3,28 @@ package com.qpidnetwork.dating.authorization;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.telephony.TelephonyManager;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.home.HomeActivity;
-import com.qpidnetwork.manager.ConfigManager;
-import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnRegisterCallback;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestEnum.Country;
 import com.qpidnetwork.request.RequestErrorCode;
-import com.qpidnetwork.request.RequestJni;
-import com.qpidnetwork.request.RequestJniAuthorization;
 import com.qpidnetwork.request.RequestJniProfile;
 import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
-import com.qpidnetwork.request.item.OtherSynConfigItem;
 import com.qpidnetwork.request.item.RegisterItem;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogAlert;
@@ -46,7 +36,9 @@ import com.qpidnetwork.view.MaterialTextField;
  * @author Max.Chiu
  *
  */
-public class RegisterPasswordActivity extends BaseActivity implements OnLoginManagerCallback {
+public class RegisterPasswordActivity extends BaseFragmentActivity 
+									  implements OnLoginManagerCallback 
+{
 	private enum RequestFlag {
 		REQUEST_SUCCESS,
 		REQUEST_FAIL,
@@ -73,7 +65,7 @@ public class RegisterPasswordActivity extends BaseActivity implements OnLoginMan
 			password = "";
 			firstname = "";
 			lastname = "";
-			country = Country.Afghanistan;
+			country = Country.Other;
 			year = "";
 			month = "";
 			day = "";
@@ -280,7 +272,7 @@ public class RegisterPasswordActivity extends BaseActivity implements OnLoginMan
 //									obj.email = email;
 //									obj.password = password;
 //									msg.obj = obj;
-//									mHandler.sendMessage(msg);
+//									sendUiMessage(msg);
 //								}
 //							});
 //				} else {
@@ -290,7 +282,7 @@ public class RegisterPasswordActivity extends BaseActivity implements OnLoginMan
 //					obj.email = email;
 //					obj.password = password;
 //					msg.obj = obj;
-//					mHandler.sendMessage(msg);
+//					sendUiMessage(msg);
 //				}
 //			}
 //		});
@@ -313,7 +305,7 @@ public class RegisterPasswordActivity extends BaseActivity implements OnLoginMan
 				obj.email = email;
 				obj.password = password;
 				msg.obj = obj;
-				mHandler.sendMessage(msg);
+				sendUiMessage(msg);
 			}
 		});
 
@@ -331,15 +323,7 @@ public class RegisterPasswordActivity extends BaseActivity implements OnLoginMan
 		appbar.setAppbarBackgroundColor(getResources().getColor(R.color.white));
 		appbar.setTitle(getString(R.string.Choose_a_password), Color.WHITE);
 		appbar.addButtonToLeft(android.R.id.button1, "", R.drawable.ic_arrow_back_white_24dp);
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				finish();
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		
 		editTextEmail.setEmail();
 		editTextPassword.setPassword();
@@ -352,80 +336,75 @@ public class RegisterPasswordActivity extends BaseActivity implements OnLoginMan
 	}
 
 	@Override
-	public void InitHandler() {
+	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				hideProgressDialog();
-				final MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_SUCCESS:{
-					if( mRegisterParam.picturePath.length() > 0 ) {
-						// 此处该弹菊花
-						// 注册成功, 上传头像
-						RequestJniProfile.UploadHeaderPhoto(mRegisterParam.picturePath, 
-								new OnRequestCallback() {
-									@Override
-									public void OnRequest(boolean isSuccess,
-											String errno, String errmsg) {
-										// TODO Auto-generated method stub
-										Message msg = Message.obtain();
-										if( isSuccess ) {
-											// 上传头像成功
-											msg.what = RequestFlag.UPLOAD_SUCCESS.ordinal();
-											obj.errmsg = errmsg;
-											obj.errno = errno;
-										} else {
-											// 上传头像失败
-											msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-										}
-										msg.obj = obj;
-										mHandler.sendMessage(msg);
-									}
-									
-								});
-					} else {
-						// 注册成功(自动登录成功), 跳转主界面
-//						LoginManager.getInstance().Login(
-//								obj.item.manid, 
-//								editTextPassword.getText().toString()
-//								);
-						OnRegisterSuccess(obj.email, obj.password, obj.item);
-					}
-				}break;
-				case REQUEST_FAIL:{
-					// 注册失败
-					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();
-					
-					// 不允许注册
-					switch (obj.errno) {
-					case RequestErrorCode.MBCE1004:{
-						// 账号不允许注册, 但已经被记录
-						editTextEmail.setError(Color.RED, true);
-					}break;
-					default:
-						break;
-					}
-				}break;
-				case UPLOAD_SUCCESS:{
-					// 上传头像成功, 跳转主界面
-				}
-				case UPLOAD_FAIL:{
-//					LoginManager.getInstance().Login(
-//							obj.item.manid, 
-//							editTextPassword.getText().toString()
-//							);
-					OnRegisterSuccess(obj.email, obj.password, obj.item);
-				}break;
-				default:
-					break;
-				}
-			};
-		};
+		super.handleUiMessage(msg);
+		// 收起菊花
+		hideProgressDialog();
+		final MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_SUCCESS:{
+			if( mRegisterParam.picturePath.length() > 0 ) {
+				// 此处该弹菊花
+				// 注册成功, 上传头像
+				RequestJniProfile.UploadHeaderPhoto(mRegisterParam.picturePath, 
+						new OnRequestCallback() {
+							@Override
+							public void OnRequest(boolean isSuccess,
+									String errno, String errmsg) {
+								// TODO Auto-generated method stub
+								Message msg = Message.obtain();
+								if( isSuccess ) {
+									// 上传头像成功
+									msg.what = RequestFlag.UPLOAD_SUCCESS.ordinal();
+									obj.errmsg = errmsg;
+									obj.errno = errno;
+								} else {
+									// 上传头像失败
+									msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+								}
+								msg.obj = obj;
+								sendUiMessage(msg);
+							}
+							
+						});
+			} else {
+				// 注册成功(自动登录成功), 跳转主界面
+//				LoginManager.getInstance().Login(
+//						obj.item.manid, 
+//						editTextPassword.getText().toString()
+//						);
+				OnRegisterSuccess(obj.email, obj.password, obj.item);
+			}
+		}break;
+		case REQUEST_FAIL:{
+			// 注册失败
+			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();
+			
+			// 不允许注册
+			switch (obj.errno) {
+			case RequestErrorCode.MBCE1004:{
+				// 账号不允许注册, 但已经被记录
+				editTextEmail.setError(Color.RED, true);
+			}break;
+			default:
+				break;
+			}
+		}break;
+		case UPLOAD_SUCCESS:{
+			// 上传头像成功, 跳转主界面
+		}
+		case UPLOAD_FAIL:{
+//			LoginManager.getInstance().Login(
+//					obj.item.manid, 
+//					editTextPassword.getText().toString()
+//					);
+			OnRegisterSuccess(obj.email, obj.password, obj.item);
+		}break;
+		default:
+			break;
+		}
 	}
-	
 	/**
 	 * 根据界面传参数初始化界面
 	 */
@@ -475,5 +454,12 @@ public class RegisterPasswordActivity extends BaseActivity implements OnLoginMan
 	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if (v.getId() == android.R.id.button1) {
+			finish();
+		}
 	}
 }

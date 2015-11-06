@@ -31,6 +31,7 @@
 	<string name="myprofile_free_chat">Free Chat Vouchers can be used to start free chat with all newly introduced ladies.</string>
 	<string name="myprofile_sure_clean_cache">Are you sure you wish to clean the app cache?</string>
 	<string name="title_activity_forget_password_successful">RegisterResetPasswordSuccessfulAcitiviy</string>
+	<string name="find_matches">Find Matches</string>
 	
 	<string name="login_x_ladies_are_online_now">%s ladies are online now.</string>
 	<string name="login_email_or_id">Login email or ID</string>
@@ -144,12 +145,14 @@
 	<string name="emf_credit_button_add">Add more credits</string>
 	<string name="emf_do_photo_add_tips">First attachment is free!</string>
 	<string name="emf_do_photo_add">1 credit for each extra attachment added</string>
-	<string name="emf_notification_unread">You have %1$d emf</string>
+	<string name="emf_notification_unread">You have got %1$d EMF mail.</string>
 	<string name="emf_block_list">Blocked list</string>
 	<string name="why_you_choose_to_block_her_from_mail">Why do you consider adding her to your mailing blacklist?</string>
 	<string name="emf_block_reasonA">She\'s not suitable for me</string>
 	<string name="emf_block_reasonB">I am writing to another lady</string>
 	<string name="emf_block_reasonC">Other reasons</string>
+	<string name="emf_short_video_price">2.0 credits for each video viewed, Viewed videos will remain free for 3 days</string>
+	<string name="emf_short_video_download_fail">Video loading failed.</string>
 
     <!--  contacts -->
     <string name="contact_title">My contact list</string>
@@ -184,7 +187,7 @@
     <!-- livechat -->
     <string name="animated_emotion_credit">Animated Emoticons are billed at 0.3 credits each.</string>
     <string name="message_too_short">Voice message is too short.</string>
-    <string name="livechat_voice_record">Hold to Speak</string>
+    <string name="livechat_voice_record">Hold to\nSpeak</string>
     <string name="livechat_voice_record_speak">Speak</string>
     <string name="livechat_voice_record_cancel">Release to cancel</string>
     <string name="livechat_voice_record_payment">0.3 credits for each voice message sent.</string>
@@ -276,6 +279,7 @@
     <string name="common_pic_a_date">Pick a Date</string>
     <string name="common_btn_delete">Delete</string>
 	<string name="common_btn_read_now">Read now</string>
+	<string name="common_btn_download">Download</string>
     
     
      <!-- video about list -->

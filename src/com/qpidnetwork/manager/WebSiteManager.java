@@ -47,6 +47,7 @@ public class WebSiteManager {
 	private Context mContext = null;
 	private static WebSiteManager gWebSiteManager;
 	public Map<String, WebSite> mWebSiteMap = new HashMap<String, WebSite>();
+	private boolean mIsDefaultWebSite = false;
 
 	/**
 	 * 缓存路径前序
@@ -114,7 +115,10 @@ public class WebSiteManager {
 		if (index > -1 && index < WebSiteType.values().length) {
 			type = WebSiteType.values()[index];
 			ChangeWebSite(type);
-		} 
+		}
+		else {
+			setDefaultWebSite(WebSiteType.ChnLove);
+		}
 	}
 	
 	/**
@@ -158,14 +162,25 @@ public class WebSiteManager {
 	}
 	
 	/**
+	 * 是否正在使用默认站点
+	 * @return
+	 */
+	public boolean IsDefaultWebSite()
+	{
+		return mIsDefaultWebSite;
+	}
+	
+	/**
 	 * 切换整站数据
 	 * 
-	 * @param type
-	 *            站点类型
+	 * @param type 站点类型
 	 */
 	public void ChangeWebSite(WebSiteType type) {
 		
 		mWebSite = mWebSiteMap.get(type.name());
+		
+		// 设置不是使用默认站点
+		mIsDefaultWebSite = false;
 
 		/* 切换缓存目录 */
 		FileCacheManager.getInstance().ChangeMainPath(mWebSite.cachePath);
@@ -185,6 +200,41 @@ public class WebSiteManager {
 		Editor editor = mSharedPreferences.edit();
 		editor.putInt(LAST_WEBSITE_TYPE, type.ordinal());
 		editor.commit();
+		
+		// 通知其他模块
+		for(OnChangeWebsiteCallback callback : mCallbackList) {
+			if( callback != null ) {
+				callback.OnChangeWebsite(mWebSite);
+			} 
+		}
+	}
+	
+	/**
+	 * 使用默认站点
+	 * 
+	 * @param type 站点类型
+	 */
+	public void setDefaultWebSite(WebSiteType type) 
+	{
+		// 设置默认站点
+		mIsDefaultWebSite = true;
+					
+		// 获取站点
+		mWebSite = mWebSiteMap.get(type.name());
+
+		/* 切换缓存目录 */
+		FileCacheManager.getInstance().ChangeMainPath(mWebSite.cachePath);
+		
+		/* 切换日志目录 */
+		RequestJni.SetLogDirectory(FileCacheManager.getInstance().GetLogPath());
+		
+		/* 切换错误日志目录 */
+		CrashHandlerJni.SetCrashLogDirectory(FileCacheManager.getInstance().GetCrashInfoPath());
+		CrashHandler.getInstance().SaveAppVersionFile();
+		
+		/* 切换请求站点 */
+		RequestJni.SetWebSite(mWebSite.webSiteHost,
+				mWebSite.appSiteHost);
 		
 		// 通知其他模块
 		for(OnChangeWebsiteCallback callback : mCallbackList) {

@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,7 +15,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.EMFAttachmentBean;
 import com.qpidnetwork.dating.bean.EMFAttachmentBean.AttachType;
@@ -32,7 +31,10 @@ import com.qpidnetwork.view.MaterialAppBar;
  * 选择虚拟礼物界面
  * @author Max.Chiu
  */
-public class EmotionChooseActivity extends BaseActivity {
+public class EmotionChooseActivity extends BaseFragmentActivity
+								   implements OnItemClickListener,
+								   			  OnOnGetVirtualGiftCallback
+{
 	/**
 	 * 其他界面交互时候参数
 	 * 已经选择的虚拟礼物Id
@@ -128,62 +130,30 @@ public class EmotionChooseActivity extends BaseActivity {
 		appbar.addButtonToLeft(R.id.common_button_back, "back", R.drawable.ic_arrow_back_grey600_24dp);
 		appbar.setTitle("Select virtaul gift", getResources().getColor(R.color.text_color_dark));
 		appbar.setAppbarBackgroundColor(Color.WHITE);
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				switch (v.getId()) {
-				case R.id.common_button_back:
-					finish();
-					break;
-
-				default:
-					break;
-				}
-				finish();
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		
 		girdView = (GridView) findViewById(R.id.gridView);
 		girdView.setAdapter(mAdapter);
-		girdView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				// TODO Auto-generated method stub
-				
-				Activity activity = (Activity) mContext;
-				Intent intent = new Intent();
-				intent.putExtra(VIRTUAL_GIFT_ID, mVirtualGiftList.get(position).vgid);
-				activity.setResult(RESULT_OK, intent);
-				activity.finish();
-			}
-		});
+		girdView.setOnItemClickListener(this);
 	}
 
 	@Override
-	public void InitHandler() {
+	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				hideProgressDialog();
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_SUCCESS:{
-					// 请求成功
-					ReloadData();
-				}break;
-				case REQUEST_FAIL:{
-					// 请求失败
-				}break;
-				default:
-					break;
-				}
-			}
-		};
+		super.handleUiMessage(msg);
+		// 收起菊花
+		hideProgressDialog();
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_SUCCESS:{
+			// 请求成功
+			ReloadData();
+		}break;
+		case REQUEST_FAIL:{
+			// 请求失败
+		}break;
+		default:
+			break;
+		}
 	}
 	
 	@Override
@@ -216,26 +186,54 @@ public class EmotionChooseActivity extends BaseActivity {
 	 * 获取虚拟礼物列表
 	 */
 	public void GetVirtualGift() {
-		VirtualGiftManager.getInstance().GetVirtualGift(new OnOnGetVirtualGiftCallback() {
-			
-			@Override
-			public void OnGetVirtualGift(boolean isSuccess, List<Gift> itemList,
-					String errno, String errmsg) {
-				// TODO Auto-generated method stub
-				Message msg = Message.obtain();
-				if( isSuccess ) {
-					msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
-					mVirtualGiftList = itemList;
-					if(mVirtualGiftList != null){
-					}
-				} else {
-					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-				}
-				mHandler.sendMessage(msg);
-			}
-		});
+		VirtualGiftManager.getInstance().GetVirtualGift(this);
 	}
 	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()) {
+		case R.id.common_button_back:
+			finish();
+			break;
+
+		default:
+			break;
+		}
+		finish();
+	}
+	
+	@Override
+	/**
+	* OnItemClickListener callback
+	*/
+	public void onItemClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		// TODO Auto-generated method stub
+		
+		Activity activity = (Activity) mContext;
+		Intent intent = new Intent();
+		intent.putExtra(VIRTUAL_GIFT_ID, mVirtualGiftList.get(position).vgid);
+		activity.setResult(RESULT_OK, intent);
+		activity.finish();
+	}
+
+	@Override
+	public void OnGetVirtualGift(boolean isSuccess, List<Gift> itemList,
+			String errno, String errmsg) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		if( isSuccess ) {
+			msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
+			mVirtualGiftList = itemList;
+			if(mVirtualGiftList != null){
+			}
+		} else {
+			msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+		}
+		sendUiMessage(msg);
+	}
+
 	/**
 	 * 点击去取消
 	 * @param v

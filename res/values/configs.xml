@@ -33,10 +33,10 @@
         <item name="webName_latamdate" type="string">LatamDate.com</item>
     </array>
     <array name="webDescArray">
-        <item name="webDesc_chnlove" type="string">Find Chinese Lovers</item>
-        <item name="webDesc_idateasia" type="string">East Asian Singles</item>
-        <item name="webDesc_charmingdate" type="string">Russia &amp; Ukraine Ladies</item>
-        <item name="webDesc_latamdate" type="string">Latin American Beauties</item>
+        <item name="webDesc_chnlove" type="string">Dating in China</item>
+        <item name="webDesc_idateasia" type="string">Dating in Asia</item>
+        <item name="webDesc_charmingdate" type="string">Dating in Russia &amp; Ukraine</item>
+        <item name="webDesc_latamdate" type="string">Dating in Latin American</item>
     </array>
     <array name="wwwHostArray">
         <item name="wwwHost_chnlove" type="string">http://www.chnlove.com</item>

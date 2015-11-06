@@ -22,7 +22,10 @@ import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginFacebookItem;
 import com.qpidnetwork.request.item.OtherSynConfigItem;
 
-public class FacebookRegisterTask {
+public class FacebookRegisterTask implements OnLoginWithFacebookCallback, 
+											 OnRequestCallback, 
+											 OnConfigManagerCallback 
+{
 
 	private OnLoginWithFacebookCallback mRegisterCallback;
 	private Handler mHandler;
@@ -137,41 +140,14 @@ public class FacebookRegisterTask {
 	}
 
 	public void execute() {
-		ConfigManager.getInstance().GetOtherSynConfigItem(
-				new OnConfigManagerCallback() {
-
-					@Override
-					public void OnGetOtherSynConfigItem(boolean isSuccess,
-							String errno, String errmsg, OtherSynConfigItem item) {
-						Message msg = Message.obtain();
-						RequestBaseResponse response = new RequestBaseResponse(
-								isSuccess, errno, errmsg, item);
-						msg.what = RequestFlag.SYNCONFIG_CALLBACK.ordinal();
-						msg.obj = response;
-						mHandler.sendMessage(msg);
-					}
-				});
+		ConfigManager.getInstance().GetOtherSynConfigItem(this);
 	}
 
 	/**
 	 * 上传安装跟踪信息
 	 */
 	public void summitUtmreference() {
-		AdAnakysisManager.getInstance().summitUtmReference(
-				new OnRequestCallback() {
-
-					@Override
-					public void OnRequest(boolean isSuccess, String errno,
-							String errmsg) {
-						Message msg = Message.obtain();
-						RequestBaseResponse response = new RequestBaseResponse(
-								isSuccess, errno, errmsg, null);
-						msg.what = RequestFlag.UPLOAD_UTMREFERENCE_CALLBACK
-								.ordinal();
-						msg.obj = response;
-						mHandler.sendMessage(msg);
-					}
-				});
+		AdAnakysisManager.getInstance().summitUtmReference(this);
 	}
 
 	public void register() {
@@ -196,21 +172,44 @@ public class FacebookRegisterTask {
 				password, RequestJni.GetDeviceId(tm),
 				String.valueOf(QpidApplication.versionCode), Build.MODEL,
 				Build.MANUFACTURER, error, year, month, day, reference,
-				new OnLoginWithFacebookCallback() {
+				this);
+	}
 
-					@Override
-					public void OnLoginWithFacebook(boolean isSuccess,
-							String errno, String errmsg,
-							LoginFacebookItem item, LoginErrorItem errItem) {
-						Message msg = Message.obtain();
-						msg.arg1 = RequestFlag.REGISTER_CALLBACK.ordinal();
-						MessageCallbackItem obj = new MessageCallbackItem(
-								isSuccess, errno, errmsg);
-						obj.loginItem = item;
-						obj.loginErrorItem = errItem;
-						msg.obj = obj;
-						mHandler.sendMessage(msg);
-					}
-				});
+	@Override
+	public void OnLoginWithFacebook(boolean isSuccess, String errno,
+			String errmsg, LoginFacebookItem item, LoginErrorItem errItem) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		msg.what = RequestFlag.REGISTER_CALLBACK.ordinal();
+		MessageCallbackItem obj = new MessageCallbackItem(
+				isSuccess, errno, errmsg);
+		obj.loginItem = item;
+		obj.loginErrorItem = errItem;
+		msg.obj = obj;
+		mHandler.sendMessage(msg);
+	}
+
+	@Override
+	public void OnRequest(boolean isSuccess, String errno, String errmsg) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		RequestBaseResponse response = new RequestBaseResponse(
+				isSuccess, errno, errmsg, null);
+		msg.what = RequestFlag.UPLOAD_UTMREFERENCE_CALLBACK
+				.ordinal();
+		msg.obj = response;
+		mHandler.sendMessage(msg);
+	}
+
+	@Override
+	public void OnGetOtherSynConfigItem(boolean isSuccess, String errno,
+			String errmsg, OtherSynConfigItem item) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		RequestBaseResponse response = new RequestBaseResponse(
+				isSuccess, errno, errmsg, item);
+		msg.what = RequestFlag.SYNCONFIG_CALLBACK.ordinal();
+		msg.obj = response;
+		mHandler.sendMessage(msg);
 	}
 }

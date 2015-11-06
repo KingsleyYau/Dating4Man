@@ -157,4 +157,10 @@ public class LivechatPrivatePhotoPreview extends BaseFragmentActivity implements
 		}
 	}
 
+	@Override
+	public void InitView() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

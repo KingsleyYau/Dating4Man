@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.WebViewActivity;
@@ -32,7 +32,7 @@ import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialDialogSingleChoice;
 
-public class SettingActivity extends BaseActivity {
+public class SettingActivity extends BaseFragmentActivity implements OnOtherVersionCheckCallback {
 	private enum RequestFlag {
 		REQUEST_VERSIONCHECK_SUCCESS,
 		REQUEST_FAIL,
@@ -279,57 +279,53 @@ public class SettingActivity extends BaseActivity {
 	}
 	
 	@Override
-	public void InitHandler() {
+	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				hideProgressDialog();
-				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_VERSIONCHECK_SUCCESS:{
-					// 版本检测成功
-					mOtherVersionCheckItem = (OtherVersionCheckItem)obj.body;
-					
-					ReloadData();
-					
-					if( mOtherVersionCheckItem != null && mOtherVersionCheckItem.verCode > QpidApplication.versionCode ) {
-						// 有更新
-						mUpdateDialog.setTitle(mContext.getString(R.string.upgrade_title));
-						mUpdateDialog.setMessage(mOtherVersionCheckItem.verDesc);
-						mUpdateDialog.removeAllButton();
-						mUpdateDialog.addButton(mUpdateDialog.createButton(getString(R.string.common_btn_go), new OnClickListener(){
-							@Override
-							public void onClick(View v) {
-								// TODO Auto-generated method stub
-								Uri uri = Uri.parse(mOtherVersionCheckItem.storeUrl);
-								Intent intent = new Intent();
-								intent.setAction(Intent.ACTION_VIEW);
-								intent.setData(uri);
-								startActivity(intent);
-							}
-						}));
-						mUpdateDialog.addButton(mUpdateDialog.createButton(getString(R.string.common_btn_cancel), null));
-						mUpdateDialog.show();
-						
-					} else {
-						// 无更新
-						MaterialDialogAlert alert = new MaterialDialogAlert(mContext);
-						alert.setMessage("You are the latest version!");
-						alert.addButton(alert.createButton(getString(R.string.common_btn_ok), null));
-						alert.show();
+		super.handleUiMessage(msg);
+		// 收起菊花
+		hideProgressDialog();
+		RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_VERSIONCHECK_SUCCESS:{
+			// 版本检测成功
+			mOtherVersionCheckItem = (OtherVersionCheckItem)obj.body;
+			
+			ReloadData();
+			
+			if( mOtherVersionCheckItem != null && mOtherVersionCheckItem.verCode > QpidApplication.versionCode ) {
+				// 有更新
+				mUpdateDialog.setTitle(mContext.getString(R.string.upgrade_title));
+				mUpdateDialog.setMessage(mOtherVersionCheckItem.verDesc);
+				mUpdateDialog.removeAllButton();
+				mUpdateDialog.addButton(mUpdateDialog.createButton(getString(R.string.common_btn_go), new OnClickListener(){
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						Uri uri = Uri.parse(mOtherVersionCheckItem.storeUrl);
+						Intent intent = new Intent();
+						intent.setAction(Intent.ACTION_VIEW);
+						intent.setData(uri);
+						startActivity(intent);
 					}
-				}break;
-				case REQUEST_FAIL:{
-					// 请求失败
-					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
-				}break;
-				default:
-					break;
-				}
-			};
-		};
+				}));
+				mUpdateDialog.addButton(mUpdateDialog.createButton(getString(R.string.common_btn_cancel), null));
+				mUpdateDialog.show();
+				
+			} else {
+				// 无更新
+				MaterialDialogAlert alert = new MaterialDialogAlert(mContext);
+				alert.setMessage("You are the latest version!");
+				alert.addButton(alert.createButton(getString(R.string.common_btn_ok), null));
+				alert.show();
+			}
+		}break;
+		case REQUEST_FAIL:{
+			// 请求失败
+			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
+		}break;
+		default:
+			break;
+		}
 	}
 	
 	/**
@@ -338,26 +334,24 @@ public class SettingActivity extends BaseActivity {
 	private void VersionCheck() {
 		// 此处应有菊花
 		showProgressDialog("Loading...");
-		RequestJniOther.VersionCheck(1, new OnOtherVersionCheckCallback() {
-			@Override
-			public void OnOtherVersionCheck(boolean isSuccess, String errno,
-					String errmsg, OtherVersionCheckItem item) {
-				// TODO Auto-generated method stub
-				Message msg = Message.obtain();
-				RequestBaseResponse response = new RequestBaseResponse(isSuccess, errno, errmsg, item);
-				if( isSuccess ) {
-					// 版本检测成功
-					msg.what = RequestFlag.REQUEST_VERSIONCHECK_SUCCESS.ordinal();
-				} else {
-					// 失败
-					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-				}
-				msg.obj = response;
-				mHandler.sendMessage(msg);
-			}
-		});
+		RequestJniOther.VersionCheck(1, this);
 	}
-	
+	@Override
+	public void OnOtherVersionCheck(boolean isSuccess, String errno,
+			String errmsg, OtherVersionCheckItem item) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		RequestBaseResponse response = new RequestBaseResponse(isSuccess, errno, errmsg, item);
+		if( isSuccess ) {
+			// 版本检测成功
+			msg.what = RequestFlag.REQUEST_VERSIONCHECK_SUCCESS.ordinal();
+		} else {
+			// 失败
+			msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+		}
+		msg.obj = response;
+		sendUiMessage(msg);
+	}
 	/**
 	 * 刷新界面
 	 */

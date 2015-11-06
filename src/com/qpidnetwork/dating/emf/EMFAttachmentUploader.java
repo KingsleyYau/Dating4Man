@@ -22,7 +22,9 @@ import com.qpidnetwork.view.ProgressImageHorizontalView;
  * 上传附件控制器
  * @author Max.Chiu
  */
-public class EMFAttachmentUploader implements OnClickListener {
+public class EMFAttachmentUploader implements OnClickListener,
+											  OnEMFUploadAttachCallback
+{
 	public interface EMFAttachmentUploaderCallback {
 		public void OnUploadFinish(boolean isSuccess, String errno, String errmsg, String attachId);
 		public void OnClickCancel(EMFAttachmentUploader uploader);
@@ -168,31 +170,7 @@ public class EMFAttachmentUploader implements OnClickListener {
 			this.mIsCancel = false;
 			
 			// 开始上传
-			mRequestId = RequestOperator.getInstance().UploadAttach(this.attachType, this.localPath, new OnEMFUploadAttachCallback() {
-				
-				@Override
-				public void OnEMFUploadAttach(boolean isSuccess, String errno,
-						String errmsg, String attachId) {
-					// TODO Auto-generated method stub
-					attachmentId = attachId;
-					mErrno = errno;
-					mErrmsg = errmsg;
-					
-					if( callback != null && !mIsCancel ) {
-						callback.OnUploadFinish(isSuccess, errno, errmsg, attachId);
-					}
-					
-					Message msg = Message.obtain();
-					if( isSuccess ) {
-						// 成功
-						msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
-					} else {
-						// 失败
-						msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-					}
-					mHandler.sendMessage(msg);
-				}
-			});
+			mRequestId = RequestOperator.getInstance().UploadAttach(this.attachType, this.localPath, this);
 			
 		} else {
 			return false;
@@ -263,5 +241,28 @@ public class EMFAttachmentUploader implements OnClickListener {
 	
 	public String GetErrmsg() {
 		return mErrmsg;
+	}
+
+	@Override
+	public void OnEMFUploadAttach(boolean isSuccess, String errno,
+			String errmsg, String attachId) {
+		// TODO Auto-generated method stub
+		attachmentId = attachId;
+		mErrno = errno;
+		mErrmsg = errmsg;
+		
+		if( callback != null && !mIsCancel ) {
+			callback.OnUploadFinish(isSuccess, errno, errmsg, attachId);
+		}
+		
+		Message msg = Message.obtain();
+		if( isSuccess ) {
+			// 成功
+			msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
+		} else {
+			// 失败
+			msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+		}
+		mHandler.sendMessage(msg);
 	}
 }

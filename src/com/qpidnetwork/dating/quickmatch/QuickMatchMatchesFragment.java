@@ -43,7 +43,7 @@ import com.qpidnetwork.view.ViewTools;
  * @author Max.Chiu
  *
  */
-public class QuickMatchMatchesFragment extends Fragment {
+public class QuickMatchMatchesFragment extends Fragment implements OnClickListener {
 	private static QuickMatchMatchesFragment gFragment = null;
 	
 	private enum RequestFlag {
@@ -552,16 +552,7 @@ public class QuickMatchMatchesFragment extends Fragment {
 		});
 		
 		imageViewLady.setClickable(true);
-		imageViewLady.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				QuickMatchLady lady = mQuickMatchLadyList.get(mIndex);
-				LadyDetailActivity.launchLadyDetailActivity(mContext, lady.womanid, true);
-			}
-			
-		});
+		imageViewLady.setOnClickListener(this);
 		
 		// 预计算女士拖动界面 大小
 		layoutLady = (View) view.findViewById(R.id.linearLayoutLady);
@@ -572,7 +563,12 @@ public class QuickMatchMatchesFragment extends Fragment {
 		
 		return view;
 	}
-	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		QuickMatchLady lady = mQuickMatchLadyList.get(mIndex);
+		LadyDetailActivity.launchLadyDetailActivity(mContext, lady.womanid, true);
+	}
 	/**
 	 * 初始化事件监听
 	 */

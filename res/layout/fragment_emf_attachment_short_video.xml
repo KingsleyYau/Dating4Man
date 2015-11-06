@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rl_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.qpidnetwork.view.TouchImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/llDonwloadPlayParent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/touch_feedback_dark_grey_round"
+        android:gravity="center"
+        android:minHeight="64dp"
+        android:minWidth="64dp"
+        android:orientation="vertical" >
+
+        <ImageButton
+            android:id="@+id/ivBtnDownloadPlay"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@null"
+            android:src="@drawable/ic_file_download_white_24dp" />
+
+        <TextView
+            android:id="@+id/tvDownloadTips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/common_btn_download"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvPriceTips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/llDonwloadPlayParent"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/touch_feedback_dark_grey_round"
+        android:gravity="center_horizontal"
+        android:padding="8dp"
+        android:text="@string/emf_short_video_price"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <com.qpidnetwork.view.MaterialProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:matProg_barColor="@color/white"
+        app:matProg_progressIndeterminate="true" />
+
+</RelativeLayout>

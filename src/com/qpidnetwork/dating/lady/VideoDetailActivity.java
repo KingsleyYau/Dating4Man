@@ -921,7 +921,9 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 			RequestFailBean bean = (RequestFailBean)msg.obj;
 			if ("MBCE45003".equals(bean.errno.trim())) {
 				GetMoreCreditDialog dialog = new GetMoreCreditDialog(VideoDetailActivity.this);
-				dialog.show();
+				if(isActivityVisible()){
+					dialog.show();
+				}
 				break;
 			}
 			
@@ -1098,6 +1100,12 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 	/*加载成功收起加载进度*/
 	private void hideInitLoading(){
 		hideProgressDialog();
+	}
+
+	@Override
+	public void InitView() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

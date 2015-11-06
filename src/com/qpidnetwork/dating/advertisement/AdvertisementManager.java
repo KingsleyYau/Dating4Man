@@ -14,7 +14,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
 
+import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.setting.SettingPerfence;
+import com.qpidnetwork.dating.setting.SettingPerfence.NotificationItem;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.request.OnAdMainAdvertCallback;
 import com.qpidnetwork.request.OnAdPushAdvertCallback;
@@ -31,7 +34,9 @@ import com.qpidnetwork.tool.FileDownloader;
  * @author Max.Chiu
  * 
  */
-public class AdvertisementManager {
+public class AdvertisementManager implements OnAdMainAdvertCallback, 
+											 OnAdPushAdvertCallback 
+{
 
 	private static AdvertisementManager gAdvertisementManager;
 	private Context mContenxt = null;
@@ -118,43 +123,7 @@ public class AdvertisementManager {
 						(mAdMainAdvertItem != null && mAdMainAdvertItem.adMainAdvert != null) ? mAdMainAdvertItem.adMainAdvert.id: "0", 
 						mAdMainAdvertItem.showTimes,
 						mAdMainAdvertItem.clickTimes,
-						new OnAdMainAdvertCallback() {
-							@Override
-							public void OnAdMainAdvert(boolean isSuccess,
-									String errno, String errmsg,
-									AdMainAdvert advert) {
-								// TODO Auto-generated method stub
-								if (isSuccess) {
-									int curTime = (int)(System.currentTimeMillis()/1000);
-									if (mAdMainAdvertItem == null
-											|| mAdMainAdvertItem.adMainAdvert == null
-											|| mAdMainAdvertItem.adMainAdvert.id.compareTo(advert.id) != 0) 
-									{
-										isMainNewAdvert = true;
-										// 新广告，更新本地内存
-										AdMainAdvertItem item = new AdMainAdvertItem();
-										item.showTimes = 0;
-										item.clickTimes = 0;
-										item.adMainAdvert = advert;
-										/*valid 需要转换一次，服务器返回的是最后有效期和当前的时间差*/
-										item.adMainAdvert.validTime = item.adMainAdvert.validTime + curTime;
-										
-										AdvertPerfence
-												.SaveAdMainAdvertItem(
-														mContenxt,
-														item);
-										/* 下载广告图片用于显示 */
-										if (advert.image != null) {
-											downloadAdvertImage(advert.image);
-										}
-									}else{
-										/*本地当前广告,更新最后有效时间*/
-										mAdMainAdvertItem.adMainAdvert.validTime = advert.validTime + curTime;
-										AdvertPerfence.SaveAdMainAdvertItem(mContenxt, mAdMainAdvertItem);
-									}
-								}
-							}
-						});
+						this);
 	}
 
 	/**
@@ -163,34 +132,7 @@ public class AdvertisementManager {
 	public void PushAdvert() {
 		TelephonyManager tm = (TelephonyManager) mContenxt
 				.getSystemService(Context.TELEPHONY_SERVICE);
-		RequestJniAdvert.PushAdvert(RequestJni.GetDeviceId(tm), mPushId,
-				new OnAdPushAdvertCallback() {
-
-					@Override
-					public void OnAdPushAdvert(boolean isSuccess, String errno,
-							String errmsg, AdPushAdvert[] advert) {
-						// TODO Auto-generated method stub
-						if (isSuccess) {
-							// 保存列表
-							if (advert != null) {
-								mAdPushAdvertList = Arrays.asList(advert);
-							}
-
-							// 获取最新Id
-							GetLastPushId();
-
-							// 本地缓存
-							if (mAdPushAdvertList != null) {
-								AdvertPerfence.SaveAdPushAdvertList(mContenxt,
-										mAdPushAdvertList);
-							}
-
-							Message msg = Message.obtain();
-							msg.what = MESSAGE_FLAG.PUSH_ADVERT_FLAG.ordinal();
-							mHandler.sendMessage(msg);
-						}
-					}
-				});
+		RequestJniAdvert.PushAdvert(RequestJni.GetDeviceId(tm), mPushId, this);
 	}
 
 	/**
@@ -222,11 +164,38 @@ public class AdvertisementManager {
 					if (mAdPushAdvertList != null) {
 						for (AdPushAdvert item : mAdPushAdvertList) {
 							String appName = mContenxt.getResources().getString(R.string.app_name);
+							NotificationItem ni = SettingPerfence
+									.GetNotificationItem(QpidApplication.getContext());
+
+							boolean bSound = false;
+							boolean bVibrate = true;
+
+							switch (ni.mPushNotification) {
+							case SoundWithVibrate: {
+								bSound = true;
+								bVibrate = true;
+							}
+								break;
+							case Vibrate: {
+								bSound = false;
+								bVibrate = true;
+							}
+								break;
+							case Silent: {
+								bSound = true;
+								bVibrate = false;
+							}
+							default: {
+								bSound = false;
+								bVibrate = false;
+							}
+								break;
+							}
 							AdvertNotification.getInstance().ShowNotification(
 									R.drawable.ic_launcher,
 									item.message, appName,
 									item.message, item.adurl, item.openType,
-									true, true, true);
+									bVibrate, bSound);
 						}
 					}
 				}
@@ -260,11 +229,11 @@ public class AdvertisementManager {
 			mAdMainAdvertItem = new AdMainAdvertItem();
 		}
 		else {
-			// 判断是否需要显示广告
-			if (isMainAdvertShow()) {
-				// 添加到广告显示列表
-				mAdMainList.add(mAdMainAdvertItem);
-			}
+//			// 判断是否需要显示广告
+//			if (isMainAdvertShow()) {
+//				// 添加到广告显示列表
+//				mAdMainList.add(mAdMainAdvertItem);
+//			}
 		}
 		/*服务器获取下次广告显示数据*/
 		SyncMainAdvert();
@@ -360,5 +329,70 @@ public class AdvertisementManager {
 	public static void openWebviewUseUrl(Context context, String url, OpenType openType) {
 		Intent intent = AdvertWebviewActivity.getIntent(context, url, openType);
 		context.startActivity(intent);
+	}
+
+	@Override
+	public void OnAdMainAdvert(boolean isSuccess, String errno, String errmsg,
+			AdMainAdvert advert) {
+		// TODO Auto-generated method stub
+		if (isSuccess) {
+			int curTime = (int)(System.currentTimeMillis()/1000);
+			if (mAdMainAdvertItem == null
+					|| mAdMainAdvertItem.adMainAdvert == null
+					|| mAdMainAdvertItem.adMainAdvert.id.compareTo(advert.id) != 0) 
+			{
+				isMainNewAdvert = true;
+				// 新广告，更新本地内存
+				AdMainAdvertItem item = new AdMainAdvertItem();
+				item.showTimes = 0;
+				item.clickTimes = 0;
+				item.adMainAdvert = advert;
+				/*valid 需要转换一次，服务器返回的是最后有效期和当前的时间差*/
+				item.adMainAdvert.validTime = item.adMainAdvert.validTime + curTime;
+				
+				AdvertPerfence
+						.SaveAdMainAdvertItem(
+								mContenxt,
+								item);
+				/* 下载广告图片用于显示 */
+				if (advert.image != null) {
+					downloadAdvertImage(advert.image);
+				}
+			}else{
+				/*本地当前广告,更新最后有效时间*/
+				mAdMainAdvertItem.adMainAdvert.validTime = advert.validTime + curTime;
+				// 判断是否需要显示广告
+				if (isMainAdvertShow()) {
+					// 添加到广告显示列表
+					mAdMainList.add(mAdMainAdvertItem);
+				}
+				AdvertPerfence.SaveAdMainAdvertItem(mContenxt, mAdMainAdvertItem);
+			}
+		}
+	}
+
+	@Override
+	public void OnAdPushAdvert(boolean isSuccess, String errno, String errmsg,
+			AdPushAdvert[] advert) {
+		// TODO Auto-generated method stub
+		if (isSuccess) {
+			// 保存列表
+			if (advert != null) {
+				mAdPushAdvertList = Arrays.asList(advert);
+			}
+
+			// 获取最新Id
+			GetLastPushId();
+
+			// 本地缓存
+			if (mAdPushAdvertList != null) {
+				AdvertPerfence.SaveAdPushAdvertList(mContenxt,
+						mAdPushAdvertList);
+			}
+
+			Message msg = Message.obtain();
+			msg.what = MESSAGE_FLAG.PUSH_ADVERT_FLAG.ordinal();
+			mHandler.sendMessage(msg);
+		}
 	}
 }

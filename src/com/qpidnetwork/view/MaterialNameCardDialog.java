@@ -13,6 +13,7 @@ import android.os.Build;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -70,6 +71,7 @@ public class MaterialNameCardDialog extends Dialog implements OnClickListener{
 		mContext = context;
 		
 		this.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+		this.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		setContentView(createView());
 
 	}

@@ -3,12 +3,18 @@ package com.qpidnetwork.framework.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
 
+import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -20,6 +26,8 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.net.Uri;
+import android.provider.MediaStore;
 
 public class ImageUtil {
 	
@@ -219,28 +227,28 @@ public class ImageUtil {
 			
 		final float roundPx = 2.0f * context.getResources().getDisplayMetrics().density;
 
-		if (inBmp.getWidth() <= roundPx || inBmp.getHeight() <= roundPx) return inBmp;
+		if (inBmp.getWidth() <= roundPx || inBmp.getHeight() <= roundPx)
+		{
+			return inBmp;
+		}
 		
-		      Bitmap output = Bitmap.createBitmap(inBmp.getWidth(), inBmp
-		                .getHeight(), Config.ARGB_8888);
-		        Canvas canvas = new Canvas(output);
+		Bitmap output = Bitmap.createBitmap(inBmp.getWidth(), inBmp
+		            .getHeight(), Config.ARGB_8888);
+		Canvas canvas = new Canvas(output);
 
-		        final int color = 0xff424242;
-		        final Paint paint = new Paint();
-		        final Rect rect = new Rect(0, 0, inBmp.getWidth(), inBmp.getHeight());
-		        final RectF rectF = new RectF(rect);
+		final int color = 0xff424242;
+		final Paint paint = new Paint();
+		final Rect rect = new Rect(0, 0, inBmp.getWidth(), inBmp.getHeight());
+		final RectF rectF = new RectF(rect);
 		        
+		paint.setAntiAlias(true);
+		paint.setColor(color);
+		canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
 
-
-		        paint.setAntiAlias(true);
-		        paint.setColor(color);
-		        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
-
-		        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
-		        canvas.drawBitmap(inBmp, rect, rect, paint);
-		        inBmp.recycle();
-		        return output;
-
+		paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+		canvas.drawBitmap(inBmp, rect, rect, paint);
+		inBmp.recycle();
+		return output;
 	}
 	
 	
@@ -252,27 +260,29 @@ public class ImageUtil {
 		
 		
 		final float roundPx = 2.0f * context.getResources().getDisplayMetrics().density;
-		if (inBmp.getWidth() <= roundPx || inBmp.getHeight() <= roundPx) return inBmp;
+		if (inBmp.getWidth() <= roundPx || inBmp.getHeight() <= roundPx)
+		{
+			return inBmp;
+		}
 		
-		      Bitmap output = Bitmap.createBitmap(inBmp.getWidth(), inBmp
-		                .getHeight(), Config.ARGB_8888);
-		        Canvas canvas = new Canvas(output);
+		Bitmap output = Bitmap.createBitmap(inBmp.getWidth(), inBmp
+							.getHeight(), Config.ARGB_8888);
+		Canvas canvas = new Canvas(output);
 
-		        Paint paint = new Paint();
-
-		        RectF rectF = new RectF(0, 0, inBmp.getWidth(), inBmp.getHeight());
-		        Rect rect = new Rect((int)border, (int)border, (int)((float)inBmp.getWidth() - border), (int)((float)inBmp.getHeight() - border));
-		        
-
-		        paint.setAntiAlias(true);
-		        paint.setColor(borderColor);
-		        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
-
-		        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
-		        canvas.drawBitmap(inBmp, rect, rect, paint);
-		        if (recycleInputBmp) inBmp.recycle();
-		        return output;
-
+		Paint paint = new Paint();
+		
+		RectF rectF = new RectF(0, 0, inBmp.getWidth(), inBmp.getHeight());
+		Rect rect = new Rect((int)border, (int)border, (int)((float)inBmp.getWidth() - border), (int)((float)inBmp.getHeight() - border));
+		
+		
+		paint.setAntiAlias(true);
+		paint.setColor(borderColor);
+		canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+		
+		paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+		canvas.drawBitmap(inBmp, rect, rect, paint);
+		if (recycleInputBmp) inBmp.recycle();
+		return output;
 	}
 	
 	/**
@@ -416,5 +426,144 @@ public class ImageUtil {
 		}
 		
 		return result;
+	}
+	
+
+	public static Bitmap createRotatedBitmap(Context context, String imageUrl, int rotation){
+		
+		Bitmap bitmap = BitmapFactory.decodeFile(imageUrl);
+		if (bitmap == null) {
+			return null;
+		}
+		
+		int w = bitmap.getWidth();
+	    int h = bitmap.getHeight();
+	    Matrix mtx = new Matrix();
+	    mtx.preRotate(rotation);
+	    bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
+		
+		return bitmap;
+	}
+	
+	public static Bitmap createRotatedBitmap(Context context, Bitmap bitmap, int rotation){
+		
+		if (bitmap == null) {
+			return null;
+		}
+		
+		int w = bitmap.getWidth();
+	    int h = bitmap.getHeight();
+	    Matrix mtx = new Matrix();
+	    mtx.preRotate(rotation);
+	    bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
+		
+		return bitmap;
+	}
+	
+	public static boolean writeBitmapToFile(Bitmap bitmap, String desFileUrl){
+		FileOutputStream outStream = null;
+		
+		try{
+			outStream = new FileOutputStream(desFileUrl);
+			bitmap.compress(CompressFormat.JPEG, 100, outStream);
+			outStream.close();
+			return true;
+		}catch(Exception e){
+			return false;
+		}
+	}
+	
+	/**
+	 * 保存图片到系统相册（大图不会OOM）
+	 * @param activity		activity
+	 * @param thumbFilePath	缩略图路径(可为 null)
+	 * @param filePath		原图路径
+	 * @param fileName		图片名称(可为 null)
+	 * @param desc			图片描述(可为 null)
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	public static boolean SaveImageToGallery(Activity activity, String thumbFilePath, String filePath, String fileName, String desc) 
+	{
+		if (null == activity
+			|| StringUtil.isEmpty(filePath))
+		{
+			return false;
+		}
+		
+		boolean result = false;
+		
+		String insertImagePath = "";
+		String tempFilePath = "";
+		if (StringUtil.isEmpty(thumbFilePath)) {
+			// 生成临时图片文件
+			Bitmap tempBitmap = scaleImageFile(filePath, 100, 100);
+			if (null != tempBitmap) {
+				tempFilePath = filePath + ".temp.jpg";
+				saveBitmapToFile(tempFilePath, tempBitmap, CompressFormat.JPEG, 100);
+				tempBitmap.recycle();
+				tempBitmap = null;
+				
+				// 使用临时图片文件路径
+				insertImagePath = tempFilePath;
+			}
+		}
+		else {
+			// 使用缩略图文件路径
+			insertImagePath = thumbFilePath;
+		}
+		
+		// 插入图库
+	    try {
+	    	// 插入图片文件
+	    	ContentResolver cr = activity.getContentResolver();
+	    	String path = MediaStore.Images.Media.insertImage(cr, insertImagePath, fileName, desc);
+	    	
+	    	// 获取插入后的文件路径
+	    	Uri uri = Uri.parse(path);
+	    	Log.d("SaveImageToGallery", "path : " + path + ", " + 
+	    			"getHost : " + uri.getHost() + ", " +
+	    			"getPath : " + uri.getPath()
+	    			);
+	    	String[] proj = { MediaStore.Images.Media.DATA };   
+	    	Cursor actualimagecursor = activity.managedQuery(uri,proj,null,null,null);  
+	    	int actual_image_column_index = actualimagecursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);   
+	    	actualimagecursor.moveToFirst();   
+	    	String img_path = actualimagecursor.getString(actual_image_column_index);  
+	    	
+	    	// 把已插入的文件替换为原文件（防止原文件过大导致OOM的问题）
+			String cmd = "cp -f " + filePath + " " + img_path;
+			try {
+				Runtime.getRuntime().exec(cmd);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		    // 刷新图库
+		    activity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filePath)));
+		    
+		    // 完成
+		    result = true;
+	    	
+	    } catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	    } catch(Throwable e){
+	    	/*添加OOM捕捉，防止异常死机问题*/
+	    	e.printStackTrace();
+	    }
+	    
+	    // 删除临时图片文件
+	    if (StringUtil.isEmpty(tempFilePath)) {
+	    	String cmd = "rm -f " + tempFilePath;
+			try {
+				Runtime.getRuntime().exec(cmd);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    }
+	    
+	    return result;
 	}
 }

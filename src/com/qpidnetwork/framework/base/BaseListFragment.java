@@ -152,8 +152,8 @@ public class BaseListFragment extends BaseFragment implements OnPullRefreshListe
 	/**
 	 * 无更多关闭下拉刷新
 	 */
-	public void closePullUpRefresh(){
-		refreshListview.setCanPullUp(false);
+	public void closePullUpRefresh(boolean closePullUp){
+		refreshListview.setCanPullUp(!closePullUp);
 	}
 	
 	/**

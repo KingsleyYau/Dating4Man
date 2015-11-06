@@ -3,13 +3,11 @@ package com.qpidnetwork.dating.authorization;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
@@ -29,7 +27,7 @@ import com.qpidnetwork.view.MaterialTextField;
  * @author Max.Chiu
  *
  */
-public class RegisterFacebookPasswordActivity extends BaseActivity implements OnLoginManagerCallback {
+public class RegisterFacebookPasswordActivity extends BaseFragmentActivity implements OnLoginManagerCallback {
 	public static String REGISTER_FACEBOOK_LOGINERRORITEM_KEY = "LoginErrorItem";
 	
 	private enum RequestFlag {
@@ -118,15 +116,7 @@ public class RegisterFacebookPasswordActivity extends BaseActivity implements On
 		appbar.setTouchFeedback(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
 		appbar.addButtonToLeft(android.R.id.button1, "", R.drawable.ic_arrow_back_grey600_24dp);
 		appbar.setTitle(getString(R.string.facebook_connect), getResources().getColor(R.color.text_color_dark));
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				onClickCancel(v);
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		
 		imageViewHeader = (CircleImageView) findViewById(R.id.imageViewHeader);
 		textViewName = (TextView) findViewById(R.id.textViewName);
@@ -139,28 +129,24 @@ public class RegisterFacebookPasswordActivity extends BaseActivity implements On
 	}
 	
 	@Override
-	public void InitHandler() {
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				hideProgressDialog();
-//				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_SUCCESS:{
-					// 绑定成功
-					finish();
-				}break;
-				case REQUEST_FAIL:{
-//					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();
-				}break;
-				default:
-					break;
-				}
-			};
-		};
+	protected void handleUiMessage(Message msg) {
+		// TODO Auto-generated method stub
+		super.handleUiMessage(msg);
+		// 收起菊花
+		hideProgressDialog();
+//		MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_SUCCESS:{
+			// 绑定成功
+			finish();
+		}break;
+		case REQUEST_FAIL:{
+//			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();
+		}break;
+		default:
+			break;
+		}
 	}
-	
 	/**
 	 * 根据界面传参数初始化界面
 	 */
@@ -197,12 +183,20 @@ public class RegisterFacebookPasswordActivity extends BaseActivity implements On
 			obj.body = errItem;
 		}
 		msg.obj = obj;
-		mHandler.sendMessage(msg);
+		sendUiMessage(msg);
 	}
 	
 	@Override
 	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if (appbar == v) {
+			onClickCancel(v);
+		}
 	}
 }

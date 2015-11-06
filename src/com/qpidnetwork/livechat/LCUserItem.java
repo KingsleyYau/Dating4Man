@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import com.qpidnetwork.livechat.LCMessageItem.SendType;
+import com.qpidnetwork.livechat.LCMessageItem.StatusType;
 import com.qpidnetwork.livechat.jni.LiveChatClient.ClientType;
 import com.qpidnetwork.livechat.jni.LiveChatClient.UserSexType;
 import com.qpidnetwork.livechat.jni.LiveChatClient.UserStatusType;
@@ -150,6 +151,23 @@ public class LCUserItem implements Serializable{
 	}
 	
 	/**
+	 * 清除所有已完成的聊天记录
+	 */
+	public void clearFinishedMsgList() {
+		ArrayList<LCMessageItem> tempList = new ArrayList<LCMessageItem>();
+		synchronized (msgList) {
+			for (Iterator<LCMessageItem> iter = msgList.iterator(); iter.hasNext(); ) {
+				LCMessageItem item = iter.next();
+				if (item.statusType == StatusType.Finish) {
+					tempList.add(item);
+					item.clear();
+				}
+			}
+			msgList.removeAll(tempList);
+		}
+	}
+	
+	/**
 	 * 根据消息ID获取LCMessageItem
 	 * @param msgId	消息ID
 	 * @return
@@ -281,40 +299,46 @@ public class LCUserItem implements Serializable{
 			public int compare(LCUserItem lhs, LCUserItem rhs) {
 				// TODO Auto-generated method stub
 				int result = 0;
-				synchronized (lhs.msgList) 
+				if (lhs != rhs) 
 				{
-					synchronized (rhs.msgList) 
+					synchronized (lhs.msgList) 
 					{
-						if (lhs.msgList.size() == 0 && rhs.msgList.size() == 0) {
-							// 两个都没有消息，按名字排序
-							int nameCompareValue = lhs.userName.compareTo(rhs.userName);
-							if (nameCompareValue != 0) {
-								result = nameCompareValue > 0 ? 1 : -1;
-							}
-						}
-						else if (lhs.msgList.size() > 0 && rhs.msgList.size() > 0) {
-							// 两个都有消息
-							LCMessageItem lMsgItem = lhs.msgList.get(lhs.msgList.size()-1);
-							LCMessageItem rMsgItem = rhs.msgList.get(rhs.msgList.size()-1);
-							
-							// 以最后一条消息的聊天时间倒序排序
-							if (null != lMsgItem && null != rMsgItem) {
-								if (lMsgItem.createTime != rMsgItem.createTime) {
-									result = (lMsgItem.createTime > rMsgItem.createTime ? -1 : 1);
-								}
-							}
-							else {
-								if (null == lMsgItem && null != rMsgItem) {
+						synchronized (rhs.msgList) 
+						{
+							if (lhs.msgList.size() == 0 && rhs.msgList.size() == 0) {
+								// 两个都没有消息，按名字排序
+								int nameCompareValue = lhs.userName.compareTo(rhs.userName);
+								if (nameCompareValue > 0) {
 									result = 1;
 								}
-								else if (null != lMsgItem && null == rMsgItem) {
+								else if (nameCompareValue < 0) {
 									result = -1;
 								}
 							}
-						}
-						else {
-							// 其中一个有消息
-							result = (lhs.msgList.size() > rhs.msgList.size() ? -1 : 1);
+							else if (lhs.msgList.size() > 0 && rhs.msgList.size() > 0) {
+								// 两个都有消息
+								LCMessageItem lMsgItem = lhs.msgList.get(lhs.msgList.size()-1);
+								LCMessageItem rMsgItem = rhs.msgList.get(rhs.msgList.size()-1);
+								
+								// 以最后一条消息的聊天时间倒序排序
+								if (null != lMsgItem && null != rMsgItem) {
+									if (lMsgItem.createTime != rMsgItem.createTime) {
+										result = (lMsgItem.createTime > rMsgItem.createTime ? -1 : 1);
+									}
+								}
+								else {
+									if (null == lMsgItem && null != rMsgItem) {
+										result = 1;
+									}
+									else if (null != lMsgItem && null == rMsgItem) {
+										result = -1;
+									}
+								}
+							}
+							else {
+								// 其中一个有消息
+								result = (lhs.msgList.size() > rhs.msgList.size() ? -1 : 1);
+							}
 						}
 					}
 				}

@@ -16,7 +16,9 @@
     <color name="Gray">#808080</color>
     <color name="green">#0f9d58</color>
     <color name="transparent_green">#700f9d58</color>
+    <color name="window_background_color">#8f8f8f</color>
     <color name="transparent_black_windown_bg">#98000000</color>
+    
     
     <!-- theme -->
     <color name="theme_actionbar_indicator">#92FFFFFF</color>

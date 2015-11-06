@@ -23,16 +23,17 @@
             android:layout_centerInParent="true"
             android:visibility="visible" />
 
-        <Button
+        <View
             android:id="@+id/foreRecordBtn"
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:layout_centerInParent="true"
             android:background="@drawable/circle_solid_red"
             android:clickable="false"
-            android:focusable="false" />
+            android:focusable="false"
+            android:elevation="0dp" />
 
-        <Button
+        <View
             android:id="@+id/foreCancelBtn"
             android:layout_width="72dp"
             android:layout_height="72dp"
@@ -40,11 +41,12 @@
             android:background="@drawable/circle_solid_white"
             android:clickable="false"
             android:focusable="false"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:elevation="0dp" />
 
         <TextView
             android:id="@+id/tvRecord"
-            android:layout_width="64dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:gravity="center"

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.livechat.ChatActivity;
 import com.qpidnetwork.dating.livechat.expression.NormalEmotionFragment.OnItemClickCallback;
@@ -82,7 +83,7 @@ public class EmotionHistoryFragment extends BaseFragment implements LiveChatMana
 	
 	private void updateEmotionGridview(List<OtherEmotionConfigEmotionItem> emotionList){
 		String curSite = WebSiteManager.newInstance(getActivity()).GetWebSite().getSiteName();
-		String userId = LoginPerfence.GetLoginParam(getActivity()).item.manid;
+		String userId = LoginManager.getInstance().GetLoginParam().item.manid;
 		premiumIds = EmotionHistoryUtil.getItemStringIds(getActivity(), userId, curSite, "premium");
 		premiumdataList = new ArrayList<OtherEmotionConfigEmotionItem>();
 		for (String idstr : premiumIds) {
@@ -132,7 +133,7 @@ public class EmotionHistoryFragment extends BaseFragment implements LiveChatMana
 		} 
 		
 		String curSite = WebSiteManager.newInstance(getActivity()).GetWebSite().getSiteName();
-		String userId = LoginPerfence.GetLoginParam(getActivity()).item.manid;
+		String userId = LoginManager.getInstance().GetLoginParam().item.manid;
 		
 		EmotionHistoryUtil.saveItemStringIds(premiumIds, getActivity(), userId, curSite, "premium");
 		mAdapter.notifyDataSetChanged();

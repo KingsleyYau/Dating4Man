@@ -185,7 +185,7 @@ public class HomeLadySearchWindow extends PopupWindow implements OnTouchListener
 
 		int initialRadius = view.getWidth();
 		Animator anim = ViewAnimationUtils.createCircularReveal(view, view.getRight() - UnitConversion.dip2px(context, 72), 0, 0, initialRadius);
-		anim.setDuration(150);
+		anim.setDuration(220);
 		contentView.setVisibility(View.VISIBLE);
 		anim.start();
 	}
@@ -222,7 +222,7 @@ public class HomeLadySearchWindow extends PopupWindow implements OnTouchListener
 		
 		int initialRadius = contentView.getWidth();
 		Animator anim = ViewAnimationUtils.createCircularReveal(contentView, contentView.getRight() - UnitConversion.dip2px(context, 72), 0, initialRadius, 0);
-		anim.setDuration(150);
+		anim.setDuration(220);
 		anim.addListener(new AnimatorListenerAdapter() {
 		    @Override
 		    public void onAnimationEnd(Animator animation) {

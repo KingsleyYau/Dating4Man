@@ -3,7 +3,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     tools:context="${relativePackage}.${activityClass}"
-    android:background="#F2F2F2"
     android:fitsSystemWindows="true">
     
 	<GridView
@@ -16,7 +15,8 @@
    		android:fadingEdge="@null"
    		android:fadeScrollbars="true"
    		android:layout_marginTop="@dimen/actionbar_height"
-   		android:listSelector="@null" />
+   		android:listSelector="@null"
+   		android:background="@color/white" />
 	
 	
 	<com.qpidnetwork.view.MaterialAppBar

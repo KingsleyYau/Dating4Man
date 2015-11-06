@@ -5,15 +5,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.framework.util.Log;
@@ -24,7 +22,10 @@ import com.qpidnetwork.request.RequestJniAuthorization;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialTextField;
 
-public class RegisterResetPasswordActivity extends BaseActivity {
+public class RegisterResetPasswordActivity extends BaseFragmentActivity
+										   implements OnRequestOriginalCallback,
+										   			  OnFindPasswordCallback
+{
 	
 	private enum RequestFlag {
 		REQUEST_SUCCESS,
@@ -76,30 +77,7 @@ public class RegisterResetPasswordActivity extends BaseActivity {
 	 * 验证码码
 	 */
 	public void GetCheckCode() {
-		RequestJniAuthorization.GetCheckCode(new OnRequestOriginalCallback() {
-			
-			@Override
-			public void OnRequestData(boolean isSuccess, String errno, String errmsg,
-					byte[] data) {
-				// TODO Auto-generated method stub
-				if( isSuccess ) {
-					Message msg = Message.obtain();
-					RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
-					if( isSuccess ) {
-						// 获取验证码成功
-						msg.what = RequestFlag.REQUEST_CHECKCODE_SUCCESS.ordinal();
-						if( data.length != 0 ) {
-							obj.body = BitmapFactory.decodeByteArray(data, 0, data.length);
-						}
-					} else {
-						// 获取验证码失败
-						msg.what = RequestFlag.REQUEST_CHECKCODE_FAIL.ordinal();
-					}
-					msg.obj = obj;
-					mHandler.sendMessage(msg);
-				}
-			}
-		});
+		RequestJniAuthorization.GetCheckCode(this);
 	}
 	
 	/**
@@ -124,25 +102,7 @@ public class RegisterResetPasswordActivity extends BaseActivity {
 		RequestJniAuthorization.FindPassword(
 				editTextEmail.getText().toString(), 
 				editTextCheckcode.getText().toString(),
-				new OnFindPasswordCallback() {
-					
-					@Override
-					public void OnFindPassword(boolean isSuccess, String errno, String errmsg,
-							String tips) {
-						// TODO Auto-generated method stub
-						Message msg = Message.obtain();
-						RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
-						if( isSuccess ) {
-							// 成功
-							msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
-						} else {
-							// 失败
-							msg.what = RequestFlag.REQUEST_FAIL.ordinal();;
-						}
-						msg.obj = obj;
-						mHandler.sendMessage(msg);
-					}
-				});
+				this);
 	}
 	
 	@Override
@@ -154,17 +114,7 @@ public class RegisterResetPasswordActivity extends BaseActivity {
 		appbar.setTitle(getString(R.string.Reset_Password), getResources().getColor(R.color.text_color_dark));
 		appbar.addButtonToLeft(R.id.common_button_back, "", R.drawable.ic_close_grey600_24dp);
 		appbar.setAppbarBackgroundColor(getResources().getColor(R.color.white));
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				if (v.getId() == R.id.common_button_back){
-					onClickCancel(v);
-				}
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		editTextEmail = (MaterialTextField) findViewById(R.id.editTextEmail);
 		editTextEmail.setHint(getResources().getString(R.string.Enter_your_eamil));
 		editTextEmail.setEmail();
@@ -185,59 +135,104 @@ public class RegisterResetPasswordActivity extends BaseActivity {
 	}
 	
 	@Override
-	public void InitHandler() {
+	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				hideProgressDialog();
-				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_SUCCESS:{
-					// 收起菊花
-					Intent intent = new Intent(mContext, RegisterResetPasswordSuccessfulAcitiviy.class);
-					intent.putExtra(RegisterResetPasswordSuccessfulAcitiviy.INPUT_EMAIL_KEY, editTextEmail.getText().toString());
-					startActivity(intent);
-					
-					Log.v("email address", editTextEmail.getText().toString());
-					
-					// 改变密码成功
-					finish();
-				}break;
-				case REQUEST_FAIL:{
-					// 收起菊花
-					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();
-					
-					// 改变密码失败
-					switch (obj.errno) {
-					case RequestErrorCode.MBCE1012: {
-						// 验证码无效
-					}
-					case RequestErrorCode.MBCE1013:{
-						// 验证码无效
-						layoutCheckCode.setVisibility(View.VISIBLE);
-					}break;
-					default:
-						break;
-					}
-				}break;
-				case REQUEST_CHECKCODE_SUCCESS:{
-					// 获取验证码成功
-					if( obj != null && obj.body != null ) {
-						Bitmap bitmap = (Bitmap)obj.body;
-						imageViewCheckCode.setImageBitmap(bitmap);
-						layoutCheckCode.setVisibility(View.VISIBLE);
-//						textViewSep3.setVisibility(View.VISIBLE);
-					} else {
-						layoutCheckCode.setVisibility(View.GONE);
-//						textViewSep3.setVisibility(View.GONE);
-					}
-				}break;
-				default:
-					break;
+		super.handleUiMessage(msg);
+		// 收起菊花
+		hideProgressDialog();
+		RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_SUCCESS:{
+			// 收起菊花
+			Intent intent = new Intent(mContext, RegisterResetPasswordSuccessfulAcitiviy.class);
+			intent.putExtra(RegisterResetPasswordSuccessfulAcitiviy.INPUT_EMAIL_KEY, editTextEmail.getText().toString());
+			startActivity(intent);
+			
+			Log.v("email address", editTextEmail.getText().toString());
+			
+			// 改变密码成功
+			finish();
+		}break;
+		case REQUEST_FAIL:{
+			// 收起菊花
+			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();
+			
+			// 改变密码失败
+			switch (obj.errno) {
+			case RequestErrorCode.MBCE1012: {
+				// 验证码无效
+			}
+			case RequestErrorCode.MBCE1013:{
+				// 验证码无效
+				layoutCheckCode.setVisibility(View.VISIBLE);
+			}break;
+			default:
+				break;
+			}
+		}break;
+		case REQUEST_CHECKCODE_SUCCESS:{
+			// 获取验证码成功
+			if( obj != null && obj.body != null ) {
+				Bitmap bitmap = (Bitmap)obj.body;
+				imageViewCheckCode.setImageBitmap(bitmap);
+				layoutCheckCode.setVisibility(View.VISIBLE);
+//				textViewSep3.setVisibility(View.VISIBLE);
+			} else {
+				layoutCheckCode.setVisibility(View.GONE);
+//				textViewSep3.setVisibility(View.GONE);
+			}
+		}break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void OnRequestData(boolean isSuccess, String errno, String errmsg,
+			byte[] data) 
+	{
+		// TODO Auto-generated method stub
+		if( isSuccess ) {
+			Message msg = Message.obtain();
+			RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
+			if( isSuccess ) {
+				// 获取验证码成功
+				msg.what = RequestFlag.REQUEST_CHECKCODE_SUCCESS.ordinal();
+				if( data.length != 0 ) {
+					obj.body = BitmapFactory.decodeByteArray(data, 0, data.length);
 				}
-			};
-		};
+			} else {
+				// 获取验证码失败
+				msg.what = RequestFlag.REQUEST_CHECKCODE_FAIL.ordinal();
+			}
+			msg.obj = obj;
+			sendUiMessage(msg);
+		}
+	}
+
+	@Override
+	public void OnFindPassword(boolean isSuccess, String errno, String errmsg,
+			String tips) 
+	{
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
+		if( isSuccess ) {
+			// 成功
+			msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
+		} else {
+			// 失败
+			msg.what = RequestFlag.REQUEST_FAIL.ordinal();;
+		}
+		msg.obj = obj;
+		sendUiMessage(msg);
+	}
+	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if (v.getId() == R.id.common_button_back){
+			onClickCancel(v);
+		}
 	}
 }

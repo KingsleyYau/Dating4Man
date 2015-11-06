@@ -437,7 +437,7 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 		}break;
 		case LOGINED:{
 			// 处于登录状态
-			LoginParam param = LoginPerfence.GetLoginParam(mContext);
+			LoginParam param = LoginManager.getInstance().GetLoginParam();
 
 			if( param != null && param.item != null ) {
 				tvUsername.setText(param.item.firstname + " " + param.item.lastname);
@@ -453,6 +453,8 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 						ivPhoto, 
 						url, 
 						localPath,
+						ivPhoto.getWidth(),
+						ivPhoto.getHeight(),
 						null
 						);
 			} else {

@@ -1281,7 +1281,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetVideo
 			JString2String(env, user_id),
 			JString2String(env, womanId),
 			JString2String(env, videoid),
-			size,
+			(VIDEO_PHOTO_TYPE)size,
 			JString2String(env, filePath)
 			);
 

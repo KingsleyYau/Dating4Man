@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
 
+import com.facebook.AppEventsLogger;
 import com.qpidnetwork.dating.analysis.AdAnakysisManager;
 import com.qpidnetwork.dating.analysis.AnalysisItem;
 import com.qpidnetwork.dating.authorization.RegisterPasswordActivity.RegisterParam;
@@ -27,7 +28,10 @@ import com.qpidnetwork.request.item.RegisterItem;
  * @author Hunter
  * 
  */
-public class RegisterTask {
+public class RegisterTask implements OnConfigManagerCallback,
+									 OnRequestCallback,
+									 OnRegisterCallback
+{
 
 	private OnRegisterCallback mRegisterCallback;
 	private Handler mHandler;
@@ -95,41 +99,14 @@ public class RegisterTask {
 	}
 
 	public void execute() {
-		ConfigManager.getInstance().GetOtherSynConfigItem(
-				new OnConfigManagerCallback() {
-
-					@Override
-					public void OnGetOtherSynConfigItem(boolean isSuccess,
-							String errno, String errmsg, OtherSynConfigItem item) {
-						Message msg = Message.obtain();
-						RequestBaseResponse response = new RequestBaseResponse(
-								isSuccess, errno, errmsg, item);
-						msg.what = RequestFlag.SYNCONFIG_CALLBACK.ordinal();
-						msg.obj = response;
-						mHandler.sendMessage(msg);
-					}
-				});
+		ConfigManager.getInstance().GetOtherSynConfigItem(this);
 	}
 
 	/**
 	 * 提交安装信息
 	 */
 	private void summitUtmreference() {
-		AdAnakysisManager.getInstance().summitUtmReference(
-				new OnRequestCallback() {
-
-					@Override
-					public void OnRequest(boolean isSuccess, String errno,
-							String errmsg) {
-						Message msg = Message.obtain();
-						RequestBaseResponse response = new RequestBaseResponse(
-								isSuccess, errno, errmsg, null);
-						msg.what = RequestFlag.UPLOAD_UTMREFERENCE_CALLBACK
-								.ordinal();
-						msg.obj = response;
-						mHandler.sendMessage(msg);
-					}
-				});
+		AdAnakysisManager.getInstance().summitUtmReference(this);
 	}
 
 	private void emailRegister() {
@@ -154,18 +131,43 @@ public class RegisterTask {
 					mRegisterParam.year, mRegisterParam.month,
 					mRegisterParam.day, false, Build.MODEL,
 					RequestJni.GetDeviceId(tm), Build.MANUFACTURER, reference,
-					new OnRegisterCallback() {
-						@Override
-						public void OnRegister(boolean isSuccess, String errno,
-								String errmsg, RegisterItem item) {
-							Message msg = Message.obtain();
-							RequestBaseResponse response = new RequestBaseResponse(
-									isSuccess, errno, errmsg, item);
-							msg.arg1 = RequestFlag.REGISTER_CALLBACK.ordinal();
-							msg.obj = response;
-							mHandler.sendMessage(msg);
-						}
-					});
+					this);
 		}
+	}
+
+	@Override
+	public void OnGetOtherSynConfigItem(boolean isSuccess, String errno,
+			String errmsg, OtherSynConfigItem item) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		RequestBaseResponse response = new RequestBaseResponse(
+				isSuccess, errno, errmsg, item);
+		msg.what = RequestFlag.SYNCONFIG_CALLBACK.ordinal();
+		msg.obj = response;
+		mHandler.sendMessage(msg);
+	}
+
+	@Override
+	public void OnRequest(boolean isSuccess, String errno, String errmsg) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		RequestBaseResponse response = new RequestBaseResponse(
+				isSuccess, errno, errmsg, null);
+		msg.what = RequestFlag.UPLOAD_UTMREFERENCE_CALLBACK
+				.ordinal();
+		msg.obj = response;
+		mHandler.sendMessage(msg);
+	}
+
+	@Override
+	public void OnRegister(boolean isSuccess, String errno, String errmsg,
+			RegisterItem item) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		RequestBaseResponse response = new RequestBaseResponse(
+				isSuccess, errno, errmsg, item);
+		msg.what = RequestFlag.REGISTER_CALLBACK.ordinal();
+		msg.obj = response;
+		mHandler.sendMessage(msg);
 	}
 }

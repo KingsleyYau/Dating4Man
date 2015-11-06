@@ -100,12 +100,9 @@ public class RecordView extends View implements OnErrorListener{
 				/*异步开线程关闭recorder，防止和关闭动画冲突，导致界面重绘卡死*/
 				if (recorder != null) {
 					try {
-						Log.i("hunter", "recorder stop");
 						recorder.setOnErrorListener(null);
 						recorder.stop();
-						Log.i("hunter", "recorder reset");
 						recorder.reset();
-						Log.i("hunter", "recorder release");
 						recorder.release();
 					} catch (Exception e) {
 						e.printStackTrace();

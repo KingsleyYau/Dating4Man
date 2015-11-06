@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
+import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginParam;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.request.OnQueryChatVirtualGiftCallback;
@@ -152,7 +153,7 @@ public class VirtualGiftManager implements OnLoginManagerCallback {
 		}
 		
 		// 获取接口
-		LoginParam param = LoginPerfence.GetLoginParam(mContext);
+		LoginParam param = LoginManager.getInstance().GetLoginParam();
 		if( param != null && param.item != null) {
 			RequestOperator.getInstance().QueryChatVirtualGift(
 					param.item.sessionid, 

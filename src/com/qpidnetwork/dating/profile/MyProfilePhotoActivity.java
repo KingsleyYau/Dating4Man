@@ -23,7 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.framework.util.CompatUtil;
@@ -42,7 +42,7 @@ import com.qpidnetwork.view.MaterialThreeButtonDialog;
  * MyProfile模块
  * @author Max.Chiu
  */
-public class MyProfilePhotoActivity extends BaseActivity {
+public class MyProfilePhotoActivity extends BaseFragmentActivity implements MaterialThreeButtonDialog.OnClickCallback, OnRequestCallback {
 	
 	private ProfileItem mProfile;
 	
@@ -133,38 +133,35 @@ public class MyProfilePhotoActivity extends BaseActivity {
 	 */
 	public void onClickChangePhoto(View view) {
 		
-		MaterialThreeButtonDialog dialog = new MaterialThreeButtonDialog(this, new MaterialThreeButtonDialog.OnClickCallback() {
-			
-			@Override
-			public void OnSecondButtonClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
-				startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
-			}
-			
-			@Override
-			public void OnFirstButtonClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-				intent.putExtra(
-						android.provider.MediaStore.EXTRA_OUTPUT, 
-						Uri.fromFile(new File(FileCacheManager.getInstance().GetTempImageUrl()))
-								);
-				
-				startActivityForResult(intent, RESULT_LOAD_IMAGE_CAPTURE);
-			}
-			
-			@Override
-			public void OnCancelButtonClick(View v) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		MaterialThreeButtonDialog dialog = new MaterialThreeButtonDialog(this, this);
 		
 		dialog.show();
 
 	}
+	@Override
+	public void OnSecondButtonClick(View v) {
+		// TODO Auto-generated method stub
+		Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
+		startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+	}
 	
+	@Override
+	public void OnFirstButtonClick(View v) {
+		// TODO Auto-generated method stub
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		intent.putExtra(
+				android.provider.MediaStore.EXTRA_OUTPUT, 
+				Uri.fromFile(new File(FileCacheManager.getInstance().GetTempImageUrl()))
+						);
+		
+		startActivityForResult(intent, RESULT_LOAD_IMAGE_CAPTURE);
+	}
+	
+	@Override
+	public void OnCancelButtonClick(View v) {
+		// TODO Auto-generated method stub
+		
+	}
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    super.onActivityResult(requestCode, resultCode, data);
@@ -225,24 +222,8 @@ public class MyProfilePhotoActivity extends BaseActivity {
 			        // 上传头像
 			        RequestOperator.getInstance().UploadHeaderPhoto(
 			        		FileCacheManager.getInstance().GetTempImageUrl(), 
-			        		new OnRequestCallback() {
+			        		this);
 						
-						@Override
-						public void OnRequest(boolean isSuccess, String errno, String errmsg) {
-							// TODO Auto-generated method stub
-							Message msg = Message.obtain();
-							RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
-							if( isSuccess ) {
-								// 上传头像成功
-								msg.what = RequestFlag.REQUEST_UPLOAD_SUCCESS.ordinal();
-							} else {
-								// 上传头像失败
-								msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-							}
-							msg.obj = obj;
-							mHandler.sendMessage(msg);
-						}
-					});
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -253,7 +234,21 @@ public class MyProfilePhotoActivity extends BaseActivity {
 	    default:break;
 	    }
 	}
-	
+	@Override
+	public void OnRequest(boolean isSuccess, String errno, String errmsg) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
+		if( isSuccess ) {
+			// 上传头像成功
+			msg.what = RequestFlag.REQUEST_UPLOAD_SUCCESS.ordinal();
+		} else {
+			// 上传头像失败
+			msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+		}
+		msg.obj = obj;
+		sendUiMessage(msg);
+	}
 	/**
 	 * 裁剪图片方法实现
 	 * 
@@ -302,31 +297,27 @@ public class MyProfilePhotoActivity extends BaseActivity {
 	}
 	
 	@Override
-	public void InitHandler() {
+	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_UPLOAD_SUCCESS:{
-					// 上传头像成功
-					
-					// 清除旧头像缓存
-					FileCacheManager.getInstance().CleanCacheImageFromUrl(mPhotoUrl);
-					// 重新下载
-					loader.DisplayImage(imageViewHeader, mPhotoUrl, 
-							FileCacheManager.getInstance().CacheImagePathFromUrl(mPhotoUrl), null);
-				}break;
-				case REQUEST_FAIL:{
-					// 请求失败
-					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
-				}break;
-				default:
-					break;
-				}
-			};
-		};
+		super.handleUiMessage(msg);
+		// 收起菊花
+		RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_UPLOAD_SUCCESS:{
+			// 上传头像成功
+			
+			// 清除旧头像缓存
+			FileCacheManager.getInstance().CleanCacheImageFromUrl(mPhotoUrl);
+			// 重新下载
+			loader.DisplayImage(imageViewHeader, mPhotoUrl, 
+					FileCacheManager.getInstance().CacheImagePathFromUrl(mPhotoUrl), null);
+		}break;
+		case REQUEST_FAIL:{
+			// 请求失败
+			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
+		}break;
+		default:
+			break;
+		}
 	}
 }

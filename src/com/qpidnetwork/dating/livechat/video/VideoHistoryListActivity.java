@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.livechat.VideoPlayActivity;
@@ -182,7 +183,7 @@ public class VideoHistoryListActivity extends BaseActionBarFragmentActivity
 			mLiveChatManager.GetVideo(targetId, item);
 			updateVideoDownloadItem(position, item.inviteid, item.videoid);
 		}else{
-			VideoPlayActivity.launchVideoPlayActivity(this, videoThumbPath, videoLocalPath);
+			VideoPlayActivity.launchVideoPlayActivity(this, videoThumbPath, videoLocalPath, false);
 		}
 	}
 	
@@ -190,7 +191,7 @@ public class VideoHistoryListActivity extends BaseActionBarFragmentActivity
 	 * 获取最近视频列表
 	 */
 	private void getRecentWatchList(){
-		LoginItem item = LoginPerfence.GetLoginParam(this).item;
+		LoginItem item = LoginManager.getInstance().GetLoginParam().item;
 		if(item != null){
 			refreshForDownloadStart();
 			RequestOperator.getInstance().QueryRecentVideo(item.sessionid, item.manid, targetId, new OnQueryRecentVideoListCallback() {

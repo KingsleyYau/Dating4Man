@@ -1,5 +1,7 @@
 package com.qpidnetwork.request.item;
 
+import com.qpidnetwork.request.RequestEnum.Country;
+
 public class OtherSynConfigPublicItem {
 	public OtherSynConfigPublicItem() {
 		
@@ -18,6 +20,7 @@ public class OtherSynConfigPublicItem {
 	 * @param chatVoiceUrl		LiveChat语音下载/上传host
 	 * @param addCreditsUrl		选择点数充值页面url
 	 * @param addCredits2Url	指定点数充值页面url
+	 * @param ipcountry	                        当前IP对应的国家代码（如：US,CN）
 	 */
 	public OtherSynConfigPublicItem(
 			int vgVer,
@@ -30,7 +33,8 @@ public class OtherSynConfigPublicItem {
 			String storeUrl,
 			String chatVoiceHostUrl,
 			String addCreditsUrl,
-			String addCredits2Url
+			String addCredits2Url,
+			int ipcountry
 			) 
 	{
 		this.vgVer = vgVer;
@@ -44,6 +48,12 @@ public class OtherSynConfigPublicItem {
 		this.chatVoiceHostUrl = chatVoiceHostUrl;
 		this.addCreditsUrl = addCreditsUrl;
 		this.addCredits2Url = addCredits2Url;
+		
+		if( ipcountry < 0 || ipcountry >= Country.values().length ) {
+			this.ipcountry = Country.values()[Country.Other.ordinal()];
+		} else {
+			this.ipcountry = Country.values()[ipcountry];
+		}
 	}
 	
 	public int vgVer;
@@ -57,4 +67,5 @@ public class OtherSynConfigPublicItem {
 	public String chatVoiceHostUrl;
 	public String addCreditsUrl;
 	public String addCredits2Url;
+	public Country ipcountry;
 }

@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginParam;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.framework.util.StringUtil;
@@ -120,7 +121,7 @@ public class TicketDetailAdapter extends BaseAdapter{
 		if(item.method == MethodType.Receive){
 			holder.ivPhoto.setImageResource(R.drawable.ic_launcher);
 		}else{
-			LoginParam loginParam = LoginPerfence.GetLoginParam(mContext);
+			LoginParam loginParam = LoginManager.getInstance().GetLoginParam();
 			holder.ivPhoto.setImageResource(R.drawable.default_photo_64dp);
 			/*头像处理*/
 			if((loginParam != null)&&(loginParam.item!= null)&&(!StringUtil.isEmpty(loginParam.item.photoURL))){

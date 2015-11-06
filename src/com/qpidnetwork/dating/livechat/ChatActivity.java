@@ -63,6 +63,7 @@ import com.qpidnetwork.dating.livechat.picture.PictureSelectFragment;
 import com.qpidnetwork.dating.livechat.video.VideoHistoryListActivity;
 import com.qpidnetwork.dating.livechat.voice.VoiceRecordFragment;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
+import com.qpidnetwork.framework.util.ImageUtil;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.framework.widget.CircleImageView;
@@ -116,7 +117,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 	private static final int MIN_HEIGHT = 200;// 单位dp
 
 	public static final int CHAT_SELECT_PHOTO = 1001;
-	private static final int RESULT_LOAD_IMAGE_CAPTURE = 1002;
+	public static final int RESULT_LOAD_IMAGE_CAPTURE = 1002;
 
 	private static final int RECEIVE_CHAT_MESSAGE = 0;
 	private static final int PHOTO_FEE_SUCCESS = 1;
@@ -139,6 +140,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 	private PictureSelectFragment pictureSelectFragment;
 	private VoiceRecordFragment voiceRecordFragment;
 	private EmotionMainFragment emotionMainFragment;
+	private CameraViewFragment cameraViewFragment;
 
 	/* title */
 	private LinearLayout llBack;
@@ -194,7 +196,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 		Intent intent = new Intent();
 		/* 未登录成功跳转登陆界面 */
 		if (LoginManager.getInstance().CheckLogin(context)) {
-			LoginParam loginParam = LoginPerfence.GetLoginParam(context);
+			LoginParam loginParam = LoginManager.getInstance().GetLoginParam();
 			if (loginParam.item.premit && !loginParam.item.livechat) {
 				/* 账号未被冻结且livechat未被风控，可直接进入聊天界面 */
 				intent.setClass(context, ChatActivity.class);
@@ -221,12 +223,14 @@ public class ChatActivity extends BaseFragmentActivity implements
 		setContentView(R.layout.activity_livechat_chat);
 
 		/* 风控条件初始化 */
-		if((LoginPerfence.GetLoginParam(this) != null)&&(LoginPerfence.GetLoginParam(this).item != null)){
-			photosendEnable = LoginPerfence.GetLoginParam(this).item.photosend;
+		if((LoginManager.getInstance().GetLoginParam() != null)&&(LoginManager.getInstance().GetLoginParam().item != null)){
+			photosendEnable = LoginManager.getInstance().GetLoginParam().item.photosend;
 		}
-		initLivechatConfig();
+		
+		mLiveChatManager = LiveChatManager.newInstance(null);
 		initViews();
 		initData();
+		initLivechatConfig();
 		initReceive();
 		initKeyboardDetect();
 
@@ -236,8 +240,6 @@ public class ChatActivity extends BaseFragmentActivity implements
 	 * 初始化配置LivechatManager，监听消息请求及推送事件
 	 */
 	private void initLivechatConfig() {
-
-		mLiveChatManager = LiveChatManager.newInstance(null);
 		/* 绑定监听回调事件 */
 		mLiveChatManager.RegisterMessageListener(this);
 		mLiveChatManager.RegisterEmotionListener(this);
@@ -325,7 +327,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 			}
 		}
 
-		if (targetId == null) {
+		if ((StringUtil.isEmpty(targetId))) {
 			finish();
 			return;
 		} else {
@@ -454,7 +456,6 @@ public class ChatActivity extends BaseFragmentActivity implements
 			isResizeInOnLayout = true;
 			getWindow().setSoftInputMode(
 					WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-			 Log.i("hunter", "resize to compute keyboard height");
 		} else {
 			hideSoftInput();
 			isMenuOpen = false;
@@ -462,8 +463,15 @@ public class ChatActivity extends BaseFragmentActivity implements
 					.setSoftInputMode(
 							WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
 									| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-			 Log.i("hunter", "height: " + getKeyboardHeight() + " hidesoft");
 		}
+	}
+	
+	/**
+	 * 设置默认拍照路径
+	 * @param filePath
+	 */
+	public void setTempPicturePath(String filePath){
+		takePhotoTempPath = filePath;
 	}
 
 	private void initReceive() {
@@ -566,7 +574,14 @@ public class ChatActivity extends BaseFragmentActivity implements
 			onMenuButtonClick(MenuBtnType.NORMAL_EXPRESSION);
 			break;
 		case R.id.btnTakePhoto:
-			takePhoto();
+			
+			//Android api 11 or above will use in app camera. otherwise will open system camera.
+			if (Build.VERSION.SDK_INT < 11){
+				takePhoto();
+			}else{
+				onMenuButtonClick(MenuBtnType.USE_CAMERA);
+			}
+			
 			break;
 		case R.id.btnSelectPhoto:
 			onMenuButtonClick(MenuBtnType.SELECT_PHOTO);
@@ -622,13 +637,14 @@ public class ChatActivity extends BaseFragmentActivity implements
 				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		hideSoftInput();
 
-		LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) flBottom
-				.getLayoutParams();
-		if (getKeyboardHeight() > UnitConversion.dip2px(this, MIN_HEIGHT)) {
-			params.height = getKeyboardHeight();
-		} else {
-			params.height = UnitConversion.dip2px(this, MIN_HEIGHT);
-		}
+		LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) flBottom.getLayoutParams();
+		int keyboardHeight = (getKeyboardHeight() > UnitConversion.dip2px(this, MIN_HEIGHT)) ? getKeyboardHeight() : UnitConversion.dip2px(this, MIN_HEIGHT);
+		params.height = keyboardHeight;
+		//if (getKeyboardHeight() > UnitConversion.dip2px(this, MIN_HEIGHT)) {
+		//	params.height = getKeyboardHeight();
+		//} else {
+		//	params.height = UnitConversion.dip2px(this, MIN_HEIGHT);
+		//}
 
 		flBottom.setLayoutParams(params);
 		flBottom.setVisibility(View.VISIBLE);
@@ -649,13 +665,11 @@ public class ChatActivity extends BaseFragmentActivity implements
 
 			if (btnExpression.getTag() == null
 					|| btnExpression.getTag().equals("false")) {
-				btnExpression
-						.setImageResource(R.drawable.ic_keyboard_grey600_24dp);
+				btnExpression.setImageResource(R.drawable.ic_keyboard_grey600_24dp);
 				transaction.replace(R.id.flPane, new NormalExprssionFragment());
 				btnExpression.setTag("true");
 			} else {
-				btnExpression
-						.setImageResource(R.drawable.ic_tag_faces_grey600_24dp);
+				btnExpression.setImageResource(R.drawable.ic_tag_faces_grey600_24dp);
 				btnExpression.setTag("false");
 				showSoftInput();
 				isResizeInOnLayout = true;
@@ -678,8 +692,13 @@ public class ChatActivity extends BaseFragmentActivity implements
 			if (emotionMainFragment == null)
 				emotionMainFragment = new EmotionMainFragment();
 			transaction.replace(R.id.flPane, emotionMainFragment);
-			btnEmotion
-					.setImageResource(R.drawable.ic_premium_emotion_blue_24dp);
+			btnEmotion.setImageResource(R.drawable.ic_premium_emotion_blue_24dp);
+			break;
+		case USE_CAMERA:
+			//Android api 11 or above will use in app camera. otherwise will open system camera.
+			if (cameraViewFragment == null) cameraViewFragment = CameraViewFragment.newInstance(keyboardHeight);
+			transaction.replace(R.id.flPane, cameraViewFragment);
+			btnTakePhoto.setImageResource(R.drawable.ic_photo_camera_blue_24dp);
 			break;
 		default:
 			break;
@@ -785,8 +804,8 @@ public class ChatActivity extends BaseFragmentActivity implements
 					if ((takePhotoTempPath != null)
 							&& (!takePhotoTempPath.equals(""))) {
 						// 保存到相册
-						SaveImageToGallery(takePhotoTempPath,
-								PictureHelper.getPhotoFileName());
+						ImageUtil.SaveImageToGallery(this, null, takePhotoTempPath,
+								PictureHelper.getPhotoFileName(), null);
 						// 增加附件
 						sendPrivatePhoto(takePhotoTempPath);
 					}
@@ -906,9 +925,6 @@ public class ChatActivity extends BaseFragmentActivity implements
 			msgList.scrollToBottom(true);
 			return rowView;
 		} else {
-			/* 由于未登录成功等原因，底层认为异常返回空，跳去登陆处理,首先注销php登陆 */
-			LoginManager.newInstance(ChatActivity.this).LogoutAndClean();
-
 			MaterialDialogAlert dialog = new MaterialDialogAlert(this);
 			dialog.setMessage(getString(R.string.livechat_kickoff_by_sever_update));
 			dialog.addButton(dialog.createButton(getString(R.string.login),
@@ -916,6 +932,9 @@ public class ChatActivity extends BaseFragmentActivity implements
 
 						@Override
 						public void onClick(View v) {
+							/* 由于未登录成功等原因，底层认为异常返回空，跳去登陆处理,首先注销php登陆 */
+							LoginManager.newInstance(ChatActivity.this).LogoutAndClean(false);
+							
 							Intent intent = new Intent(ChatActivity.this,
 									HomeActivity.class);
 							intent.putExtra(HomeActivity.NEED_RELOGIN_OPERATE,
@@ -1562,26 +1581,6 @@ public class ChatActivity extends BaseFragmentActivity implements
 	}
 
 	/**
-	 * 保存图片到系统相册
-	 * 
-	 * @param filePath
-	 *            文件路径
-	 */
-	public void SaveImageToGallery(String filePath, String fileName) {
-		// 插入图库
-		try {
-			MediaStore.Images.Media.insertImage(getContentResolver(), filePath,
-					fileName, null);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		// 刷新图库
-		sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-				Uri.parse("file://" + filePath)));
-	}
-
-	/**
 	 * 默认读取配置中虚拟键盘高度，如果不等于-1，表示已记录不在更新
 	 * 
 	 * @return
@@ -1606,7 +1605,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 	}
 
 	private enum MenuBtnType {
-		NORMAL_EXPRESSION, SELECT_PHOTO, RECORD_VOICE, EMOTION_PAN
+		NORMAL_EXPRESSION, SELECT_PHOTO, RECORD_VOICE, EMOTION_PAN, USE_CAMERA
 	}
 
 	/**
@@ -1724,8 +1723,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 	private void resetMenuButtonBg() {
 		if (photosendEnable) {
 			btnSelectPhoto.setImageResource(R.drawable.ic_photo_grey600_24dp);
-			btnTakePhoto
-					.setImageResource(R.drawable.ic_photo_camera_grey600_24dp);
+			btnTakePhoto.setImageResource(R.drawable.ic_photo_camera_grey600_24dp);
 		}
 		btnVoice.setImageResource(R.drawable.ic_mic_grey600_24dp);
 		btnEmotion.setImageResource(R.drawable.ic_premium_emotion_24dp);
@@ -1786,5 +1784,11 @@ public class ChatActivity extends BaseFragmentActivity implements
 				onReceiveMsgUpdate(item);
 			}
 		}
+	}
+
+	@Override
+	public void InitView() {
+		// TODO Auto-generated method stub
+		
 	}
 }

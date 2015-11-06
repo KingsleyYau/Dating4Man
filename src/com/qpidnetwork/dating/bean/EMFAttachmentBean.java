@@ -9,11 +9,13 @@ public class EMFAttachmentBean implements Parcelable{
 	public String photoUrl;
 	public String vgId;
 	public PrivatePhotoBean privatePhoto;
+	public ShortVideoBean shortVideo;
 	
 	public String photoLocalUrl;//用于编辑邮件时，附件预览
 	
 	public EMFAttachmentBean(){
 		privatePhoto = new PrivatePhotoBean();
+		shortVideo = new ShortVideoBean();
 	}
 
 	public int describeContents() {
@@ -28,6 +30,7 @@ public class EMFAttachmentBean implements Parcelable{
 		dest.writeString(photoUrl);
 		dest.writeString(vgId);
 		dest.writeParcelable(privatePhoto, PARCELABLE_WRITE_RETURN_VALUE);
+		dest.writeParcelable(shortVideo, PARCELABLE_WRITE_RETURN_VALUE);
 		dest.writeString(photoLocalUrl);
 	}
 	
@@ -45,13 +48,15 @@ public class EMFAttachmentBean implements Parcelable{
 		photoUrl = in.readString();
 		vgId = in.readString();
 		privatePhoto = in.readParcelable(PrivatePhotoBean.class.getClassLoader());
+		shortVideo = in.readParcelable(ShortVideoBean.class.getClassLoader());
 		photoLocalUrl = in.readString();
 	}
 	
 	public enum AttachType{
 		NORAML_PICTURE,
 		PRIVATE_PHOTO,
-		VIRTUAL_GIFT
+		VIRTUAL_GIFT,
+		SHORT_VIDEO
 	}
 
 }

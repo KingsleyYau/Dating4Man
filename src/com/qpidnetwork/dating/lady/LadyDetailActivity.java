@@ -21,7 +21,6 @@ import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.qpidnetwork.dating.BaseActivity;
 import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.advertisement.AdvertisementManager;
@@ -38,6 +37,7 @@ import com.qpidnetwork.dating.emf.MailEditActivity;
 import com.qpidnetwork.dating.lady.LadyDetailManager.OnLadyDetailManagerQueryLadyDetailCallback;
 import com.qpidnetwork.dating.livechat.ChatActivity;
 import com.qpidnetwork.dating.lovecall.DirectCallManager;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.SystemUtil;
 import com.qpidnetwork.manager.WebSiteManager;
@@ -55,7 +55,7 @@ import com.qpidnetwork.view.MaterialDropDownMenu;
 import com.qpidnetwork.view.MaterialThreeButtonDialog;
 
 @SuppressLint({ "SetJavaScriptEnabled", "RtlHardcoded" })
-public class LadyDetailActivity extends BaseActivity {
+public class LadyDetailActivity extends BaseFragmentActivity {
 	/**
 	 * 其他界面进入参数
 	 */
@@ -70,7 +70,7 @@ public class LadyDetailActivity extends BaseActivity {
 	public static void launchLadyDetailActivity(Context context, String womanId, boolean showButtons){
 		if(LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED){
 			/*登陆成功，需要判断风控条件，如果女士详情被风控则不可以查看*/
-			LoginParam loginParam = LoginPerfence.GetLoginParam(context);
+			LoginParam loginParam = LoginManager.getInstance().GetLoginParam();
 			if(loginParam.item.ladyprofile){
 				MaterialDialogAlert dialog = new MaterialDialogAlert(context);
 				dialog.setMessage(context.getString(R.string.common_risk_control_notify));
@@ -286,7 +286,7 @@ public class LadyDetailActivity extends BaseActivity {
 				RequestBaseResponse obj = new RequestBaseResponse(true, "", "", null);
 				msg.what = RequestFlag.REQUEST_WEBVIEW_START.ordinal();
 				msg.obj = obj;
-				mHandler.sendMessage(msg);
+				sendUiMessage(msg);
 			}
 			
 			@Override
@@ -297,7 +297,7 @@ public class LadyDetailActivity extends BaseActivity {
 				RequestBaseResponse obj = new RequestBaseResponse(true, "", "", null);
 				msg.what = RequestFlag.REQUEST_WEBVIEW_FINISH.ordinal();
 				msg.obj = obj;
-				mHandler.sendMessage(msg);
+				sendUiMessage(msg);
 			}
 			
 		    @Override  
@@ -329,164 +329,162 @@ public class LadyDetailActivity extends BaseActivity {
 	}
 
 	@Override
-	public void InitHandler() {
+	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				hideProgressDialog();
-				// 处理消息
-				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
-				if((obj.body != null) && (obj.body instanceof LadyDetail)){
-					LadyDetail ladyDetail = (LadyDetail)obj.body;
-					// 是否在线
-					if( ladyDetail.isonline ) {
-						appbar.changeIconById(R.id.common_button_online, R.drawable.ic_chat_grey600_24dp);
-						appbar.getButtonById(R.id.common_button_online).setEnabled(true);
-						appbar.pushBadgeById(R.id.common_button_online, Color.parseColor("#228B22"));
-					} else {
-						appbar.changeIconById(R.id.common_button_online, R.drawable.ic_chat_greyc8c8c8_24dp);
-						appbar.getButtonById(R.id.common_button_online).setEnabled(false);
-						appbar.cancelBadgeById(R.id.common_button_online);
+		super.handleUiMessage(msg);
+		// 收起菊花
+		hideProgressDialog();
+		// 处理消息
+		RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+		if((obj.body != null) && (obj.body instanceof LadyDetail)){
+			LadyDetail ladyDetail = (LadyDetail)obj.body;
+			// 是否在线
+			if( ladyDetail.isonline ) {
+				appbar.changeIconById(R.id.common_button_online, R.drawable.ic_chat_grey600_24dp);
+				appbar.getButtonById(R.id.common_button_online).setEnabled(true);
+				appbar.pushBadgeById(R.id.common_button_online, Color.parseColor("#228B22"));
+			} else {
+				appbar.changeIconById(R.id.common_button_online, R.drawable.ic_chat_greyc8c8c8_24dp);
+				appbar.getButtonById(R.id.common_button_online).setEnabled(false);
+				appbar.cancelBadgeById(R.id.common_button_online);
+			}
+			
+			
+			// 是否允许打电话
+			if( ladyDetail.show_lovecall == ShowLoveCall.CallMeNow) {
+				appbar.getButtonById(R.id.common_button_call).setVisibility(View.VISIBLE);
+			} else {
+				appbar.getButtonById(R.id.common_button_call).setVisibility(View.GONE);
+			}
+			
+			
+			if(!mShowButtons){
+				appbar.getButtonById(R.id.common_button_call).setVisibility(View.GONE);
+				appbar.setTitle(ladyDetail.firstname, getResources().getColor(R.color.text_color_dark));
+			}
+			
+			ReloadFavorite(ladyDetail.isfavorite);
+		}
+		
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_DETAIL_SUCCESS:{
+			item = (LadyDetail)obj.body;
+		}break;
+		case REQUEST_PHOTO_SUCCESS:{
+			// 判断是否登录
+			if( CheckLogin() ) {
+				// 获取图片成功
+				ArrayList<EMFAttachmentBean> attachList = new ArrayList<EMFAttachmentBean>();
+				LadyDetail photoLadyDetail = (LadyDetail)obj.body;
+				if( photoLadyDetail != null && photoLadyDetail.photoList != null ) {
+					for(String photo : photoLadyDetail.photoList) {
+						EMFAttachmentBean normalItem = new EMFAttachmentBean();
+						normalItem.type = AttachType.NORAML_PICTURE;
+						normalItem.photoUrl = photo;
+						attachList.add(normalItem);
 					}
-					
-					
-					// 是否允许打电话
-					if( ladyDetail.show_lovecall == ShowLoveCall.CallMeNow) {
-						appbar.getButtonById(R.id.common_button_call).setVisibility(View.VISIBLE);
-					} else {
-						appbar.getButtonById(R.id.common_button_call).setVisibility(View.GONE);
-					}
-					
-					
-					if(!mShowButtons){
-						appbar.getButtonById(R.id.common_button_call).setVisibility(View.GONE);
-						appbar.setTitle(ladyDetail.firstname, getResources().getColor(R.color.text_color_dark));
-					}
-					
-					ReloadFavorite(ladyDetail.isfavorite);
 				}
 				
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_DETAIL_SUCCESS:{
-					item = (LadyDetail)obj.body;
-				}break;
-				case REQUEST_PHOTO_SUCCESS:{
-					// 判断是否登录
-					if( CheckLogin() ) {
-						// 获取图片成功
-						ArrayList<EMFAttachmentBean> attachList = new ArrayList<EMFAttachmentBean>();
-						LadyDetail photoLadyDetail = (LadyDetail)obj.body;
-						if( photoLadyDetail != null && photoLadyDetail.photoList != null ) {
-							for(String photo : photoLadyDetail.photoList) {
-								EMFAttachmentBean normalItem = new EMFAttachmentBean();
-								normalItem.type = AttachType.NORAML_PICTURE;
-								normalItem.photoUrl = photo;
-								attachList.add(normalItem);
-							}
-						}
-						
-						// 打开预览图片
-						Intent intent = EMFAttachmentPreviewActivity.getIntent(mContext, attachList, 0);
-						startActivity(intent);
-					}
-				}break;
-				case REQUEST_VIDEO_SUCCESS:{
-					// 判断是否登录
-					if( CheckLogin() ) {
-						// 打开预览视频
-						LadyDetail videoLadyDetail = (LadyDetail)obj.body;
-						VideoDetailActivity.launchLadyVideoDetailActivity(mContext, videoLadyDetail.womanid, videoLadyDetail.firstname);
-					}
-				}break;
-				case REQUEST_FAIL:{
-					// 请求失败
-					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
-				}break;
-				case REQUEST_ADD_FAVOUR_SUCCESS:{
-					showToastDone("Added!");
-					if( item != null ) {
-						item.isfavorite = true;
-						ReloadFavorite(item.isfavorite);
-					}
-					/*添加favorite成功，添加到现有联系人或更新联系人*/
-					ContactManager.getInstance().updateBySendEMF(item);
-					
-					appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
-				}break;
-				case REQUEST_ADD_FAVOUR_FAIL:{
-					// 收藏失败
-					cancelToastImmediately();
-					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
-					appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
-				}break;
-				case REQUEST_REMOVE_FAVOUR_SUCCESS:{
-					showToastDone("Removed!");
-					if( item != null ) {
-						item.isfavorite = false;
-						ReloadFavorite(item.isfavorite);
-					}
-					appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
-					ContactManager.getInstance().updateFavoriteStatus(item.womanid, false);
-				}break;
-				case REQUEST_REMOVE_FAVOUR_FAIL:{
-					// 删除收藏失败
-					cancelToastImmediately();
-					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
-					appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
-				}break;
-				case REQUEST_GET_LOVE_CALL_SUCCESS:{
-					// 请求lovecall成功
-					showToastDone("Finish!");
-					LadyCall ladyCall = (LadyCall)obj.body;
-					if(ladyCall != null){
-						makeCall(ladyCall.lc_centernumber, ladyCall.lovecallid);
-					}
-				}break;
-				case REQUEST_GET_LOVE_CALL_FAIL:{
-					// 请求lovecall失败
-					//showToastFailed("Fail!");
-					cancelToastImmediately();
-					MaterialDialogAlert dialog = new MaterialDialogAlert(mContext);
-					dialog.setMessage(obj.errmsg);
-					
-					if (!obj.errno.equals("MBCE61005")){   //RequestErrorCode 裏面沒有這個錯誤代碼.
-						dialog.addButton(dialog.createButton(getString(R.string.common_btn_cancel), null));
-						dialog.show();
-						return;
-					}
-					
-					dialog.addButton(dialog.createButton(getString(R.string.common_btn_add_credit), new OnClickListener(){
-
-						@Override
-						public void onClick(View v) {
-							// TODO Auto-generated method stub
-							GetMoreCreditDialog dialog = new GetMoreCreditDialog(mContext, R.style.ChoosePhotoDialog);
-							dialog.show();
-						}
-						
-					}));
-					
-					dialog.addButton(dialog.createButton(getString(R.string.common_btn_cancel), null));
-					if(isActivityVisible()){
-						dialog.show();
-					}
-				}break;
-				case REQUEST_WEBVIEW_START:{
-					showProgressDialog("Loading...");
-				}break;
-				case REQUEST_WEBVIEW_FINISH:{
-					hideProgressDialog();
-					if( item != null ) {
-						ReloadFavorite(item.isfavorite);
-					}
-				}break;
-				default:break;
-				}
-
+				// 打开预览图片
+				Intent intent = EMFAttachmentPreviewActivity.getIntent(mContext, attachList, 0);
+				startActivity(intent);
 			}
-		};
+		}break;
+		case REQUEST_VIDEO_SUCCESS:{
+			// 判断是否登录
+			if( CheckLogin() ) {
+				// 打开预览视频
+				LadyDetail videoLadyDetail = (LadyDetail)obj.body;
+				VideoDetailActivity.launchLadyVideoDetailActivity(mContext, videoLadyDetail.womanid, videoLadyDetail.firstname);
+			}
+		}break;
+		case REQUEST_FAIL:{
+			// 请求失败
+			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
+		}break;
+		case REQUEST_ADD_FAVOUR_SUCCESS:{
+			showToastDone("Added!");
+			if( item != null ) {
+				item.isfavorite = true;
+				ReloadFavorite(item.isfavorite);
+			}
+			/*添加favorite成功，添加到现有联系人或更新联系人*/
+			ContactManager.getInstance().updateBySendEMF(item);
+			
+			appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
+		}break;
+		case REQUEST_ADD_FAVOUR_FAIL:{
+			// 收藏失败
+			cancelToastImmediately();
+			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
+			appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
+		}break;
+		case REQUEST_REMOVE_FAVOUR_SUCCESS:{
+			showToastDone("Removed!");
+			if( item != null ) {
+				item.isfavorite = false;
+				ReloadFavorite(item.isfavorite);
+			}
+			appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
+			ContactManager.getInstance().updateFavoriteStatus(item.womanid, false);
+		}break;
+		case REQUEST_REMOVE_FAVOUR_FAIL:{
+			// 删除收藏失败
+			cancelToastImmediately();
+			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
+			appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
+		}break;
+		case REQUEST_GET_LOVE_CALL_SUCCESS:{
+			// 请求lovecall成功
+			showToastDone("Finish!");
+			LadyCall ladyCall = (LadyCall)obj.body;
+			if(ladyCall != null){
+				makeCall(ladyCall.lc_centernumber, ladyCall.lovecallid);
+			}
+		}break;
+		case REQUEST_GET_LOVE_CALL_FAIL:{
+			// 请求lovecall失败
+			//showToastFailed("Fail!");
+			cancelToastImmediately();
+			MaterialDialogAlert dialog = new MaterialDialogAlert(mContext);
+			dialog.setMessage(obj.errmsg);
+			
+			if (!obj.errno.equals("MBCE61005")){   //RequestErrorCode 裏面沒有這個錯誤代碼.
+				dialog.addButton(dialog.createButton(getString(R.string.common_btn_cancel), null));
+				if(isActivityVisible()){
+					dialog.show();
+				}
+				return;
+			}
+			
+			dialog.addButton(dialog.createButton(getString(R.string.common_btn_add_credit), new OnClickListener(){
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					GetMoreCreditDialog dialog = new GetMoreCreditDialog(mContext, R.style.ChoosePhotoDialog);
+					dialog.show();
+				}
+				
+			}));
+			
+			dialog.addButton(dialog.createButton(getString(R.string.common_btn_cancel), null));
+			if(isActivityVisible()){
+				dialog.show();
+			}
+		}break;
+		case REQUEST_WEBVIEW_START:{
+			showProgressDialog("Loading...");
+		}break;
+		case REQUEST_WEBVIEW_FINISH:{
+			hideProgressDialog();
+			if( item != null ) {
+				ReloadFavorite(item.isfavorite);
+			}
+		}break;
+		default:break;
+		}
+
 	}
 	
 	/**
@@ -512,7 +510,7 @@ public class LadyDetailActivity extends BaseActivity {
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
 				}
 				msg.obj = obj;
-				mHandler.sendMessage(msg);
+				sendUiMessage(msg);
 			}
 		});
 		
@@ -564,7 +562,7 @@ public class LadyDetailActivity extends BaseActivity {
 						msg.what = RequestFlag.REQUEST_FAIL.ordinal();
 					}
 					msg.obj = obj;
-					mHandler.sendMessage(msg);
+					sendUiMessage(msg);
 				}
 			});
 			
@@ -589,7 +587,7 @@ public class LadyDetailActivity extends BaseActivity {
 						msg.what = RequestFlag.REQUEST_FAIL.ordinal();
 					}
 					msg.obj = obj;
-					mHandler.sendMessage(msg);
+					sendUiMessage(msg);
 				}
 			});
 			
@@ -704,7 +702,7 @@ public class LadyDetailActivity extends BaseActivity {
 					msg.what = RequestFlag.REQUEST_ADD_FAVOUR_FAIL.ordinal();
 				}
 				msg.obj = obj;
-				mHandler.sendMessage(msg);
+				sendUiMessage(msg);
 			}
 		});
 	}
@@ -729,7 +727,7 @@ public class LadyDetailActivity extends BaseActivity {
 					msg.what = RequestFlag.REQUEST_REMOVE_FAVOUR_FAIL.ordinal();
 				}
 				msg.obj = obj;
-				mHandler.sendMessage(msg);
+				sendUiMessage(msg);
 			}
 		});
 	}
@@ -760,7 +758,7 @@ public class LadyDetailActivity extends BaseActivity {
 					msg.what = RequestFlag.REQUEST_GET_LOVE_CALL_FAIL.ordinal();
 				}
 				msg.obj = obj;
-				mHandler.sendMessage(msg);
+				sendUiMessage(msg);
 			}
 		});
 	}

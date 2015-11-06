@@ -1,6 +1,7 @@
 package com.qpidnetwork.dating.emf;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -24,7 +25,10 @@ import com.qpidnetwork.view.ViewTools;
  * 显示附件图片界面
  * @author Max.Chiu
  */
-public class EMFAttachmentPhotoFragment extends IndexFragment {
+public class EMFAttachmentPhotoFragment extends IndexFragment 
+										implements ImageViewLoaderCallback,
+												   Runnable
+{
 	
 	private boolean bCanStop = false;
 	
@@ -55,7 +59,8 @@ public class EMFAttachmentPhotoFragment extends IndexFragment {
         super.onCreate(savedInstanceState);
     }
     
-    @Override
+    @SuppressLint("InflateParams")
+	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
                                                                                                                                                                                                                                                                                                                       
@@ -110,39 +115,7 @@ public class EMFAttachmentPhotoFragment extends IndexFragment {
                 		imageView, 
                 		url, 
                 		localPath, 
-                		new ImageViewLoaderCallback() {
-					
-					@Override
-					public void OnDisplayNewImageFinish() {
-						// TODO Auto-generated method stub
-						imageView.SetCanScale(true);
-						((Activity) mContext).runOnUiThread(new Runnable(){
-
-							@Override
-							public void run() {
-								// TODO Auto-generated method stub
-								progress.setVisibility(View.GONE);
-							}
-							
-						});
-					}
-
-					@Override
-					public void OnLoadPhotoFailed() {
-						// TODO Auto-generated method stub
-						imageView.SetCanScale(true);
-						((Activity) mContext).runOnUiThread(new Runnable(){
-
-							@Override
-							public void run() {
-								// TODO Auto-generated method stub
-								progress.setVisibility(View.GONE);
-							}
-							
-						});
-						
-					}
-				});
+                		this);
     		}
     	}
 	}
@@ -176,6 +149,26 @@ public class EMFAttachmentPhotoFragment extends IndexFragment {
 		} else {
 			bCanStop = false;
 		}
+	}
+
+	@Override
+	public void OnDisplayNewImageFinish() {
+		// TODO Auto-generated method stub
+		imageView.SetCanScale(true);
+		((Activity) mContext).runOnUiThread(this);
+	}
+
+	@Override
+	public void OnLoadPhotoFailed() {
+		// TODO Auto-generated method stub
+		imageView.SetCanScale(true);
+		((Activity) mContext).runOnUiThread(this);
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		progress.setVisibility(View.GONE);
 	}
  
 }

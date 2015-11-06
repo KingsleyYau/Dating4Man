@@ -27,7 +27,7 @@ import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialThreeButtonDialog;
 
-public class LoveCallListAdapter extends UpdateableAdapter<LoveCallBean>{
+public class LoveCallListAdapter extends UpdateableAdapter<LoveCallBean> implements OnClickListener {
 	
 	public Activity mContext;
 	private SimpleDateFormat scheduleFormat = new SimpleDateFormat("HH:mm dd MMM", Locale.getDefault());
@@ -68,15 +68,8 @@ public class LoveCallListAdapter extends UpdateableAdapter<LoveCallBean>{
 			holder.tvDesc.setText(mContext.getResources().getString(R.string.lovecall_schedule_time, scheduleFormat.format(item.longbegintime)));
 			if (item.isCallActive()){
 				holder.btnCall.setVisibility(View.VISIBLE);
-				holder.btnCall.setOnClickListener(new OnClickListener(){
-
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						makeCall(item);
-					}
-					
-				});
+				holder.btnCall.setTag(item);
+				holder.btnCall.setOnClickListener(this);
 				
 			}
 		}else{
@@ -184,6 +177,13 @@ public class LoveCallListAdapter extends UpdateableAdapter<LoveCallBean>{
 		ImageView btnCall;
 		TextView tvTips;
 		public ImageViewLoader imageDownLoader;
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		LoveCallBean item = (LoveCallBean) v.getTag();
+		makeCall(item);
 	}
 
 }

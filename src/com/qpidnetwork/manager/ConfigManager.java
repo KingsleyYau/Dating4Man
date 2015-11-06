@@ -93,9 +93,6 @@ public class ConfigManager {
 					// 设置语音站点
 					mOtherSynConfigItem = obj.otherSynConfigItem;
 					RequestJni.SetPublicWebSite(mOtherSynConfigItem.pub.chatVoiceHostUrl);
-				} else {
-					mOtherSynConfigItem = null;
-					RequestJni.SetPublicWebSite("");
 				}
 				
 				if( obj.callback != null ) {
@@ -128,5 +125,9 @@ public class ConfigManager {
 				}
 			});
 		}
+	}
+	
+	public OtherSynConfigItem getSynConfigItem(){
+		return mOtherSynConfigItem;
 	}
 }

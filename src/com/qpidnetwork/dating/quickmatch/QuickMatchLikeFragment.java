@@ -32,7 +32,7 @@ import com.qpidnetwork.tool.ImageViewLoader;
  * 显示like列表界面
  * @author Max.Chiu
  */
-public class QuickMatchLikeFragment extends Fragment {
+public class QuickMatchLikeFragment extends Fragment implements OnItemClickListener {
 	private static QuickMatchLikeFragment gFragment = null;
 	private ListView mListView = null;
 	
@@ -183,19 +183,15 @@ public class QuickMatchLikeFragment extends Fragment {
         // 刷新数据
         LoadData(false);
         
-        mListView.setOnItemClickListener(new OnItemClickListener(){
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				LadyDetailActivity.launchLadyDetailActivity(getActivity(), mAdapter.getListData().get(arg2).womanid, true);
-			}
-        	
-        });
+        mListView.setOnItemClickListener(this);
         
         return view;
     }
-    
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		LadyDetailActivity.launchLadyDetailActivity(getActivity(), mAdapter.getListData().get(arg2).womanid, true);
+	} 
 	/**
 	 * 初始化事件监听
 	 */
@@ -256,7 +252,9 @@ public class QuickMatchLikeFragment extends Fragment {
 					// 获取匹配女士列表失败
 					msg.what = REQUEST_FAIL;
 				}
-				mHandler.sendMessage(msg);
+				if(mHandler != null){
+					mHandler.sendMessage(msg);
+				}
 			}
 		});
     }

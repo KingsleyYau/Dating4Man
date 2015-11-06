@@ -8,11 +8,11 @@ import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.text.InputType;
 import android.view.Display;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.ImageButton;
@@ -23,10 +23,12 @@ import android.widget.Toast;
 
 import com.facebook.Session;
 import com.facebook.SessionLoginBehavior;
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
+import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnOtherOnlineCountCallback;
 import com.qpidnetwork.request.OnRequestOriginalCallback;
@@ -38,6 +40,7 @@ import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.request.item.OtherOnlineCountItem;
 import com.qpidnetwork.view.ButtonRaised;
+import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialTextField;
 
 /**
@@ -46,7 +49,10 @@ import com.qpidnetwork.view.MaterialTextField;
  * @author Max.Chiu
  *
  */
-public class LoginActivity extends BaseActivity implements OnLoginManagerCallback {
+public class LoginActivity extends BaseFragmentActivity 
+						   implements OnLoginManagerCallback, 
+						              OnRequestOriginalCallback 
+{
 	private enum RequestFlag {
 		REQUEST_SUCCESS,
 		REQUEST_FAIL,
@@ -98,7 +104,7 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
     	
 		
 		// 读取本地缓存
-    	LoginParam param = LoginPerfence.GetLoginParam(mContext);
+    	LoginParam param = LoginManager.getInstance().GetLoginParam();
     	if( param != null ) {
     		switch (param.type) {
 			case Default :{
@@ -136,6 +142,34 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 		
 		// 获取在线人数
 //		OnlineCount();
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		int kickoffInterval = ((int)(System.currentTimeMillis()/1000)) - QpidApplication.lastestKickoffTime;
+        if(QpidApplication.isKickOff && kickoffInterval <= 60*60){
+        	//被踢且被踢的时间差在1消失以内，弹出提示显示被踢
+        	MaterialDialogAlert dialog = new MaterialDialogAlert(this);
+			if(QpidApplication.kickOffType == KickOfflineType.Maintain){
+				dialog.setMessage(getString(R.string.livechat_kickoff_by_sever_update));
+			}
+			else{
+				dialog.setMessage(getString(R.string.livechat_kickoff_by_other));
+			}
+		
+			dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+
+				}
+			}));
+			dialog.show();
+        }
+        KickOffNotification.newInstance(this).Cancel();
+        QpidApplication.isKickOff = false;
 	}
 	
 	@Override
@@ -242,7 +276,7 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 							msg.what = RequestFlag.REQUEST_ONLINE_FAIL.ordinal();
 						}
 						msg.obj = obj;
-						mHandler.sendMessage(msg);
+						sendUiMessage(msg);
 					}
 				});
 	}
@@ -254,28 +288,7 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 		buttonRetry.setVisibility(View.GONE);
 		imageViewCheckCode.setClickable(false);
 		RequestJni.StopAllRequest();
-		RequestJniAuthorization.GetCheckCode(new OnRequestOriginalCallback() {
-			
-			@Override
-			public void OnRequestData(boolean isSuccess, String errno, String errmsg,
-					byte[] data) {
-				// TODO Auto-generated method stub
-				Message msg = Message.obtain();
-				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
-				if( isSuccess ) {
-					// 获取验证码成功
-					msg.what = RequestFlag.REQUEST_CHECKCODE_SUCCESS.ordinal();
-					if( data.length != 0 ) {
-						obj.body = BitmapFactory.decodeByteArray(data, 0, data.length);
-					}
-				} else {
-					// 获取验证码失败
-					msg.what = RequestFlag.REQUEST_CHECKCODE_FAIL.ordinal();
-				}
-				msg.obj = obj;
-				mHandler.sendMessage(msg);
-			}
-		});
+		RequestJniAuthorization.GetCheckCode(this);
 	}
 	
 	/**
@@ -306,7 +319,7 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 			obj.body = errItem;
 		}
 		msg.obj = obj;
-		mHandler.sendMessage(msg);
+		sendUiMessage(msg);
 	}
 
 	/**
@@ -356,115 +369,131 @@ public class LoginActivity extends BaseActivity implements OnLoginManagerCallbac
 	}
 	
 	@Override
-	public void InitHandler() {
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				// 收起菊花
-				hideProgressDialog();
-				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_SUCCESS:{
-					// 登录成功
-					finish();
-				}break;
-				case REQUEST_FAIL:{
-					// 登录失败显示其他方式
-					buttonForget.setVisibility(View.VISIBLE);
-					//buttonLoginWithFacebook.setVisibility(View.VISIBLE);
-					
-					switch (obj.errno) {
-					case RequestErrorCode.LOCAL_ERROR_CODE_TIMEOUT:{
-						// 本地错误
-					}
-					case RequestErrorCode.LOCAL_ERROR_CODE_PARSEFAIL:{
-						Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_SHORT).show();
-					}break;
-					case RequestErrorCode.MBCE1001:{
-						// 用户名与密码不正确
-						editTextName.setError(Color.RED, true);
-						editTextPassword.setError(Color.RED, false, false);
-					}break;
-					case RequestErrorCode.MBCE1002:{
-						// 会员帐号暂停
-					}
-					case RequestErrorCode.MBCE1003:{
-						// 帐号被冻结
-						editTextName.setError(Color.RED, true);
-					}break;
-					case RequestErrorCode.MBCE1012: {
-						// 验证码为空
-					}
-					case RequestErrorCode.MBCE1013:{
-						// 验证码无效
-						
-						// 重新获取验证码
-						layoutCheckCode.setVisibility(View.VISIBLE);
-						editTextCheckcode.setError(Color.RED, true);
-						GetCheckCode();
-					}break;
-					default:{
-						// 其他会员账号错误
-						editTextName.setError(Color.RED, true);
-						editTextPassword.setError(Color.RED, true);
-					}break;
-					}
-				}break;
-				case REQUEST_CHECKCODE_SUCCESS:{
-					// 获取验证码成功
-					layoutCheckCode.setVisibility(View.VISIBLE);
+	protected void handleUiMessage(Message msg) {
+		// TODO Auto-generated method stub
+		super.handleUiMessage(msg);
+		// 收起菊花
+		hideProgressDialog();
+		RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_SUCCESS:{
+			// 登录成功
+			finish();
+		}break;
+		case REQUEST_FAIL:{
+			// 登录失败显示其他方式
+			buttonForget.setVisibility(View.VISIBLE);
+			//buttonLoginWithFacebook.setVisibility(View.VISIBLE);
+			
+			switch (obj.errno) {
+			case RequestErrorCode.LOCAL_ERROR_CODE_TIMEOUT:{
+				// 本地错误
+			}
+			case RequestErrorCode.LOCAL_ERROR_CODE_PARSEFAIL:{
+				Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_SHORT).show();
+			}break;
+			case RequestErrorCode.MBCE1001:{
+				// 用户名与密码不正确
+				editTextName.setError(Color.RED, true);
+				editTextPassword.setError(Color.RED, false, false);
+			}break;
+			case RequestErrorCode.MBCE1002:{
+				// 会员帐号暂停
+			}
+			case RequestErrorCode.MBCE1003:{
+				// 帐号被冻结
+				editTextName.setError(Color.RED, true);
+			}break;
+			case RequestErrorCode.MBCE1012: {
+				// 验证码为空
+			}
+			case RequestErrorCode.MBCE1013:{
+				// 验证码无效
+				
+				// 重新获取验证码
+				layoutCheckCode.setVisibility(View.VISIBLE);
+				editTextCheckcode.setError(Color.RED, true);
+				GetCheckCode();
+			}break;
+			default:{
+				// 其他会员账号错误
+				editTextName.setError(Color.RED, true);
+				editTextPassword.setError(Color.RED, true);
+			}break;
+			}
+		}break;
+		case REQUEST_CHECKCODE_SUCCESS:{
+			// 获取验证码成功
+			layoutCheckCode.setVisibility(View.VISIBLE);
+			buttonRetry.setVisibility(View.GONE);
+			mbHasGetCheckCode = true;
+			imageViewCheckCode.setClickable(true);
+			
+			if( obj != null && obj.body != null ) {
+				Bitmap bitmap = (Bitmap)obj.body;
+				imageViewCheckCode.setImageBitmap(bitmap);
+				imageViewCheckCode.setVisibility(View.VISIBLE);
+			} else {
+				if( !mbHasGetCheckCode ) {
+					// 从来未获取到验证码
+					buttonRetry.setVisibility(View.VISIBLE);
+					imageViewCheckCode.setVisibility(View.GONE);
+				} else {
+					// 已经获取成功过
 					buttonRetry.setVisibility(View.GONE);
-					mbHasGetCheckCode = true;
-					imageViewCheckCode.setClickable(true);
-					
-					if( obj != null && obj.body != null ) {
-						Bitmap bitmap = (Bitmap)obj.body;
-						imageViewCheckCode.setImageBitmap(bitmap);
-						imageViewCheckCode.setVisibility(View.VISIBLE);
-					} else {
-						if( !mbHasGetCheckCode ) {
-							// 从来未获取到验证码
-							buttonRetry.setVisibility(View.VISIBLE);
-							imageViewCheckCode.setVisibility(View.GONE);
-						} else {
-							// 已经获取成功过
-							buttonRetry.setVisibility(View.GONE);
-							imageViewCheckCode.setVisibility(View.VISIBLE);
-						}
-					}
-				}break;
-				case REQUEST_CHECKCODE_FAIL:{
-					// 获取验证码失败
-					switch (obj.errno) {
-					case RequestErrorCode.LOCAL_ERROR_CODE_TIMEOUT:{
-						// 本地错误
-					}
-					case RequestErrorCode.LOCAL_ERROR_CODE_PARSEFAIL:{
-						Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_SHORT).show();
-					}break;
-					default:{
-					}break;
-					}
-				}break;
-				case REQUEST_ONLINE_SUCCESS:{
-					// 获取站点在线人数成功
-					OtherOnlineCountItem[] otherOnlineCountItem = (OtherOnlineCountItem[])obj.body;
-					for(int i = 0; i < otherOnlineCountItem.length; i++) {
-						if( otherOnlineCountItem[i].site == WebSiteManager.newInstance(mContext).GetWebSite().getSiteId() ) {
-							textViewOnline.setText(String.valueOf(otherOnlineCountItem[i].onlineCount));
-							break;
-						}
-					}
-
-				}break;
-				case REQUEST_ONLINE_FAIL:{
-					
-				}break;
-				default:
+					imageViewCheckCode.setVisibility(View.VISIBLE);
+				}
+			}
+		}break;
+		case REQUEST_CHECKCODE_FAIL:{
+			// 获取验证码失败
+			switch (obj.errno) {
+			case RequestErrorCode.LOCAL_ERROR_CODE_TIMEOUT:{
+				// 本地错误
+			}
+			case RequestErrorCode.LOCAL_ERROR_CODE_PARSEFAIL:{
+				Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_SHORT).show();
+			}break;
+			default:{
+			}break;
+			}
+		}break;
+		case REQUEST_ONLINE_SUCCESS:{
+			// 获取站点在线人数成功
+			OtherOnlineCountItem[] otherOnlineCountItem = (OtherOnlineCountItem[])obj.body;
+			for(int i = 0; i < otherOnlineCountItem.length; i++) {
+				if( otherOnlineCountItem[i].site == WebSiteManager.newInstance(mContext).GetWebSite().getSiteId() ) {
+					textViewOnline.setText(String.valueOf(otherOnlineCountItem[i].onlineCount));
 					break;
 				}
-			};
-		};
+			}
+		}break;
+		case REQUEST_ONLINE_FAIL:{
+			
+		}break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void OnRequestData(boolean isSuccess, String errno, String errmsg,
+			byte[] data) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
+		if( isSuccess ) {
+			// 获取验证码成功
+			msg.what = RequestFlag.REQUEST_CHECKCODE_SUCCESS.ordinal();
+			if( data.length != 0 ) {
+				obj.body = BitmapFactory.decodeByteArray(data, 0, data.length);
+			}
+		} else {
+			// 获取验证码失败
+			msg.what = RequestFlag.REQUEST_CHECKCODE_FAIL.ordinal();
+		}
+		msg.obj = obj;
+		mHandler.sendMessage(msg);
 	}
 
 }

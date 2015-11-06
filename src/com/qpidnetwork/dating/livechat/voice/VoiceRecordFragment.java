@@ -42,8 +42,8 @@ public class VoiceRecordFragment extends BaseFragment {
 	/* 录音动画View */
 	private RecordView recordView;
 	private ImageView backBtnBg;
-	private Button foreRecordBtn;
-	private Button foreCancelBtn;
+	private View foreRecordBtn;
+	private View foreCancelBtn;
 	private TextView tvRecord;
 
 	/* data 区 */
@@ -100,8 +100,8 @@ public class VoiceRecordFragment extends BaseFragment {
 						}
 					}
 				});
-		foreRecordBtn = (Button) view.findViewById(R.id.foreRecordBtn);
-		foreCancelBtn = (Button) view.findViewById(R.id.foreCancelBtn);
+		foreRecordBtn =  view.findViewById(R.id.foreRecordBtn);
+		foreCancelBtn = view.findViewById(R.id.foreCancelBtn);
 		tvRecord = (TextView) view.findViewById(R.id.tvRecord);
 
 		recordPane.setOnTouchListener(voiceRecordTouch);
@@ -498,6 +498,16 @@ public class VoiceRecordFragment extends BaseFragment {
 
 	public enum RecordStatus {
 		DEFAULT, START_RECORD, RELEASE_TO_CANCEL, STOP_RECORD
+	}
+	
+	@Override
+	public void onDetach() {
+		// TODO Auto-generated method stub
+		super.onDetach();
+		if(mHandler != null){
+			/*fragment detach 时去调异步处理*/
+			mHandler.removeCallbacks(delayTask);
+		}
 	}
 
 }

@@ -423,8 +423,8 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_Reg
 	const char *cpReferrer = env->GetStringUTFChars(referrer, 0);
 
 	requestId = gRequestAuthorizationController.Register(cpEmail, cpPassword, male, cpFirst_name, cpLast_name,
-			country, cpBirthday_y, cpBirthday_m, cpBirthday_d, weeklymail, cpModel, cpDeviceId, cpReferrer,
-			cpManufacturer);
+			country, cpBirthday_y, cpBirthday_m, cpBirthday_d, weeklymail, cpModel, cpDeviceId, cpManufacturer,
+			cpReferrer);
 
 	jobject obj = env->NewGlobalRef(callback);
 	gCallbackMap.Insert(requestId, obj);

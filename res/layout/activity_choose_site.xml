@@ -1,112 +1,89 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutRoot"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context="${relativePackage}.${activityClass}" 
     android:background="@drawable/u561"
+    android:clipChildren="false"
     android:gravity="center_vertical"
-    android:id="@+id/layoutRoot"
-    android:clipChildren="false"> 
-    
-    
-    <LinearLayout
-        android:id="@+id/layoutHeader"
-        android:layout_width="match_parent" 
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp">
+    tools:context="${relativePackage}.${activityClass}" >
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/logo_40dp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center" >
 
         <LinearLayout
-            android:layout_width="wrap_content" 
+            android:id="@+id/layoutHeader"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginLeft="16dp">
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="32dp"
+            android:gravity="center"
+            android:orientation="horizontal" >
 
-            <TextView
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/logo_40dp" />
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/title_company_name"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"  />
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:orientation="vertical" >
 
                 <TextView
+                    android:id="@+id/site_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/title_select_member_site"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:singleLine="true"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/site_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:textStyle="bold"/>
-            
+                    android:singleLine="true"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-    
-    <at.technikum.mti.fancycoverflow.FancyCoverFlow
-        android:id="@+id/fancyCoverFlow"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_below="@+id/layoutHeader"
-        android:layout_marginTop="32dp"/>
+
+        <at.technikum.mti.fancycoverflow.FancyCoverFlow
+            android:id="@+id/fancyCoverFlow"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_below="@+id/layoutHeader"
+            android:layout_marginTop="32dp" />
+
+        <com.qpidnetwork.view.ButtonRaised
+            android:id="@+id/enterSiteButton"
+            android:layout_width="220dp"
+            android:layout_height="48dp"
+            android:layout_below="@+id/fancyCoverFlow"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="32dp"
+            app:background="@color/them_actionbar_bg_ida"
+            app:title="@string/find_matches"
+            app:title_color="@color/white" />
+
+    </RelativeLayout>
 
     <TextView
-        android:id="@+id/site_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/fancyCoverFlow"
-        android:layout_marginTop="32dp"
-        android:textColor="#FFCC00"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
-    
-    <TextView
-        android:id="@+id/site_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/site_name"
-        android:layout_marginTop="8dp"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:textStyle="bold"/>
-    
-    
-     <TextView
-        android:id="@+id/textViewOnline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/textView2"
-        android:layout_marginTop="8dp"
-        android:text="@string/login_x_ladies_are_online_now"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:drawableLeft="@drawable/circle_green_bg"
-        android:drawablePadding="6dp" 
-        android:visibility="gone" />
-     
-     
-     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="32dp"
-        
-        android:layout_marginBottom="16dp"
-        android:text="Member-site can be switched after entered."
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:visibility="gone"/>
+        android:layout_marginBottom="24dp"
+        android:text="@string/title_company_name"
+        android:textColor="#999999"
+        android:textSize="14sp" />
+
 </RelativeLayout>

@@ -14,16 +14,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.RegisterPasswordActivity.RegisterParam;
 import com.qpidnetwork.dating.profile.MyProfileSelectCountryActivity;
 import com.qpidnetwork.framework.util.CompatUtil;
 import com.qpidnetwork.framework.util.StringUtil;
+import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestEnum.Country;
@@ -41,7 +41,12 @@ import com.qpidnetwork.view.MaterialThreeButtonDialog;
  * @author Max.Chiu
  *
  */
-public class RegisterByEmailActivity extends BaseActivity  {
+public class RegisterByEmailActivity extends BaseFragmentActivity
+									 implements MaterialThreeButtonDialog.OnClickCallback,
+									 			MaterialDatePickerDialog.DateSelectCallback,
+									 			OnCheckLinstener,
+									 			OnFocuseChangedCallback
+{
 	/**
 	 * 拍照
 	 */
@@ -83,6 +88,17 @@ public class RegisterByEmailActivity extends BaseActivity  {
 		
 		siteManager = WebSiteManager.newInstance(mContext);
 		if (siteManager != null) appbar.setAppbarBackgroundColor((mContext.getResources().getColor(siteManager.GetWebSite().getSiteColor())));
+		
+		//初始化根据Ip初始化设置
+		ConfigManager cm = ConfigManager.getInstance();
+		String[] countries = getResources().getStringArray(R.array.country_without_code);
+		if((cm != null) && (cm.getSynConfigItem() != null)){
+			Country ipCountry = cm.getSynConfigItem().pub.ipcountry;
+			if(ipCountry != Country.Other){
+				editTextViewCountry.setText(countries[ipCountry.ordinal()]);
+				mRegisterParam.country = ipCountry;
+			}
+		}
 	}
 	
 	/**
@@ -131,33 +147,7 @@ public class RegisterByEmailActivity extends BaseActivity  {
 		});*/
 		
 		
-		MaterialThreeButtonDialog dialog = new MaterialThreeButtonDialog(this, new MaterialThreeButtonDialog.OnClickCallback() {
-			
-			@Override
-			public void OnSecondButtonClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
-				startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
-			}
-			
-			@Override
-			public void OnFirstButtonClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-				intent.putExtra(
-						android.provider.MediaStore.EXTRA_OUTPUT, 
-						Uri.fromFile(new File(FileCacheManager.getInstance().GetTempCameraImageUrl()))
-								);
-				
-				startActivityForResult(intent, RESULT_LOAD_IMAGE_CAPTURE);
-			}
-			
-			@Override
-			public void OnCancelButtonClick(View v) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		MaterialThreeButtonDialog dialog = new MaterialThreeButtonDialog(this, this);
 		
 		dialog.show();
 	}
@@ -167,7 +157,7 @@ public class RegisterByEmailActivity extends BaseActivity  {
 	 * @param v
 	 */
 	public void onClickCountry(View v) {
-		mRegisterParam.country = Country.China;
+//		mRegisterParam.country = Country.China;
 		Intent intent = new Intent(this, MyProfileSelectCountryActivity.class);
 		intent.putExtra(MyProfileSelectCountryActivity.WITHOUT_CODE, true);
 		startActivityForResult(intent, RESULT_COUNTRY);
@@ -178,31 +168,11 @@ public class RegisterByEmailActivity extends BaseActivity  {
 	 * @param v
 	 */
 	public void onClickBirthday(View v) {
-
-		
-		 MaterialDatePickerDialog.DateSelectCallback datePickerListener = new MaterialDatePickerDialog.DateSelectCallback() {
-				
-
-
-				@Override
-				public void onDateSelected(int year, int month, int day) {
-					// TODO Auto-generated method stub
-					String year1 = String.valueOf(year);
-				    String month1 = String.valueOf(month + 1);
-				    String day1 = String.valueOf(day);
-				    
-				    mRegisterParam.year = year1;
-				    mRegisterParam.month = month1;
-				    mRegisterParam.day = day1;
-				    editTextViewBirthday.setText(day1 + "/" + month1 + "/" + year1);
-				}
-		};
-		
 		int year = (mRegisterParam.year.length() > 0) ? Integer.parseInt(mRegisterParam.year) : 1970;
 		int month = (mRegisterParam.month.length() > 0) ? Integer.parseInt(mRegisterParam.month): 01;
 		int date = (mRegisterParam.day.length() > 0) ? Integer.parseInt(mRegisterParam.day) : 01;
 		
-        MaterialDatePickerDialog datePicker = new MaterialDatePickerDialog(this, datePickerListener,  year,  month, date);
+        MaterialDatePickerDialog datePicker = new MaterialDatePickerDialog(this, this,  year,  month, date);
         datePicker.show();
 
 
@@ -258,44 +228,19 @@ public class RegisterByEmailActivity extends BaseActivity  {
 		appbar.setAppbarBackgroundColor(getResources().getColor(R.color.blue_color));
 		appbar.addButtonToLeft(android.R.id.button1, "", R.drawable.ic_arrow_back_white_24dp);
 		appbar.setTitle(getString(R.string.Create_your_account), Color.WHITE);
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				switch(v.getId()){
-				case android.R.id.button1:
-					finish();
-					break;
-				}
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		
 		imageViewHeader = (ImageView) findViewById(R.id.imageViewHeader);
 //		buttonCoutinue = (ButtonRaised)findViewById(R.id.buttonCoutinue);
 		
 		checkButtonMale = (CheckButton) findViewById(R.id.buttonMale);
 		checkButtonMale.SetText("Man looking for woman");
-		checkButtonMale.SetOnCheckChangeListener(new OnCheckLinstener() {
-			@Override
-			public void onCheckedChange(boolean bChecked) {
-				// TODO Auto-generated method stub
-				checkButtonFemale.SetChecked(!bChecked);
-			}
-		});
+		checkButtonMale.SetOnCheckChangeListener(this);
 		checkButtonMale.SetChecked(true);
 		
 		checkButtonFemale = (CheckButton) findViewById(R.id.buttonFemale);
 		checkButtonFemale.SetText("Woman looking for man");
-		checkButtonFemale.SetOnCheckChangeListener(new OnCheckLinstener() {
-			
-			@Override
-			public void onCheckedChange(boolean bChecked) {
-				// TODO Auto-generated method stub
-				checkButtonMale.SetChecked(!bChecked);
-			}
-		});
+		checkButtonFemale.SetOnCheckChangeListener(this);
 		checkButtonFemale.SetChecked(false);
 		
 		editTextFirstName = (MaterialTextField) findViewById(R.id.editTextFirstName);
@@ -317,44 +262,11 @@ public class RegisterByEmailActivity extends BaseActivity  {
 		editTextViewBirthday.setHint(getString(R.string.your_birthday));
 		
 		lastFocusedView = editTextFirstName.getEditor();
-		editTextFirstName.setOnFocusChangedCallback(focusListener);
-		editTextLastName.setOnFocusChangedCallback(focusListener);
-		editTextViewCountry.setOnFocusChangedCallback(focusListener);
-		editTextViewBirthday.setOnFocusChangedCallback(focusListener);
+		editTextFirstName.setOnFocusChangedCallback(this);
+		editTextLastName.setOnFocusChangedCallback(this);
+		editTextViewCountry.setOnFocusChangedCallback(this);
+		editTextViewBirthday.setOnFocusChangedCallback(this);
 		
-		
-	}
-
-	OnFocuseChangedCallback focusListener = new OnFocuseChangedCallback(){
-
-		@Override
-		public void onFocuseChanged(View v, boolean hasFocus) {
-			// TODO Auto-generated method stub
-
-			
-			if (v.equals(editTextViewCountry.getEditor())){
-				
-				if (hasFocus){
-					onClickCountry(v);
-					lastFocusedView.requestFocus();
-				}
-				
-				
-			}else if(v.equals(editTextViewBirthday.getEditor())){
-				if (hasFocus){
-					onClickBirthday(v);
-					lastFocusedView.requestFocus();
-				}
-			}else{
-				if (hasFocus) lastFocusedView = v;
-			}
-		}
-		
-	};
-	
-	@Override
-	public void InitHandler() {
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -463,5 +375,86 @@ public class RegisterByEmailActivity extends BaseActivity  {
 		intent.putExtra("return-data", false);// 将相应的数据与URI关联起来，返回裁剪后的图片URI,true返回bitmap
 		intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
 		startActivityForResult(intent, RESULT_LOAD_IMAGE_CUT);
+	}
+
+	@Override
+	public void OnFirstButtonClick(View v) {
+		// TODO Auto-generated method stub
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		intent.putExtra(
+				android.provider.MediaStore.EXTRA_OUTPUT, 
+				Uri.fromFile(new File(FileCacheManager.getInstance().GetTempCameraImageUrl()))
+						);
+		
+		startActivityForResult(intent, RESULT_LOAD_IMAGE_CAPTURE);
+	}
+
+	@Override
+	public void OnSecondButtonClick(View v) {
+		// TODO Auto-generated method stub
+		Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
+		startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+	}
+
+	@Override
+	public void OnCancelButtonClick(View v) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDateSelected(int year, int month, int day) {
+		// TODO Auto-generated method stub
+		String year1 = String.valueOf(year);
+	    String month1 = String.valueOf(month + 1);
+	    String day1 = String.valueOf(day);
+	    
+	    mRegisterParam.year = year1;
+	    mRegisterParam.month = month1;
+	    mRegisterParam.day = day1;
+	    editTextViewBirthday.setText(day1 + "/" + month1 + "/" + year1);
+	}
+	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch(v.getId())
+		{
+		case android.R.id.button1: {
+			finish();
+		} break;
+		}
+	}
+
+	@Override
+	public void onCheckedChange(View v, boolean bChecked) {
+		// TODO Auto-generated method stub
+		if (v == checkButtonMale) {
+			checkButtonFemale.SetChecked(!bChecked);
+		}
+		else if (v == checkButtonFemale) {
+			checkButtonMale.SetChecked(!bChecked);
+		}
+	}
+
+	@Override
+	public void onFocuseChanged(View v, boolean hasFocus) {
+		// TODO Auto-generated method stub
+		if (v.equals(editTextViewCountry.getEditor())){
+			
+			if (hasFocus){
+				onClickCountry(v);
+				lastFocusedView.requestFocus();
+			}
+			
+			
+		}else if(v.equals(editTextViewBirthday.getEditor())){
+			if (hasFocus){
+				onClickBirthday(v);
+				lastFocusedView.requestFocus();
+			}
+		}else{
+			if (hasFocus) lastFocusedView = v;
+		}
 	}
 }

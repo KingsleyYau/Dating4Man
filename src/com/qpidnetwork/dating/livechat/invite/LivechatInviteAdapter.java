@@ -84,6 +84,12 @@ public class LivechatInviteAdapter extends BaseAdapter{
 			holder.tvDesc.setText(null);
 		}
 		
+		if(item.isOnline){
+			holder.ivOnline.setVisibility(View.VISIBLE);
+		}else{
+			holder.ivOnline.setVisibility(View.GONE);
+		}
+		
 		/*头像处理*/
 		holder.ivPhoto.setImageResource(R.drawable.female_default_profile_photo_40dp);
 		if ( null != holder.imageDownLoader ) {

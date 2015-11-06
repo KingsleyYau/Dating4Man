@@ -174,9 +174,7 @@ public class AdmireListFragment extends BaseListFragment{
 	public void onRefreshComplete() {
 		// TODO Auto-generated method stub
 		super.onRefreshComplete();
-		if(mAdapter.getDataList().size() >= getPageBean().getDataCount()){
-			closePullUpRefresh();
-		}
+		closePullUpRefresh(mAdapter.getDataList().size() >= getPageBean().getDataCount());
 	}
 
 }

@@ -11,6 +11,8 @@
 
 #include <common/KZip.h>
 #include <common/command.h>
+#include <simulatorchecker/SimulatorRecognition.h>
+#include <json/json/json.h>
 
 #define OS_TYPE "Android"
 
@@ -487,8 +489,11 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_PhoneInfo
 
 	if (requestId != -1) {
 		// 保存callback
-		jobject jObj = env->NewGlobalRef(callback);
-		gCallbackMap.Insert(requestId, jObj);
+		jobject jObj = NULL;
+		if (NULL != callback) {
+			jObj = env->NewGlobalRef(callback);
+			gCallbackMap.Insert(requestId, jObj);
+		}
 		FileLog("httprequest", "Other.Native::PhoneInfo() requestId:%lld, callback:%p, jObj:%p", requestId, callback, jObj);
 	}
 	else {
@@ -509,20 +514,23 @@ void OnPhoneInfo(long requestId, bool success, const string& errnum, const strin
 
 	/* real callback java */
 	jobject jCallbackObj = gCallbackMap.Erase(requestId);
+	jclass jCallbackCls = NULL;
+	if (NULL != jCallbackObj) {
+		jCallbackCls = env->GetObjectClass(jCallbackObj);
+		if (NULL != jCallbackCls) {
+			string signure = "(ZLjava/lang/String;Ljava/lang/String;)V";
+			jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnOtherPhoneInfo", signure.c_str());
 
-	jclass jCallbackCls = env->GetObjectClass(jCallbackObj);
+			if(NULL != jCallback) {
+				jstring jerrno = env->NewStringUTF(errnum.c_str());
+				jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
 
-	string signure = "(ZLjava/lang/String;Ljava/lang/String;)V";
-	jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnOtherPhoneInfo", signure.c_str());
+				env->CallVoidMethod(jCallbackObj, jCallback, success, jerrno, jerrmsg);
 
-	if( jCallbackObj != NULL && jCallback != NULL ) {
-		jstring jerrno = env->NewStringUTF(errnum.c_str());
-		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
-
-		env->CallVoidMethod(jCallbackObj, jCallback, success, jerrno, jerrmsg);
-
-		env->DeleteLocalRef(jerrno);
-		env->DeleteLocalRef(jerrmsg);
+				env->DeleteLocalRef(jerrno);
+				env->DeleteLocalRef(jerrmsg);
+			}
+		}
 	}
 
 	// delete callback object & class
@@ -879,6 +887,7 @@ void CreateSynConfigPublicJItem(JNIEnv* env, const OtherSynConfigItem::PublicIte
 					"Ljava/lang/String;"	// chatVoiceUrl
 					"Ljava/lang/String;"	// addCreditsUrl
 					"Ljava/lang/String;"	// addCredits2Url
+					"I"	                    // ipcountry
 					")V");
 
 			jstring apkVerName = env->NewStringUTF(item.apkVerName.c_str());
@@ -901,7 +910,8 @@ void CreateSynConfigPublicJItem(JNIEnv* env, const OtherSynConfigItem::PublicIte
 						apkStoreURL,
 						chatVoiceHostUrl,
 						addCreditsUrl,
-						addCredits2Url
+						addCredits2Url,
+						item.ipcountry
 						);
 
 			// delete jItemCls
@@ -1288,9 +1298,33 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_InstallLogs
 	string release = GetPhoneBuildVersion();
 	string sdk = GetPhoneBuildSDKVersion();
 
+	// 模拟器检测
+	SimulatorRecognitionDescList descList;
+	bool isSimulator = SimulatorRecognition::IsSimulator(descList);
+	// 生成检测原始数据
+	string checkInfo("");
+	Json::FastWriter jsonWriter;
+	Json::Value checkInfoRoot;
+	for (SimulatorRecognitionDescList::iterator iter = descList.begin();
+		 iter != descList.end();
+		 iter++)
+	{
+		checkInfoRoot[(*iter).key] = (*iter).value;
+//		// key
+//		checkInfo += (*iter).key;
+//		checkInfo += ":\r\n";
+//
+//		// 内容
+//		checkInfo += (*iter).value;
+//
+//		// 结束符
+//		checkInfo += "\r\n\r\n";
+	}
+	checkInfo = jsonWriter.write(checkInfoRoot);
+
 	requestId = gRequestController.InstallLogs(
 					cpDeviceId, installTime, submitTime, verCode
-					, model, manufacturer, os, release, sdk, width, height, cpReferrer);
+					, model, manufacturer, os, release, sdk, width, height, cpReferrer, isSimulator, checkInfo);
 	if (requestId != -1) {
 		// callback
 		jobject jObj = env->NewGlobalRef(callback);

@@ -13,7 +13,7 @@ import com.qpidnetwork.framework.base.BaseActionBarFragmentActivity;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDropDownMenu.OnClickCallback;
 
-public class ContactTicketListActivity extends BaseActionBarFragmentActivity {
+public class ContactTicketListActivity extends BaseActionBarFragmentActivity implements OnClickCallback{
 	
 	public static final String ACTION_GET_DETAIL_SUCCESS = "getDetailSuccess";
 	
@@ -38,14 +38,7 @@ public class ContactTicketListActivity extends BaseActionBarFragmentActivity {
 		getCustomActionBar().setButtonIconById(R.id.common_button_back, R.drawable.ic_arrow_back_grey600_24dp);
 		getCustomActionBar().getButtonById(R.id.common_button_back).setBackgroundResource(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
 		
-		getCustomActionBar().addOverflowButton(new String[]{getString(R.string.menu_more_add_new_ticket)}, new OnClickCallback() {
-			
-			@Override
-			public void onClick(AdapterView<?> adptView, View v, int which) {
-				Intent intent = new Intent(ContactTicketListActivity.this, TicketCreateActivity.class);
-				startActivityForResult(intent, RESULT_CREATE_NEW_TICKET);
-			}
-		}, R.drawable.ic_more_vert_grey600_24dp);
+		getCustomActionBar().addOverflowButton(new String[]{getString(R.string.menu_more_add_new_ticket)}, this, R.drawable.ic_more_vert_grey600_24dp);
 		
 		initReceive();
 	}
@@ -89,5 +82,11 @@ public class ContactTicketListActivity extends BaseActionBarFragmentActivity {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(ACTION_GET_DETAIL_SUCCESS);
 		registerReceiver(mBroadcastReceiver, filter);
+	}
+
+	@Override
+	public void onClick(AdapterView<?> adptView, View v, int which) {
+		Intent intent = new Intent(ContactTicketListActivity.this, TicketCreateActivity.class);
+		startActivityForResult(intent, RESULT_CREATE_NEW_TICKET);		
 	}
 }

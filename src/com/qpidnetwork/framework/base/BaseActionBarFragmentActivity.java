@@ -92,4 +92,10 @@ public class BaseActionBarFragmentActivity extends BaseFragmentActivity{
 			break;
 		}
 	}
+
+	@Override
+	public void InitView() {
+		// TODO Auto-generated method stub
+		
+	}
 }

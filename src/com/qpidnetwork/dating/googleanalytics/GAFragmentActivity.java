@@ -8,7 +8,10 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.authorization.LoginActivity;
+import com.qpidnetwork.dating.authorization.RegisterActivity;
 import com.qpidnetwork.dating.contacts.ContactManager;
 import com.qpidnetwork.dating.home.HomeActivity;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
@@ -30,25 +33,29 @@ public class GAFragmentActivity extends FragmentActivity
 				Bundle bundle = intent.getExtras();
 				if(bundle != null && bundle.containsKey(ContactManager.LIVE_CHAT_KICK_OFF)){
 					final KickOfflineType type = KickOfflineType.values()[bundle.getInt(ContactManager.LIVE_CHAT_KICK_OFF)];
-					MaterialDialogAlert dialog = new MaterialDialogAlert(GAFragmentActivity.this);
-					if(type == KickOfflineType.Maintain){
-						dialog.setMessage(getString(R.string.livechat_kickoff_by_sever_update));
-					}
-					else{
-						dialog.setMessage(getString(R.string.livechat_kickoff_by_other));
-					}
-				
-					dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							Intent intent = new Intent(GAFragmentActivity.this, HomeActivity.class);
-							intent.putExtra(ContactManager.LIVE_CHAT_KICK_OFF, type);
-							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-							startActivity(intent);
-						}
-					}));
-					dialog.show();
+					Intent jumpIntent = new Intent(GAFragmentActivity.this, HomeActivity.class);
+					jumpIntent.putExtra(ContactManager.LIVE_CHAT_KICK_OFF, type);
+					jumpIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(jumpIntent);
+//					MaterialDialogAlert dialog = new MaterialDialogAlert(GAFragmentActivity.this);
+//					if(type == KickOfflineType.Maintain){
+//						dialog.setMessage(getString(R.string.livechat_kickoff_by_sever_update));
+//					}
+//					else{
+//						dialog.setMessage(getString(R.string.livechat_kickoff_by_other));
+//					}
+//				
+//					dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), new OnClickListener() {
+//						
+//						@Override
+//						public void onClick(View v) {
+//							Intent intent = new Intent(GAFragmentActivity.this, HomeActivity.class);
+//							intent.putExtra(ContactManager.LIVE_CHAT_KICK_OFF, type);
+//							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//							startActivity(intent);
+//						}
+//					}));
+//					dialog.show();
 				}
 			}
 		};
@@ -68,13 +75,33 @@ public class GAFragmentActivity extends FragmentActivity
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(LIVECHAT_KICKOFF_ACTION);
 		registerReceiver(kickoffReceiver, filter);
+		
+		if(QpidApplication.isKickOff){
+			Intent intent = null;
+			if(!(this instanceof RegisterActivity)&& (!(this instanceof LoginActivity))){
+				if(this instanceof HomeActivity){
+					Intent loginIntent = new Intent(this,
+							RegisterActivity.class);
+					startActivity(loginIntent);
+				}else{
+					intent = new Intent(GAFragmentActivity.this, HomeActivity.class);
+					intent.putExtra(ContactManager.LIVE_CHAT_KICK_OFF, QpidApplication.kickOffType);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+				}
+			}
+		}
 	}
 	
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		unregisterReceiver(kickoffReceiver);
+		try{
+			unregisterReceiver(kickoffReceiver);
+		}catch(IllegalArgumentException e){
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

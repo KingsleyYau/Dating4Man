@@ -2,9 +2,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" 
-    android:background="#FFFFFF"
     android:fitsSystemWindows="true">
     
+            <RelativeLayout android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="@color/white">
     
     <ScrollView
         android:layout_width="fill_parent"
@@ -43,5 +45,7 @@
         android:layout_height="@dimen/actionbar_height"
         android:layout_width="match_parent"
         android:id="@+id/appbar"/>
+    
+    </RelativeLayout>
 
 </RelativeLayout>

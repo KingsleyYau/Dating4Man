@@ -30,7 +30,7 @@ public class LoginItem implements Serializable {
 		this.photoreceived = true;
 		this.videoreceived = true;
 		
-		this.premit = false;
+		this.premit = true;
 		this.ladyprofile = false;
 		this.livechat = false;
 		this.admirer = false;
@@ -149,8 +149,9 @@ public class LoginItem implements Serializable {
 	public boolean admirer;
 	public boolean bpemf;
 	
-	
 	public LoginItem(RegisterItem item) {
+		this();
+		
 		if( item != null ) { 
 			this.manid = item.manid;
 			this.email = item.email;
@@ -168,6 +169,8 @@ public class LoginItem implements Serializable {
 	}
 	
 	public LoginItem(LoginFacebookItem item) {
+		this();
+		
 		if( item != null ) { 
 			this.manid = item.manid;
 			this.email = item.email;

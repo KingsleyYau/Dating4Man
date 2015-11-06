@@ -92,8 +92,12 @@ public class AdmirerListAdapter extends EMFBaseAdapter<EMFAdmirerListItem>{
 		}
 		
 		//if (item.photoURL != null && item.)
-		
-		holder.ivAttach.setVisibility(View.VISIBLE);
+		/*是否有附件*/
+		if(item.attachnum > 0){
+			holder.ivAttach.setVisibility(View.VISIBLE);
+		}else{
+			holder.ivAttach.setVisibility(View.GONE);
+		}
 		holder.ivGift.setVisibility(View.GONE);
 		
 		holder.ivPhoto.setOnClickListener(new OnClickListener() {

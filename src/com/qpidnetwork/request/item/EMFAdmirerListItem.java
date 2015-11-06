@@ -23,6 +23,7 @@ public class EMFAdmirerListItem {
 	  * @param age			年龄
 	  * @param photoURL		头像URL
 	  * @param sendTime		发送时间
+	  * @param attachnum	附件数量
 	  */
 	public EMFAdmirerListItem(
 		 String id,
@@ -38,7 +39,8 @@ public class EMFAdmirerListItem {
 		 String mtab,
 		 int age,
 		 String photoURL,
-		 String sendTime
+		 String sendTime,
+		 int attachnum
 		 	) {
 		this.id = id;
 		this.idcode = idcode;
@@ -54,6 +56,7 @@ public class EMFAdmirerListItem {
 		this.age = age;
 		this.photoURL = photoURL;
 		this.sendTime = sendTime;
+		this.attachnum = attachnum;
 	}
 	
 	public String id;
@@ -70,6 +73,7 @@ public class EMFAdmirerListItem {
 	public int age;
 	public String photoURL;
 	public String sendTime;
+	public int attachnum;
 	
 	@Override
 	public boolean equals(Object o) {

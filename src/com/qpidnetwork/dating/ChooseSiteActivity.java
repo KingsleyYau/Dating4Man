@@ -1,9 +1,7 @@
 package com.qpidnetwork.dating;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
@@ -19,16 +17,18 @@ import at.technikum.mti.fancycoverflow.FancyCoverFlowAdapter;
 
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.home.HomeActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.manager.WebSiteManager.WebSiteType;
 import com.qpidnetwork.request.OnOtherOnlineCountCallback;
 import com.qpidnetwork.request.RequestJniOther;
 import com.qpidnetwork.request.item.OtherOnlineCountItem;
+import com.qpidnetwork.view.ButtonRaised;
 
 /**
  */
-public class ChooseSiteActivity extends BaseActivity implements OnPageChangeListener {
+public class ChooseSiteActivity extends BaseFragmentActivity implements OnPageChangeListener{
 	
 	/**
 	 * 分页适配器
@@ -51,7 +51,7 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
 	        return i;
 	    }
 	    
-	    @SuppressLint("NewApi") @Override
+
 	    public View getCoverFlowItem(final int i, View reuseableView, final ViewGroup viewGroup) {
 	    	RelativeLayout layout = null;
 	    	ImageView imageView = null;
@@ -92,9 +92,10 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
 	
 //	private ChooseSitePagerAdapter mAdapter;
 	private FancyCoverFlow fancyCoverFlow;
-	private TextView textViewOnline;
 	public TextView textViewSiteName;
 	public TextView textViewSiteDesc;
+	public ButtonRaised enterSiteButton;
+	private WebSiteManager siteManager;
 	
 	
 	/** CD, CL, IDA, LD **/
@@ -113,6 +114,7 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
 		super.onCreate(savedInstanceState);
 		siteName = WebSiteManager.getInstance().getDefaultSortedSiteNames();
 		siteDescrip = WebSiteManager.getInstance().getDefaultSortedSiteDescs();
+		siteManager = WebSiteManager.newInstance(ChooseSiteActivity.this);
 	}
 	
 	/**
@@ -136,8 +138,11 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
         
         textViewSiteName = (TextView) findViewById(R.id.site_name);
         textViewSiteDesc = (TextView) findViewById(R.id.site_description);
-        textViewOnline = (TextView) findViewById(R.id.textViewOnline);
-        textViewOnline.setVisibility(View.GONE);
+        
+        enterSiteButton = (ButtonRaised)findViewById(R.id.enterSiteButton);
+        enterSiteButton.getTitleTextView().getPaint().setFakeBoldText(true);
+        enterSiteButton.setRadius(UnitConversion.dip2px(this, 24 - 4));
+        enterSiteButton.setOnClickListener(this);
         
         fancyCoverFlow.setOnItemClickListener(new OnItemClickListener(){
 
@@ -147,29 +152,7 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
 				// TODO Auto-generated method stub
 				
 				if (arg2 != fancyCoverFlow.getSelectedItemId()) return;
-				
-				final WebSiteManager wm = WebSiteManager.newInstance(ChooseSiteActivity.this);
-				switch (arg2) {
-				case 0:{
-					wm.ChangeWebSite(WebSiteType.CharmDate);
-				}break;
-				case 1:{
-					wm.ChangeWebSite(WebSiteType.ChnLove);
-				}break;
-				case 2:{
-					wm.ChangeWebSite(WebSiteType.IDateAsia);
-				}break;
-				case 3:{
-					wm.ChangeWebSite(WebSiteType.LatamDate);
-				}break;
-				default:
-					break;
-				}
-				
-				Intent intent = new Intent(mContext, HomeActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-				startActivity(intent);
-				finish();
+				doEnterSite();
 			}
         	
         });
@@ -181,6 +164,7 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
 					int arg2, long arg3) {
 				textViewSiteName.setText(siteName[arg2]);
 				textViewSiteDesc.setText(siteDescrip[arg2]);
+			
 			}
 
 			@Override
@@ -194,31 +178,55 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
        fancyCoverFlow.setSelection(1);
 	}
 	
-	/**
-	 * 初始化事件监听
-	 */
+	
+	private void doEnterSite(){
+
+		int position = fancyCoverFlow.getSelectedItemPosition();
+		
+		switch (position) {
+		case 0:{
+			siteManager.ChangeWebSite(WebSiteType.CharmDate);
+		}break;
+		case 1:{
+			siteManager.ChangeWebSite(WebSiteType.ChnLove);
+		}break;
+		case 2:{
+			siteManager.ChangeWebSite(WebSiteType.IDateAsia);
+		}break;
+		case 3:{
+			siteManager.ChangeWebSite(WebSiteType.LatamDate);
+		}break;
+		default:
+			break;
+		}
+		
+		Intent intent = new Intent(mContext, HomeActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		startActivity(intent);
+		finish();
+		
+	}
+	
+	@Override public void onClick(View view){
+		super.onClick(view);
+		switch(view.getId()){
+		case R.id.enterSiteButton:
+			//do enter site here
+			doEnterSite();
+			break;
+		}
+	}
+	
 	@Override
-	public void InitHandler() {
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				// 收起菊花
-				hideProgressDialog();
-//				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_ONLINE_SUCCESS:{
-					// 获取站点在线人数成功
-//					for(int i = 0; i < obj.otherOnlineCountItem.length; i++) {
-//						if( obj.otherOnlineCountItem[i].site == WebSiteManager.newInstance(mContext).GetWebSite().getSiteId() ) {
-//							textViewOnline.setText(String.valueOf(obj.otherOnlineCountItem[i].onlineCount));
-//							break;
-//						}
-//					}
-				}break;
-				default:break;
-				}
-			}
-		};
+	protected void handleUiMessage(Message msg) {
+		// TODO Auto-generated method stub
+		super.handleUiMessage(msg);
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_ONLINE_SUCCESS:{
+			// 获取站点在线人数成功
+		}break;
+		default:break;
+		}
 	}
 
 	@Override
@@ -263,7 +271,7 @@ public class ChooseSiteActivity extends BaseActivity implements OnPageChangeList
 							msg.what = RequestFlag.REQUEST_ONLINE_FAIL.ordinal();
 						}
 						msg.obj = obj;
-						mHandler.sendMessage(msg);
+						sendUiMessage(msg);
 					}
 				});
 	}

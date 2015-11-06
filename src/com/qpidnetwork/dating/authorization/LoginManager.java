@@ -48,9 +48,12 @@ import com.qpidnetwork.request.item.RegisterItem;
  * @author Max.Chiu
  *
  */
-public class LoginManager {
+public class LoginManager implements Session.StatusCallback, 
+									 Request.GraphUserCallback
+{
 	
 	private static final int ADWORDS_REGISTER_SUCCESS_UPDATE = 1;//adwords 注册成功跟踪
+	private static final int LOGIN_STATUS_UPDATE = ADWORDS_REGISTER_SUCCESS_UPDATE + 1; // 登录状态改变  
 
 	public interface OnLoginManagerCallback {
 		/**
@@ -66,7 +69,7 @@ public class LoginManager {
 		
 		/**
 		 * 注销成功回调
-		 * @param bActive			是否主动注销
+		 * @param bActive			是否超时
 		 */
 		public void OnLogout(boolean bActive);
 	}
@@ -116,7 +119,7 @@ public class LoginManager {
 	 */
 	private Context mContext = null;
 	private Handler mHandler = null;
-	private Handler mAdwordsHandler = null;
+	private boolean mbIsAutoLogin = true;
 	private static LoginManager gLoginManager = null;
 	
 	public static LoginManager newInstance(Context context) {
@@ -156,53 +159,19 @@ public class LoginManager {
 		mHandler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
-				if( obj.isSuccess ) {
-					// 改变状态
-		        	mLoginStatus = LoginStatus.LOGINED;
-					
-					// 登录成功, 处理是否记住密码, 自动登录等
-					LoginPerfence.SaveLoginParam(
-							mContext, 
-							new LoginParam(obj.email, obj.password, obj.accessToken, obj.type, obj.loginItem));
-					
-					// 提交GAUserID到Google Analytics
-					GAManager.newInstance().setGAUserId(obj.loginItem.ga_uid);
-					// for test
-					//String gaUserId = "53FB07A0EF8972C1DB43324E1A339F11";	// MD5("test_samson_2015")
-					//GAManager.newInstance().setGAUserId(gaUserId);
-				} else {
-		        	mLoginStatus = LoginStatus.NONE;
-					switch (obj.errno) {
-					case RequestErrorCode.MBCE64005:{
-						// 清空本地token
-						LoginParam param = LoginPerfence.GetLoginParam(mContext);
-						if( param != null ) {
-							param.accessToken = "";
-							LoginPerfence.SaveLoginParam(mContext, param);
-						}
-					}break;
-					default:
-						break;
+				if (msg.what == LOGIN_STATUS_UPDATE) 
+				{
+					MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+					LoginStatusChangeProc(obj);
+				}
+				else if (msg.what == ADWORDS_REGISTER_SUCCESS_UPDATE)
+				{
+					//添加Google推广监控
+					if(!QpidApplication.isDemo){
+						AdWordsConversionReporter.reportWithConversionId(mContext.getApplicationContext(), "1072471539", "WDf5CKKc-VUQ87uy_wM", "0.00", true);
 					}
 				}
-				
-				// 通知其他模块
-				for(OnLoginManagerCallback callback : mCallbackList) {
-					if( callback != null ) {
-						callback.OnLogin(obj.isSuccess, obj.errno, obj.errmsg, obj.loginItem, obj.loginErrorItem);
-					} 
-				}
 			}
-		};
-		
-		mAdwordsHandler = new Handler(){
-			public void handleMessage(Message msg) {
-				if(msg.what == ADWORDS_REGISTER_SUCCESS_UPDATE){
-					//添加Google推广监控
-					AdWordsConversionReporter.reportWithConversionId(mContext.getApplicationContext(), "1072471539", "WDf5CKKc-VUQ87uy_wM", "0.00", true);
-				}	
-			};
 		};
 		
 		// 检测apk签名
@@ -232,59 +201,20 @@ public class LoginManager {
 		InitFacebook();
 	}
 	
-	// facebook 登录状态改变回调
-    private Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
-        @Override
-        public void call(Session session, SessionState state, Exception exception) {
-        	if( session != null ) {
-            	Log.d("LoginManager", "Session.StatusCallback.call( "
-        				+ String.format(
-        						"Session : %s, state : %s", 
-        						session.toString(), 
-        						state.toString()
-        						)
-        				+ " )");
-        	}
-
-        	if( exception != null ) {
-            	Log.d("LoginManager", "Session.StatusCallback.call( "
-        				+ String.format("Error: %s", exception.toString())
-        				+ " )");
-				Message msg = Message.obtain();
-				MessageCallbackItem obj = new MessageCallbackItem(RequestErrorCode.LOCAL_ERROR_CODE_FACEBOOK_FAIL, "Facebook login error!");
-				obj.isSuccess = false;
-				msg.obj = obj;
-				mHandler.sendMessage(msg);
-        	}
-        	
-        	if( currentSession != session ) {
-        		Log.d("LoginManager", "Session.StatusCallback.call( currentSession != session )");
-        		return;
-        	}
-        	
-        	if( state.isOpened() ) {
-        		// facebook授权成功, 调用facebook登录接口
-        		Log.d("LoginManager", "Session.StatusCallback.call( facebook session opened )");
-        		FetchUserInfo();
-        	} else {
-        		Log.d("LoginManager", "Session.StatusCallback.call( facebook session not open )");
-        	}
-        }
-    };
     
 	/**
 	 * 初始化facebook
 	 */
 	public void InitFacebook() {
 		if( currentSession != null ) {
-			currentSession.removeCallback(sessionStatusCallback);
+			currentSession.removeCallback(this);
 		}
 		
 		currentSession = new Session.Builder(mContext)
         .setTokenCachingStrategy(tokenCache)
         .build();
 
-		currentSession.addCallback(sessionStatusCallback);
+		currentSession.addCallback(this);
 	}
 	
 	/**
@@ -301,21 +231,7 @@ public class LoginManager {
 	private void FetchUserInfo() {
 		Log.d("LoginManager", "FetchUserInfo()");
         if ( currentSession != null && currentSession.isOpened() ) {
-            Request request = Request.newMeRequest(currentSession, new Request.GraphUserCallback() {
-				@Override
-				public void onCompleted(GraphUser user, Response response) {
-					// TODO Auto-generated method stub
-					Log.d("LoginManager", "FetchUserInfo。onCompleted( " +
-							"response : " + response.toString() + 
-							" )");
-					
-					if (response.getRequest().getSession() == currentSession && user != null ) {
-						Log.d("LoginManager", "FetchUserInfo.onCompleted( facebook user info ok )");
-						graphUser = user;
-						LoginWithFacebook("", "", "", "", "", "");
-                    }
-				}
-            });
+            Request request = Request.newMeRequest(currentSession, this);
             request.executeAsync();
         }
     }
@@ -340,6 +256,10 @@ public class LoginManager {
 		mCallbackList.remove(callback);
 	}
 	
+	public LoginParam GetLoginParam() {
+		return LoginPerfence.GetLoginParam(mContext);
+	}
+	
 	/**
 	 * 登录接口
 	 * @param email			账号
@@ -358,11 +278,7 @@ public class LoginManager {
 	 * @return				
 	 */
 	public void Login(final String email, final String password, final String checkcode) {
-		Log.d("LoginManager", "Login( " +
-								"email : " + email + ", " +
-								"password : " + password + ", " + 
-								"mLoginStatus : " + mLoginStatus.name() + 
-								" )");
+		Log.d("LoginManager", "Login( email:%s, password:%s, mLoginStatus:%s )", email, password, mLoginStatus.name());
 		
 		if( mLoginStatus != LoginStatus.NONE ) {
 			return;
@@ -405,6 +321,7 @@ public class LoginManager {
 									obj.accessToken = "";
 									obj.type = LoginType.Default;
 									msg.obj = obj;
+									msg.what = LOGIN_STATUS_UPDATE;
 									mHandler.sendMessage(msg);
 
 								}
@@ -414,6 +331,7 @@ public class LoginManager {
 					MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
 					obj.isSuccess = false;
 					msg.obj = obj;
+					msg.what = LOGIN_STATUS_UPDATE;
 					mHandler.sendMessage(msg);
 				}
 			}
@@ -504,6 +422,7 @@ public class LoginManager {
 //									obj.accessToken = finalAccessToken;
 //									obj.type = LoginType.Facebook;
 //									msg.obj = obj;
+//									msg.what = LOGIN_STATUS_UPDATE;
 //									mHandler.sendMessage(msg);
 //									
 //									if(isSuccess 
@@ -518,6 +437,7 @@ public class LoginManager {
 //					MessageCallbackItem obj = new MessageCallbackItem(errno, errmsg);
 //					obj.isSuccess = false;
 //					msg.obj = obj;
+//					msg.what = LOGIN_STATUS_UPDATE;
 //					mHandler.sendMessage(msg);
 //				}
 //			}
@@ -538,12 +458,14 @@ public class LoginManager {
 				obj.accessToken = finalAccessToken;
 				obj.type = LoginType.Facebook;
 				msg.obj = obj;
+				msg.what = LOGIN_STATUS_UPDATE;
 				mHandler.sendMessage(msg);
 				
 				if(isSuccess 
-						&& (item != null)
-						&&(item.is_reg)){
-					mAdwordsHandler.sendEmptyMessage(ADWORDS_REGISTER_SUCCESS_UPDATE);
+					&& item != null
+					&& item.is_reg)
+				{
+					mHandler.sendEmptyMessage(ADWORDS_REGISTER_SUCCESS_UPDATE);
 				}
 			}
 		});
@@ -552,7 +474,7 @@ public class LoginManager {
     
     /**
      * 注销
-     * @param bActive			是否主动注销
+     * @param bActive			是否超时
      */
     public void Logout(boolean bActive) {
     	RequestJni.CleanCookies();
@@ -565,13 +487,6 @@ public class LoginManager {
 			return;
 		}
     	mLoginStatus = LoginStatus.NONE;
-    	
-    	LoginParam param = LoginPerfence.GetLoginParam(mContext);
-    	if( param != null ) {
-        	param.item = null;
-    	}
-
-    	LoginPerfence.SaveLoginParam(mContext, param);
     	
 		// 通知其他模块
 		for(OnLoginManagerCallback callback : mCallbackList) {
@@ -588,13 +503,18 @@ public class LoginManager {
     	Logout(false);
     }
     
-    public void LogoutAndClean() {
+    public void LogoutAndClean(boolean bKick) {
     	Logout(true);
     	
 		LoginParam param = LoginPerfence.GetLoginParam(mContext);
 		if( param != null ) {
-			param.password = "";
-			param.accessToken = "";
+			mbIsAutoLogin = false;
+			if( !bKick ) {
+				param.password = "";
+				param.accessToken = "";
+			}
+			// 修改为主动注销时，才清除用户信息，防止底层session过期重登陆过程中，使用到manId等地方异常
+        	param.item = null;
 			LoginPerfence.SaveLoginParam(mContext, param);
 		}
     }
@@ -608,6 +528,10 @@ public class LoginManager {
 				" )");
 		
 		if( mLoginStatus != LoginStatus.NONE ) {
+			return;
+		}
+		
+		if( !mbIsAutoLogin ) {
 			return;
 		}
 		
@@ -727,11 +651,110 @@ public class LoginManager {
 		obj.password = password;
 		obj.type = LoginType.Default;
 		msg.obj = obj;
+		msg.what = LOGIN_STATUS_UPDATE;
 		mHandler.sendMessage(msg);
 		
 		if(item.login) {
 			//非非法注册账户才提交
-			mAdwordsHandler.sendEmptyMessage(ADWORDS_REGISTER_SUCCESS_UPDATE);
+			mHandler.sendEmptyMessage(ADWORDS_REGISTER_SUCCESS_UPDATE);
 		}
+	}
+	
+	/**
+	 * 登录状态改变处理函数
+	 * @param obj
+	 */
+	private void LoginStatusChangeProc(MessageCallbackItem obj)
+	{
+		if( obj.isSuccess ) {
+			// 改变状态
+        	mLoginStatus = LoginStatus.LOGINED;
+        	mbIsAutoLogin = true;
+        	
+			// 登录成功, 处理是否记住密码, 自动登录等
+			LoginPerfence.SaveLoginParam(
+					mContext, 
+					new LoginParam(obj.email, obj.password, obj.accessToken, obj.type, obj.loginItem));
+			
+			// 提交GAUserID到Google Analytics
+			GAManager.newInstance().setGAUserId(obj.loginItem.ga_uid);
+			// for test
+			//String gaUserId = "53FB07A0EF8972C1DB43324E1A339F11";	// MD5("test_samson_2015")
+			//GAManager.newInstance().setGAUserId(gaUserId);
+		} else {
+        	mLoginStatus = LoginStatus.NONE;
+			switch (obj.errno) {
+			case RequestErrorCode.MBCE64005:{
+				// 清空本地token
+				LoginParam param = LoginPerfence.GetLoginParam(mContext);
+				if( param != null ) {
+					param.accessToken = "";
+					LoginPerfence.SaveLoginParam(mContext, param);
+				}
+			}break;
+			default:
+				break;
+			}
+		}
+		
+		// 通知其他模块
+		for(OnLoginManagerCallback callback : mCallbackList) {
+			if( callback != null ) {
+				callback.OnLogin(obj.isSuccess, obj.errno, obj.errmsg, obj.loginItem, obj.loginErrorItem);
+			} 
+		}
+	}
+
+	@Override
+	public void call(Session session, SessionState state, Exception exception) {
+		// TODO Auto-generated method stub
+		if( session != null ) {
+        	Log.d("LoginManager", "Session.StatusCallback.call( "
+    				+ String.format(
+    						"Session : %s, state : %s", 
+    						session.toString(), 
+    						state.toString()
+    						)
+    				+ " )");
+    	}
+
+    	if( exception != null ) {
+        	Log.d("LoginManager", "Session.StatusCallback.call( "
+    				+ String.format("Error: %s", exception.toString())
+    				+ " )");
+			Message msg = Message.obtain();
+			MessageCallbackItem obj = new MessageCallbackItem(RequestErrorCode.LOCAL_ERROR_CODE_FACEBOOK_FAIL, "Facebook login error!");
+			obj.isSuccess = false;
+			msg.obj = obj;
+			msg.what = LOGIN_STATUS_UPDATE; 
+			mHandler.sendMessage(msg);
+    	}
+    	
+    	if( currentSession != session ) {
+    		Log.d("LoginManager", "Session.StatusCallback.call( currentSession != session )");
+    		return;
+    	}
+    	
+    	if( state.isOpened() ) {
+    		// facebook授权成功, 调用facebook登录接口
+    		Log.d("LoginManager", "Session.StatusCallback.call( facebook session opened )");
+    		FetchUserInfo();
+    	} else {
+    		Log.d("LoginManager", "Session.StatusCallback.call( facebook session not open )");
+    	}
+	}
+
+	@Override
+	public void onCompleted(GraphUser user, Response response) {
+		// TODO Auto-generated method stub
+		Log.d("LoginManager", "FetchUserInfo。onCompleted( " +
+				"response : " + response.toString() + 
+				" )");
+		
+		if (response.getRequest().getSession() == currentSession && user != null ) {
+			Log.d("LoginManager", "FetchUserInfo.onCompleted( facebook user info ok )");
+			graphUser = user;
+			LoginWithFacebook("", "", "", "", "", "");
+        }
 	}
 }

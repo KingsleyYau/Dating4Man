@@ -15,7 +15,6 @@ import android.view.WindowManager;
 
 import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.manager.WebSiteManager;
-import com.qpidnetwork.request.OnOtherPhoneInfoCallback;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestJniOther;
 import com.qpidnetwork.request.RequestJniOther.ActionType;
@@ -96,13 +95,7 @@ public class PhoneInfoManager {
 				tm.getPhoneType(), 
 				tm.getNetworkType(), 
 				RequestJni.GetDeviceId(tm), 
-				new OnOtherPhoneInfoCallback() {
-					@Override
-					public void OnOtherPhoneInfo(boolean isSuccess, String errno, String errmsg) {
-						// TODO Auto-generated method stub
-						
-					}
-				});
+				null);
 		}
 	}
 	

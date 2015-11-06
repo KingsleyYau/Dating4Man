@@ -124,11 +124,6 @@ public class LCMessageItem implements Serializable{
 	 */
 	static private int mDbTime = 0; 
 	
-	/**
-	 * 用于不需要缓存，但需要界面特殊显示的消息类型
-	 */
-	private LCLocalCustomItem customItem;
-	
 	public LCMessageItem() {
 		clear();
 	}
@@ -240,68 +235,89 @@ public class LCMessageItem implements Serializable{
 		
 		switch(record.messageType) {
 		case Text: {
-			LCTextItem textItem = new LCTextItem();
-			textItem.init(record.textMsg);
-			setTextItem(textItem);
-			result = true;
+			if (null != record.textMsg) 
+			{
+				LCTextItem textItem = new LCTextItem();
+				textItem.init(record.textMsg);
+				setTextItem(textItem);
+				result = true;
+			}
 		}break;
 		case Invite: {
-			LCTextItem textItem = new LCTextItem();
-			textItem.init(record.inviteMsg);
-			setTextItem(textItem);
-			result = true;
+			if (null != record.inviteMsg)
+			{
+				LCTextItem textItem = new LCTextItem();
+				textItem.init(record.inviteMsg);
+				setTextItem(textItem);
+				result = true;
+			}
 		}break;
 		case Warning: {
-			LCWarningItem warningItem = new LCWarningItem();
-			warningItem.init(record.warningMsg);
-			setWarningItem(warningItem);
-			result = true;
+			if (null != record.warningMsg)
+			{
+				LCWarningItem warningItem = new LCWarningItem();
+				warningItem.init(record.warningMsg);
+				setWarningItem(warningItem);
+				result = true;
+			}
 		}break;
 		case Emotion: {
-			LCEmotionItem emotionItem = emotionMgr.getEmotion(record.emotionId);
-			setEmotionItem(emotionItem);
-			result = true;
+			if (null != record.emotionId)
+			{
+				LCEmotionItem emotionItem = emotionMgr.getEmotion(record.emotionId);
+				setEmotionItem(emotionItem);
+				result = true;
+			}
 		}break;
 		case Photo: {
-			LCPhotoItem photoItem = new LCPhotoItem();
-			// 男士端发送的为已付费
-			boolean photoCharge = (this.sendType == SendType.Send ? true : record.photoCharge); 
-			photoItem.init(
-					record.photoId
-					, ""
-					, record.photoDesc
-					, photoMgr.getPhotoPath(record.photoId, PhotoModeType.Fuzzy, PhotoSizeType.Large)
-					, photoMgr.getPhotoPath(record.photoId, PhotoModeType.Fuzzy, PhotoSizeType.Middle)
-					, photoMgr.getPhotoPath(record.photoId, PhotoModeType.Clear, PhotoSizeType.Original)
-					, photoMgr.getPhotoPath(record.photoId, PhotoModeType.Clear, PhotoSizeType.Large)
-					, photoMgr.getPhotoPath(record.photoId, PhotoModeType.Clear, PhotoSizeType.Middle)
-					, photoCharge);
-			setPhotoItem(photoItem);
-			result = true;
+			if (null != record.photoId)
+			{
+				LCPhotoItem photoItem = new LCPhotoItem();
+				// 男士端发送的为已付费
+				boolean photoCharge = (this.sendType == SendType.Send ? true : record.photoCharge); 
+				photoItem.init(
+						record.photoId
+						, ""
+						, record.photoDesc
+						, photoMgr.getPhotoPath(record.photoId, PhotoModeType.Fuzzy, PhotoSizeType.Large)
+						, photoMgr.getPhotoPath(record.photoId, PhotoModeType.Fuzzy, PhotoSizeType.Middle)
+						, photoMgr.getPhotoPath(record.photoId, PhotoModeType.Clear, PhotoSizeType.Original)
+						, photoMgr.getPhotoPath(record.photoId, PhotoModeType.Clear, PhotoSizeType.Large)
+						, photoMgr.getPhotoPath(record.photoId, PhotoModeType.Clear, PhotoSizeType.Middle)
+						, photoCharge);
+				setPhotoItem(photoItem);
+				result = true;
+			}
 		}break;
 		case Voice: {
-			LCVoiceItem voiceItem = new LCVoiceItem();
-			voiceItem.init(record.voiceId
-					, voiceMgr.getVoicePath(record.voiceId, record.voiceType)
-					, record.voiceTime, record.voiceType
-					, ""
-					, true);
-			setVoiceItem(voiceItem);
-			result = true;
+			if (null != record.voiceId)
+			{
+				LCVoiceItem voiceItem = new LCVoiceItem();
+				voiceItem.init(record.voiceId
+						, voiceMgr.getVoicePath(record.voiceId, record.voiceType)
+						, record.voiceTime, record.voiceType
+						, ""
+						, true);
+				setVoiceItem(voiceItem);
+				result = true;
+			}
 		}break;
 		case Video: {
-			LCVideoItem videoItem = new LCVideoItem();
-			videoItem.init(
-					record.videoId
-					, record.videoSendId
-					, record.videoDesc
-					, videoMgr.getVideoPhotoPath(userId, record.videoId, inviteId, VideoPhotoType.Big)
-					, videoMgr.getVideoPhotoPath(userId, record.videoId, inviteId, VideoPhotoType.Default)
-					, ""
-					, videoMgr.getVideoPath(userId, record.videoId, inviteId)
-					, record.videoCharge);
-			setVideoItem(videoItem);
-			result = true;
+			if (null != record.videoId)
+			{
+				LCVideoItem videoItem = new LCVideoItem();
+				videoItem.init(
+						record.videoId
+						, record.videoSendId
+						, record.videoDesc
+						, videoMgr.getVideoPhotoPath(userId, record.videoId, inviteId, VideoPhotoType.Big)
+						, videoMgr.getVideoPhotoPath(userId, record.videoId, inviteId, VideoPhotoType.Default)
+						, ""
+						, videoMgr.getVideoPath(userId, record.videoId, inviteId)
+						, record.videoCharge);
+				setVideoItem(videoItem);
+				result = true;
+			}
 		}break;
 		default: {
 			Log.e("livechat", String.format("%s::%s() unknow message type", "LCMessageItem", "InitWithRecord"));
@@ -422,7 +438,6 @@ public class LCMessageItem implements Serializable{
 		videoItem = null;
 		systemItem = null;
 		userItem = null;
-		customItem = null;
 	}
 	
 	
@@ -449,13 +464,5 @@ public class LCMessageItem implements Serializable{
 			}
 		};
 		return comparator;
-	}
-
-	public LCLocalCustomItem getCustomItem() {
-		return customItem;
-	}
-
-	public void setCustomItem(LCLocalCustomItem customItem) {
-		this.customItem = customItem;
 	}
 }

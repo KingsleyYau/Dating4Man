@@ -28,7 +28,7 @@ import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialDropDownMenu.OnClickCallback;
 
-public class TicketDetailListActivity extends BaseActionBarFragmentActivity{
+public class TicketDetailListActivity extends BaseActionBarFragmentActivity implements OnTicketDetailCallback, OnRequestCallback, OnClickCallback{
 	
 	public static final String TICKET_ID = "ticket_id";
 	public static final String TICKET_TITLE = "ticket_title";
@@ -90,13 +90,6 @@ public class TicketDetailListActivity extends BaseActionBarFragmentActivity{
 		headerResolve.setVisibility(View.GONE);
 		
 		mAdapter = new TicketDetailAdapter(this, ticketDetailItem);
-//		mAdapter.setOnResolveClickListener(new OnResolveClickListener() {
-//			
-//			@Override
-//			public void onResolveClick() {
-//				resolveTicket(ticketId);
-//			}
-//		});
 		
 		lvContent.addHeaderView(headerResolve);
 		lvContent.setAdapter(mAdapter);
@@ -141,19 +134,7 @@ public class TicketDetailListActivity extends BaseActionBarFragmentActivity{
 				//防止按钮重复添加
 				isReplyBtnVisible = true;
 				if(ticketDetailItem.status == StatusType.Open){
-					getCustomActionBar().addOverflowButton(new String[]{getString(R.string.add_reply)}, new OnClickCallback() {
-						
-						@Override
-						public void onClick(AdapterView<?> adptView, View v, int which) {
-							Intent intent = new Intent(TicketDetailListActivity.this, TicketReplyActivity.class);
-							intent.putExtra(TICKET_ID, ticketId);
-							intent.putExtra(TICKET_TITLE, ticketDetailItem.title);
-							startActivityForResult(intent, RESULT_REPLY_SUCCESS);
-						}
-					}, R.drawable.ic_more_vert_grey600_24dp);
-					
-					
-					
+					getCustomActionBar().addOverflowButton(new String[]{getString(R.string.add_reply)}, this, R.drawable.ic_more_vert_grey600_24dp);
 				}else{
 					
 				}
@@ -176,36 +157,7 @@ public class TicketDetailListActivity extends BaseActionBarFragmentActivity{
 	 */
 	private void queryTicketDetail(String ticketId){
 		showProgressDialog(getString(R.string.common_loading_tips));
-		RequestOperator.newInstance(this).TicketDetail(ticketId, new OnTicketDetailCallback() {
-			
-			@Override
-			public void OnTicketDetail(boolean isSuccess, String errno, String errmsg,
-					TicketDetailItem item) {
-				Message msg = Message.obtain();
-				if(isSuccess){
-					msg.what = GET_TICKET_DETAIL_SUCCESS;
-					if(item.contentList != null){
-						Arrays.sort(item.contentList, new Comparator<TicketContentItem>() {
-
-							@Override
-							public int compare(TicketContentItem lhs,
-									TicketContentItem rhs) {
-								if(lhs.sendDate != rhs.sendDate){
-									return lhs.sendDate > rhs.sendDate ? -1:1;
-								}else{
-									return 0;
-								}
-							}
-						});
-					}
-					msg.obj = item;
-				}else{
-					msg.what = GET_TICKET_DETAIL_FAILED;
-					msg.obj = new RequestFailBean(errno, errmsg);
-				}
-				sendUiMessage(msg);
-			}
-		});
+		RequestOperator.newInstance(this).TicketDetail(ticketId, this);
 	}
 	
 	/**
@@ -214,20 +166,7 @@ public class TicketDetailListActivity extends BaseActionBarFragmentActivity{
 	 */
 	private void resolveTicket(String ticketId){
 		showProgressDialog(getString(R.string.common_loading_tips));
-		RequestOperator.newInstance(this).ResolvedTicket(ticketId, new OnRequestCallback() {
-			
-			@Override
-			public void OnRequest(boolean isSuccess, String errno, String errmsg) {
-				Message msg = Message.obtain();
-				if(isSuccess){
-					msg.what = TICKET_RESOLVE_SUCCESS;
-				}else{
-					msg.what = TICKET_RESOLVE_FAILED;
-					msg.obj = new RequestFailBean(errno, errmsg);
-				}
-				sendUiMessage(msg);
-			}
-		});
+		RequestOperator.newInstance(this).ResolvedTicket(ticketId, this);
 	}
 	
 	@Override
@@ -274,6 +213,55 @@ public class TicketDetailListActivity extends BaseActionBarFragmentActivity{
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void OnTicketDetail(boolean isSuccess, String errno, String errmsg,
+			TicketDetailItem item) {
+		Message msg = Message.obtain();
+		if(isSuccess){
+			msg.what = GET_TICKET_DETAIL_SUCCESS;
+			if(item.contentList != null){
+				Arrays.sort(item.contentList, new Comparator<TicketContentItem>() {
+
+					@Override
+					public int compare(TicketContentItem lhs,
+							TicketContentItem rhs) {
+						if(lhs.sendDate != rhs.sendDate){
+							return lhs.sendDate > rhs.sendDate ? -1:1;
+						}else{
+							return 0;
+						}
+					}
+				});
+			}
+			msg.obj = item;
+		}else{
+			msg.what = GET_TICKET_DETAIL_FAILED;
+			msg.obj = new RequestFailBean(errno, errmsg);
+		}
+		sendUiMessage(msg);		
+	}
+
+	@Override
+	public void OnRequest(boolean isSuccess, String errno, String errmsg) {
+		
+		Message msg = Message.obtain();
+		if(isSuccess){
+			msg.what = TICKET_RESOLVE_SUCCESS;
+		}else{
+			msg.what = TICKET_RESOLVE_FAILED;
+			msg.obj = new RequestFailBean(errno, errmsg);
+		}
+		sendUiMessage(msg);		
+	}
+
+	@Override
+	public void onClick(AdapterView<?> adptView, View v, int which) {
+		Intent intent = new Intent(TicketDetailListActivity.this, TicketReplyActivity.class);
+		intent.putExtra(TICKET_ID, ticketId);
+		intent.putExtra(TICKET_TITLE, ticketDetailItem.title);
+		startActivityForResult(intent, RESULT_REPLY_SUCCESS);		
 	}
 	
 }

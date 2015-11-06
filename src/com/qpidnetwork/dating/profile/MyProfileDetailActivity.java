@@ -23,7 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.framework.widget.wrap.WrapBaseAdapter;
@@ -50,7 +50,7 @@ import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogSingleChoice;
 
-public class MyProfileDetailActivity extends BaseActivity {
+public class MyProfileDetailActivity extends BaseFragmentActivity {
 	private class InterestLabelAdapter extends WrapBaseAdapter {
 		
 		private Context mContext;
@@ -281,6 +281,314 @@ public class MyProfileDetailActivity extends BaseActivity {
 		finish();
 	}
 	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()){
+		case android.R.id.button1:
+			finish();
+			break;
+		case R.id.buttonMoreSelfInfo:{
+			if( mMore ) {
+				buttonMoreSelfInfo.setText("more");
+				textViewSelfInfo.setMaxLines(4);
+			} else {
+				buttonMoreSelfInfo.setText("less");
+				textViewSelfInfo.setMaxLines(999);
+			}
+			mMore = !mMore;
+		}break;
+		default:{
+			switch ( (int)v.getTag() ) {
+			case R.id.textViewSelfInfo:{
+				// 打开编辑个人简介
+				Intent intent = new Intent(mContext, MyProfileDetailSelfIntroActivity.class);
+				if( mProfileItem != null ) {
+					intent.putExtra(MyProfileDetailSelfIntroActivity.SELF_INTRO, mProfileItem.resume);
+				}
+				startActivityForResult(intent, RESULT_SELF_INTRO);
+			}break;
+			case R.id.textViewMatchCriteria:{
+				// 打开编辑匹配女士
+				Intent intent = new Intent(mContext, MyProfileMatchCriteriaActivity.class);
+				startActivityForResult(intent, RESULT_MATCH_CRITERIA);
+			}break;
+			case R.id.layoutMyInterests:{
+				// 打开编辑兴趣爱好
+				Intent intent = new Intent(mContext, MyProfileDetailInterestActivity.class);
+				intent.putStringArrayListExtra(MyProfileDetailInterestActivity.INTEREST, mProfileItem.interests);
+				startActivityForResult(intent, RESULT_INTEREST);
+			}break;
+			case R.id.layoutHeight:{
+				// 打开身高
+				String[] array = getResources().getStringArray(R.array.height);
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+						MyProfileDetailActivity.this, 
+						array,
+						new MaterialDialogSingleChoice.OnClickCallback() {
+							
+							@Override
+							public void onClick(AdapterView<?> adptView, View v, int which) {
+								// TODO Auto-generated method stub
+								if( which > -1 && which < Height.values().length ) {
+									mProfileItem.height = Height.values()[which];
+									ReloadData();
+									UploadProfile();
+								}
+							}
+						},
+						mProfileItem.height.ordinal());
+				
+				dialog.setTitle("Your height");
+				dialog.show();
+				dialog.setCanceledOnTouchOutside(true);
+			}break;
+			case R.id.layoutWeight:{
+				String[] array = getResources().getStringArray(R.array.weight);
+				
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+						MyProfileDetailActivity.this, 
+						array,
+						new MaterialDialogSingleChoice.OnClickCallback() {
+							
+							@Override
+							public void onClick(AdapterView<?> adptView, View v, int which) {
+								// TODO Auto-generated method stub
+								if( which > -1 && which < Weight.values().length ) {
+									mProfileItem.weight = Weight.values()[which];
+									ReloadData();
+									UploadProfile();
+								}
+							}
+						},
+						mProfileItem.weight.ordinal());
+				
+				dialog.setTitle("Your weight");
+				dialog.show();
+				dialog.setCanceledOnTouchOutside(true);
+			}break;
+			case R.id.layoutSmoke:{
+				String[] array = getResources().getStringArray(R.array.smoke);
+				
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+						MyProfileDetailActivity.this, 
+						array,
+						new MaterialDialogSingleChoice.OnClickCallback() {
+							
+							@Override
+							public void onClick(AdapterView<?> adptView, View v, int which) {
+								// TODO Auto-generated method stub
+								if( which > -1 && which < Smoke.values().length ) {
+									mProfileItem.smoke = Smoke.values()[which];
+									ReloadData();
+									UploadProfile();
+								}
+							}
+						},
+						mProfileItem.smoke.ordinal());
+				
+				dialog.setTitle("Do you smoke?");
+				dialog.show();
+				dialog.setCanceledOnTouchOutside(true);
+			}break;
+			case R.id.layoutDrink:{
+				String[] array = getResources().getStringArray(R.array.drink);
+				
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+						MyProfileDetailActivity.this, 
+						array,
+						new MaterialDialogSingleChoice.OnClickCallback() {
+							
+							@Override
+							public void onClick(AdapterView<?> adptView, View v, int which) {
+								// TODO Auto-generated method stub
+								if( which > -1 && which < Drink.values().length ) {
+									mProfileItem.drink = Drink.values()[which];
+									ReloadData();
+									UploadProfile();
+								}
+							}
+						},
+						mProfileItem.drink.ordinal());
+				
+				dialog.setTitle("How often do you drink?");
+				dialog.show();
+				dialog.setCanceledOnTouchOutside(true);
+			}break;
+			case R.id.layoutEducation:{
+				String[] array = getResources().getStringArray(R.array.education);
+				
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+						MyProfileDetailActivity.this, 
+						array,
+						new MaterialDialogSingleChoice.OnClickCallback() {
+							
+							@Override
+							public void onClick(AdapterView<?> adptView, View v, int which) {
+								// TODO Auto-generated method stub
+								if( which > -1 && which < Education.values().length ) {
+									mProfileItem.education = Education.values()[which];
+									ReloadData();
+									UploadProfile();
+								}
+							}
+						},
+						mProfileItem.education.ordinal());
+				
+				dialog.setTitle("What is you education level?");
+				dialog.show();
+				dialog.setCanceledOnTouchOutside(true);
+			}break;
+			case R.id.layoutProfession:{
+				String[] array = getResources().getStringArray(R.array.profression);
+				
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+						MyProfileDetailActivity.this, 
+						array,
+						new MaterialDialogSingleChoice.OnClickCallback() {
+							
+							@Override
+							public void onClick(AdapterView<?> adptView, View v, int which) {
+								// TODO Auto-generated method stub
+								if( which > -1 && which < Profession.values().length ) {
+									mProfileItem.profession = Profession.values()[which];
+									ReloadData();
+									UploadProfile();
+								}
+							}
+						},
+						mProfileItem.profession.ordinal());
+				
+				dialog.setTitle("Your profession");
+				dialog.show();
+				dialog.setCanceledOnTouchOutside(true);
+			}break;
+			case R.id.layoutEthnicity:{
+				String[] array = getResources().getStringArray(R.array.ethnicity);
+				
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+						MyProfileDetailActivity.this, 
+						array,
+						new MaterialDialogSingleChoice.OnClickCallback() {
+							
+							@Override
+							public void onClick(AdapterView<?> adptView, View v, int which) {
+								// TODO Auto-generated method stub
+								if( which > -1 && which < Ethnicity.values().length ) {
+									mProfileItem.ethnicity = Ethnicity.values()[which];
+									ReloadData();
+									UploadProfile();
+								}
+							}
+						},
+						mProfileItem.ethnicity.ordinal());
+				
+				dialog.setTitle("What is you ethnicity?");
+				dialog.show();
+				dialog.setCanceledOnTouchOutside(true);
+			}break;
+			case R.id.layoutReligion:{
+				String[] array = getResources().getStringArray(R.array.religion);
+				
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+						MyProfileDetailActivity.this, 
+						array,
+						new MaterialDialogSingleChoice.OnClickCallback() {
+							
+							@Override
+							public void onClick(AdapterView<?> adptView, View v, int which) {
+								// TODO Auto-generated method stub
+								if( which > -1 && which < Religion.values().length ) {
+									mProfileItem.religion = Religion.values()[which];
+									ReloadData();
+									UploadProfile();
+								}
+							}
+						},
+						mProfileItem.religion.ordinal());
+				
+				dialog.setTitle("You religion");
+				dialog.show();
+				dialog.setCanceledOnTouchOutside(true);
+			}break;
+			case R.id.layoutPrimaryLanguage:{
+				
+				String[] array = getResources().getStringArray(R.array.language);
+				
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+						MyProfileDetailActivity.this, 
+						array,
+						new MaterialDialogSingleChoice.OnClickCallback() {
+							
+							@Override
+							public void onClick(AdapterView<?> adptView, View v, int which) {
+								// TODO Auto-generated method stub
+								if( which > -1 && which < Language.values().length ) {
+									mProfileItem.language = Language.values()[which];
+									ReloadData();
+									UploadProfile();
+								}
+							}
+						},
+						mProfileItem.language.ordinal());
+				
+				dialog.setTitle("What language do you speak?");
+				dialog.show();
+				dialog.setCanceledOnTouchOutside(true);
+			}break;
+			case R.id.layoutHaveChildren:{
+				String[] array = getResources().getStringArray(R.array.children);
+				
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+						MyProfileDetailActivity.this, 
+						array,
+						new MaterialDialogSingleChoice.OnClickCallback() {
+							
+							@Override
+							public void onClick(AdapterView<?> adptView, View v, int which) {
+								// TODO Auto-generated method stub
+								if( which > -1 && which < Children.values().length ) {
+									mProfileItem.children = Children.values()[which];
+									ReloadData();
+									UploadProfile();
+								}
+							}
+						},
+						mProfileItem.children.ordinal());
+				
+				dialog.setTitle("Do you have children?");
+				dialog.show();
+				dialog.setCanceledOnTouchOutside(true);
+			}break;
+			case R.id.layoutCurrentIncome:{
+				String[] array = getResources().getStringArray(R.array.income);
+				
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+						MyProfileDetailActivity.this, 
+						array,
+						new MaterialDialogSingleChoice.OnClickCallback() {
+							
+							@Override
+							public void onClick(AdapterView<?> adptView, View v, int which) {
+								// TODO Auto-generated method stub
+								if( which > -1 && which < Income.values().length ) {
+									mProfileItem.income = Income.values()[which];
+									ReloadData();
+									UploadProfile();
+								}
+							}
+						},
+						mProfileItem.income.ordinal());
+				
+				dialog.setTitle("Your income");
+				dialog.show();
+				dialog.setCanceledOnTouchOutside(true);
+			}break;
+			}
+		}
+		}
+	}
+	
 	/**
 	 * 初始化界面
 	 */
@@ -293,19 +601,7 @@ public class MyProfileDetailActivity extends BaseActivity {
 		appbar.setTouchFeedback(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
 		appbar.addButtonToLeft(android.R.id.button1, "", R.drawable.ic_close_grey600_24dp);
 		appbar.setTitle(getString(R.string.title_activity_profile_detail), getResources().getColor(R.color.text_color_dark));
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				switch (v.getId()){
-				case android.R.id.button1:
-					finish();
-					break;
-				}
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		
 		/**
 		 * 用户头像
@@ -342,40 +638,15 @@ public class MyProfileDetailActivity extends BaseActivity {
 		
 		textViewSelfInfo = (TextView) findViewById(R.id.textViewSelfInfo);
 		buttonMoreSelfInfo = (Button) findViewById(R.id.buttonMoreSelfInfo);
-		buttonMoreSelfInfo.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				if( mMore ) {
-					buttonMoreSelfInfo.setText("more");
-					textViewSelfInfo.setMaxLines(4);
-				} else {
-					buttonMoreSelfInfo.setText("less");
-					textViewSelfInfo.setMaxLines(999);
-				}
-				
-				mMore = !mMore;
-			}
-		});
+		buttonMoreSelfInfo.setOnClickListener(this);
 		
 		/**
 		 * 个人简介
 		 */
 		textViewSelfInfo = (TextView) findViewById(R.id.textViewSelfInfo);
 		MyProfileDetailEditItemView view = (MyProfileDetailEditItemView) findViewById(R.id.layoutSelfIntro);
-		view.imageViewRight.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				// 打开编辑个人简介
-				Intent intent = new Intent(mContext, MyProfileDetailSelfIntroActivity.class);
-				if( mProfileItem != null ) {
-					intent.putExtra(MyProfileDetailSelfIntroActivity.SELF_INTRO, mProfileItem.resume);
-				}
-				startActivityForResult(intent, RESULT_SELF_INTRO);
-			}
-		});
+		view.imageViewRight.setTag(R.id.textViewSelfInfo);
+		view.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 匹配说明
@@ -383,31 +654,17 @@ public class MyProfileDetailActivity extends BaseActivity {
 		textViewMatchCriteria = (TextView) findViewById(R.id.textViewMatchCriteria);
 		view = (MyProfileDetailEditItemView) findViewById(R.id.layoutMatchCriteria);
 		view.textViewLeft.setText(R.string.My_match_criteria);
-		view.imageViewRight.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				// 打开编辑匹配女士
-				Intent intent = new Intent(mContext, MyProfileMatchCriteriaActivity.class);
-				startActivityForResult(intent, RESULT_MATCH_CRITERIA);
-			}
-		});
+		view.imageViewRight.setTag(R.id.textViewMatchCriteria);
+		view.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 兴趣爱好
 		 */
 		view = (MyProfileDetailEditItemView) findViewById(R.id.layoutMyInterests);
 		view.textViewLeft.setText(R.string.my_interest);
-		view.imageViewRight.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				// 打开编辑兴趣爱好
-				Intent intent = new Intent(mContext, MyProfileDetailInterestActivity.class);
-				intent.putStringArrayListExtra(MyProfileDetailInterestActivity.INTEREST, mProfileItem.interests);
-				startActivityForResult(intent, RESULT_INTEREST);
-			}
-		});
+		view.imageViewRight.setTag(R.id.layoutMyInterests);
+		view.imageViewRight.setOnClickListener(this);
+
 		wrapListView = (WrapListView) findViewById(R.id.wrapListView);
 		wrapListView.setDividerWidth(5);
 		wrapListView.setDividerHeight(10);
@@ -423,639 +680,144 @@ public class MyProfileDetailActivity extends BaseActivity {
 		 */
 		layoutHeight = (MyProfileDetailEditItemView) findViewById(R.id.layoutHeight);
 		layoutHeight.textViewLeft.setText("Height");
-		layoutHeight.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				String[] array = getResources().getStringArray(R.array.height);
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						MyProfileDetailActivity.this, 
-						array,
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Height.values().length ) {
-									mProfileItem.height = Height.values()[which];
-									ReloadData();
-									UploadProfile();
-								}
-							}
-						},
-						mProfileItem.height.ordinal());
-				
-				dialog.setTitle("Your height");
-				dialog.show();
-				dialog.setCanceledOnTouchOutside(true);
-
-			}
-		});
+		layoutHeight.imageViewRight.setTag(R.id.layoutHeight);
+		layoutHeight.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 体重
 		 */
 		layoutWeight = (MyProfileDetailEditItemView) findViewById(R.id.layoutWeight);
 		layoutWeight.textViewLeft.setText("Weight");
-		layoutWeight.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Weight");  
-                builder.setSingleChoiceItems(R.array.weight, mProfileItem.weight.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "体重: " + String.valueOf(which));
-						if( which > -1 && which < Weight.values().length ) {
-							mProfileItem.weight = Weight.values()[which];
-							ReloadData();
-							UploadProfile();
-							dialog.dismiss();
-						}
-					}
-				});
-                builder.create().show();*/
-				
-				
-				String[] array = getResources().getStringArray(R.array.weight);
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						MyProfileDetailActivity.this, 
-						array,
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Weight.values().length ) {
-									mProfileItem.weight = Weight.values()[which];
-									ReloadData();
-									UploadProfile();
-								}
-							}
-						},
-						mProfileItem.weight.ordinal());
-				
-				dialog.setTitle("Your weight");
-				dialog.show();
-				dialog.setCanceledOnTouchOutside(true);
-			}
-		});
+		layoutWeight.imageViewRight.setTag(R.id.layoutWeight);
+		layoutWeight.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 吸烟状态
 		 */
 		layoutSmoke = (MyProfileDetailEditItemView) findViewById(R.id.layoutSmoke);
 		layoutSmoke.textViewLeft.setText("Smoke");
-		layoutSmoke.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				
-				String[] array = getResources().getStringArray(R.array.smoke);
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						MyProfileDetailActivity.this, 
-						array,
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Smoke.values().length ) {
-									mProfileItem.smoke = Smoke.values()[which];
-									ReloadData();
-									UploadProfile();
-								}
-							}
-						},
-						mProfileItem.smoke.ordinal());
-				
-				dialog.setTitle("Do you smoke?");
-				dialog.show();
-				dialog.setCanceledOnTouchOutside(true);
-				
-				
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Smoke");  
-                builder.setSingleChoiceItems(R.array.smoke, mProfileItem.smoke.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "吸烟状态: " + String.valueOf(which));
-						if( which > -1 && which < Smoke.values().length ) {
-							mProfileItem.smoke = Smoke.values()[which];
-							ReloadData();
-							UploadProfile();
-							dialog.dismiss();
-						}
-					}
-				});
-                builder.create().show();*/
-			}
-		});
+		layoutSmoke.imageViewRight.setTag(R.id.layoutSmoke);
+		layoutSmoke.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 喝酒状态
 		 */
 		layoutDrink = (MyProfileDetailEditItemView) findViewById(R.id.layoutDrink);
 		layoutDrink.textViewLeft.setText("Drink");
-		layoutDrink.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				String[] array = getResources().getStringArray(R.array.drink);
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						MyProfileDetailActivity.this, 
-						array,
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Drink.values().length ) {
-									mProfileItem.drink = Drink.values()[which];
-									ReloadData();
-									UploadProfile();
-								}
-							}
-						},
-						mProfileItem.drink.ordinal());
-				
-				dialog.setTitle("How often do you drink?");
-				dialog.show();
-				dialog.setCanceledOnTouchOutside(true);
-				
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Drink");  
-                builder.setSingleChoiceItems(R.array.drink, mProfileItem.drink.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "喝酒状态: " + String.valueOf(which));
-						if( which > -1 && which < Drink.values().length ) {
-							mProfileItem.drink = Drink.values()[which];
-							ReloadData();
-							UploadProfile();
-							dialog.dismiss();
-						}
-					}
-				});
-                builder.create().show();*/
-			}
-		});
+		layoutDrink.imageViewRight.setTag(R.id.layoutDrink);
+		layoutDrink.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 教育程度
 		 */
 		layoutEducation = (MyProfileDetailEditItemView) findViewById(R.id.layoutEducation);
 		layoutEducation.textViewLeft.setText("Education");
-		layoutEducation.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				String[] array = getResources().getStringArray(R.array.education);
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						MyProfileDetailActivity.this, 
-						array,
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Education.values().length ) {
-									mProfileItem.education = Education.values()[which];
-									ReloadData();
-									UploadProfile();
-								}
-							}
-						},
-						mProfileItem.education.ordinal());
-				
-				dialog.setTitle("What is you education level?");
-				dialog.show();
-				dialog.setCanceledOnTouchOutside(true);
-				
-				
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Education");  
-                builder.setSingleChoiceItems(R.array.education, mProfileItem.education.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "教育程度: " + String.valueOf(which));
-						if( which > -1 && which < Education.values().length ) {
-							mProfileItem.education = Education.values()[which];
-							ReloadData();
-							UploadProfile();
-							dialog.dismiss();
-						}
-					}
-				});
-                builder.create().show();*/
-			}
-		});
+		layoutEducation.imageViewRight.setTag(R.id.layoutEducation);
+		layoutEducation.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 职业
 		 */
 		layoutProfession = (MyProfileDetailEditItemView) findViewById(R.id.layoutProfession);
 		layoutProfession.textViewLeft.setText("Profession");
-		layoutProfession.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				String[] array = getResources().getStringArray(R.array.profression);
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						MyProfileDetailActivity.this, 
-						array,
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Profession.values().length ) {
-									mProfileItem.profession = Profession.values()[which];
-									ReloadData();
-									UploadProfile();
-								}
-							}
-						},
-						mProfileItem.profession.ordinal());
-				
-				dialog.setTitle("Your profession");
-				dialog.show();
-				dialog.setCanceledOnTouchOutside(true);
-				
-				
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Profession");  
-                builder.setSingleChoiceItems(R.array.profression, mProfileItem.profession.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "职业: " + String.valueOf(which));
-						if( which > -1 && which < Profession.values().length ) {
-							mProfileItem.profession = Profession.values()[which];
-							ReloadData();
-							UploadProfile();
-							dialog.dismiss();
-						}
-					}
-				});
-                builder.create().show();*/
-			}
-		});
+		layoutProfession.imageViewRight.setTag(R.id.layoutProfession);
+		layoutProfession.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 信仰
 		 */	
 		layoutEthnicity = (MyProfileDetailEditItemView) findViewById(R.id.layoutEthnicity);
 		layoutEthnicity.textViewLeft.setText("Ethnicity");
-		layoutEthnicity.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				
-				String[] array = getResources().getStringArray(R.array.ethnicity);
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						MyProfileDetailActivity.this, 
-						array,
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Ethnicity.values().length ) {
-									mProfileItem.ethnicity = Ethnicity.values()[which];
-									ReloadData();
-									UploadProfile();
-								}
-							}
-						},
-						mProfileItem.ethnicity.ordinal());
-				
-				dialog.setTitle("What is you ethnicity?");
-				dialog.show();
-				dialog.setCanceledOnTouchOutside(true);
-				
-				
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Ethnicity");  
-                builder.setSingleChoiceItems(R.array.ethnicity, mProfileItem.ethnicity.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "信仰: " + String.valueOf(which));
-						if( which > -1 && which < Ethnicity.values().length ) {
-							mProfileItem.ethnicity = Ethnicity.values()[which];
-							ReloadData();
-							UploadProfile();
-							dialog.dismiss();
-						}
-					}
-				});
-                builder.create().show();*/
-			}
-		});
+		layoutEthnicity.imageViewRight.setTag(R.id.layoutEthnicity);
+		layoutEthnicity.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 种族
 		 */
 		layoutReligion = (MyProfileDetailEditItemView) findViewById(R.id.layoutReligion);
 		layoutReligion.textViewLeft.setText("Religion");
-		layoutReligion.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Religion");  
-                builder.setSingleChoiceItems(R.array.religion, mProfileItem.religion.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "种族: " + String.valueOf(which));
-						if( which > -1 && which < Religion.values().length ) {
-							mProfileItem.religion = Religion.values()[which];
-							ReloadData();
-							UploadProfile();
-							dialog.dismiss();
-						}
-					}
-				});
-                builder.create().show();*/
-				
-				
-				String[] array = getResources().getStringArray(R.array.religion);
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						MyProfileDetailActivity.this, 
-						array,
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Religion.values().length ) {
-									mProfileItem.religion = Religion.values()[which];
-									ReloadData();
-									UploadProfile();
-								}
-							}
-						},
-						mProfileItem.religion.ordinal());
-				
-				dialog.setTitle("You religion");
-				dialog.show();
-				dialog.setCanceledOnTouchOutside(true);
-				
-			}
-		});
+		layoutReligion.imageViewRight.setTag(R.id.layoutReligion);
+		layoutReligion.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 语言
 		 */
 		layoutPrimaryLanguage = (MyProfileDetailEditItemView) findViewById(R.id.layoutPrimaryLanguage);
 		layoutPrimaryLanguage.textViewLeft.setText("Primary Language");
-		layoutPrimaryLanguage.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				String[] array = getResources().getStringArray(R.array.language);
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						MyProfileDetailActivity.this, 
-						array,
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Language.values().length ) {
-									mProfileItem.language = Language.values()[which];
-									ReloadData();
-									UploadProfile();
-								}
-							}
-						},
-						mProfileItem.language.ordinal());
-				
-				dialog.setTitle("What language do you speak?");
-				dialog.show();
-				dialog.setCanceledOnTouchOutside(true);
-				
-				
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Language");  
-                builder.setSingleChoiceItems(R.array.language, mProfileItem.language.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "语言: " + String.valueOf(which));
-						if( which > -1 && which < Language.values().length ) {
-							mProfileItem.language = Language.values()[which];
-							ReloadData();
-							UploadProfile();
-							dialog.dismiss();
-						}
-					}
-				});
-                builder.create().show();*/
-			}
-		});
+		layoutPrimaryLanguage.imageViewRight.setTag(R.id.layoutPrimaryLanguage);
+		layoutPrimaryLanguage.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 子女情况
 		 */
 		layoutHaveChildren = (MyProfileDetailEditItemView) findViewById(R.id.layoutHaveChildren);
 		layoutHaveChildren.textViewLeft.setText("Have Children");
-		layoutHaveChildren.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Children");  
-                builder.setSingleChoiceItems(R.array.children, mProfileItem.children.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "子女情况: " + String.valueOf(which));
-						if( which > -1 && which < Children.values().length ) {
-							mProfileItem.children = Children.values()[which];
-							ReloadData();
-							UploadProfile();
-							dialog.dismiss();
-						}
-					}
-				});
-                builder.create().show();*/
-				
-				
-				String[] array = getResources().getStringArray(R.array.children);
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						MyProfileDetailActivity.this, 
-						array,
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Children.values().length ) {
-									mProfileItem.children = Children.values()[which];
-									ReloadData();
-									UploadProfile();
-								}
-							}
-						},
-						mProfileItem.children.ordinal());
-				
-				dialog.setTitle("Do you have children?");
-				dialog.show();
-				dialog.setCanceledOnTouchOutside(true);
-				
-			}
-		});
-		
+		layoutHaveChildren.imageViewRight.setTag(R.id.layoutHaveChildren);
+		layoutHaveChildren.imageViewRight.setOnClickListener(this);
 		/**
 		 * 收入情况
 		 */
 		layoutCurrentIncome = (MyProfileDetailEditItemView) findViewById(R.id.layoutCurrentIncome);
 		layoutCurrentIncome.textViewLeft.setText("Current Income");
-		layoutCurrentIncome.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Income");  
-                builder.setSingleChoiceItems(R.array.income, mProfileItem.income.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "收入情况: " + String.valueOf(which));
-						if( which > -1 && which < Income.values().length ) {
-							mProfileItem.income = Income.values()[which];
-							ReloadData();
-							UploadProfile();
-							dialog.dismiss();
-						}
-					}
-				});
-                builder.create().show();*/
-				
-				String[] array = getResources().getStringArray(R.array.income);
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						MyProfileDetailActivity.this, 
-						array,
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Income.values().length ) {
-									mProfileItem.income = Income.values()[which];
-									ReloadData();
-									UploadProfile();
-								}
-							}
-						},
-						mProfileItem.income.ordinal());
-				
-				dialog.setTitle("Your income");
-				dialog.show();
-				dialog.setCanceledOnTouchOutside(true);
-				
-			}
-		});
+		layoutCurrentIncome.imageViewRight.setTag(R.id.layoutCurrentIncome);
+		layoutCurrentIncome.imageViewRight.setOnClickListener(this);
 		
 		/**
 		 * 星座
 		 */
 		layoutZodiac = (MyProfileDetailEditItemView) findViewById(R.id.layoutZodiac);
 		layoutZodiac.textViewLeft.setText("Zodiac");
-		layoutZodiac.imageViewRight.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+//		layoutZodiac.imageViewRight.setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
 		layoutZodiac.setVisibility(View.GONE);
 	}
 	
 	@Override
-	public void InitHandler() {
+	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_PROFILE_SUCCESS:
-					hideProgressDialog();
-					// 缓存数据
-					mProfileItem = (ProfileItem)obj.body;
-					MyProfilePerfence.SaveProfileItem(mContext, mProfileItem);
-					
-					// 刷新界面
-					ReloadData();
-					break;
-				case REQUEST_UPDATE_PROFILE_SUCCESS:
-					showToastDone("Done!");
+		super.handleUiMessage(msg);
+		RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_PROFILE_SUCCESS:
+			hideProgressDialog();
+			// 缓存数据
+			mProfileItem = (ProfileItem)obj.body;
+			MyProfilePerfence.SaveProfileItem(mContext, mProfileItem);
+			
+			// 刷新界面
+			ReloadData();
+			break;
+		case REQUEST_UPDATE_PROFILE_SUCCESS:
+			showToastDone("Done!");
 
-					// 缓存数据
-					MyProfilePerfence.SaveProfileItem(mContext, mProfileItem);
-					
-					ReloadData();
-					break;
-				case REQUEST_QUERYLADYMATCH_SUCCESS:
-					cancelToast();
+			// 缓存数据
+			MyProfilePerfence.SaveProfileItem(mContext, mProfileItem);
+			
+			ReloadData();
+			break;
+		case REQUEST_QUERYLADYMATCH_SUCCESS:
+			cancelToast();
 
-					// 获取匹配女士成功
-					// 缓存数据
-					mLadyMatch = (LadyMatch)obj.body;
-					MyProfilePerfence.SaveLadyMatch(mContext, mLadyMatch);
-					
-					ReloadData();
-					break;
-				case REQUEST_FAIL:{
-					hideProgressDialog();
-					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
-				}break;
-				default:
-					break;
-				}
-			};
-		};
+			// 获取匹配女士成功
+			// 缓存数据
+			mLadyMatch = (LadyMatch)obj.body;
+			MyProfilePerfence.SaveLadyMatch(mContext, mLadyMatch);
+			
+			ReloadData();
+			break;
+		case REQUEST_FAIL:{
+			hideProgressDialog();
+			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
+		}break;
+		default:
+			break;
+		}
 	}
 	
 	@Override
@@ -1120,7 +882,7 @@ public class MyProfileDetailActivity extends BaseActivity {
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
 				}
 				msg.obj = obj;
-				mHandler.sendMessage(msg);
+				sendUiMessage(msg);
 			}
 		});
 	}
@@ -1145,7 +907,7 @@ public class MyProfileDetailActivity extends BaseActivity {
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
 				}
 				msg.obj = obj;
-				mHandler.sendMessage(msg);
+				sendUiMessage(msg);
 			}
 		});
 	}
@@ -1186,7 +948,7 @@ public class MyProfileDetailActivity extends BaseActivity {
 							msg.what = RequestFlag.REQUEST_FAIL.ordinal();
 						}
 						msg.obj = obj;
-						mHandler.sendMessage(msg);
+						sendUiMessage(msg);
 					}
 				});
 	}

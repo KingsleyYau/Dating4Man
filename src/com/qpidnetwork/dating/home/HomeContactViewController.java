@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager;
+import com.qpidnetwork.dating.authorization.LoginManager.LoginStatus;
 import com.qpidnetwork.dating.bean.ContactBean;
 import com.qpidnetwork.dating.contacts.ContactManager;
 import com.qpidnetwork.dating.contacts.ContactSearchActivity;
@@ -50,7 +51,9 @@ import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.MaterialProgressBar;
 
 @SuppressLint("InflateParams")
-public class HomeContactViewController {
+public class HomeContactViewController implements OnClickListener,
+		OnRefreshListener, OnGetContactListCallBack,
+		OnLadyDetailManagerQueryLadyDetailCallback {
 
 	private static final int GET_CONTACTLIST_SUCCESS = 0;
 	private static final int GET_CONTACTLIST_FAILED = 1;
@@ -88,9 +91,6 @@ public class HomeContactViewController {
 		getView();
 		mImageViewLoader = new ImageViewLoader(context);
 	}
-	
-	
-
 
 	public View getView() {
 
@@ -113,70 +113,31 @@ public class HomeContactViewController {
 				.findViewById(R.id.progress_bar);
 		noDataView = (LinearLayout) mView.findViewById(R.id.no_content);
 		noDataView.setVisibility(View.GONE);
-		noDataViewLogin = (ButtonRaised)mView.findViewById(R.id.btn_no_data_login);
-		noDataViewTips = (TextView)mView.findViewById(R.id.no_data_view_tips);
-		
-		if (Build.VERSION.SDK_INT >= 21){
-			expand.getLayoutParams().height = UnitConversion.dip2px(mContext, 48);
-			expand.getLayoutParams().width = UnitConversion.dip2px(mContext, 48);
-			search.getLayoutParams().height = UnitConversion.dip2px(mContext, 48);
-			search.getLayoutParams().width = UnitConversion.dip2px(mContext, 48);
+		noDataViewLogin = (ButtonRaised) mView
+				.findViewById(R.id.btn_no_data_login);
+		noDataViewTips = (TextView) mView.findViewById(R.id.no_data_view_tips);
+
+		if (Build.VERSION.SDK_INT >= 21) {
+			expand.getLayoutParams().height = UnitConversion.dip2px(mContext,
+					48);
+			expand.getLayoutParams().width = UnitConversion
+					.dip2px(mContext, 48);
+			search.getLayoutParams().height = UnitConversion.dip2px(mContext,
+					48);
+			search.getLayoutParams().width = UnitConversion
+					.dip2px(mContext, 48);
 		}
-		
-		noDataViewLogin.setOnClickListener(new OnClickListener(){
 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				mActivity.getSlideMenu().close(true);
-				mActivity.getSlideMenu().postDelayed(new Runnable(){
-
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						LoginManager.getInstance().CheckLogin(mContext);
-					}
-					
-				}, 200);
-			}
-			
-		});
-
-		search.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				ContactSearchActivity.launchContactSearchActivity(mContext, 1);
-				mActivity.overridePendingTransition(R.anim.anim_donot_animate, R.anim.anim_donot_animate);  
-			}
-
-		});
-
-		expand.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				mActivity.scrollToLeftEdge();
-			}
-		});
+		noDataViewLogin.setOnClickListener(this);
+		search.setOnClickListener(this);
+		expand.setOnClickListener(this);
 
 		mContactManager = ContactManager.getInstance();
 		mAdapter = new ContactsAdapter((Activity) mContext, 1);
 		mAdapter.setComparator(ContactBean.getComparator());
 		mContactList.setAdapter(mAdapter);
 
-		mRefreshView.setOnRefreshListener(new OnRefreshListener() {
-
-			@Override
-			public void onRefresh() {
-				// TODO Auto-generated method stub
-				queryContactList();
-			}
-
-		});
+		mRefreshView.setOnRefreshListener(this);
 
 		/* invite */
 		initFootInvite(mView);
@@ -188,29 +149,21 @@ public class HomeContactViewController {
 	}
 
 	private void queryContactList() {
-		if (!isInited) {
-			// showInitLoading();
-		}
-		noDataView.setVisibility(View.GONE);
-		mContactManager.getContacts(new OnGetContactListCallBack() {
-
-			@Override
-			public void onContactListCallback(boolean isSuccess, String errno,
-					String errmsg) {
-				// TODO Auto-generated method stub
-				Message msg = Message.obtain();
-				if (isSuccess) {
-					msg.what = GET_CONTACTLIST_SUCCESS;
-					msg.obj = mContactManager.getContactList();
-				} else {
-					msg.what = GET_CONTACTLIST_FAILED;
-					msg.obj = errmsg;
-				}
-				handleUiMessage(msg);
+		if (LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED) {
+			/* 已登录再调用获取联系人接口 */
+			if (!isInited) {
+				// showInitLoading();
 			}
-		});
-
-		mRefreshView.setRefreshing(true);
+			noDataView.setVisibility(View.GONE);
+			mContactManager.getContacts(this);
+			mRefreshView.setRefreshing(true);
+		} else {
+			/* 未登录，刷新登陆失败 */
+			Message msg = Message.obtain();
+			msg.what = GET_CONTACTLIST_FAILED;
+			msg.obj = "";
+			handleUiMessage(msg);
+		}
 	}
 
 	private void handleUiMessage(Message msg) {
@@ -258,13 +211,13 @@ public class HomeContactViewController {
 				if (item.errType == 1) {
 					LadyDetail ladyDetail = (LadyDetail) item.body;
 					/* 获取女士资料成功，下载女士头像 */
-					ivInvitePhoto.setImageResource(R.drawable.female_default_profile_photo_40dp);
+					ivInvitePhoto
+							.setImageResource(R.drawable.female_default_profile_photo_40dp);
 					if (!StringUtil.isEmpty(ladyDetail.photoMinURL)) {
 						String localPath = FileCacheManager.getInstance()
 								.CacheImagePathFromUrl(ladyDetail.photoMinURL);
-						mImageViewLoader.DisplayImage(
-								ivInvitePhoto, ladyDetail.photoMinURL,
-								localPath, null);
+						mImageViewLoader.DisplayImage(ivInvitePhoto,
+								ladyDetail.photoMinURL, localPath, null);
 					}
 				}
 				break;
@@ -274,53 +227,56 @@ public class HomeContactViewController {
 	};
 
 	private void showListOrNoContent() {
-		if (mAdapter.getDataList() == null || mAdapter.getDataList().size() == 0) {
+		if (mAdapter.getDataList() == null
+				|| mAdapter.getDataList().size() == 0) {
 			noDataView.setVisibility(View.VISIBLE);
-			if (LoginManager.getInstance().CheckLogin(mContext, false)){
-				noDataViewTips.setText(R.string.contact_no_data_tips_logined_in);
+			if (LoginManager.getInstance().CheckLogin(mContext, false)) {
+				noDataViewTips
+						.setText(R.string.contact_no_data_tips_logined_in);
 				noDataViewLogin.setVisibility(View.GONE);
-			}else{
+			} else {
 				noDataViewLogin.setVisibility(View.VISIBLE);
 				noDataViewTips.setText(R.string.contact_no_data_tips_not_login);
 			}
-			
+
 		} else {
 			noDataView.setVisibility(View.GONE);
 		}
 	}
 
 	public void reloadDataIfNull() {
-		if (mAdapter.getDataList() == null || mAdapter.getDataList().size() == 0)
+		if (mAdapter.getDataList() == null
+				|| mAdapter.getDataList().size() == 0)
 			queryContactList();
 	}
 
 	public void listenToContactListUpdate(List<ContactBean> list) {
 		mAdapter.replaceList(list);
 		showListOrNoContent();
-		
+
 	}
-	
-	/*登陆处理*/
-	public void listenToLoginActivity(){
-		/*站点切换，登陆成功，刷新底部邀请处理*/
-		if(mLiveChatManager != null && footer != null){
-			/*防止未初始化完成*/
+
+	/* 登陆处理 */
+	public void listenToLoginActivity() {
+		/* 站点切换，登陆成功，刷新底部邀请处理 */
+		if (mLiveChatManager != null && footer != null) {
+			/* 防止未初始化完成 */
 			updateInviteView();
 		}
 	}
 
-	/*注销处理*/
-	public void listenToLogoutActivity(){
+	/* 注销处理 */
+	public void listenToLogoutActivity() {
 		mAdapter.getDataList().clear();
 		mAdapter.notifyDataSetChanged();
-		
-		/*站点切换，注销成功，隐藏底部邀请*/
-		if(footer != null){
+
+		/* 站点切换，注销成功，隐藏底部邀请 */
+		if (footer != null) {
 			footer.setVisibility(View.GONE);
 		}
 	}
-	
-public Point getSize(){
+
+	public Point getSize() {
 		Point size = getScreenSize();
 		size.x -= getOffset();
 		return size;
@@ -392,15 +348,8 @@ public Point getSize(){
 
 		mLiveChatManager = LiveChatManager.newInstance(mActivity);
 		updateInviteView();
-		
-		footer.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(mContext, LivechatInviteListActivity.class);
-				mContext.startActivity(intent);
-			}
-		});
+
+		footer.setOnClickListener(this);
 	}
 
 	/**
@@ -408,40 +357,41 @@ public Point getSize(){
 	 */
 	private void updateInviteView() {
 		ArrayList<LCUserItem> inviteList = mLiveChatManager.GetInviteUsers();
-		if(inviteList != null && inviteList.size() > 0){
+		if (inviteList != null && inviteList.size() > 0) {
 			LCUserItem lastInvite = mLiveChatManager.GetLastInviteUser();
-			
-			if(lastInvite != null
-					&& !StringUtil.isEmpty(lastInvite.userId)){
-				/*邀请列表不为null且最后一条记录不为空显示底部,并且最后一条邀请用户的最近一条消息必须是text*/
+
+			if (lastInvite != null && !StringUtil.isEmpty(lastInvite.userId)) {
+				/* 邀请列表不为null且最后一条记录不为空显示底部,并且最后一条邀请用户的最近一条消息必须是text */
 				footer.setVisibility(View.VISIBLE);
 				QueryLadyDetail(lastInvite.userId);
-			
+
 				// 设置显示邀请数字符串
 				String strInviteNum = "";
 				if (inviteList.size() > 99) {
 					strInviteNum = "99+";
-				}
-				else {
+				} else {
 					strInviteNum = String.valueOf(inviteList.size());
 				}
 				tvInviteNum.setText(strInviteNum);
-				
-				/*提示消息内容*/
+
+				/* 提示消息内容 */
 				LCMessageItem lastMsg = lastInvite.getTheOtherLastMessage();
-				if (lastMsg != null)
-				{
-					if((lastMsg.msgType == MessageType.Text)
-							&&(lastMsg.getTextItem() != null
-							&&lastMsg.getTextItem().message != null)){
-						ExpressionImageGetter imageGetter = new ExpressionImageGetter(mContext, UnitConversion.dip2px(
-								mContext, 28), UnitConversion.dip2px(mContext, 28));
-						tvInviteMsg.setText(imageGetter.getExpressMsgHTML(lastMsg.getTextItem().message));
-					}else{
-						String inviteMsg = ContactManager.getInstance().generateMsgHint(lastMsg);
+				if (lastMsg != null) {
+					if ((lastMsg.msgType == MessageType.Text)
+							&& (lastMsg.getTextItem() != null && lastMsg
+									.getTextItem().message != null)) {
+						ExpressionImageGetter imageGetter = new ExpressionImageGetter(
+								mContext, UnitConversion.dip2px(mContext, 28),
+								UnitConversion.dip2px(mContext, 28));
+						tvInviteMsg
+								.setText(imageGetter.getExpressMsgHTML(lastMsg
+										.getTextItem().message));
+					} else {
+						String inviteMsg = ContactManager.getInstance()
+								.generateMsgHint(lastMsg);
 						tvInviteMsg.setText(inviteMsg);
 					}
-				}  
+				}
 			}
 		} else {
 			/* 无邀请直接隐藏底部，不显示. */
@@ -460,20 +410,74 @@ public Point getSize(){
 	 * @param womanid
 	 */
 	private void QueryLadyDetail(String womanid) {
-		LadyDetailManager.getInstance().QueryLadyDetail(womanid,
-				new OnLadyDetailManagerQueryLadyDetailCallback() {
+		LadyDetailManager.getInstance().QueryLadyDetail(womanid, this);
+	}
 
-					@Override
-					public void OnQueryLadyDetailCallback(boolean isSuccess,
-							String errno, String errmsg, LadyDetail item) {
-						Message msg = Message.obtain();
-						msg.what = QUERY_LADY_DETAIL;
-						LiveChatCallBackItem ladyDetail = new LiveChatCallBackItem(
-								isSuccess ? 1 : 0, errno, errmsg, item);
-						msg.obj = ladyDetail;
-						handleUiMessage(msg);
-					}
-				});
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.btn_no_data_login: {
+			mActivity.getSlideMenu().close(true);
+			mActivity.getSlideMenu().postDelayed(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					LoginManager.getInstance().CheckLogin(mContext);
+				}
+
+			}, 200);
+		}
+			break;
+		case R.id.expand: {
+			mActivity.scrollToLeftEdge();
+		}
+			break;
+		case R.id.search: {
+			ContactSearchActivity.launchContactSearchActivity(mContext, 1);
+			mActivity.overridePendingTransition(R.anim.anim_donot_animate,
+					R.anim.anim_donot_animate);
+		}
+			break;
+		case R.id.footer: {
+			Intent intent = new Intent(mContext,
+					LivechatInviteListActivity.class);
+			mContext.startActivity(intent);
+		}
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void onRefresh() {
+		queryContactList();
+	}
+
+	@Override
+	public void onContactListCallback(boolean isSuccess, String errno,
+			String errmsg) {
+		Message msg = Message.obtain();
+		if (isSuccess) {
+			msg.what = GET_CONTACTLIST_SUCCESS;
+			msg.obj = mContactManager.getContactList();
+		} else {
+			msg.what = GET_CONTACTLIST_FAILED;
+			msg.obj = errmsg;
+		}
+		handleUiMessage(msg);
+	}
+
+	@Override
+	public void OnQueryLadyDetailCallback(boolean isSuccess, String errno,
+			String errmsg, LadyDetail item) {
+		Message msg = Message.obtain();
+		msg.what = QUERY_LADY_DETAIL;
+		LiveChatCallBackItem ladyDetail = new LiveChatCallBackItem(
+				isSuccess ? 1 : 0, errno, errmsg, item);
+		msg.obj = ladyDetail;
+		handleUiMessage(msg);
 	}
 
 }

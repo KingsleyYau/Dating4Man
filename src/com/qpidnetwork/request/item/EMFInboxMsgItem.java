@@ -43,6 +43,7 @@ public class EMFInboxMsgItem {
 		 String[] photosURL,
 		 String sendTime,
 		 EMFPrivatePhotoItem[] privatePhotos,
+		 EMFShortVideoItem[] shortVideos,
 		 String vgId
 			) {
 		this.id = id;
@@ -60,6 +61,7 @@ public class EMFInboxMsgItem {
 		this.photosURL = photosURL;
 		this.sendTime = sendTime;
 		this.privatePhotos = privatePhotos;
+		this.shortVideos = shortVideos;
 		this.vgId = vgId;
 	}
 	
@@ -78,5 +80,6 @@ public class EMFInboxMsgItem {
 	public String[] photosURL;
 	public String sendTime;
 	public EMFPrivatePhotoItem[] privatePhotos;
+	public EMFShortVideoItem[] shortVideos;
 	public String vgId;
 }

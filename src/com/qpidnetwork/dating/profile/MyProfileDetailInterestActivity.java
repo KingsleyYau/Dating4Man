@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.framework.widget.wrap.WrapBaseAdapter;
 import com.qpidnetwork.framework.widget.wrap.WrapListView;
@@ -25,7 +25,7 @@ import com.qpidnetwork.view.MaterialAppBar;
  * MyProfile模块
  * @author Max.Chiu
  */
-public class MyProfileDetailInterestActivity extends BaseActivity {
+public class MyProfileDetailInterestActivity extends BaseFragmentActivity implements OnClickListener {
 
 	public static final String INTEREST = "interest";
 	
@@ -50,7 +50,7 @@ public class MyProfileDetailInterestActivity extends BaseActivity {
 		public boolean isSigned;
 	}
 	
-	private class InterestLabelAdapter extends WrapBaseAdapter {
+	private class InterestLabelAdapter extends WrapBaseAdapter implements OnClickListener {
 		
 		private Context mContext;
 		private List<CheckItem> mList;
@@ -106,19 +106,8 @@ public class MyProfileDetailInterestActivity extends BaseActivity {
 			}
 			holder.tvLabelDesc.setText(item.name);
 			holder.cvLabel.setCardElevation(0f);
-			holder.cvLabel.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					if(mList.get(position).isSigned){
-						mList.get(position).isSigned = false;
-					}else{
-						mList.get(position).isSigned = true;
-					}
-					notifyDataSetChanged();
-				}
-			});
+			holder.cvLabel.setTag(position);
+			holder.cvLabel.setOnClickListener(this);
 			
 			return convertView;
 		}
@@ -143,6 +132,18 @@ public class MyProfileDetailInterestActivity extends BaseActivity {
 			CardView cvLabel;
 			ImageView ivLabelCheck;
 			TextView tvLabelDesc;
+		}
+
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			int position = (int)v.getTag();
+			if(mList.get(position).isSigned){
+				mList.get(position).isSigned = false;
+			}else{
+				mList.get(position).isSigned = true;
+			}
+			notifyDataSetChanged();
 		}
 
 	}
@@ -181,33 +182,24 @@ public class MyProfileDetailInterestActivity extends BaseActivity {
 		appbar.addButtonToLeft(android.R.id.button1, "", R.drawable.ic_arrow_back_grey600_24dp);
 		appbar.addButtonToRight(android.R.id.button2, "", R.drawable.ic_done_grey600_24dp);
 		appbar.setTitle(getString(R.string.my_interest), getResources().getColor(R.color.text_color_dark));
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				switch (v.getId()){
-				case android.R.id.button1:
-					setResult(RESULT_CANCELED, null);
-					finish();
-					break;
-				case android.R.id.button2:
-					Intent intent = new Intent();
-					intent.putExtra(INTEREST, intrestLabelAdapter.getChoosedLabelsId());
-					setResult(RESULT_OK, intent);
-					finish();
-					break;
-				}
-			}
-			
-		});
-		
+		appbar.setOnButtonClickListener(this);
 	}
 
 	@Override
-	public void InitHandler() {
+	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		
+		switch (v.getId()){
+		case android.R.id.button1:
+			setResult(RESULT_CANCELED, null);
+			finish();
+			break;
+		case android.R.id.button2:
+			Intent intent = new Intent();
+			intent.putExtra(INTEREST, intrestLabelAdapter.getChoosedLabelsId());
+			setResult(RESULT_OK, intent);
+			finish();
+			break;
+		}
 	}
 	
 	/**

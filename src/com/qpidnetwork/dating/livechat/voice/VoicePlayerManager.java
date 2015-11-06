@@ -48,6 +48,12 @@ public class VoicePlayerManager {
 		if(currMsgId == msgId){
 			if(isPlaying){
 				stopPlaying();
+			}else{
+				this.v = v;
+				if((filePath != null) && (new File(filePath).exists())){
+					/*本地文件存在开始播放*/
+					startPlaying(filePath);
+				}
 			}
 		}else{
 			currMsgId = msgId;

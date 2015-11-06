@@ -37,6 +37,7 @@ import com.qpidnetwork.dating.quickmatch.QuickMatchManager;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.SystemUtil;
 import com.qpidnetwork.livechat.LiveChatManager;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.manager.VirtualGiftManager;
@@ -60,6 +61,11 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 	private IAdvertBinder mAdvertBinder = null;
 	private ServiceConnection mAdvertConnection = null;
 	private Handler mHandler = null;
+	
+	//存放被踢时标志位及被踢时间，用于判断再次进入是否弹出被T提示
+	public static boolean isKickOff = false;
+	public static int lastestKickoffTime = 0;
+	public static KickOfflineType kickOffType = KickOfflineType.Unknow;
 	
 	private enum ApplicationHandleType {
 		LOGIN_SUCCESS,
@@ -227,6 +233,7 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 	public static synchronized Context getContext(){
 		return mContext;
 	}
+	
 	
 	/**
 	 * 初始化handler

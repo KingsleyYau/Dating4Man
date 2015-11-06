@@ -1,8 +1,13 @@
 package com.qpidnetwork.framework.util;
 
+import java.util.List;
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.WindowManager;
 
 public class SystemUtil {
@@ -34,5 +39,27 @@ public class SystemUtil {
 	    } 
 	    return false;
 	}
+	
+	/**
+	 * 判断是否后台运行
+	 * @param context
+	 * @return
+	 */
+	public static boolean isBackground(Context context) {  
+        ActivityManager activityManager = (ActivityManager) context  
+                .getSystemService(Context.ACTIVITY_SERVICE);  
+        List<RunningAppProcessInfo> appProcesses = activityManager  
+                .getRunningAppProcesses();  
+        for (RunningAppProcessInfo appProcess : appProcesses) {  
+            if (appProcess.processName.equals(context.getPackageName())) {  
+                if (appProcess.importance != RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {  
+                    return true;  
+                } else {   
+                    return false;  
+                }  
+            }  
+        }  
+        return false;  
+    }
 	
 }

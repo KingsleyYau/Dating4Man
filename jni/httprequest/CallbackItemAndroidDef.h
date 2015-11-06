@@ -40,6 +40,7 @@
 
 /* 6.EMF模块 */
 #define EMF_PRIVATEPHOTO_ITEM_CLASS		"com/qpidnetwork/request/item/EMFPrivatePhotoItem"
+#define EMF_SHORTVIDEO_ITEM_CLASS		"com/qpidnetwork/request/item/EMFShortVideoItem"
 #define EMF_INBOXLIST_ITEM_CLASS		"com/qpidnetwork/request/item/EMFInboxListItem"
 #define EMF_INBOXMSG_ITEM_CLASS			"com/qpidnetwork/request/item/EMFInboxMsgItem"
 #define EMF_OUTBOXLIST_ITEM_CLASS		"com/qpidnetwork/request/item/EMFOutboxListItem"

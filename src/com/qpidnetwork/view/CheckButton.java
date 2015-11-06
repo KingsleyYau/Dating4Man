@@ -14,7 +14,7 @@ import com.qpidnetwork.dating.R;
 public class CheckButton extends RelativeLayout implements View.OnClickListener {
 	
 	public interface OnCheckLinstener {
-		public void onCheckedChange(boolean bChecked);
+		public void onCheckedChange(View v, boolean bChecked);
 	}
 	
 	
@@ -79,7 +79,7 @@ public class CheckButton extends RelativeLayout implements View.OnClickListener 
     	}
     	
     	if( bFlag && mListener != null ) {
-    		mListener.onCheckedChange(mChecked);
+    		mListener.onCheckedChange(this, mChecked);
     	}
     	
     }

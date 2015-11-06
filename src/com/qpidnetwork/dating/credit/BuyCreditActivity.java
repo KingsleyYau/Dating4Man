@@ -19,6 +19,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
+import android.webkit.WebView.HitTestResult;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
@@ -37,7 +38,7 @@ import com.qpidnetwork.view.MaterialDialogAlert;
 
 @SuppressLint("SetJavaScriptEnabled")
 @SuppressWarnings("deprecation")
-public class BuyCreditActivity extends BaseActionBarFragmentActivity{
+public class BuyCreditActivity extends BaseActionBarFragmentActivity implements OnConfigManagerCallback{
 	
 	protected final String tag = getClass().getName();
 	
@@ -49,6 +50,7 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity{
 	
 	/*JS交互*/
 	public static final int NEXT = 100;
+	
 	public static final int FIRST = 101;
 	public static final int HOME = 102;
 	
@@ -80,7 +82,6 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity{
 				orderId = bundle.getString(CREDIT_ORDER_NUMBER);
 			}
 		}
-		
 		mWebView = (WebView)findViewById(R.id.webView);
 		mWebPage = (RelativeLayout)findViewById(R.id.webPage);
 		
@@ -104,24 +105,12 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity{
 		mWebView.setWebViewClient(wvc);
 		mWebView.setWebChromeClient(client);
 		
-		showProgressDialog("Loading");
+//		showProgressDialog("Loading");
 		
 		/*getInstance 前必须createInstance */
 		CookieSyncManager.createInstance(this);
 		
-		ConfigManager.getInstance().GetOtherSynConfigItem(new OnConfigManagerCallback() {
-			
-			@Override
-			public void OnGetOtherSynConfigItem(boolean isSuccess, String errno,
-					String errmsg, OtherSynConfigItem item) {
-				// TODO Auto-generated method stub
-				if(isSuccess){
-					addCreditsUrl = item.pub.addCreditsUrl;
-					addCredits2Url = item.pub.addCredits2Url;
-					loadUrl();
-				}
-			}
-		});
+		ConfigManager.getInstance().GetOtherSynConfigItem(this);
 	}
 	
 	@Override
@@ -171,10 +160,14 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity{
 
 		@Override
 		public void onPageFinished(WebView view, String url) {
-			hideProgressDialog();
+//			hideProgressDialog();
+			/*重定向可能导致多次onPageStarted 但仅一次onPageFinished 导致dialog无法隐藏*/
+			hideProgressDialogIgnoreCount();
 			
 			if(isBlockLoadingNetworkImage){
-				mWebView.getSettings().setBlockNetworkImage(false);
+				if(mWebView != null){
+					mWebView.getSettings().setBlockNetworkImage(false);
+				}
 				isBlockLoadingNetworkImage = false;
 			}
 			super.onPageFinished(view, url);
@@ -369,6 +362,32 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity{
 			return false;
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	public void OnGetOtherSynConfigItem(boolean isSuccess, String errno,
+			String errmsg, OtherSynConfigItem item) {
+		if(isSuccess){
+			addCreditsUrl = item.pub.addCreditsUrl;
+			addCredits2Url = item.pub.addCredits2Url;
+			loadUrl();
+		}		
+	}
+	
+	/**
+	 * 忽视计数器直接隐藏progressDialog
+	 */
+	public void hideProgressDialogIgnoreCount(){
+		try {
+			if( mProgressDialogCount > 0 ) {
+				mProgressDialogCount = 0;
+				if( progressDialog != null ) {
+					progressDialog.dismiss();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

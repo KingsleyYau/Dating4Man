@@ -24,9 +24,7 @@ import com.qpidnetwork.dating.advertisement.AdWomanListAdvertItem;
 import com.qpidnetwork.dating.advertisement.AdvertPerfence;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
-import com.qpidnetwork.dating.bean.ContactBean;
 import com.qpidnetwork.dating.contacts.ContactManager;
-import com.qpidnetwork.dating.contacts.OnContactUpdateCallback;
 import com.qpidnetwork.dating.home.LadyListAdapter.ChatButtonType;
 import com.qpidnetwork.dating.home.LadyListAdapter.OnLadyListAdapterCallback;
 import com.qpidnetwork.dating.lady.LadyDetailActivity;
@@ -111,6 +109,7 @@ public class HomeContentViewController implements View.OnClickListener {
 	public OrderType mOrderType = OrderType.DEFAULT;
 	
 	public boolean mbLoadingMore = false;
+	private int mOnlineLadyPageIndex = 1;
 	
 	/**
 	 * 请求消息
@@ -194,40 +193,6 @@ public class HomeContentViewController implements View.OnClickListener {
     	mAge2 = -1;
     	mOnlineType = OnlineType.ONLINE;
     	mWomanId = "";
-    	
-    	// 初始化联系人
-    	ContactManager.getInstance().registerContactUpdate(new OnContactUpdateCallback() {
-			
-			@Override
-			public void onContactUpdate(List<ContactBean> contactList) {
-				// TODO Auto-generated method stub
-				// 如果有INCHAT, 并且INCHAT的联系人没有未读
-//				boolean bFlag = false;
-//				int unreadCount = 0;
-//				for( ContactBean item : contactList ) {
-//					unreadCount += item.unreadCount;
-//					if( item.isInchating ) {
-//						// 标记有INCHAT
-//						bFlag = true;
-//					}
-//					
-//					if( bFlag && unreadCount != 0 ) {
-//						// 有未读, 退出
-//						Log.d("HomeContentViewController", "onContactUpdate( INCHAT, unread )");
-//						return;
-//					}
-//				}
-//				
-//				Log.d("HomeContentViewController", "onContactUpdate( no INCHAT or no unread )");
-//				
-//				// 没有未读, 去除菜单栏白点
-//				Message msg = Message.obtain();
-//				MessageCallbackItem obj = new MessageCallbackItem("", "");
-//				msg.what = RequestFlag.LIVECHAT_CONTACT_MESSAGE.ordinal();
-//				msg.obj = obj;
-//				mHandler.sendMessage(msg);
-			}
-		});
     	
 		// 读取女士列表广告
     	mAdWomanListAdvertItem = AdvertPerfence.GetAdWomanListAdvertItem(mContext);
@@ -505,6 +470,7 @@ public class HomeContentViewController implements View.OnClickListener {
 					} 
 					else {
 						// 刷新成功
+						mLadyList.clear();
 						RequestLadyListAdvert();
 					}
 					
@@ -661,23 +627,15 @@ public class HomeContentViewController implements View.OnClickListener {
 	 * @param loadMore
 	 */
 	public void QueryOnlineLadyList(final boolean loadMore) {
-		// 当次需要获取结果的第几页
-		int pageIndex = 1;
 		// 每页最大纪录数
 		final int pageSize = 10;
 		
-		// 需要从服务器获取的记录
-		final int maxOnlineCount = mLadyList.size() + pageSize;
-		
-	    // 当次需要获取结果的第几页
-		pageIndex = (maxOnlineCount - 1) / pageSize + 1;
-		pageIndex = (pageIndex > 0)?pageIndex:1;
-	    
 		if( !loadMore ) {
 			// 刷最新
-			pageIndex = 1;
+			mOnlineLadyPageIndex = 1;
 		} else {
 			mbLoadingMore = true;
+			mOnlineLadyPageIndex++;
 		}
 		
 		mAdapter.mChatButtonType = ChatButtonType.Default;
@@ -728,7 +686,7 @@ public class HomeContentViewController implements View.OnClickListener {
 		TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
 		LadyDetailManager.getInstance().QueryLadyList(
 //		RequestJniLady.QueryLadyList(
-				pageIndex,
+				mOnlineLadyPageIndex,
 				pageSize,
 				mSearchType, 
 				mWomanId,

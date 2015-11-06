@@ -18,6 +18,8 @@ public class EMFAdmirerViewerItem {
 	  * @param age			年龄
 	  * @param photoURL		头像URL
 	  * @param sendTime		发送时间
+	  * @param templateType 主题类型（A:信件主题，B:虚拟礼物主题）
+	  * @param vgId		            虚拟礼物ID
 	  */
 	public EMFAdmirerViewerItem(
 		 String id,
@@ -32,7 +34,9 @@ public class EMFAdmirerViewerItem {
 		 String mtab,
 		 int age,
 		 String photoURL,
-		 String sendTime
+		 String sendTime,
+		 String templateType,
+		 String vgId
 		 	) {
 		this.id = id;
 		this.body = body;
@@ -47,6 +51,8 @@ public class EMFAdmirerViewerItem {
 		this.age = age;
 		this.photoURL = photoURL;
 		this.sendTime = sendTime;
+		this.templateType = templateType;
+		this.vgId = vgId;
 	}
 	
 	public String id;
@@ -62,4 +68,6 @@ public class EMFAdmirerViewerItem {
 	public int age;
 	public String photoURL;
 	public String sendTime;
+	public String templateType;
+	public String vgId;
 }

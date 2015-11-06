@@ -103,6 +103,8 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 		return -1;
 	}
 
+	HttpClient::Init();
+
 	gHttpRequestManager.SetHostManager(&gHttpRequestHostManager);
 
 	//	InitEnumHelper(env, COUNTRY_ITEM_CLASS, &gCountryItem);
@@ -188,6 +190,10 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 	jobject jEMFPrivatePhotoItem;
 	InitClassHelper(env, EMF_PRIVATEPHOTO_ITEM_CLASS, &jEMFPrivatePhotoItem);
 	gJavaItemMap.insert(JavaItemMap::value_type(EMF_PRIVATEPHOTO_ITEM_CLASS, jEMFPrivatePhotoItem));
+
+	jobject jEMFShortVideoItem;
+	InitClassHelper(env, EMF_SHORTVIDEO_ITEM_CLASS, &jEMFShortVideoItem);
+	gJavaItemMap.insert(JavaItemMap::value_type(EMF_SHORTVIDEO_ITEM_CLASS, jEMFShortVideoItem));
 
 	jobject jEMFInboxListItem;
 	InitClassHelper(env, EMF_INBOXLIST_ITEM_CLASS, &jEMFInboxListItem);

@@ -40,7 +40,15 @@ import com.qpidnetwork.view.MaterialProgressBar;
  * 显示虚拟礼物界面
  * @author Max.Chiu
  */
-public class EMFAttachmentVirtualGiftFragment extends IndexFragment implements Callback, OnSeekCompleteListener, OnCompletionListener, OnErrorListener, OnPreparedListener {
+public class EMFAttachmentVirtualGiftFragment extends IndexFragment 
+											  implements Callback, 
+											  			 OnSeekCompleteListener, 
+											  			 OnCompletionListener, 
+											  			 OnErrorListener, 
+											  			 OnPreparedListener,
+											  			 OnClickListener,
+											  			 FileDownloaderCallback
+{
 	
 	private enum DownLoadFlag {
 		FAIL,
@@ -119,7 +127,6 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment implements C
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
                                         
-    	Log.i("hunter", "EMFAttachmentVirtualGiftFragment onCreateView"); 
     	
         View view = inflater.inflate(R.layout.fragment_emf_attachment_virtual_gift, null);
         imageView = (ImageView) view.findViewById(R.id.imageView);
@@ -128,24 +135,10 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment implements C
 //        layoutInsert = (RelativeLayout) view.findViewById(R.id.layoutInsert);
         textViewDescription = (TextView) view.findViewById(R.id.textViewDescription);
         buttonInsert = (Button) view.findViewById(R.id.buttonInsert);
-        buttonInsert.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				onClickInsert(v);
-			}
-		});
+        buttonInsert.setOnClickListener(this);
         
         buttonPlay = (ImageButton) view.findViewById(R.id.buttonPlay);
-        buttonPlay.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				onClickPlay(v);
-			}
-		});
+        buttonPlay.setOnClickListener(this);
         
         mediaPlayer = new MediaPlayer();
         surfaceView = (SurfaceView) view.findViewById(R.id.surfaceView); 
@@ -186,32 +179,7 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment implements C
 			if( !mFileDownloader.IsDownloading() ) {
 				// 未缓存过, 开始下载 
 				mNeedPlay = true;
-				mFileDownloader.StartDownload(videoUrl, videoLocalPath, new FileDownloaderCallback() {
-					@Override
-					public void onUpdate(FileDownloader loader, int progress) {
-						// TODO Auto-generated method stub
-						// 下载中 
-					}
-					
-					@Override
-					public void onSuccess(FileDownloader loader) {
-						// TODO Auto-generated method stub
-						// 下载成功显示 
-						Message msg = Message.obtain();
-						msg.what = DownLoadFlag.SUCCESS.ordinal();
-						msg.obj = videoLocalPath;
-						mHandler.sendMessage(msg);
-					}
-					
-					@Override
-					public void onFail(FileDownloader loader) {
-						// TODO Auto-generated method stub
-						// 下载失败
-						Message msg = Message.obtain();
-						msg.what = DownLoadFlag.FAIL.ordinal();
-						mHandler.sendMessage(msg);
-					}
-				});
+				mFileDownloader.StartDownload(videoUrl, videoLocalPath, this);
 			}
 			
 			// 刷新界面
@@ -575,5 +543,41 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment implements C
         
 		// 播放  
         mediaPlayer.start();
+	}
+	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if (v.getId() == R.id.buttonInsert) {
+			onClickInsert(v);
+		}
+		else if (v.getId() == R.id.buttonPlay) {
+			onClickPlay(v);
+		}
+	}
+
+	@Override
+	public void onSuccess(FileDownloader loader) {
+		// TODO Auto-generated method stub
+		// 下载成功显示 
+		Message msg = Message.obtain();
+		msg.what = DownLoadFlag.SUCCESS.ordinal();
+		msg.obj = videoLocalPath;
+		mHandler.sendMessage(msg);
+	}
+
+	@Override
+	public void onFail(FileDownloader loader) {
+		// TODO Auto-generated method stub
+		// 下载失败
+		Message msg = Message.obtain();
+		msg.what = DownLoadFlag.FAIL.ordinal();
+		mHandler.sendMessage(msg);
+	}
+
+	@Override
+	public void onUpdate(FileDownloader loader, int progress) {
+		// TODO Auto-generated method stub
+		// 下载中 
 	}
 }

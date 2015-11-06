@@ -26,7 +26,7 @@ import com.qpidnetwork.view.FlatToast;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialTextField;
 
-public class TicketReplyActivity extends BaseActionBarFragmentActivity{
+public class TicketReplyActivity extends BaseActionBarFragmentActivity implements OnRequestCallback{
 	
 	private static final int REPLY_TICKET_SUCCESS = 0;
 	private static final int REPLY_TICKET_FAILED = 1;
@@ -124,20 +124,7 @@ public class TicketReplyActivity extends BaseActionBarFragmentActivity{
 		
 		showProgressDialog("Submitting");
 		String body = etBody.getText().toString().trim();
-		RequestOperator.newInstance(this).ReplyTicket(ticketId, body, filePath, new OnRequestCallback() {
-			
-			@Override
-			public void OnRequest(boolean isSuccess, String errno, String errmsg) {
-				Message msg = Message.obtain();
-				if(isSuccess){
-					msg.what = REPLY_TICKET_SUCCESS;
-				}else{
-					msg.what = REPLY_TICKET_FAILED;
-					msg.obj = new RequestFailBean(errno, errmsg);
-				}
-				sendUiMessage(msg);
-			}
-		});
+		RequestOperator.newInstance(this).ReplyTicket(ticketId, body, filePath, this);
 	}
 	
 	@Override
@@ -190,5 +177,17 @@ public class TicketReplyActivity extends BaseActionBarFragmentActivity{
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void OnRequest(boolean isSuccess, String errno, String errmsg) {
+		Message msg = Message.obtain();
+		if(isSuccess){
+			msg.what = REPLY_TICKET_SUCCESS;
+		}else{
+			msg.what = REPLY_TICKET_FAILED;
+			msg.obj = new RequestFailBean(errno, errmsg);
+		}
+		sendUiMessage(msg);		
 	}
 }

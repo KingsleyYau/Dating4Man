@@ -16,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.view.IndexableListView;
 import com.qpidnetwork.view.MaterialAppBar;
@@ -26,7 +26,7 @@ import com.qpidnetwork.view.StringMatcher;
  * MyProfile模块
  * @author Max.Chiu
  */
-public class MyProfileSelectCountryActivity extends BaseActivity {
+public class MyProfileSelectCountryActivity extends BaseFragmentActivity implements OnItemClickListener {
     private class CountryAdapter extends ArrayAdapter<String> implements SectionIndexer {
     	private String mSections = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     	private Context context;
@@ -105,7 +105,13 @@ public class MyProfileSelectCountryActivity extends BaseActivity {
 		((Activity) mContext).setResult(RESULT_CANCELED, null);
 		finish();
 	}
-	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if (v.getId() == R.id.common_button_back){
+			onClickCancel(v);
+		}
+	}
 	@Override
 	public void InitView() {
 		setContentView(R.layout.activity_my_profile_select_country);
@@ -126,17 +132,7 @@ public class MyProfileSelectCountryActivity extends BaseActivity {
 
 		MaterialAppBar appbar = (MaterialAppBar)findViewById(R.id.appbar);
 		appbar.addButtonToLeft(R.id.common_button_back, "", R.drawable.ic_close_grey600_24dp);
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				if (v.getId() == R.id.common_button_back){
-					onClickCancel(v);
-				}
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		
 		appbar.setTitle(getString(R.string.Select_country), getResources().getColor(R.color.text_color_dark));
 		CountryAdapter adapter = new CountryAdapter(this,
@@ -144,23 +140,15 @@ public class MyProfileSelectCountryActivity extends BaseActivity {
         
 		listView.setAdapter(adapter);
 		listView.setFastScrollEnabled(true);
-		listView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent();
-				intent.putExtra(RESULT_COUNTRY_INDEX, position);
-				((Activity) mContext).setResult(RESULT_OK, intent);
-				((Activity)mContext).finish();
-			}
-		});
+		listView.setOnItemClickListener(this);
 	}
-	
 	@Override
-	public void InitHandler() {
+	public void onItemClick(AdapterView<?> parent, View view,
+			int position, long id) {
 		// TODO Auto-generated method stub
-
+		Intent intent = new Intent();
+		intent.putExtra(RESULT_COUNTRY_INDEX, position);
+		((Activity) mContext).setResult(RESULT_OK, intent);
+		((Activity)mContext).finish();
 	}
 }

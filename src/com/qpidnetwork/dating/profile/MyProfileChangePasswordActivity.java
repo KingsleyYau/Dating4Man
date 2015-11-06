@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.request.OnRequestCallback;
@@ -21,7 +21,7 @@ import com.qpidnetwork.view.MaterialTextField;
  * MyProfile模块
  * @author Max.Chiu
  */
-public class MyProfileChangePasswordActivity extends BaseActivity {
+public class MyProfileChangePasswordActivity extends BaseFragmentActivity implements OnRequestCallback, OnClickListener {
 	
 	private enum RequestFlag {
 		REQUEST_SUCCESS,
@@ -64,25 +64,17 @@ public class MyProfileChangePasswordActivity extends BaseActivity {
 			RequestOperator.getInstance().ChangePassword(
 					editTextCurrentPassword.getText().toString(),
 					editTextNewPassword.getText().toString(),
-					new OnRequestCallback() {
-						
-						@Override
-						public void OnRequest(boolean isSuccess, String errno, String errmsg) {
-							// TODO Auto-generated method stub
-							Message msg = Message.obtain();
-							RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
-							if( isSuccess ) {
-								// 改变密码成功
-								msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
-							} else {
-								// 失败
-								msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-							}
-							msg.obj = obj;
-							mHandler.sendMessage(msg);
-						}
-					});
+					this
+					);
 		} 
+	}
+	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if (v.getId() == R.id.common_button_back){
+			onClickCancel(v);
+		}
 	}
 	
 	@Override
@@ -93,17 +85,7 @@ public class MyProfileChangePasswordActivity extends BaseActivity {
 		appbar.setTouchFeedback(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
 		appbar.addButtonToLeft(R.id.common_button_back, "", R.drawable.ic_close_grey600_24dp);
 		appbar.setTitle(getString(R.string.Change_Password), getResources().getColor(R.color.text_color_dark));
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				if (v.getId() == R.id.common_button_back){
-					onClickCancel(v);
-				}
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		
 		//textViewTips = (TextView) findViewById(R.id.textViewTips);
 		//textViewTips.setVisibility(View.GONE);
@@ -122,29 +104,25 @@ public class MyProfileChangePasswordActivity extends BaseActivity {
 	}
 	
 	@Override
-	public void InitHandler() {
+	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				hideProgressDialog();
-				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_SUCCESS:{
-					// 改变密码成功
-					finish();
-				}break;
-				case REQUEST_FAIL:{
-					// 请求失败
-					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
-//					editTextCurrentPassword.setError(Color.RED, true);
-				}break;
-				default:
-					break;
-				}
-			};
-		};
+		super.handleUiMessage(msg);
+		// 收起菊花
+		hideProgressDialog();
+		RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_SUCCESS:{
+			// 改变密码成功
+			finish();
+		}break;
+		case REQUEST_FAIL:{
+			// 请求失败
+			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
+//			editTextCurrentPassword.setError(Color.RED, true);
+		}break;
+		default:
+			break;
+		}
 	}
 	
 	/**
@@ -191,5 +169,21 @@ public class MyProfileChangePasswordActivity extends BaseActivity {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public void OnRequest(boolean isSuccess, String errno, String errmsg) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
+		if( isSuccess ) {
+			// 改变密码成功
+			msg.what = RequestFlag.REQUEST_SUCCESS.ordinal();
+		} else {
+			// 失败
+			msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+		}
+		msg.obj = obj;
+		sendUiMessage(msg);
 	}
 }

@@ -23,7 +23,10 @@ import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.EMFBlockListItem;
 import com.qpidnetwork.view.MaterialDialogSingleChoice;
 
-public class EMFBlockListFragment extends BaseListFragment{
+public class EMFBlockListFragment extends BaseListFragment
+								  implements OnItemClickListener,
+								  			 OnItemLongClickListener
+{
 
 	
 	private static final int EMF_BLOCKLIST_INIT =0;
@@ -47,47 +50,8 @@ public class EMFBlockListFragment extends BaseListFragment{
 		mAdapter = new EMFBlockedListAdapter(getActivity(), people);
 		getPullToRefreshListView().setAdapter(mAdapter);
 		queryEMFBlockedList(0, EMF_BLOCKLIST_INIT, "");
-		getPullToRefreshListView().setOnItemClickListener(new OnItemClickListener(){
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				// TODO Auto-generated method stub
-				LadyDetailActivity.launchLadyDetailActivity(getActivity(), mAdapter.getDataList().get(arg2).womanid, true);
-			}
-			
-		});
-		
-		getPullToRefreshListView().setOnItemLongClickListener(new OnItemLongClickListener(){
-
-			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int arg2, long arg3) {
-				// TODO Auto-generated method stub
-				
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(getActivity(), 
-						new String[]{getString(R.string.common_btn_delete), getString(R.string.view_profile), getString(R.string.common_btn_cancel)},
-						new MaterialDialogSingleChoice.OnClickCallback() {
-							
-							@Override
-							public void onClick(AdapterView<?> adptView, View v, int which) {
-								// TODO Auto-generated method stub
-								if(which == 0){
-									((BaseFragmentActivity)getActivity()).showToastProgressing("Deleting");
-									String[] womanid = new String[1];
-									womanid[0] = mAdapter.getDataList().get(arg2).womanid;
-									unBlock(womanid);
-								}else if (which == 1){
-									LadyDetailActivity.launchLadyDetailActivity(getActivity(), mAdapter.getDataList().get(arg2).womanid, true);
-								}
-							}
-						}
-						, -1
-					);
-				
-				dialog.show();
-				return true;
-			}
-			
-		});
+		getPullToRefreshListView().setOnItemClickListener(this);
+		getPullToRefreshListView().setOnItemLongClickListener(this);
 	}
 	
 	/**
@@ -240,9 +204,48 @@ public class EMFBlockListFragment extends BaseListFragment{
 	public void onRefreshComplete() {
 		// TODO Auto-generated method stub
 		super.onRefreshComplete();
-		if(mAdapter.getDataList().size() >= getPageBean().getDataCount()){
-			closePullUpRefresh();
-		}
+		closePullUpRefresh(mAdapter.getDataList().size() >= getPageBean().getDataCount());
+	}
+
+	@Override
+	/**
+	* OnItemClickListener
+	*/
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		// TODO Auto-generated method stub
+		LadyDetailActivity.launchLadyDetailActivity(getActivity(), mAdapter.getDataList().get(arg2).womanid, true);
+	}
+
+	@Override
+	/**
+	* OnItemLongClickListener callback
+	*/
+	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int arg2,
+			long arg3) 
+	{
+		// TODO Auto-generated method stub
+		MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(getActivity(), 
+				new String[]{getString(R.string.common_btn_delete), getString(R.string.view_profile), getString(R.string.common_btn_cancel)},
+				new MaterialDialogSingleChoice.OnClickCallback() {
+					
+					@Override
+					public void onClick(AdapterView<?> adptView, View v, int which) {
+						// TODO Auto-generated method stub
+						if(which == 0){
+							((BaseFragmentActivity)getActivity()).showToastProgressing("Deleting");
+							String[] womanid = new String[1];
+							womanid[0] = mAdapter.getDataList().get(arg2).womanid;
+							unBlock(womanid);
+						}else if (which == 1){
+							LadyDetailActivity.launchLadyDetailActivity(getActivity(), mAdapter.getDataList().get(arg2).womanid, true);
+						}
+					}
+				}
+				, -1
+			);
+		
+		dialog.show();
+		return true;
 	}
 
 }

@@ -3,10 +3,12 @@
     xmlns:button="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tiny_grey_solid"
     tools:context="${relativePackage}.${activityClass}" 
     android:fitsSystemWindows="true">
     
+    <RelativeLayout android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="@color/tiny_grey_solid">
     
     <LinearLayout
         android:layout_width="match_parent"
@@ -74,4 +76,5 @@
         android:padding="8dp"
         android:visibility="gone"/>
     
+</RelativeLayout>
 </RelativeLayout>

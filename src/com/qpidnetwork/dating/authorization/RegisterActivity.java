@@ -2,11 +2,11 @@ package com.qpidnetwork.dating.authorization;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,10 +14,15 @@ import android.widget.Toast;
 import com.facebook.AppEventsLogger;
 import com.facebook.Session;
 import com.facebook.SessionLoginBehavior;
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
+import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
+import com.qpidnetwork.dating.contacts.ContactManager;
+import com.qpidnetwork.dating.googleanalytics.GAFragmentActivity;
 import com.qpidnetwork.dating.home.AppUrlHandler;
+import com.qpidnetwork.dating.home.HomeActivity;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
 import com.qpidnetwork.request.RequestErrorCode;
@@ -25,6 +30,7 @@ import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.request.item.OtherSynConfigItem;
 import com.qpidnetwork.view.ButtonRaised;
+import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MovingImageView;
 import com.qpidnetwork.view.MovingImageView.Callback;
 import com.qpidnetwork.view.MovingImageView.TranslateMode;
@@ -35,7 +41,11 @@ import com.qpidnetwork.view.MovingImageView.TranslateMode;
  * @author Max.Chiu
  *
  */
-public class RegisterActivity extends BaseActivity implements OnLoginManagerCallback {
+public class RegisterActivity extends BaseFragmentActivity 
+							  implements OnLoginManagerCallback, 
+							  			 OnConfigManagerCallback,
+							  			 Callback
+{
 
 	@SuppressWarnings("unused")
 	private class LoginMessageItem {
@@ -66,6 +76,7 @@ public class RegisterActivity extends BaseActivity implements OnLoginManagerCall
 	private ButtonRaised buttonFacebook;
 	private MovingImageView mFloatingBg;
 	private ImageView backImage;
+	private MovingImageView.Images mImages;
 	
 	private String mParam = null;
     
@@ -84,7 +95,7 @@ public class RegisterActivity extends BaseActivity implements OnLoginManagerCall
 		
 		LoginManager.getInstance().AddListenner(this);
 		
-		LoginParam param = LoginPerfence.GetLoginParam(mContext);
+		LoginParam param = LoginManager.getInstance().GetLoginParam();
     	if( param != null ) {
     		switch (param.type) {
 			case Default :{
@@ -96,22 +107,7 @@ public class RegisterActivity extends BaseActivity implements OnLoginManagerCall
 			}
     	}
     	
-    	ConfigManager.getInstance().GetOtherSynConfigItem(new OnConfigManagerCallback() {
-			
-			@Override
-			public void OnGetOtherSynConfigItem(boolean isSuccess, String errno,
-					String errmsg, OtherSynConfigItem item) {
-				// TODO Auto-generated method stub
-				if( isSuccess && item != null && item.pub != null && item.pub.facebook_enable ) {
-					buttonFacebook.setVisibility(View.VISIBLE);
-					mTextViewLogin.setVisibility(View.VISIBLE);
-					mButtonLogin.setVisibility(View.GONE);
-				}else {
-					mTextViewLogin.setVisibility(View.GONE);
-					mButtonLogin.setVisibility(View.VISIBLE);
-				}
-			}
-		});
+    	ConfigManager.getInstance().GetOtherSynConfigItem(this);
 	}
 	
     @Override
@@ -231,7 +227,7 @@ public class RegisterActivity extends BaseActivity implements OnLoginManagerCall
 
 			msg.obj = loginItem;
 		}
-		mHandler.sendMessage(msg);
+		sendUiMessage(msg);
 	}
 
 	@Override
@@ -251,7 +247,7 @@ public class RegisterActivity extends BaseActivity implements OnLoginManagerCall
 				R.drawable.long_gallery
 		};
 		
-		final MovingImageView.Images images = new MovingImageView.Images(imgesResourceIds);
+		mImages = new MovingImageView.Images(imgesResourceIds);
 		
 		backImage = (ImageView)findViewById(R.id.back_image);
 		mTextViewLogin = (TextView) findViewById(R.id.textLogin);
@@ -259,96 +255,95 @@ public class RegisterActivity extends BaseActivity implements OnLoginManagerCall
 		buttonFacebook = (ButtonRaised) findViewById(R.id.buttonFacebook);
 		
 		mFloatingBg = (MovingImageView)findViewById(R.id.floatingBackground);
-		mFloatingBg.setImageResource(images.getNext());
+		mFloatingBg.setImageResource(mImages.getNext());
 		mFloatingBg.setDuration(6000);
 		mFloatingBg.setMode(TranslateMode.YTRANSLATE);
 		mFloatingBg.runAnimate(500);
 		
-		mFloatingBg.setCallback(new Callback(){
-
-			@Override
-			public void onAnimationStopped() {
-				// TODO Auto-generated method stub
-				if (images.getNextPosition() == 1){
-					mFloatingBg.setMode(TranslateMode.XTRANSLATE);
-				}else{
-					mFloatingBg.setMode(TranslateMode.YTRANSLATE);
-				}
-				
-				int nextImage = images.getNext();
-				backImage.setImageResource(nextImage);
-				mFloatingBg.setNextPhoto(nextImage);
-
-			}
-			
-			@Override
-			public void onBeforeSetNext() {
-				// TODO Auto-generated method stub
-			}
-			
-			@Override
-			public void onNextPhotoSet() {
-				// TODO Auto-generated method stub
-				mFloatingBg.runAnimate(mFloatingBg.mode, 0);
-				
-				
-			}
-
-
-			
-		});
-		
-
-
+		mFloatingBg.setCallback(this);
 	}
 	
+	@Override
+	protected void handleUiMessage(Message msg) {
+		// TODO Auto-generated method stub
+		super.handleUiMessage(msg);
+		// 收起菊花
+		hideProgressDialog();
+		switch ( msg.what ) {
+		case REQUEST_SUCCESS:{
+			// facebook登录成功跳转主界面
+//			Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+//			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//			startActivity(intent);
+			
+			finish();
+			
+			AppUrlHandler.AppUrlHandleProc(mParam);
+		}break;
+		case REQUEST_FAIL:{
+			// facebook登录失败, 根据错误码选择显示界面
+			LoginMessageItem loginItem = (LoginMessageItem) msg.obj;
+			switch (loginItem.errno) {
+			case RequestErrorCode.MBCE64001:{
+				// facebook没有邮箱，显示输入邮箱
+        		startActivity(new Intent(RegisterActivity.this, RegisterByFacebookActivity.class));
+			} break;
+			case RequestErrorCode.MBCE64002:{
+				// facebook有邮箱，并且已经被qpidnetwork注册，显示输入密码，重新绑定
+				Intent intent = new Intent(RegisterActivity.this, RegisterFacebookPasswordActivity.class);
+				intent.putExtra(
+						RegisterFacebookPasswordActivity.REGISTER_FACEBOOK_LOGINERRORITEM_KEY,
+						loginItem.errItem
+						);
+				startActivity(intent);
+			}break;
+			default:
+				Toast.makeText(mContext, loginItem.errmsg, Toast.LENGTH_LONG).show();
+				break;
+			}
+		}break;
+		default:
+			break;
+		}
+	}
 
 	@Override
-	public void InitHandler() {
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				hideProgressDialog();
-				switch ( msg.what ) {
-				case REQUEST_SUCCESS:{
-					// facebook登录成功跳转主界面
-//					Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
-//					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//					startActivity(intent);
-					
-					finish();
-					
-					AppUrlHandler.AppUrlHandleProc(mParam);
-				}break;
-				case REQUEST_FAIL:{
-					// facebook登录失败, 根据错误码选择显示界面
-					LoginMessageItem loginItem = (LoginMessageItem) msg.obj;
-					switch (loginItem.errno) {
-					case RequestErrorCode.MBCE64001:{
-						// facebook没有邮箱，显示输入邮箱
-                		startActivity(new Intent(RegisterActivity.this, RegisterByFacebookActivity.class));
-					} break;
-					case RequestErrorCode.MBCE64002:{
-						// facebook有邮箱，并且已经被qpidnetwork注册，显示输入密码，重新绑定
-						Intent intent = new Intent(RegisterActivity.this, RegisterFacebookPasswordActivity.class);
-						intent.putExtra(
-								RegisterFacebookPasswordActivity.REGISTER_FACEBOOK_LOGINERRORITEM_KEY,
-								loginItem.errItem
-								);
-						startActivity(intent);
-					}break;
-					default:
-						Toast.makeText(mContext, loginItem.errmsg, Toast.LENGTH_LONG).show();
-						break;
-					}
-				}break;
-				default:
-					break;
-				}
-			};
-		};
+	public void OnGetOtherSynConfigItem(boolean isSuccess, String errno,
+			String errmsg, OtherSynConfigItem item) {
+		// TODO Auto-generated method stub
+		if( isSuccess && item != null && item.pub != null && item.pub.facebook_enable ) {
+			buttonFacebook.setVisibility(View.VISIBLE);
+			mTextViewLogin.setVisibility(View.VISIBLE);
+			mButtonLogin.setVisibility(View.GONE);
+		}else {
+			mTextViewLogin.setVisibility(View.GONE);
+			mButtonLogin.setVisibility(View.VISIBLE);
+		}
 	}
-	
 
+	@Override
+	public void onAnimationStopped() {
+		// TODO Auto-generated method stub
+		if (mImages.getNextPosition() == 1){
+			mFloatingBg.setMode(TranslateMode.XTRANSLATE);
+		}else{
+			mFloatingBg.setMode(TranslateMode.YTRANSLATE);
+		}
+		
+		int nextImage = mImages.getNext();
+		backImage.setImageResource(nextImage);
+		mFloatingBg.setNextPhoto(nextImage);
+	}
+
+	@Override
+	public void onBeforeSetNext() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onNextPhotoSet() {
+		// TODO Auto-generated method stub
+		mFloatingBg.runAnimate(mFloatingBg.mode, 0);
+	}
 }

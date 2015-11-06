@@ -22,7 +22,7 @@ import com.qpidnetwork.view.MaterialProgressBar;
 import com.qpidnetwork.view.TouchImageView;
 import com.qpidnetwork.view.ViewTools;
 
-public class AttachmentPhotoPreview extends BaseFragmentActivity{
+public class AttachmentPhotoPreview extends BaseFragmentActivity implements ImageViewLoaderCallback{
 	
 	private static final String PHOTO_URL = "photoUrl";
 	
@@ -91,22 +91,7 @@ public class AttachmentPhotoPreview extends BaseFragmentActivity{
         		imageView, 
         		photoUrl, 
         		localPath, 
-        		new ImageViewLoaderCallback() {
-			
-			@Override
-			public void OnDisplayNewImageFinish() {
-				Message msg = Message.obtain();
-				msg.what = DOWNLOAD_PHOTO_SUCCESS;
-				sendUiMessage(msg);;
-			}
-
-			@Override
-			public void OnLoadPhotoFailed() {
-				Message msg = Message.obtain();
-				msg.what = DOWNLOAD_PHOTO_FAILED;
-				sendUiMessage(msg);;
-			}
-		});
+        		this);
 	}
 	
 	@Override
@@ -137,5 +122,25 @@ public class AttachmentPhotoPreview extends BaseFragmentActivity{
 		default:
 			break;
 		}
+	}
+
+	@Override
+	public void InitView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnDisplayNewImageFinish() {
+		Message msg = Message.obtain();
+		msg.what = DOWNLOAD_PHOTO_SUCCESS;
+		sendUiMessage(msg);		
+	}
+
+	@Override
+	public void OnLoadPhotoFailed() {
+		Message msg = Message.obtain();
+		msg.what = DOWNLOAD_PHOTO_FAILED;
+		sendUiMessage(msg);		
 	}
 }

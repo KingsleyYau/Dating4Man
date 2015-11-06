@@ -16,7 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.R.color;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
@@ -27,7 +27,7 @@ import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.LadySignItem;
 import com.qpidnetwork.view.FlowLayout;
 
-public class LadyLabelActivity extends BaseActivity {
+public class LadyLabelActivity extends BaseFragmentActivity {
 	
 	public static final String LABEL_WOMAN_ID = "womanId";
 	public static final String LADY_LABEL_ADD = "lady_label_add";
@@ -109,7 +109,7 @@ public class LadyLabelActivity extends BaseActivity {
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
 				}
 				msg.obj = obj;
-				mHandler.sendMessage(msg);
+				sendUiMessage(msg);
 			}
 		});
 	}
@@ -137,7 +137,7 @@ public class LadyLabelActivity extends BaseActivity {
 					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
 				}
 				msg.obj = obj;
-				mHandler.sendMessage(msg);
+				sendUiMessage(msg);
 			}
 		});
 	}
@@ -193,67 +193,62 @@ public class LadyLabelActivity extends BaseActivity {
 	}
 
 	@Override
-	public void InitHandler() {
+	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				hideProgressDialog();
-				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_GET_LABEL_SUCCESS:{
-					// 获取标签成功
-					mLabelList.clear();
-					mOrignalLabelList.clear();
-					LadySignItem[] ladySignItem = (LadySignItem[])obj.body;
-					if( ladySignItem != null ) {
-						// 保存原始数组
-						mOrignalLabelList.addAll(Arrays.asList(ladySignItem));
-						// 复制用于界面改变数组
-						for(LadySignItem item : ladySignItem) {
-							mLabelList.add(item.clone());
-						}
-					}
-					labelAdapter.adaptView();
-					ivSummit.setVisibility(View.VISIBLE);
-				}break;
-				case REQUEST_SUBMIT_LABEL_SUCCESS:{
-					// 提交标签成功
-					Intent intent = new Intent();
-					
-					// 获取增加和删除的标签
-					List<String> labelListAdd = new ArrayList<String>();
-					List<String> labelListDel = new ArrayList<String>();
-					for(int i = 0; i < mOrignalLabelList.size() && i < mLabelList.size(); i++ ) {
-						LadySignItem itemOrignal = mOrignalLabelList.get(i);
-						LadySignItem item = mLabelList.get(i);
-						
-						if( !itemOrignal.isSigned && item.isSigned ) {
-							// 增加的标签
-							labelListAdd.add(item.signId);
-						} else if( itemOrignal.isSigned && !item.isSigned ) {
-							// 删除的标签
-							labelListDel.add(item.signId);
-						}
-					}
-					
-					intent.putExtra(LADY_LABEL_ADD, labelListAdd.toArray(new String[labelListAdd.size()]));
-					intent.putExtra(LADY_LABEL_DEL, labelListDel.toArray(new String[labelListDel.size()]));
-					
-					showToastDone("Done!");
-					
-					setResult(RESULT_OK, intent);
-					finish();
-				}break;
-				case REQUEST_FAIL:{
-					showToastFailed("Failed!");
-					isSubmitting = false;
-				}break;
-				default:break;
+		super.handleUiMessage(msg);
+		// 收起菊花
+		hideProgressDialog();
+		RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_GET_LABEL_SUCCESS:{
+			// 获取标签成功
+			mLabelList.clear();
+			mOrignalLabelList.clear();
+			LadySignItem[] ladySignItem = (LadySignItem[])obj.body;
+			if( ladySignItem != null ) {
+				// 保存原始数组
+				mOrignalLabelList.addAll(Arrays.asList(ladySignItem));
+				// 复制用于界面改变数组
+				for(LadySignItem item : ladySignItem) {
+					mLabelList.add(item.clone());
 				}
 			}
-		};
+			labelAdapter.adaptView();
+			ivSummit.setVisibility(View.VISIBLE);
+		}break;
+		case REQUEST_SUBMIT_LABEL_SUCCESS:{
+			// 提交标签成功
+			Intent intent = new Intent();
+			
+			// 获取增加和删除的标签
+			List<String> labelListAdd = new ArrayList<String>();
+			List<String> labelListDel = new ArrayList<String>();
+			for(int i = 0; i < mOrignalLabelList.size() && i < mLabelList.size(); i++ ) {
+				LadySignItem itemOrignal = mOrignalLabelList.get(i);
+				LadySignItem item = mLabelList.get(i);
+				
+				if( !itemOrignal.isSigned && item.isSigned ) {
+					// 增加的标签
+					labelListAdd.add(item.signId);
+				} else if( itemOrignal.isSigned && !item.isSigned ) {
+					// 删除的标签
+					labelListDel.add(item.signId);
+				}
+			}
+			
+			intent.putExtra(LADY_LABEL_ADD, labelListAdd.toArray(new String[labelListAdd.size()]));
+			intent.putExtra(LADY_LABEL_DEL, labelListDel.toArray(new String[labelListDel.size()]));
+			
+			showToastDone("Done!");
+			
+			setResult(RESULT_OK, intent);
+			finish();
+		}break;
+		case REQUEST_FAIL:{
+			showToastFailed("Failed!");
+			isSubmitting = false;
+		}break;
+		default:break;
+		}
 	}
-	
 }

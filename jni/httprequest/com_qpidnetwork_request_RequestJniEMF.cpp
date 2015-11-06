@@ -24,6 +24,8 @@ void OnBlock(long requestId, bool success, const string& errnum, const string& e
 void OnUnblock(long requestId, bool success, const string& errnum, const string& errmsg);
 void OnInboxPhotoFee(long requestId, bool success, const string& errnum, const string& errmsg);
 void OnPrivatePhotoView(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath);
+void OnGetVideoThumbPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath);
+void OnGetVideoUrl(long requestId, bool success, const string& errnum, const string& errmsg, const string& url);
 static RequestEMFControllerCallback gRequestControllerCallback {
 	OnInboxList,
 	OnInboxMsg,
@@ -40,7 +42,9 @@ static RequestEMFControllerCallback gRequestControllerCallback {
 	OnBlock,
 	OnUnblock,
 	OnInboxPhotoFee,
-	OnPrivatePhotoView
+	OnPrivatePhotoView,
+	OnGetVideoThumbPhoto,
+	OnGetVideoUrl,
 };
 static RequestEMFController gRequestController(&gHttpRequestManager, gRequestControllerCallback);
 
@@ -74,6 +78,38 @@ jobjectArray GetPrivatePhotoJArray(JNIEnv* env, const EMFPrivatePhotoList& list)
 	}
 
 	return photoArray;
+}
+
+jobjectArray GetShortVideoJArray(JNIEnv* env, const EMFShortVideoList& list)
+{
+	jobjectArray videoArray = NULL;
+
+	jclass jCls = GetJClass(env, EMF_SHORTVIDEO_ITEM_CLASS);
+	if (NULL != jCls) {
+		videoArray = env->NewObjectArray(list.size(), jCls, NULL);
+		EMFShortVideoList::const_iterator iter;
+		int iIndex = 0;
+		for (iter = list.begin(); iter != list.end(); iter++, iIndex++) {
+			jmethodID init = env->GetMethodID(jCls, "<init>", "("
+					"Ljava/lang/String;"	// sendId
+					"Ljava/lang/String;"	// photoId
+					"Z"						// photoFee
+					"Ljava/lang/String;"	// photoDesc
+					")V");
+
+			jobject jItem = env->NewObject(jCls, init,
+					env->NewStringUTF((*iter).sendId.c_str()),
+					env->NewStringUTF((*iter).videoId.c_str()),
+					(*iter).videoFee,
+					env->NewStringUTF((*iter).videoDesc.c_str())
+					);
+
+			env->SetObjectArrayElement(videoArray, iIndex, jItem);
+			env->DeleteLocalRef(jItem);
+		}
+	}
+
+	return videoArray;
 }
 
 // ------------------------------ InboxList ---------------------------------
@@ -263,6 +299,7 @@ void OnInboxMsg(long requestId, bool success, const string& errnum, const string
 {
 	FileLog("httprequest", "EMF.Native::OnInboxMsg( success : %s )", success?"true":"false");
 	FileLog("httprequest", "EMF.Native::OnInboxMsg( item.privatePhotoList.size:%d )", item.privatePhotoList.size());
+	FileLog("httprequest", "EMF.Native::OnInboxMsg( item.shortVideoList.size:%d )", item.shortVideoList.size());
 
 	/* turn object to java object here */
 	JNIEnv* env;
@@ -298,6 +335,9 @@ void OnInboxMsg(long requestId, bool success, const string& errnum, const string
 							"[L"
 							EMF_PRIVATEPHOTO_ITEM_CLASS	// privatePhotos
 							";"
+							"[L"
+							EMF_SHORTVIDEO_ITEM_CLASS	// shortVideos
+							";"
 							"Ljava/lang/String;"	// vgId
 							")V");
 
@@ -312,6 +352,8 @@ void OnInboxMsg(long requestId, bool success, const string& errnum, const string
 				}
 
 				jobjectArray privatePhotoArray = GetPrivatePhotoJArray(env, item.privatePhotoList);
+
+				jobjectArray shortVideoArray = GetShortVideoJArray(env, item.shortVideoList);
 
 				jItem = env->NewObject(jItemCls, init,
 							env->NewStringUTF(item.id.c_str()),
@@ -329,11 +371,13 @@ void OnInboxMsg(long requestId, bool success, const string& errnum, const string
 							jPhotosURLArray,
 							env->NewStringUTF(item.sendTime.c_str()),
 							privatePhotoArray,
+							shortVideoArray,
 							env->NewStringUTF(item.vgId.c_str())
 							);
 
 				FileLog("httprequest", "EMF.Native::OnInboxMsg() NewObject() OK, jItem:%p", jItem);
 
+				env->DeleteLocalRef(shortVideoArray);
 				env->DeleteLocalRef(privatePhotoArray);
 				env->DeleteLocalRef(jPhotosURLArray);
 				env->DeleteLocalRef(jItemCls);
@@ -1257,6 +1301,7 @@ void OnAdmirerList(long requestId, bool success, const string& errnum, const str
 							"I"						// age
 							"Ljava/lang/String;"	// photoURL
 							"Ljava/lang/String;"	// sendTime
+							"I"	                    //attachnum
 							")V");
 
 					jobject jItem = env->NewObject(jItemCls, init,
@@ -1273,7 +1318,8 @@ void OnAdmirerList(long requestId, bool success, const string& errnum, const str
 							env->NewStringUTF(itr->mtab.c_str()),
 							itr->age,
 							env->NewStringUTF(itr->photoURL.c_str()),
-							env->NewStringUTF(itr->sendTime.c_str())
+							env->NewStringUTF(itr->sendTime.c_str()),
+							itr->attachnum
 							);
 
 					env->SetObjectArrayElement(jItemArray, i, jItem);
@@ -1393,6 +1439,8 @@ void OnAdmirerViewer(long requestId, bool success, const string& errnum, const s
 							"I"						// age
 							"Ljava/lang/String;"	// photoURL
 							"Ljava/lang/String;"	// sendTime
+							"Ljava/lang/String;"	// template_type
+							"Ljava/lang/String;"	// vg_id
 							")V");
 
 				jclass jStringCls = env->FindClass("java/lang/String");
@@ -1417,8 +1465,10 @@ void OnAdmirerViewer(long requestId, bool success, const string& errnum, const s
 						env->NewStringUTF(item.province.c_str()),
 						env->NewStringUTF(item.mtab.c_str()),
 						item.age,
+						env->NewStringUTF(item.photoURL.c_str()),
 						env->NewStringUTF(item.sendTime.c_str()),
-						env->NewStringUTF(item.photoURL.c_str())
+						env->NewStringUTF(item.template_type.c_str()),
+						env->NewStringUTF(item.vg_id.c_str())
 						);
 
 				env->DeleteLocalRef(jPhotosURLArray);
@@ -1957,5 +2007,135 @@ void OnPrivatePhotoView(long requestId, bool success, const string& errnum, cons
 	}
 
 	FileLog("httprequest", "EMF.Native::OnPrivatePhotoView() end");
+}
+
+/**************************** OnGetVideoThumbPhoto **************************/
+/*
+ * Class:     com_qpidnetwork_request_RequestJniEMF
+ * Method:    GetVideoThumbPhoto
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnRequestFileCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_GetVideoThumbPhoto
+  (JNIEnv *env, jclass, jstring womanId, jstring send_id, jstring video_id, jstring messageid, jint size, jstring filePath, jobject callback) {
+	jlong requestId = -1;
+
+	requestId = gRequestController.GetVideoThumbPhoto(
+			JString2String(env, womanId),
+			JString2String(env, send_id),
+			JString2String(env, video_id),
+			JString2String(env, messageid),
+			size,
+			JString2String(env, filePath)
+			);
+
+	jobject obj = env->NewGlobalRef(callback);
+	gCallbackMap.Insert(requestId, obj);
+
+	return requestId;
+}
+
+void OnGetVideoThumbPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath)
+{
+	JNIEnv* env = NULL;
+	bool isAttachThread = false;
+	GetEnv(&env, &isAttachThread);
+
+	FileLog("httprequest", "EMF.Native::OnGetVideoThumbPhoto( success : %s, env:%p, isAttachThread:%d )", success?"true":"false", env, isAttachThread);
+
+	/* real callback java */
+	jobject jCallbackObj = gCallbackMap.Erase(requestId);
+	jclass jCallbackCls = env->GetObjectClass(jCallbackObj);
+
+	string signure = "(JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
+	jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnRequestFile", signure.c_str());
+
+	FileLog("httprequest", "EMF.Native::OnGetVideoThumbPhoto(), errnum:%s, errmsg:%s, filePath:%s", errnum.c_str(), errmsg.c_str(), filePath.c_str());
+	if( jCallbackObj != NULL && jCallback != NULL ) {
+		jstring jerrno = env->NewStringUTF(errnum.c_str());
+		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+		jstring jfilePath = env->NewStringUTF(filePath.c_str());
+		jlong jlrequestId = requestId;
+
+		FileLog("httprequest", "EMF.Native::OnGetVideoThumbPhoto() jCallbackObj:%p, jCallback:%p, requestId:%ld, jerrno:%p, jerrmsg:%p, jfilePath:%p", jCallbackObj, jCallback, requestId, jerrno, jerrmsg, jfilePath);
+		env->CallVoidMethod(jCallbackObj, jCallback, jlrequestId, success, jerrno, jerrmsg, jfilePath);
+
+		env->DeleteLocalRef(jerrno);
+		env->DeleteLocalRef(jerrmsg);
+		env->DeleteLocalRef(jfilePath);
+	}
+
+	// delete callback object & class
+	if (jCallbackCls != NULL) {
+		env->DeleteLocalRef(jCallbackCls);
+	}
+	if (jCallbackObj != NULL) {
+		env->DeleteGlobalRef(jCallbackObj);
+	}
+
+	ReleaseEnv(isAttachThread);
+}
+
+/**************************** OnGetVideoUrl **************************/
+/*
+ * Class:     com_qpidnetwork_request_RequestJniEMF
+ * Method:    GetVideoUrl
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnGetVideoCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_GetVideoUrl
+  (JNIEnv *env, jclass, jstring womanId, jstring send_id, jstring video_id, jstring messageid, jobject callback) {
+	jlong requestId = -1;
+
+	requestId = gRequestController.GetVideoUrl(
+			JString2String(env, womanId),
+			JString2String(env, send_id),
+			JString2String(env, video_id),
+			JString2String(env, messageid)
+			);
+
+	jobject obj = env->NewGlobalRef(callback);
+	gCallbackMap.Insert(requestId, obj);
+
+	return requestId;
+}
+
+void OnGetVideoUrl(long requestId, bool success, const string& errnum, const string& errmsg, const string& url)
+{
+	JNIEnv* env = NULL;
+	bool isAttachThread = false;
+	GetEnv(&env, &isAttachThread);
+
+	FileLog("httprequest", "EMF.Native::OnGetVideoUrl( success : %s, env:%p, isAttachThread:%d )", success?"true":"false", env, isAttachThread);
+
+	/* real callback java */
+	jobject jCallbackObj = gCallbackMap.Erase(requestId);
+	jclass jCallbackCls = env->GetObjectClass(jCallbackObj);
+
+	string signure = "(JZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
+	jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnLCGetVideo", signure.c_str());
+
+	FileLog("httprequest", "EMF.Native::OnGetVideoUrl(), errnum:%s, errmsg:%s, url:%s", errnum.c_str(), errmsg.c_str(), url.c_str());
+	if( jCallbackObj != NULL && jCallback != NULL ) {
+		jstring jerrno = env->NewStringUTF(errnum.c_str());
+		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+		jstring jUrl = env->NewStringUTF(url.c_str());
+		jlong jlrequestId = requestId;
+
+		FileLog("httprequest", "EMF.Native::OnGetVideoUrl() jCallbackObj:%p, jCallback:%p, requestId:%ld, jerrno:%p, jerrmsg:%p, jUrl:%p", jCallbackObj, jCallback, requestId, jerrno, jerrmsg, jUrl);
+		env->CallVoidMethod(jCallbackObj, jCallback, jlrequestId, success, jerrno, jerrmsg, jUrl);
+
+		env->DeleteLocalRef(jerrno);
+		env->DeleteLocalRef(jerrmsg);
+		env->DeleteLocalRef(jUrl);
+	}
+
+	// delete callback object & class
+	if (jCallbackCls != NULL) {
+		env->DeleteLocalRef(jCallbackCls);
+	}
+	if (jCallbackObj != NULL) {
+		env->DeleteGlobalRef(jCallbackObj);
+	}
+
+	ReleaseEnv(isAttachThread);
 }
 

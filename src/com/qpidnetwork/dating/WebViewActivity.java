@@ -16,6 +16,7 @@ import android.webkit.WebViewClient;
 import com.qpidnetwork.dating.R.color;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.item.LoginErrorItem;
@@ -23,7 +24,7 @@ import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.view.MaterialAppBar;
 
 @SuppressWarnings("deprecation")
-public class WebViewActivity extends BaseActivity implements OnLoginManagerCallback {
+public class WebViewActivity extends BaseFragmentActivity implements OnLoginManagerCallback {
 	
 	public static final String WEB_URL = "web_url";
 	public static final String WEB_TITLE = "web_title";
@@ -138,11 +139,6 @@ public class WebViewActivity extends BaseActivity implements OnLoginManagerCallb
 			}
 		});
 
-	}
-	
-	@Override
-	public void InitHandler() {
-		
 	}
 	
 	@Override

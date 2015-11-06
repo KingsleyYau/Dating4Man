@@ -21,6 +21,7 @@ public class ButtonRaised extends CardView{
 	private int space = (int)(8.00 * desity);
 	private int elevation = (int)(2.00 * desity);
 	private int radius = (int)(2.00 * desity);
+	private TextView title;
 	
 	public ButtonRaised(Context context) {
 		super(context);
@@ -54,6 +55,7 @@ public class ButtonRaised extends CardView{
 			background = a.getColor(R.styleable.RaisedButton_background, 0);
 			touch_feedback = a.getResourceId(R.styleable.RaisedButton_touch_feedback, 0);
 			elevation  = (int)a.getDimension(R.styleable.RaisedButton_elevation, elevation);
+			a.recycle();
 		}
 		
 		this.setUseCompatPadding(true);
@@ -89,7 +91,7 @@ public class ButtonRaised extends CardView{
 		}
 		
 		
-		TextView title = new TextView(this.getContext());
+		title = new TextView(this.getContext());
 		title.setId(android.R.id.title);
 		LinearLayout.LayoutParams tv_params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		title.setLayoutParams(tv_params);
@@ -116,6 +118,10 @@ public class ButtonRaised extends CardView{
 	public void setButtonTitle(CharSequence text){
 		TextView t = (TextView)this.findViewById(android.R.id.title);
 		t.setText(text);
+	}
+	
+	public TextView getTitleTextView(){
+		return title;
 	}
 	
 	@Override

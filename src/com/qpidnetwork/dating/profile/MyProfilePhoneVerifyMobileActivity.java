@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.request.OnRequestCallback;
@@ -26,7 +26,7 @@ import com.qpidnetwork.view.MaterialTextField;
  * MyProfile模块
  * @author Max.Chiu
  */
-public class MyProfilePhoneVerifyMobileActivity extends BaseActivity {
+public class MyProfilePhoneVerifyMobileActivity extends BaseFragmentActivity implements OnClickListener, MaterialTextField.OnFocuseChangedCallback, OnRequestCallback {
 	/**
 	 * 编辑国家
 	 */
@@ -107,7 +107,11 @@ public class MyProfilePhoneVerifyMobileActivity extends BaseActivity {
 		}
 		GetSms();
 	}
-
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		finish();
+	}
 	@Override
 	public void InitView() {
 		setContentView(R.layout.activity_my_profile_phone_verify_mobile);
@@ -117,15 +121,7 @@ public class MyProfilePhoneVerifyMobileActivity extends BaseActivity {
 		appbar.setTouchFeedback(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
 		appbar.addButtonToLeft(android.R.id.button1, "back", R.drawable.ic_close_grey600_24dp);
 		appbar.setTitle("Verify mobile number", getResources().getColor(R.color.text_color_dark));
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				finish();
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		
 		
 		editTextUnitedStates = (MaterialTextField) findViewById(R.id.editTextUnitedStates);
@@ -142,23 +138,20 @@ public class MyProfilePhoneVerifyMobileActivity extends BaseActivity {
 		editTextUnitedStates.getEditor().setSingleLine();
 		
 		editTextUnitedStates.setText("United States (+1)");
-		editTextUnitedStates.setOnFocusChangedCallback(new MaterialTextField.OnFocuseChangedCallback() {
-			
-			@Override
-			public void onFocuseChanged(View v, boolean hasFocus) {
-				// TODO Auto-generated method stub
-				if (hasFocus) {
-					onClickUnitedStates(v);
-					editTextPhoneNumber.requestFocus();
-				}
-				
-			}
-		});
+		editTextUnitedStates.setOnFocusChangedCallback(this);
 		
 		editTextUnitedStates.getEditor().setText(countries[222]);
 		editTextUnitedStates.setTag(222);
 	}
-	
+	@Override
+	public void onFocuseChanged(View v, boolean hasFocus) {
+		// TODO Auto-generated method stub
+		if (hasFocus) {
+			onClickUnitedStates(v);
+			editTextPhoneNumber.requestFocus();
+		}
+		
+	}
 	/**
 	 * 手机获取认证短信
 	 */
@@ -169,53 +162,46 @@ public class MyProfilePhoneVerifyMobileActivity extends BaseActivity {
 				editTextPhoneNumber.getText().toString(), 
 				Country.values()[(int)editTextUnitedStates.getTag()], 
 				RequestJni.GetDeviceId(tm), 
-				new OnRequestCallback() {
-					
-					@Override
-					public void OnRequest(boolean isSuccess, String errno, String errmsg) {
-						// TODO Auto-generated method stub
-						Message msg = Message.obtain();
-						RequestBaseResponse response = new RequestBaseResponse(isSuccess, errno, errmsg, null);
-						if( isSuccess ) {
-							// 获取个人信息成功
-							msg.what = RequestFlag.REQUEST_GET_SMS_SUCCESS.ordinal();
-						} else {
-							// 获取个人信息失败
-							msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-						}
-						msg.obj = response;
-						mHandler.sendMessage(msg);
-					}
-				});
+				this);
 	}
-	
 	@Override
-	public void InitHandler() {
+	public void OnRequest(boolean isSuccess, String errno, String errmsg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
-				// 收起菊花
-				hideProgressDialog();
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_GET_SMS_SUCCESS:{
-					// 手机获取认证短信成功
-					// 跳转界面
-					//Intent intent = new Intent(mContext, MyProfilePhoneVerifyMobileCodeActivity.class);
-					//startActivity(intent);
-					String phoneNumber = editTextPhoneNumber.getText().toString();
-					MyProfilePhoneVerifyMobileCodeActivity.LaunchActivity(MyProfilePhoneVerifyMobileCodeActivity.LaunchType.CELL, phoneNumber, mContext);
-				}break;
-				case REQUEST_FAIL:{
-					// 请求失败
-					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
-				}break;
-				default:
-					break;
-				}
-			};
-		};
+		Message msg = Message.obtain();
+		RequestBaseResponse response = new RequestBaseResponse(isSuccess, errno, errmsg, null);
+		if( isSuccess ) {
+			// 获取个人信息成功
+			msg.what = RequestFlag.REQUEST_GET_SMS_SUCCESS.ordinal();
+		} else {
+			// 获取个人信息失败
+			msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+		}
+		msg.obj = response;
+		sendUiMessage(msg);
+	}
+	@Override
+	protected void handleUiMessage(Message msg) {
+		// TODO Auto-generated method stub
+		super.handleUiMessage(msg);
+		RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+		// 收起菊花
+		hideProgressDialog();
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_GET_SMS_SUCCESS:{
+			// 手机获取认证短信成功
+			// 跳转界面
+			//Intent intent = new Intent(mContext, MyProfilePhoneVerifyMobileCodeActivity.class);
+			//startActivity(intent);
+			String phoneNumber = editTextPhoneNumber.getText().toString();
+			MyProfilePhoneVerifyMobileCodeActivity.LaunchActivity(MyProfilePhoneVerifyMobileCodeActivity.LaunchType.CELL, phoneNumber, mContext);
+		}break;
+		case REQUEST_FAIL:{
+			// 请求失败
+			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
+		}break;
+		default:
+			break;
+		}
 	}
 	
 	public void ReloadData() {

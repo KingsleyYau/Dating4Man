@@ -25,7 +25,7 @@ import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.manager.WebSiteManager;
 
-public class ContactSearchActivity extends BaseFragmentActivity{
+public class ContactSearchActivity extends BaseFragmentActivity implements OnEditorActionListener, TextWatcher{
 	
 	public static final String CURRENT_CONTACT_TYPE = "contactType";
 	
@@ -81,51 +81,8 @@ public class ContactSearchActivity extends BaseFragmentActivity{
 		etSearchFilter = (EditText)findViewById(R.id.etSearchFilter);
 		etSearchFilter.setHint(R.string.contact_search_filter_hint);
 		/*设置键盘搜索键响应*/
-		etSearchFilter.setOnEditorActionListener(new OnEditorActionListener() {
-			
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				// TODO Auto-generated method stub
-				if(actionId == EditorInfo.IME_ACTION_SEARCH){
-					onSearchByIdOrName();
-					return true;
-				}
-				return false;
-			}
-		});
-		
-		
-		etSearchFilter.addTextChangedListener(new TextWatcher(){
-
-			@Override
-			public void afterTextChanged(Editable s) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
-				// TODO Auto-generated method stub
-				if (s.toString().length() == 0){
-					lvContainer.setVisibility(View.GONE);
-					llLabelContainer.setVisibility(View.VISIBLE);
-				}else{
-					adapter.replaceList(ContactManager.getInstance().getContactsByIdOrName(s.toString()));
-					lvContainer.setVisibility(View.VISIBLE);
-					llLabelContainer.setVisibility(View.GONE);
-				}
-				
-			}
-			
-		});
+		etSearchFilter.setOnEditorActionListener(this);
+		etSearchFilter.addTextChangedListener(this);
 		
 		lvContainer = (ListView)findViewById(R.id.lvContainer);
 		
@@ -203,5 +160,42 @@ public class ContactSearchActivity extends BaseFragmentActivity{
 		super.finish();
 		overridePendingTransition(R.anim.anim_donot_animate, R.anim.anim_donot_animate);   
 	}
-	
+
+	@Override
+	public void InitView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count,
+			int after) {
+		
+	}
+
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		if (s.toString().length() == 0){
+			lvContainer.setVisibility(View.GONE);
+			llLabelContainer.setVisibility(View.VISIBLE);
+		}else{
+			adapter.replaceList(ContactManager.getInstance().getContactsByIdOrName(s.toString()));
+			lvContainer.setVisibility(View.VISIBLE);
+			llLabelContainer.setVisibility(View.GONE);
+		}
+	}
+
+	@Override
+	public void afterTextChanged(Editable s) {
+		
+	}
+
+	@Override
+	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		if(actionId == EditorInfo.IME_ACTION_SEARCH){
+			onSearchByIdOrName();
+			return true;
+		}
+		return false;	
+	}
 }

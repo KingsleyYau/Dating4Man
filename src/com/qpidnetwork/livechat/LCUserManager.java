@@ -159,8 +159,11 @@ public class LCUserManager {
 					list.add(item);
 				}
 			}
-			
-			Collections.sort(list, LCUserItem.getComparator());
+			try{
+				Collections.sort(list, LCUserItem.getComparator());
+			}catch(Exception e){
+				
+			}
 		}
 		
 		return list;

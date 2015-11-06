@@ -22,7 +22,6 @@ import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.bean.LoveCallBean;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.contacts.ContactManager;
-import com.qpidnetwork.dating.dialog.CustomTermsDialogClickListener;
 import com.qpidnetwork.framework.base.BaseActionBarFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.SystemUtil;
@@ -37,7 +36,7 @@ import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialThreeButtonDialog;
 
-public class LoveCallDetailActivity extends BaseActionBarFragmentActivity implements CustomTermsDialogClickListener{
+public class LoveCallDetailActivity extends BaseActionBarFragmentActivity {
 	private static final String LOVE_CALL_DETAIL_ITEM = "lovecallitem";
 	public static final String LOVE_CALL_ORDER_ID = "orderId";
 
@@ -229,7 +228,9 @@ public class LoveCallDetailActivity extends BaseActionBarFragmentActivity implem
 				/*余额不足处理*/
 				cancelToastImmediately();
 				final GetMoreCreditDialog dialog = new GetMoreCreditDialog(LoveCallDetailActivity.this, R.style.ChoosePhotoDialog);
-		        dialog.show();
+				if(isActivityVisible()){
+					dialog.show();
+				}
 			}else if(response.errno.equals("MBCE67003")){
 				/*过期，无法确认*/
 				cancelToastImmediately();
@@ -472,11 +473,5 @@ public class LoveCallDetailActivity extends BaseActionBarFragmentActivity implem
 		if (tag.equals(DIALOG_TERMS_CALL_TAG)) {
 			
 		}
-	}
-	
-	@Override
-	public void onNegativeClick(View v, String tag) {
-		// TODO Auto-generated method stub
-		
 	}
 }

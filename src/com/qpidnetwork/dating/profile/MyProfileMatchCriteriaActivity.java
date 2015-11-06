@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestEnum.Children;
@@ -24,7 +24,7 @@ import com.qpidnetwork.view.MaterialDialogSingleChoice;
  * MyProfile模块
  * @author Max.Chiu
  */
-public class MyProfileMatchCriteriaActivity extends BaseActivity {
+public class MyProfileMatchCriteriaActivity extends BaseFragmentActivity implements OnClickListener, OnRequestCallback {
 
 	private enum RequestFlag {
 		REQUEST_SAVE_LADYMATCH_SUCCESS,
@@ -71,60 +71,16 @@ public class MyProfileMatchCriteriaActivity extends BaseActivity {
 		finish();
 	}
 	
-	/**
-	 * 初始化界面
-	 */
-	public void InitView() {
-		setContentView(R.layout.activity_my_profile_match_criteria);
-		
-		
-		//app bar
-		appbar = (MaterialAppBar)findViewById(R.id.appbar);
-		appbar.setTouchFeedback(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
-		appbar.addButtonToLeft(android.R.id.button1, "back", R.drawable.ic_arrow_back_grey600_24dp);
-		appbar.setTitle("Match criteria", getResources().getColor(R.color.text_color_dark));
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				switch (v.getId()){
-				case android.R.id.button1:
-					finish();
-					break;
-				default:
-					break;
-				}
-			}
-			
-		});
-		
-		/**
-		 * 年龄
-		 */
-		layoutAge = (MyProfileMatchCriteriaItemView) findViewById(R.id.layoutAge);
-		layoutAge.textViewLeft.setText("Her Age");
-		layoutAge.imageView.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				/*final ChooseAgeDialog dialog = new ChooseAgeDialog(mContext, R.style.ChoosePhotoDialog);
-				dialog.mMinValue = mLadyMatch.age1;
-				dialog.mMaxValue = mLadyMatch.age2;
-		        dialog.show();
-		        dialog.textViewConfirm.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						mLadyMatch.age1 = dialog.mMinValue;
-						mLadyMatch.age2 = dialog.mMaxValue;
-						dialog.dismiss();
-						ReloadData();
-						SaveLadyMatch();
-					}
-				});*/
-		        
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()){
+		case android.R.id.button1:
+			finish();
+			break;
+		default:{
+			switch ((int)v.getTag()){
+			case R.id.layoutAge:{
 		        MaterialDialogNumberRangeChooser dialog = new MaterialDialogNumberRangeChooser(
 		        		MyProfileMatchCriteriaActivity.this, 
 		        		new MaterialDialogNumberRangeChooser.OnClickCallback() {
@@ -142,96 +98,28 @@ public class MyProfileMatchCriteriaActivity extends BaseActivity {
 		        dialog.setTitle("Her age");
 		        dialog.setSelectRange(new int[]{mLadyMatch.age1, mLadyMatch.age2});
 		        dialog.show();
-				
-				
-			}
-		});
-		
-		/**
-		 * 子女情况
-		 */
-		layoutChildren = (MyProfileMatchCriteriaItemView) findViewById(R.id.layoutChildren);
-		layoutChildren.textViewLeft.setText("She has children");
-		layoutChildren.imageView.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Children");  
-                builder.setSingleChoiceItems(R.array.children, mLadyMatch.children.ordinal(), new DialogInterface.OnClickListener() {
+			}break;
+			case R.id.layoutChildren:{
+				String[] items = getResources().getStringArray(R.array.children);
+				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(MyProfileMatchCriteriaActivity.this, items, new MaterialDialogSingleChoice.OnClickCallback(){
+
 					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "子女情况: " + String.valueOf(which));
+					public void onClick(AdapterView<?> adptView,
+							View v, int which) {
+						// TODO Auto-generated method stub
 						if( which > -1 && which < Children.values().length ) {
 							mLadyMatch.children = Children.values()[which];
-							ReloadData();
+							SaveLadyMatch();
 						}
 					}
-				});
-                builder.setPositiveButton(R.string.common_btn_confirm, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
-						SaveLadyMatch();
-					}
-				});
-                builder.create().show();*/
-				
-				String[] items = getResources().getStringArray(R.array.children);
-						MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(MyProfileMatchCriteriaActivity.this, items, new MaterialDialogSingleChoice.OnClickCallback(){
-
-							@Override
-							public void onClick(AdapterView<?> adptView,
-									View v, int which) {
-								// TODO Auto-generated method stub
-								if( which > -1 && which < Children.values().length ) {
-									mLadyMatch.children = Children.values()[which];
-									SaveLadyMatch();
-								}
-							}
-							
-						},
-						mLadyMatch.children.ordinal());
-						dialog.setCanceledOnTouchOutside(true);
-						dialog.setTitle("Does her have children?");
+					
+				},
+				mLadyMatch.children.ordinal());
+				dialog.setCanceledOnTouchOutside(true);
+				dialog.setTitle("Does her have children?");
 				dialog.show();
-				
-				
-			}
-		});
-		
-		/**
-		 * 教育程度
-		 */
-		layoutEducation = (MyProfileMatchCriteriaItemView) findViewById(R.id.layoutEducation);
-		layoutEducation.textViewLeft.setText("Her education");
-		layoutEducation.imageView.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Education");  
-                builder.setSingleChoiceItems(R.array.education, mLadyMatch.education.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "教育程度: " + String.valueOf(which));
-						if( which > -1 && which < Education.values().length ) {
-							mLadyMatch.education = Education.values()[which];
-							ReloadData();
-						}
-					}
-				});
-                builder.setPositiveButton(R.string.common_btn_confirm, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
-						SaveLadyMatch();
-					}
-				});
-                builder.create().show();*/
-				
+			}break;
+			case R.id.layoutEducation:{
 				String[] items = getResources().getStringArray(R.array.education);
 				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(MyProfileMatchCriteriaActivity.this, items, new MaterialDialogSingleChoice.OnClickCallback(){
 
@@ -251,41 +139,8 @@ public class MyProfileMatchCriteriaActivity extends BaseActivity {
 				dialog.setCanceledOnTouchOutside(true);
 				dialog.setTitle("Her education level");
 				dialog.show();
-			}
-		});
-		
-		/**
-		 * 感情状况
-		 */
-		layoutRelationship = (MyProfileMatchCriteriaItemView) findViewById(R.id.layoutRelationship);
-		layoutRelationship.textViewLeft.setText("Relationship Status");
-		layoutRelationship.imageView.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				/*Builder builder = new AlertDialog.Builder(mContext);  
-                builder.setTitle("Relationship");  
-                builder.setSingleChoiceItems(R.array.marry, mLadyMatch.marry.ordinal(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub	
-						Log.d("max", "婚姻情况: " + String.valueOf(which));
-						if( which > -1 && which < Marry.values().length ) {
-							mLadyMatch.marry = Marry.values()[which];
-							ReloadData();
-						}
-					}
-				});
-                builder.setPositiveButton(R.string.common_btn_confirm, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
-						SaveLadyMatch();
-					}
-				});
-                builder.create().show();*/
-				
-				
+			}break;
+			case R.id.layoutRelationship:{
 				String[] items = getResources().getStringArray(R.array.marry);
 				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(MyProfileMatchCriteriaActivity.this, items, new MaterialDialogSingleChoice.OnClickCallback(){
 
@@ -305,36 +160,82 @@ public class MyProfileMatchCriteriaActivity extends BaseActivity {
 				dialog.setCanceledOnTouchOutside(true);
 				dialog.setTitle("Her relationship status");
 				dialog.show();
+			}break;
 			}
-		});
+		}break;
+		}
+	}
+	
+	/**
+	 * 初始化界面
+	 */
+	public void InitView() {
+		setContentView(R.layout.activity_my_profile_match_criteria);
+		
+		
+		//app bar
+		appbar = (MaterialAppBar)findViewById(R.id.appbar);
+		appbar.setTouchFeedback(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
+		appbar.addButtonToLeft(android.R.id.button1, "back", R.drawable.ic_arrow_back_grey600_24dp);
+		appbar.setTitle("Match criteria", getResources().getColor(R.color.text_color_dark));
+		appbar.setOnButtonClickListener(this);
+		
+		/**
+		 * 年龄
+		 */
+		layoutAge = (MyProfileMatchCriteriaItemView) findViewById(R.id.layoutAge);
+		layoutAge.textViewLeft.setText("Her Age");
+		layoutAge.imageView.setTag(R.id.layoutAge);
+		layoutAge.imageView.setOnClickListener(this);
+		
+		/**
+		 * 子女情况
+		 */
+		layoutChildren = (MyProfileMatchCriteriaItemView) findViewById(R.id.layoutChildren);
+		layoutChildren.textViewLeft.setText("She has children");
+		layoutChildren.imageView.setTag(R.id.layoutChildren);
+		layoutChildren.imageView.setOnClickListener(this);
+		
+		/**
+		 * 教育程度
+		 */
+		layoutEducation = (MyProfileMatchCriteriaItemView) findViewById(R.id.layoutEducation);
+		layoutEducation.textViewLeft.setText("Her education");
+		layoutEducation.imageView.setTag(R.id.layoutEducation);
+		layoutEducation.imageView.setOnClickListener(this);
+		
+		/**
+		 * 感情状况
+		 */
+		layoutRelationship = (MyProfileMatchCriteriaItemView) findViewById(R.id.layoutRelationship);
+		layoutRelationship.textViewLeft.setText("Relationship Status");
+		layoutRelationship.imageView.setTag(R.id.layoutRelationship);
+		layoutRelationship.imageView.setOnClickListener(this);
 		
 	}
 	
 	@Override
-	public void InitHandler() {
+	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				//hideProgressDialog();
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_SAVE_LADYMATCH_SUCCESS:{
-					// 上传匹配女士成功
-					// 刷新界面
-					showToastDone("Done!");
-					ReloadData();
-				}break;
-				case REQUEST_FAIL:{
-					// 请求失败
-					showToastFailed("Failed!");
-				}break;
-				default:
-					break;
-				}
-			};
-		};
+		super.handleUiMessage(msg);
+		// 收起菊花
+		//hideProgressDialog();
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_SAVE_LADYMATCH_SUCCESS:{
+			// 上传匹配女士成功
+			// 刷新界面
+			showToastDone("Done!");
+			ReloadData();
+		}break;
+		case REQUEST_FAIL:{
+			// 请求失败
+			showToastFailed("Failed!");
+		}break;
+		default:
+			break;
+		}
 	}
+	
 	
 	/**
 	 * 刷新界面
@@ -473,25 +374,25 @@ public class MyProfileMatchCriteriaActivity extends BaseActivity {
 				mLadyMatch.children, 
 				mLadyMatch.marry, 
 				mLadyMatch.education, 
-				new OnRequestCallback() {
-					
-					@Override
-					public void OnRequest(boolean isSuccess, String errno, String errmsg) {
-						// TODO Auto-generated method stub
-						Message msg = Message.obtain();
-						if( isSuccess ) {
-							// 上传匹配女士成功
-							msg.what = RequestFlag.REQUEST_SAVE_LADYMATCH_SUCCESS.ordinal();
-							
-							// 缓存数据到配置
-							MyProfilePerfence.SaveLadyMatch(mContext, mLadyMatch);
-							
-						} else {
-							// 获取个人信息失败
-							msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-						}
-						mHandler.sendMessage(msg);
-					}
-				});
+				this
+				);
+	}
+
+	@Override
+	public void OnRequest(boolean isSuccess, String errno, String errmsg) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		if( isSuccess ) {
+			// 上传匹配女士成功
+			msg.what = RequestFlag.REQUEST_SAVE_LADYMATCH_SUCCESS.ordinal();
+			
+			// 缓存数据到配置
+			MyProfilePerfence.SaveLadyMatch(mContext, mLadyMatch);
+			
+		} else {
+			// 获取个人信息失败
+			msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+		}
+		sendUiMessage(msg);
 	}
 }

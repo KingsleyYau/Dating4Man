@@ -8,6 +8,7 @@ import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ import com.qpidnetwork.dating.advertisement.AdvertisementManager;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.home.HomeActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
@@ -37,14 +39,14 @@ import com.qpidnetwork.view.MovingImageView.TranslateMode;
  * 	proceed to next activity
  */
 
-public class DefaultActivity extends BaseActivity implements OnLoginManagerCallback {
+public class DefaultActivity extends BaseFragmentActivity implements OnLoginManagerCallback {
 	
 	
 	public ImageView backImage;
 	public MovingImageView imageView;
 	public ProgressBar progressBar;
 	public TextView text;
-	public Button skip;
+	public LinearLayout skip;
 	WebSiteManager siteManager = WebSiteManager.newInstance(mContext);
 
 	
@@ -127,12 +129,12 @@ public class DefaultActivity extends BaseActivity implements OnLoginManagerCallb
 		imageView = (MovingImageView) findViewById(R.id.imageView);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar);
 		text = (TextView)findViewById(R.id.text);
-		skip = (Button)findViewById(R.id.skip);
+		skip = (LinearLayout)findViewById(R.id.skip);
 
 		
 		text.setText(texts.getNext());
 		progressBar.setVisibility(View.GONE);
-		skip.setVisibility(View.GONE);
+		//skip.setVisibility(View.GONE);
 		
 		final AlphaAnimation alAnimZA = new AlphaAnimation(1.0f, 0.0f);
 		final AlphaAnimation alAnimAZ = new AlphaAnimation(0.0f, 1.0f);
@@ -148,7 +150,7 @@ public class DefaultActivity extends BaseActivity implements OnLoginManagerCallb
 			public void onAnimationStopped() {
 				// TODO Auto-generated method stub
 				
-				Log.v("next position", images.getNextPosition() + "");
+				//Log.v("next position", images.getNextPosition() + "");
 				
 				if (skip.getVisibility() == View.GONE){
 					//skip.startAnimation(alAnimAZ);
@@ -225,7 +227,7 @@ public class DefaultActivity extends BaseActivity implements OnLoginManagerCallb
 		text.setVisibility(View.GONE);
 		skip.setVisibility(View.GONE);
 		
-		if( siteManager.GetWebSite() == null ) {
+		if( siteManager.IsDefaultWebSite() ) {
 			Intent intent = new Intent(mContext, ChooseSiteActivity.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			startActivity(intent);
@@ -298,19 +300,6 @@ public class DefaultActivity extends BaseActivity implements OnLoginManagerCallb
 		
 	}
 	
-	/**
-	 * 初始化事件监听
-	 */
-	@Override
-	public void InitHandler() {
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-			
-			}
-		};
-	}
-
 	@Override
 	public void OnLogin(boolean isSuccess, String errno, String errmsg,
 			LoginItem item, LoginErrorItem errItem) {

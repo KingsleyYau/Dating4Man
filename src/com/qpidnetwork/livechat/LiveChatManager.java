@@ -331,7 +331,7 @@ public class LiveChatManager
 				}break;
 				case LoginManagerLogout: {
 					if (null != LoginManager.getInstance()) {
-						LoginManager.getInstance().LogoutAndClean();
+						LoginManager.getInstance().LogoutAndClean(true);
 					}
 				}break;
 				}
@@ -621,8 +621,10 @@ public class LiveChatManager
 			result = mIsLogin;
 		}
 		else {
-			// 重置参数
-			ResetParam();
+			if (!mIsAutoRelogin) {
+				// 重置参数
+				ResetParam();
+			}
 			
 			// LiveChat登录 
 			result = LiveChatClient.Login(userId, sid, deviceId, ClientType.CLIENT_ANDROID, UserSexType.USER_SEX_MALE);
@@ -724,6 +726,24 @@ public class LiveChatManager
 		{
 			// 已经登录及聊天状态为inchat或男士邀请
 			result = IsLogin() && (userItem.chatType == ChatType.InChatCharge
+					|| userItem.chatType == ChatType.InChatUseTryTicket
+					|| userItem.chatType == ChatType.ManInvite);
+		}
+		return result;
+	}
+	
+	/**
+	 * 是否等待登录后发送消息给用户
+	 * @param userItem	用户item
+	 * @return
+	 */
+	private boolean IsWaitForLoginToSendMessage(LCUserItem userItem)
+	{
+		boolean result = false;
+		if (null != userItem)
+		{
+			// 已经登录及聊天状态为inchat或男士邀请
+			result = !IsLogin() && (userItem.chatType == ChatType.InChatCharge
 					|| userItem.chatType == ChatType.InChatUseTryTicket
 					|| userItem.chatType == ChatType.ManInvite);
 		}
@@ -1019,6 +1039,9 @@ public class LiveChatManager
 						// 插入聊天记录
 						LCUserItem userItem = mUserMgr.getUserItemWithInviteId(inviteId);
 						if (isSuccess && userItem != null) {
+							// 清除已完成的记录（保留未完成发送的记录） 
+							userItem.clearFinishedMsgList();
+							// 插入历史记录
 							for (int i = 0; i < recordList.length; i++) 
 							{
 								LCMessageItem item = new LCMessageItem();
@@ -1098,6 +1121,8 @@ public class LiveChatManager
 							if (null != record.recordList 
 								&& userItem != null) 
 							{
+								// 清除已完成的记录（保留未完成发送的记录） 
+								userItem.clearFinishedMsgList();
 								// 服务器返回的历史消息是倒序排列的
 								for (int k = record.recordList.length - 1; k >= 0; k--) 
 								{
@@ -1341,6 +1366,11 @@ public class LiveChatManager
 				// 发送消息
 				SendMessageProc(item);
 			}
+			else if (IsWaitForLoginToSendMessage(userItem)) 
+			{
+				// 登录未成功，添加到待发送列表
+				userItem.sendMsgList.add(item);
+			}
 			else 
 			{
 				// 正在使用试聊券，消息添加到待发列表
@@ -1431,7 +1461,7 @@ public class LiveChatManager
 			LCSystemItem systemItem = new LCSystemItem();
 			systemItem.message = message; 
 			LCMessageItem item = new LCMessageItem();
-			item.init(mMsgIdIndex.getAndIncrement(), SendType.System, "", mUserId, userItem.inviteId, StatusType.Finish);
+			item.init(mMsgIdIndex.getAndIncrement(), SendType.System, userId, mUserId, userItem.inviteId, StatusType.Finish);
 			item.setSystemItem(systemItem);
 			userItem.insertSortMsgList(item);
 			mCallbackHandler.OnRecvSystemMsg(item);
@@ -1541,6 +1571,11 @@ public class LiveChatManager
 			{
 				// 发送消息
 				SendEmotionProc(item);
+			}
+			else if (IsWaitForLoginToSendMessage(userItem)) 
+			{
+				// 登录未成功，添加到待发送列表
+				userItem.sendMsgList.add(item);
 			}
 			else 
 			{
@@ -1716,6 +1751,11 @@ public class LiveChatManager
 		{
 			// 发送消息
 			SendPhotoProc(item);
+		}
+		else if (IsWaitForLoginToSendMessage(userItem)) 
+		{
+			// 登录未成功，添加到待发送列表
+			userItem.sendMsgList.add(item);
 		}
 		else 
 		{
@@ -2049,6 +2089,11 @@ public class LiveChatManager
 		{
 			// 发送消息
 			SendVoiceProc(item);
+		}
+		else if (IsWaitForLoginToSendMessage(userItem)) 
+		{
+			// 登录未成功，添加到待发送列表
+			userItem.sendMsgList.add(item);
 		}
 		else 
 		{
@@ -2625,7 +2670,7 @@ public class LiveChatManager
 			msgGetEmotionConfig.what = LiveChatRequestOptType.GetEmotionConfig.ordinal();
 			mHandler.sendMessage(msgGetEmotionConfig);
 			
-			// 使用成功，发送待发消息
+			// 使用试聊券，发送待发消息
 			Message msg = Message.obtain();
 			msg.what = LiveChatRequestOptType.CheckCouponWithToSendUser.ordinal();
 			mHandler.sendMessage(msg);
@@ -2659,7 +2704,7 @@ public class LiveChatManager
 	@Override
 	public void OnLogout(LiveChatErrType errType, String errmsg)
 	{
-		Log.d("livechat", "OnLogout(boolean bActive) begin");
+		Log.d("livechat", "OnLogout() begin, errType:%s", errType.name());
 		
 		// 重置参数
 		mIsLogin = false;
@@ -2735,14 +2780,16 @@ public class LiveChatManager
 			, LiveChatUserStatus[] userStatusArray)
 	{
 		ArrayList<LCUserItem> userArrayList = new ArrayList<LCUserItem>();
-		for (int i = 0; i < userStatusArray.length; i++)
+		if (null != userStatusArray) 
 		{
-			LiveChatUserStatus userStatusItem = userStatusArray[i];
-			LCUserItem userItem = mUserMgr.getUserItem(userStatusItem.userId);
-			if (null != userItem) {
-//				userItem.statusType = userStatusItem.statusType;
-				SetUserOnlineStatus(userItem, userStatusItem.statusType);
-				userArrayList.add(userItem);
+			for (int i = 0; i < userStatusArray.length; i++)
+			{
+				LiveChatUserStatus userStatusItem = userStatusArray[i];
+				LCUserItem userItem = mUserMgr.getUserItem(userStatusItem.userId);
+				if (null != userItem) {
+					SetUserOnlineStatus(userItem, userStatusItem.statusType);
+					userArrayList.add(userItem);
+				}
 			}
 		}
 		
@@ -2826,7 +2873,7 @@ public class LiveChatManager
 		LCMessageItem item = mEmotionMgr.getAndRemoveSendingItem(ticket);
 		if (null != item) {
 			item.statusType = (errType==LiveChatErrType.Success ? StatusType.Finish : StatusType.Fail);
-			mCallbackHandler.OnSendMessage(errType, errmsg, item);
+			mCallbackHandler.OnSendEmotion(errType, errmsg, item);
 		}
 		else {
 			Log.e("livechat", String.format("%s::%s() get sending item fail, ticket:%d", "LiveChatManager", "OnSendEmotion", ticket));

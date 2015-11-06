@@ -2,6 +2,7 @@ package com.qpidnetwork.framework.base;
 
 import java.lang.ref.WeakReference;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,19 +24,32 @@ import com.qpidnetwork.view.MaterialProgressDialog;
  * @author Hunter 
  * @since 2015.5.13
  */
-public class BaseFragmentActivity extends GAFragmentActivity implements OnClickListener{
-	
-	MaterialProgressDialog progressDialog;
+public abstract class BaseFragmentActivity extends GAFragmentActivity implements OnClickListener{
+	protected Activity mContext;
 	protected FlatToast mToast;
+	protected MaterialProgressDialog progressDialog;
+	protected int mProgressDialogCount = 0;
 	
-	private boolean isActivityVisible = true;//判断activity是否可见，用于处理异步Dialog显示 windowToken异常
+	private boolean isActivityVisible = false;//判断activity是否可见，用于处理异步Dialog显示 windowToken异常
+	
+	/**
+	 * 初始化界面
+	 */
+	public abstract void InitView();
 	
 	@Override
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);
+		
+		mContext = this;
+		
+		mProgressDialogCount = 0;
 		progressDialog = new MaterialProgressDialog(this);
 		progressDialog.setCanceledOnTouchOutside(false);
+		
+		// 初始化界面
+		InitView();
 	}
 	
 	@Override
@@ -74,23 +88,25 @@ public class BaseFragmentActivity extends GAFragmentActivity implements OnClickL
 	}
 	
 	public void showToastProgressing(String text){
-		
-		if (mToast != null){
+		if ( mToast != null ){
 			if (mToast.isShowing())mToast.cancel();
 			mToast = null;
 		}
 		mToast = new FlatToast(this);
 		mToast.setProgressing(text);
-		mToast.show();
+		if(isActivityVisible){
+			mToast.show();
+		}
 	}
 	
 	public void showToastDone(String text){
-		mToast.setDone(text);
+		if( mToast != null && mToast.isShowing() ) {
+			mToast.setDone(text);
+		}
 	}
 	
 	public void showToastFailed(String text){
-		
-		if (mToast != null && mToast.isShowing()){
+		if ( mToast != null && mToast.isShowing() ){
 			mToast.setFailed(text);
 		}
 	}
@@ -119,7 +135,9 @@ public class BaseFragmentActivity extends GAFragmentActivity implements OnClickL
 	 * @param tips 提示文字
 	 */
 	public void showProgressDialog(String tips){
-		if(!progressDialog.isShowing() && isActivityVisible){
+		cancelToast();  // cancel flat toast if it's showing before popuping a dialog.
+		mProgressDialogCount++;
+		if( !progressDialog.isShowing() && isActivityVisible) {
 			progressDialog.setMessage(tips);
 			progressDialog.show();
 		}
@@ -129,12 +147,19 @@ public class BaseFragmentActivity extends GAFragmentActivity implements OnClickL
 	 * 隐藏progressDialog
 	 */
 	public void hideProgressDialog(){
-		if((progressDialog != null)&&(progressDialog.isShowing())){
-			progressDialog.dismiss();
+		try {
+			if( mProgressDialogCount > 0 ) {
+				mProgressDialogCount--;
+				if( mProgressDialogCount == 0 && progressDialog != null ) {
+					progressDialog.dismiss();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
-	protected Handler mUiHandler = new UiHandler(this) {
+	protected Handler mHandler = new UiHandler(this) {
         public void handleMessage(android.os.Message msg) {
             super.handleMessage(msg);
             if (getActivityReference() != null && getActivityReference().get() != null) {
@@ -177,11 +202,11 @@ public class BaseFragmentActivity extends GAFragmentActivity implements OnClickL
      * @param msg
      */
     protected void sendUiMessage(Message msg) {
-        mUiHandler.sendMessage(msg);
+    	mHandler.sendMessage(msg);
     }
 
     protected void sendUiMessageDelayed(Message msg, long delayMillis) {
-        mUiHandler.sendMessageDelayed(msg, delayMillis);
+    	mHandler.sendMessageDelayed(msg, delayMillis);
     }
 
     /**
@@ -190,11 +215,11 @@ public class BaseFragmentActivity extends GAFragmentActivity implements OnClickL
      * @param what
      */
     protected void sendEmptyUiMessage(int what) {
-        mUiHandler.sendEmptyMessage(what);
+    	mHandler.sendEmptyMessage(what);
     }
 
     protected void sendEmptyUiMessageDelayed(int what, long delayMillis) {
-        mUiHandler.sendEmptyMessageDelayed(what, delayMillis);
+    	mHandler.sendEmptyMessageDelayed(what, delayMillis);
     }
     
     /**

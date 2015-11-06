@@ -27,7 +27,10 @@ import com.qpidnetwork.view.ViewTools;
  * 显示附件私密照界面
  * @author Max.Chiu
  */
-public class EMFAttachmentPrivatePhotoFragment extends IndexFragment {
+public class EMFAttachmentPrivatePhotoFragment extends IndexFragment
+											   implements OnClickListener,
+											   			  ImageViewLoaderCallback
+{
 	
 	public interface OnClickBuy {
 		public void onClickBuy(EMFAttachmentPrivatePhotoFragment fragment);
@@ -108,24 +111,10 @@ public class EMFAttachmentPrivatePhotoFragment extends IndexFragment {
         textViewTips = (TextView) view.findViewById(R.id.textViewTips);
         textViewDescription = (TextView) view.findViewById(R.id.textViewDescription);
         buttonView = (ButtonRaised) view.findViewById(R.id.buttonView);
-        buttonView.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				onClickView(v);
-			}
-		});
+        buttonView.setOnClickListener(this);
         
         imageViewDownload = (ImageView) view.findViewById(R.id.imageViewDownload);
-        imageViewDownload.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				onClickDownload(v);
-			}
-		});
+        imageViewDownload.setOnClickListener(this);
         
         progressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
@@ -211,20 +200,7 @@ public class EMFAttachmentPrivatePhotoFragment extends IndexFragment {
     					imageView, 
     					"", 
     					localPath, 
-    					new ImageViewLoaderCallback() {
-					
-					@Override
-					public void OnDisplayNewImageFinish() {
-						// TODO Auto-generated method stub
-//						imageView.SetCanScale(true);
-					}
-
-					@Override
-					public void OnLoadPhotoFailed() {
-						// TODO Auto-generated method stub
-						
-					}
-				});
+    					this);
     		}
     		
     		// 隐藏购买按钮
@@ -273,20 +249,7 @@ public class EMFAttachmentPrivatePhotoFragment extends IndexFragment {
     					imageView, 
     					"", 
     					localPath, 
-    					new ImageViewLoaderCallback() {
-					
-					@Override
-					public void OnDisplayNewImageFinish() {
-						// TODO Auto-generated method stub
-//						imageView.SetCanScale(true);
-					}
-
-					@Override
-					public void OnLoadPhotoFailed() {
-						// TODO Auto-generated method stub
-						
-					}
-				});
+    					this);
     		}
     		
 
@@ -321,5 +284,28 @@ public class EMFAttachmentPrivatePhotoFragment extends IndexFragment {
 		} else {
 			bCanStop = false;
 		}
+	}
+	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if (v.getId() == R.id.buttonView) {
+			onClickView(v);
+		}
+		else if (v.getId() == R.id.imageViewDownload) {
+			onClickDownload(v);
+		}
+	}
+
+	@Override
+	public void OnDisplayNewImageFinish() {
+		// TODO Auto-generated method stub
+//		imageView.SetCanScale(true);
+	}
+
+	@Override
+	public void OnLoadPhotoFailed() {
+		// TODO Auto-generated method stub
+		
 	}
 }

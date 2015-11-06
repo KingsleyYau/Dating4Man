@@ -68,6 +68,12 @@ public class PictureSelectActivity extends BaseFragmentActivity{
 		super.finish();
 		overridePendingTransition(R.anim.anim_donot_animate, R.anim.anim_translate_from_top_to_buttom);
 	}
+
+	@Override
+	public void InitView() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 }

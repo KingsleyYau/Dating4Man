@@ -28,8 +28,6 @@ import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager;
-import com.qpidnetwork.dating.authorization.LoginParam;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.authorization.RegisterActivity;
 import com.qpidnetwork.dating.emf.MailEditActivity;
 import com.qpidnetwork.dating.livechat.downloader.EmotionPlayImageDownloader2;
@@ -46,6 +44,7 @@ import com.qpidnetwork.livechat.LCMessageItem;
 import com.qpidnetwork.livechat.LCMessageItem.MessageType;
 import com.qpidnetwork.livechat.LCMessageItem.SendType;
 import com.qpidnetwork.livechat.LCMessageItem.StatusType;
+import com.qpidnetwork.livechat.LCTextItem;
 import com.qpidnetwork.livechat.LCWarningLinkItem.LinkOptType;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.jni.LiveChatClient.UserStatusType;
@@ -163,8 +162,10 @@ public class MessageListView extends ScrollLayout implements
 		case Send:
 			switch (bean.msgType) {
 			case Text:
-			case Warning:
 				row = getTextMessageViewOut(bean);
+				break;
+			case Warning:
+				row = getWarningView(bean);
 				break;
 			case Emotion:
 				row = getEmotionViewOut(bean, position);
@@ -389,7 +390,8 @@ public class MessageListView extends ScrollLayout implements
 		MaterialProgressBar pbDownload = (MaterialProgressBar) row
 				.findViewById(R.id.pbDownload);
 		TextView msgView = (TextView) row.findViewById(R.id.chat_message);
-		msgView.setText(imageGetter.getExpressMsgHTML(bean.getTextItem().message));
+		LCTextItem textItem = bean.getTextItem();
+		msgView.setText(imageGetter.getExpressMsgHTML(textItem.message));
 		if (bean.getTextItem().illegal) {
 			/* 非法的，显示警告 */
 			row.findViewById(R.id.includeWaring).setVisibility(View.VISIBLE);
@@ -617,7 +619,7 @@ public class MessageListView extends ScrollLayout implements
 						mLiveChatManager.GetVideo(item);
 					} else {
 						VideoPlayActivity.launchVideoPlayActivity(mContext,
-								videoThumbPhotoPath, videoPath);
+								videoThumbPhotoPath, videoPath, false);
 					}
 				}
 			}
@@ -910,14 +912,14 @@ public class MessageListView extends ScrollLayout implements
 
 		@Override
 		public void onClick(View v) {
-			LoginManager.newInstance(mContext).Logout();
-			/* 清除密码 */
-			LoginParam param = LoginPerfence.GetLoginParam(mContext);
-			param.password = "";
-			LoginPerfence.SaveLoginParam(mContext, param);
+//			LoginManager.newInstance(mContext).Logout();
+//			/* 清除密码 */
+//			LoginParam param = LoginPerfence.GetLoginParam(mContext);
+//			param.password = "";
+//			LoginPerfence.SaveLoginParam(mContext, param);
 
+			LoginManager.newInstance(mContext).LogoutAndClean(false);
 			((ChatActivity) mContext).finish();
-
 			Intent loginIntent = new Intent(mContext, RegisterActivity.class);
 			mContext.startActivity(loginIntent);
 		}

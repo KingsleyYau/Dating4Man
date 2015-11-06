@@ -24,7 +24,7 @@ import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialDialogSingleChoice;
 
 public class ContactsListFragment extends BaseListFragment implements
-		OnContactUpdateCallback {
+		OnContactUpdateCallback, OnGetContactListCallBack, OnContactListItemLongClickListener  {
 
 	private static final int GET_CONTACTLIST_SUCCESS = 0;
 	private static final int GET_CONTACTLIST_FAILED = 1;
@@ -51,42 +51,9 @@ public class ContactsListFragment extends BaseListFragment implements
 		mAdapter.setComparator(ContactBean.getComparator());
 		/* 关闭下拉刷新和上拉刷新 */
 		closePullDownRefresh();
-		closePullUpRefresh();
+		closePullUpRefresh(true);
 
-		mAdapter.setOnContactListItemLongClickListener(new OnContactListItemLongClickListener() {
-
-			@Override
-			public void onContactListItemLongClick(final int position) {
-				MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
-						getActivity(), new String[] {
-								getString(R.string.common_btn_delete),
-								getString(R.string.view_profile),
-								getString(R.string.common_btn_cancel) },
-						new MaterialDialogSingleChoice.OnClickCallback() {
-
-							@Override
-							public void onClick(AdapterView<?> adptView,
-									View v, int which) {
-								// TODO Auto-generated method stub
-								if (which == 0) {
-									ContactBean bean = mAdapter.getDataList()
-											.get(position);
-									showRemoveContactConfirm(bean);
-								} else if (which == 1) {
-									LadyDetailActivity
-											.launchLadyDetailActivity(
-													getActivity(),
-													mAdapter.getDataList().get(
-															position).womanid,
-													true);
-								}
-							}
-						}, -1);
-
-				dialog.show();
-
-			}
-		});
+		mAdapter.setOnContactListItemLongClickListener(this);
 		getPullToRefreshListView().setAdapter(mAdapter);
 
 		mContactManager.registerContactUpdate(this);
@@ -100,24 +67,7 @@ public class ContactsListFragment extends BaseListFragment implements
 		if (!isInited) {
 			showInitLoading();
 		}
-		Log.i("hunter", "queryContactList");
-		mContactManager.getContacts(new OnGetContactListCallBack() {
-
-			@Override
-			public void onContactListCallback(boolean isSuccess, String errno,
-					String errmsg) {
-				// TODO Auto-generated method stub
-				Message msg = Message.obtain();
-				if (isSuccess) {
-					msg.what = GET_CONTACTLIST_SUCCESS;
-					msg.obj = mContactManager.getContactList();
-				} else {
-					msg.what = GET_CONTACTLIST_FAILED;
-					msg.obj = errmsg;
-				}
-				sendUiMessage(msg);
-			}
-		});
+		mContactManager.getContacts(this);
 	}
 
 	/**
@@ -245,5 +195,50 @@ public class ContactsListFragment extends BaseListFragment implements
 		msg.what = CONTACTLIS_UPDATE;
 		msg.obj = contactList;
 		sendUiMessage(msg);
+	}
+
+	@Override
+	public void onContactListCallback(boolean isSuccess, String errno,
+			String errmsg) {
+		Message msg = Message.obtain();
+		if (isSuccess) {
+			msg.what = GET_CONTACTLIST_SUCCESS;
+			msg.obj = mContactManager.getContactList();
+		} else {
+			msg.what = GET_CONTACTLIST_FAILED;
+			msg.obj = errmsg;
+		}
+		sendUiMessage(msg);		
+	}
+
+	@Override
+	public void onContactListItemLongClick(final int position) {
+		MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
+				getActivity(), new String[] {
+						getString(R.string.common_btn_delete),
+						getString(R.string.view_profile),
+						getString(R.string.common_btn_cancel) },
+				new MaterialDialogSingleChoice.OnClickCallback() {
+
+					@Override
+					public void onClick(AdapterView<?> adptView,
+							View v, int which) {
+						// TODO Auto-generated method stub
+						if (which == 0) {
+							ContactBean bean = mAdapter.getDataList()
+									.get(position);
+							showRemoveContactConfirm(bean);
+						} else if (which == 1) {
+							LadyDetailActivity
+									.launchLadyDetailActivity(
+											getActivity(),
+											mAdapter.getDataList().get(
+													position).womanid,
+											true);
+						}
+					}
+				}, -1);
+
+		dialog.show();
 	}
 }

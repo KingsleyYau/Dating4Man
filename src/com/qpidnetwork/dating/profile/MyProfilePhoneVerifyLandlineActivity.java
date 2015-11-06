@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.framework.util.Log;
@@ -28,7 +28,7 @@ import com.qpidnetwork.view.MaterialTextField;
  * MyProfile模块
  * @author Max.Chiu
  */
-public class MyProfilePhoneVerifyLandlineActivity extends BaseActivity {
+public class MyProfilePhoneVerifyLandlineActivity extends BaseFragmentActivity implements OnClickListener, MaterialTextField.OnFocuseChangedCallback, OnRequestCallback {
 	/**
 	 * 编辑国家
 	 */
@@ -108,7 +108,11 @@ public class MyProfilePhoneVerifyLandlineActivity extends BaseActivity {
 	public void onClickContinue(View view) {
 		GetFixedPhone();
 	}
-
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		finish();
+	}
 	@Override
 	public void InitView() {
 		setContentView(R.layout.activity_my_profile_phone_verify_landline);
@@ -118,15 +122,7 @@ public class MyProfilePhoneVerifyLandlineActivity extends BaseActivity {
 		appbar.setTouchFeedback(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
 		appbar.addButtonToLeft(android.R.id.button1, "back", R.drawable.ic_close_grey600_24dp);
 		appbar.setTitle("Verify landline number", getResources().getColor(R.color.text_color_dark));
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				finish();
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		
 //		btnContinue = (ButtonRaised)findViewById(R.id.btn_continue);
 		editTextAreaCode = (MaterialTextField) findViewById(R.id.editTextAreaCode);
@@ -147,27 +143,24 @@ public class MyProfilePhoneVerifyLandlineActivity extends BaseActivity {
 		editTextPhoneNumber.setHint("Your phone number");
 		editTextUnitedStates.setText("United States (+1)");
 		editTextUnitedStates.getEditor().setEllipsize(TruncateAt.END);
-		editTextUnitedStates.setOnFocusChangedCallback(new MaterialTextField.OnFocuseChangedCallback() {
-			
-			@Override
-			public void onFocuseChanged(View v, boolean hasFocus) {
-				// TODO Auto-generated method stub
-				if (hasFocus){
-					onClickUnitedStates(v);
-					if (editTextAreaCode.getEditor().getText().length() == 0){
-						editTextAreaCode.requestFocus();
-					}else{
-						editTextPhoneNumber.requestFocus();
-					}
-				}
-			}
-		});
+		editTextUnitedStates.setOnFocusChangedCallback(this);
 		
 		editTextUnitedStates.getEditor().setText(countries[222]);
 		editTextUnitedStates.setTag(222);
 		
 	}
-	
+	@Override
+	public void onFocuseChanged(View v, boolean hasFocus) {
+		// TODO Auto-generated method stub
+		if (hasFocus){
+			onClickUnitedStates(v);
+			if (editTextAreaCode.getEditor().getText().length() == 0){
+				editTextAreaCode.requestFocus();
+			}else{
+				editTextPhoneNumber.requestFocus();
+			}
+		}
+	}
 	/**
 	 * 固定电话获取认证短信
 	 */
@@ -187,57 +180,51 @@ public class MyProfilePhoneVerifyLandlineActivity extends BaseActivity {
 				Country.values()[(int)editTextUnitedStates.getTag()], //country code
 				editTextAreaCode.getText().toString(),  //area code
 				RequestJni.GetDeviceId(tm), 
-				new OnRequestCallback() {
-					
-					@Override
-					public void OnRequest(boolean isSuccess, String errno, String errmsg) {
-						// TODO Auto-generated method stub
-						Message msg = Message.obtain();
-						RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
-						if( isSuccess ) {
-							// 获取个人信息成功
-							msg.what = RequestFlag.REQUEST_GET_SMS_SUCCESS.ordinal();
-						} else {
-							// 获取个人信息失败
-							msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-						}
-						msg.obj = obj;
-						mHandler.sendMessage(msg);
-					}
-				});
+				this
+				);
 	}
-	
 	@Override
-	public void InitHandler() {
+	public void OnRequest(boolean isSuccess, String errno, String errmsg) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
-				// 收起菊花
-				hideProgressDialog();
-				switch ( RequestFlag.values()[msg.what] ) {
-				case REQUEST_PROFILE_SUCCESS:{
-					// 获取个人信息成功
-					ReloadData();
-				}break;
-				case REQUEST_GET_SMS_SUCCESS:{
-					// 固定电话获取认证短信成功
-					// 跳转界面
-					//Intent intent = new Intent(mContext, MyProfilePhoneVerifyMobileCodeActivity.class);
-					//startActivity(intent);
-					String phoneNumber = editTextPhoneNumber.getText().toString();
-					MyProfilePhoneVerifyMobileCodeActivity.LaunchActivity(MyProfilePhoneVerifyMobileCodeActivity.LaunchType.LAND, phoneNumber, mContext);
-				}break;
-				case REQUEST_FAIL:{
-					// 请求失败
-					Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
-				}break;
-				default:
-					break;
-				}
-			};
-		};
+		Message msg = Message.obtain();
+		RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
+		if( isSuccess ) {
+			// 获取个人信息成功
+			msg.what = RequestFlag.REQUEST_GET_SMS_SUCCESS.ordinal();
+		} else {
+			// 获取个人信息失败
+			msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+		}
+		msg.obj = obj;
+		sendUiMessage(msg);
+	}
+	@Override
+	protected void handleUiMessage(Message msg) {
+		// TODO Auto-generated method stub
+		super.handleUiMessage(msg);
+		RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
+		// 收起菊花
+		hideProgressDialog();
+		switch ( RequestFlag.values()[msg.what] ) {
+		case REQUEST_PROFILE_SUCCESS:{
+			// 获取个人信息成功
+			ReloadData();
+		}break;
+		case REQUEST_GET_SMS_SUCCESS:{
+			// 固定电话获取认证短信成功
+			// 跳转界面
+			//Intent intent = new Intent(mContext, MyProfilePhoneVerifyMobileCodeActivity.class);
+			//startActivity(intent);
+			String phoneNumber = editTextPhoneNumber.getText().toString();
+			MyProfilePhoneVerifyMobileCodeActivity.LaunchActivity(MyProfilePhoneVerifyMobileCodeActivity.LaunchType.LAND, phoneNumber, mContext);
+		}break;
+		case REQUEST_FAIL:{
+			// 请求失败
+			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
+		}break;
+		default:
+			break;
+		}
 	}
 	
 	public void ReloadData() {

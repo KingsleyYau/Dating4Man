@@ -53,6 +53,7 @@ import com.qpidnetwork.dating.lady.LadyDetailManager;
 import com.qpidnetwork.dating.lady.LadyDetailManager.OnLadyDetailManagerQueryLadyDetailCallback;
 import com.qpidnetwork.framework.base.BaseActionBarFragmentActivity;
 import com.qpidnetwork.framework.util.CompatUtil;
+import com.qpidnetwork.framework.util.ImageUtil;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.framework.widget.CircleImageView;
@@ -84,7 +85,10 @@ import com.qpidnetwork.view.MaterialProgressBar;
 import com.qpidnetwork.view.MaterialThreeButtonDialog;
 import com.qpidnetwork.view.ProgressImageHorizontalView;
 
-public class MailEditActivity extends BaseActionBarFragmentActivity {
+public class MailEditActivity extends BaseActionBarFragmentActivity
+							  implements OnItemClickListener,
+							  			 EMFAttachmentUploaderCallback
+{
 
 	/**
 	 * 选择虚拟礼物界面返回
@@ -221,7 +225,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 			ReplyType replayType, String mTab) {
 		boolean isCanEnter = true;
 		if(LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED){
-			LoginParam loginParam = LoginPerfence.GetLoginParam(context);
+			LoginParam loginParam = LoginManager.getInstance().GetLoginParam();
 			if(loginParam.item.premit){
 				if(((replayType == ReplyType.ADMIRE)&&loginParam.item.admirer)||
 							loginParam.item.ladyprofile){
@@ -262,7 +266,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 
 		getCustomActionBar().addButtonToRight(R.id.common_button_gift, "",
 				R.drawable.ic_wallet_giftcard_grey600_24dp);
-		LoginItem item = LoginPerfence.GetLoginParam(this).item;
+		LoginItem item = LoginManager.getInstance().GetLoginParam().item;
 		if((item != null)&& (item.photosend)){
 			/*私密照发送风控，当允许发送时才显示添加附件按钮，否则直接隐藏*/
 			getCustomActionBar().addButtonToRight(R.id.common_button_attachments,
@@ -288,7 +292,22 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 	private void initViews() {
 
 		mChooseRemoveAttachmentDialog = new ChooseRemoveAttachmentDialog(this);
+		
+		//初始化dialog
 		mErrorDialog = new MaterialDialogAlert(this);
+		mErrorDialog.setMessage(getString(R.string.emf_send_fail));
+		mErrorDialog.addButton(mErrorDialog.createButton(
+				getString(R.string.common_btn_cancel), null));
+		mErrorDialog.addButton(mErrorDialog.createButton(
+				getString(R.string.common_btn_ok),
+				new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						SendEMFMessage();
+					}
+				}));
 
 		/* 使用积分按钮 */
 		tvBonusPoint = (TextView) findViewById(R.id.tvBonusPoint);
@@ -450,21 +469,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 				}, size);
 
 		// 附件
-		gvAttachments.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				// TODO Auto-generated method stub
-				ArrayList<EMFAttachmentBean> attachList = new ArrayList<EMFAttachmentBean>();
-				for (int i = 0; i < mViewsList.size(); i++) {
-					attachList.add((EMFAttachmentBean) mViewsList.get(i)
-							.getTag());
-				}
-				startActivity(EMFAttachmentPreviewActivity.getIntent(
-						MailEditActivity.this, attachList, position));
-			}
-		});
+		gvAttachments.setOnItemClickListener(this);
 
 		if (cbList.size() == 0) {
 			// 没有最近联系人, 隐藏下拉
@@ -754,8 +759,8 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 						&& (!takePhotoTempPath.equals(""))) {
 					// 保存到相册
 					String fileName = "mail" + "_" + System.currentTimeMillis() + ".jpg";
-					SaveImageToGallery(takePhotoTempPath,
-							fileName);
+					ImageUtil.SaveImageToGallery(this, null, takePhotoTempPath,
+							fileName, null);
 					
 					// 增加附件
 					addAttachments(takePhotoTempPath);
@@ -806,105 +811,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 				(gvAttachments.getWidth() - UnitConversion.dip2px(this, 16)) / 2,
 				(gvAttachments.getWidth() - UnitConversion.dip2px(this, 16)) / 2));
 		EMFAttachmentUploader uploader = new EMFAttachmentUploader();
-		uploader.Upload(view, UploadAttachType.IMAGE, localPath,
-				new EMFAttachmentUploaderCallback() {
-
-					@Override
-					public void OnUploadFinish(boolean isSuccess, String errno,
-							String errmsg, String attachId) {
-						// TODO Auto-generated method stub
-						if (isSuccess) {
-							// 上传附件成功
-							synchronized (mAttachmentIdList) {
-								mAttachmentIdList.add(attachId);
-							}
-						} else {
-							// 上传附件失败
-						}
-					}
-
-					@Override
-					public void OnClickCancel(EMFAttachmentUploader uploader) {
-						// TODO Auto-generated method stub
-						// 点击取消
-						synchronized (mAttachmentIdList) {
-							mAttachmentIdList.remove(uploader.GetAttachmentId());
-						}
-
-						mViewsList.remove(uploader.GetView());
-						mUploadList.remove(uploader);
-						mAdapter.notifyDataSetChanged();
-					}
-
-					@Override
-					public void OnClickWarning(
-							final EMFAttachmentUploader uploader) {
-						// TODO Auto-generated method stub
-						// 点击警告, 弹出对话框
-
-						final MaterialDialogAlert dialog = new MaterialDialogAlert(
-								mContext);
-						dialog.setMessage(uploader.GetErrmsg());
-
-						switch (uploader.GetErrno()) {
-						case RequestErrorCode.MBCE65001: {
-							// 附件大小不合法(5m)
-						}
-							break;
-						case RequestErrorCode.MBCE65004: {
-							// 附件格式不正确(非jpg)
-						}
-							break;
-						default: {
-							// 增加重试按钮
-							dialog.addButton(dialog.createButton(
-									getString(R.string.common_btn_retry),
-									new OnClickListener() {
-
-										@Override
-										public void onClick(View v) {
-											// TODO Auto-generated method stub
-											// 附件上传失败, 重试
-											uploader.Reload();
-											dialog.dismiss();
-										}
-									}));
-						}
-							break;
-						}
-
-						dialog.addButton(dialog.createButton(
-								getString(R.string.common_btn_remove),
-								new OnClickListener() {
-
-									@Override
-									public void onClick(View v) {
-										// TODO Auto-generated method stub
-										// 附件上传失败, 删除
-										synchronized (mAttachmentIdList) {
-											mAttachmentIdList.remove(uploader
-													.GetAttachmentId());
-										}
-
-										mViewsList.remove(uploader.GetView());
-										mUploadList.remove(uploader);
-										mAdapter.notifyDataSetChanged();
-										dialog.dismiss();
-									}
-								}));
-						dialog.show();
-						//
-						// CustomInfoDialogFragment fragment =
-						// CustomInfoDialogFragment.newInstance(
-						// getString(R.string.common_btn_retry),
-						// getString(R.string.common_btn_remove),
-						// getString(R.string.emf_attachment_fail)
-						// );
-						// fragment.mParam = uploader;
-						// fragment.show(getSupportFragmentManager(),
-						// DIALOG_REUPLOAD_ATTACHMENT_TAG);
-					}
-				});
+		uploader.Upload(view, UploadAttachType.IMAGE, localPath, this);
 
 		/* 绑定附件信息到View，用于附件预览时取出 */
 		EMFAttachmentBean item = new EMFAttachmentBean();
@@ -1120,7 +1027,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 
 			String user_sid = "";
 			String user_id = "";
-			LoginParam param = LoginPerfence.GetLoginParam(this);
+			LoginParam param = LoginManager.getInstance().GetLoginParam();
 			if (param != null && param.item != null) {
 				user_sid = param.item.sessionid;
 				user_id = param.item.manid;
@@ -1230,19 +1137,6 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 			default: {
 				// 网络超时, 或者其他错误
 				if (!mErrorDialog.isShowing()) {
-					mErrorDialog.setMessage(getString(R.string.emf_send_fail));
-					mErrorDialog.addButton(mErrorDialog.createButton(
-							getString(R.string.common_btn_cancel), null));
-					mErrorDialog.addButton(mErrorDialog.createButton(
-							getString(R.string.common_btn_ok),
-							new OnClickListener() {
-
-								@Override
-								public void onClick(View v) {
-									// TODO Auto-generated method stub
-									SendEMFMessage();
-								}
-							}));
 					if(isActivityVisible()){
 						mErrorDialog.show();
 					}
@@ -1257,7 +1151,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 			String ladyId = etLadyId.getText().toString().toUpperCase();
 			if (ladyId.compareTo(callbackItem.womanId.toUpperCase()) == 0) {
 				if(LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED){
-					LoginParam loginParam = LoginPerfence.GetLoginParam(this);
+					LoginParam loginParam = LoginManager.getInstance().GetLoginParam();
 					if(loginParam.item.bpemf){
 						/*风控使用积分发邮件*/
 						tvBonusPoint.setVisibility(View.GONE);
@@ -1573,23 +1467,113 @@ public class MailEditActivity extends BaseActionBarFragmentActivity {
 	 * ################
 	 */
 
+	@Override
 	/**
-	 * 保存图片到系统相册
-	 * 
-	 * @param filePath
-	 *            文件路径
-	 */
-	public void SaveImageToGallery(String filePath, String fileName) {
-		// 插入图库
-		try {
-			MediaStore.Images.Media.insertImage(getContentResolver(), filePath,
-					fileName, null);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+	* OnItemClickListener callback
+	*/
+	public void onItemClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		// TODO Auto-generated method stub
+		ArrayList<EMFAttachmentBean> attachList = new ArrayList<EMFAttachmentBean>();
+		for (int i = 0; i < mViewsList.size(); i++) {
+			attachList.add((EMFAttachmentBean) mViewsList.get(i)
+					.getTag());
+		}
+		startActivity(EMFAttachmentPreviewActivity.getIntent(
+				MailEditActivity.this, attachList, position));
+	}
+
+	@Override
+	public void OnUploadFinish(boolean isSuccess, String errno, String errmsg,
+			String attachId) {
+		// TODO Auto-generated method stub
+		if (isSuccess) {
+			// 上传附件成功
+			synchronized (mAttachmentIdList) {
+				mAttachmentIdList.add(attachId);
+			}
+		} else {
+			// 上传附件失败
+		}
+	}
+
+	@Override
+	public void OnClickCancel(EMFAttachmentUploader uploader) {
+		// TODO Auto-generated method stub
+		// 点击取消
+		synchronized (mAttachmentIdList) {
+			mAttachmentIdList.remove(uploader.GetAttachmentId());
 		}
 
-		// 刷新图库
-		sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-				Uri.parse("file://" + filePath)));
+		mViewsList.remove(uploader.GetView());
+		mUploadList.remove(uploader);
+		mAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void OnClickWarning(final EMFAttachmentUploader uploader) {
+		// TODO Auto-generated method stub
+		// 点击警告, 弹出对话框
+		final MaterialDialogAlert dialog = new MaterialDialogAlert(
+				mContext);
+		dialog.setMessage(uploader.GetErrmsg());
+
+		switch (uploader.GetErrno()) {
+		case RequestErrorCode.MBCE65001: {
+			// 附件大小不合法(5m)
+		}
+			break;
+		case RequestErrorCode.MBCE65004: {
+			// 附件格式不正确(非jpg)
+		}
+			break;
+		default: {
+			// 增加重试按钮
+			dialog.addButton(dialog.createButton(
+					getString(R.string.common_btn_retry),
+					new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							// 附件上传失败, 重试
+							uploader.Reload();
+							dialog.dismiss();
+						}
+					}));
+		}
+			break;
+		}
+
+		dialog.addButton(dialog.createButton(
+				getString(R.string.common_btn_remove),
+				new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						// 附件上传失败, 删除
+						synchronized (mAttachmentIdList) {
+							mAttachmentIdList.remove(uploader
+									.GetAttachmentId());
+						}
+
+						mViewsList.remove(uploader.GetView());
+						mUploadList.remove(uploader);
+						mAdapter.notifyDataSetChanged();
+						dialog.dismiss();
+					}
+				}));
+		dialog.show();
+		//
+		// CustomInfoDialogFragment fragment =
+		// CustomInfoDialogFragment.newInstance(
+		// getString(R.string.common_btn_retry),
+		// getString(R.string.common_btn_remove),
+		// getString(R.string.emf_attachment_fail)
+		// );
+		// fragment.mParam = uploader;
+		// fragment.show(getSupportFragmentManager(),
+		// DIALOG_REUPLOAD_ATTACHMENT_TAG);
 	}
 }

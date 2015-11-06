@@ -39,7 +39,11 @@ import com.qpidnetwork.view.MartinListView;
 import com.qpidnetwork.view.MartinListView.OnPullRefreshListener;
 import com.qpidnetwork.view.MaterialProgressBar;
 
-public class EMFSearchActivity extends BaseFragmentActivity implements OnClickListener, OnPullRefreshListener{
+public class EMFSearchActivity extends BaseFragmentActivity 
+							   implements OnClickListener, 
+							   			  OnPullRefreshListener,
+							   			  OnEditorActionListener
+{
 	
 	private static final String EMF_TYPE = "emfType";
 	private static final int SEARCH_EMF_SUCCESS = 0;
@@ -103,18 +107,7 @@ public class EMFSearchActivity extends BaseFragmentActivity implements OnClickLi
 		ivCancle.setOnClickListener(this);
 		
 		/*设置键盘搜索键响应*/
-		etSearchFilter.setOnEditorActionListener(new OnEditorActionListener() {
-			
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				// TODO Auto-generated method stub
-				if(actionId == EditorInfo.IME_ACTION_SEARCH){
-					onSearch(EMF_SEARCH_REFRESH);
-					return true;
-				}
-				return false;
-			}
-		});
+		etSearchFilter.setOnEditorActionListener(this);
 		
 		switch (type) {
 		case 0:
@@ -384,5 +377,20 @@ public class EMFSearchActivity extends BaseFragmentActivity implements OnClickLi
 		super.finish();
 		overridePendingTransition(R.anim.anim_donot_animate, R.anim.anim_donot_animate);   
 	}
-	
+
+	@Override
+	public void InitView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean onEditorAction(TextView arg0, int actionId, KeyEvent arg2) {
+		// TODO Auto-generated method stub
+		if(actionId == EditorInfo.IME_ACTION_SEARCH){
+			onSearch(EMF_SEARCH_REFRESH);
+			return true;
+		}
+		return false;
+	}
 }	

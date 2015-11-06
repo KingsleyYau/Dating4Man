@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.view.MaterialAppBar;
 
@@ -14,7 +14,7 @@ import com.qpidnetwork.view.MaterialAppBar;
  * MyProfile模块
  * @author Max.Chiu
  */
-public class MyProfileDetailSelfIntroActivity extends BaseActivity {
+public class MyProfileDetailSelfIntroActivity extends BaseFragmentActivity implements OnClickListener {
 
 	public static final String SELF_INTRO = "self_intro";
 	
@@ -46,27 +46,7 @@ public class MyProfileDetailSelfIntroActivity extends BaseActivity {
 		appbar.addButtonToLeft(R.id.common_button_back, "", R.drawable.ic_close_grey600_24dp);
 		appbar.addButtonToRight(R.id.common_button_ok, "", R.drawable.ic_done_grey600_24dp);
 		appbar.setTitle(getString(R.string.My_selfintro), getResources().getColor(R.color.text_color_dark));
-		
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				switch (v.getId()){
-				case R.id.common_button_back:
-					setResult(RESULT_CANCELED, null);
-					finish();
-					break;
-				case R.id.common_button_ok:
-					Intent intent = new Intent();
-					intent.putExtra(SELF_INTRO, editTextSelfIntro.getText().toString());
-					setResult(RESULT_OK, intent);
-					finish();
-					break;
-				}
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		
 		/**
 		 * 个人简介
@@ -79,9 +59,19 @@ public class MyProfileDetailSelfIntroActivity extends BaseActivity {
 	}
 
 	@Override
-	public void InitHandler() {
+	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		
+		switch (v.getId()){
+		case R.id.common_button_back:
+			setResult(RESULT_CANCELED, null);
+			finish();
+			break;
+		case R.id.common_button_ok:
+			Intent intent = new Intent();
+			intent.putExtra(SELF_INTRO, editTextSelfIntro.getText().toString());
+			setResult(RESULT_OK, intent);
+			finish();
+			break;
+		}
 	}
-	
 }

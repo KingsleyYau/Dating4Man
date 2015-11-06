@@ -135,6 +135,22 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_InboxPhotoFee
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_PrivatePhotoView
   (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jstring, jint, jobject);
 
+/*
+ * Class:     com_qpidnetwork_request_RequestJniEMF
+ * Method:    GetVideoThumbPhoto
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;ILcom/qpidnetwork/request/OnRequestFileCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_GetVideoThumbPhoto
+  (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jint, jstring, jobject);
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJniEMF
+ * Method:    GetVideoUrl
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnGetVideoCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_GetVideoUrl
+  (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jobject);
+
 #ifdef __cplusplus
 }
 #endif

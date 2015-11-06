@@ -1,16 +1,14 @@
 package com.qpidnetwork.dating.authorization;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.view.MaterialAppBar;
 
-public class RegisterResetPasswordSuccessfulAcitiviy extends BaseActivity {
+public class RegisterResetPasswordSuccessfulAcitiviy extends BaseFragmentActivity {
 	
 
 	
@@ -71,33 +69,18 @@ public class RegisterResetPasswordSuccessfulAcitiviy extends BaseActivity {
 		appbar.setTitle(getString(R.string.Reset_Password), getResources().getColor(R.color.text_color_dark));
 		appbar.addButtonToLeft(R.id.common_button_back, "", R.drawable.ic_close_grey600_24dp);
 		appbar.setAppbarBackgroundColor(getResources().getColor(R.color.white));
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				if (v.getId() == R.id.common_button_back){
-					onClickCancel(v);
-				}
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 		
 		TextView textView = (TextView)findViewById(R.id.email_address);
 		textView.setText(this.getIntent().getExtras().getString(INPUT_EMAIL_KEY));
-		
-		
 	}
 	
 	@Override
-	public void InitHandler() {
+	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				// 收起菊花
-				
-			};
-		};
+		if (v.getId() == R.id.common_button_back){
+			onClickCancel(v);
+		}
 	}
+	
 }

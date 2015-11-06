@@ -23,7 +23,7 @@ import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.TicketListItem;
 import com.qpidnetwork.request.item.TicketListItem.StatusType;
 
-public class ContactTicketListFragment extends BaseListFragment {
+public class ContactTicketListFragment extends BaseListFragment implements OnItemClickListener{
 
 	private static final int TICKET_LIST_INIT = 0;
 	private static final int TICKET_LIST_REFRESH = 1;
@@ -55,17 +55,7 @@ public class ContactTicketListFragment extends BaseListFragment {
 
 		hideLoadingPage();
 
-		getPullToRefreshListView().setOnItemClickListener(
-				new OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
-						Intent intent = new Intent(getActivity(),
-								TicketDetailListActivity.class);
-						intent.putExtra(TicketDetailListActivity.TICKET_ID, mAdapter.getDataList().get(position).ticketId);
-						startActivityForResult(intent, RESULT_REOLVE_NOTIFY);
-					}
-				});
+		getPullToRefreshListView().setOnItemClickListener(this);
 		
 		queryTicketList(0, TICKET_LIST_INIT);
 	}
@@ -171,9 +161,7 @@ public class ContactTicketListFragment extends BaseListFragment {
 	public void onRefreshComplete() {
 		// TODO Auto-generated method stub
 		super.onRefreshComplete();
-		if(mAdapter.getDataList().size() >= getPageBean().getDataCount()){
-			closePullUpRefresh();
-		}
+		closePullUpRefresh(mAdapter.getDataList().size() >= getPageBean().getDataCount());
 	}
 	
 	/*创建新的Ticket成功刷新列表*/
@@ -251,6 +239,17 @@ public class ContactTicketListFragment extends BaseListFragment {
 				break;
 			}
 		}
+	}
+
+
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		Intent intent = new Intent(getActivity(),
+				TicketDetailListActivity.class);
+		intent.putExtra(TicketDetailListActivity.TICKET_ID, mAdapter.getDataList().get(position).ticketId);
+		startActivityForResult(intent, RESULT_REOLVE_NOTIFY);		
 	}
 	
 }

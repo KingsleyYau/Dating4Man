@@ -7,7 +7,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.qpidnetwork.dating.BaseActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.request.item.ProfileItem;
 import com.qpidnetwork.view.ButtonRaised;
@@ -17,7 +17,7 @@ import com.qpidnetwork.view.MaterialAppBar;
  * MyProfile模块
  * @author Max.Chiu
  */
-public class MyProfilePhoneVerifyActivity extends BaseActivity {
+public class MyProfilePhoneVerifyActivity extends BaseFragmentActivity implements OnClickListener {
 	
 	private ImageView imageViewMobile;
 	private TextView textViewAddMobile;
@@ -115,20 +115,13 @@ public class MyProfilePhoneVerifyActivity extends BaseActivity {
 		appbar.setTouchFeedback(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
 		appbar.addButtonToLeft(android.R.id.button1, "back", R.drawable.ic_close_grey600_24dp);
 		appbar.setTitle("Phone verification", getResources().getColor(R.color.text_color_dark));
-		appbar.setOnButtonClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				finish();
-			}
-			
-		});
+		appbar.setOnButtonClickListener(this);
 	}
 	
 	@Override
-	public void InitHandler() {
+	public void onClick(View v) {
 		// TODO Auto-generated method stub
+		finish();
 	}
 	
 	public void ReloadData() {

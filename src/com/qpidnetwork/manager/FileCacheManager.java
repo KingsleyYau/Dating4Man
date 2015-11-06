@@ -29,6 +29,7 @@ public class FileCacheManager {
 	static String TEMP = "temp";
 	static String EMF = "emf";
 	static String HTTP = "http";
+	static String EMF_VIDEO = "emf/video";
 	
 	private static FileCacheManager gFileCacheManager;
 	
@@ -89,6 +90,18 @@ public class FileCacheManager {
 	private String GetEMFPath() {
 		/* 创建图片目录 */
 		String path = mMainPath + "/" + EMF + "/";
+		File file = new File(path);
+		file.mkdirs();
+		return path;
+	}
+	
+	/**
+	 * 获取EMF微视频缓存路径
+	 * @return
+	 */
+	public String GetEMFVideoPath() {
+		/* 创建图片目录 */
+		String path = mMainPath + "/" + EMF_VIDEO + "/";
 		File file = new File(path);
 		file.mkdirs();
 		return path;
@@ -425,6 +438,7 @@ public class FileCacheManager {
 		delete(new File(GetImagePath()), false);
 		delete(new File(GetTempPath()), false);
 		delete(new File(GetEMFPath()), false);
+		delete(new File(GetEMFVideoPath()), false);
 		delete(new File(GetLadyPath()), false);
 		
 		delete(new File(GetVirtualGiftPath()), false);
@@ -434,6 +448,7 @@ public class FileCacheManager {
 		delete(new File(GetLCEmotionPath()), false);
 		delete(new File(GetLCPhotoPath()), false);
 		delete(new File(GetLCVoicePath()), false);
+		delete(new File(GetLCVideoPath()), false);
 		
 //		String cmd = "rm -rf " + mMainPath;
 //		try {

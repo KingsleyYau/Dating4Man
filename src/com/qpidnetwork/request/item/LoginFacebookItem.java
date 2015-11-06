@@ -31,7 +31,7 @@ public class LoginFacebookItem implements Serializable {
 		this.photoreceived = true;
 		this.videoreceived = true;
 		
-		this.premit = false;
+		this.premit = true;
 		this.ladyprofile = false;
 		this.livechat = false;
 		this.admirer = false;

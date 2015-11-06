@@ -3,9 +3,11 @@ package com.qpidnetwork.framework.util;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Path;
 import android.net.Uri;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 /**
  * 高低版本兼容工具类
@@ -56,19 +58,26 @@ public class CompatUtil {
 		    }
 		    
 		}else{
-		    String[] projection = { MediaStore.Images.Media.DATA };
-		    try{
-			    Cursor cursor = context.getContentResolver().query(contentUri, projection, null, null, null);
-			    
-			    if( cursor != null ) {
-			    	cursor.moveToFirst();
-			    	int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-			    	filePath = cursor.getString(column_index);
-			    	cursor.close();
+			if(!TextUtils.isEmpty(contentUri.getAuthority())){
+			    String[] projection = { MediaStore.Images.Media.DATA };
+			    try{
+				    Cursor cursor = context.getContentResolver().query(contentUri, projection, null, null, null);
+				    
+				    if( cursor != null ) {
+				    	cursor.moveToFirst();
+				    	int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+				    	filePath = cursor.getString(column_index);
+				    	cursor.close();
+				    }
+			    }catch(Exception e){
+		    	
 			    }
-		    }catch(Exception e){
-	    	
-		    }
+			}else{
+				String tempfilePath = contentUri.getPath();
+				if(!TextUtils.isEmpty(tempfilePath)&&(tempfilePath.endsWith(".jpg")||tempfilePath.endsWith(".JPG"))){
+					filePath = tempfilePath;
+				}
+			}
 		}
 		return filePath;
 	}
