@@ -25,6 +25,7 @@ public class Record {
 	 * @param videoSendId	视频发送ID
 	 * @param videoDesc		视频描述
 	 * @param videoCharge	视频是否已付费
+	 * @param magicIconId   小高表ID
 	 */
 	public Record(
 			int toflag,
@@ -44,7 +45,8 @@ public class Record {
 			String videoId,
 			String videoSendId,
 			String videoDesc,
-			boolean videoCharge
+			boolean videoCharge,
+			String magicIconId
 			) {
 		
 		if( toflag < 0 || toflag >= ToFlag.values().length ) {
@@ -83,6 +85,8 @@ public class Record {
 		this.videoSendId = videoSendId;
 		this.videoDesc = videoDesc;
 		this.videoCharge = videoCharge;
+		// -- magicIcon --
+		this.magicIconId = magicIconId;
 	}
 	
 	public enum ToFlag {
@@ -96,7 +100,8 @@ public class Record {
 		Emotion,
 		Voice,
 		Photo,
-		Video
+		Video,
+		MagicIcon
 	}
 	
 	public ToFlag toflag;
@@ -124,4 +129,6 @@ public class Record {
 	public String videoSendId;
 	public String videoDesc;
 	public boolean videoCharge;
+	// -- magicIcon --
+	public String magicIconId;
 }

@@ -775,7 +775,7 @@ public class MainActivity extends FragmentActivity {
 //	
 //	private HandlerThread mHandlerThread = null;
 //	private Handler mHandler = null;
-//	static private LiveChatManager liveChatMgr = LiveChatManager.newInstance(null);
+//	static private LiveChatManager liveChatMgr = LiveChatManager.getInstance();
 //	static private int mRecvMsgCount = 0;
 //	static private String lastEmotionId = "";
 //	static private boolean isGetEmotionConfig = false;
@@ -1250,7 +1250,7 @@ public class MainActivity extends FragmentActivity {
 //		mHandler = new Handler(mHandlerThread.getLooper()) {
 //			@Override
 //            public void handleMessage(Message msg) {
-//            	LiveChatManager liveChatManager = LiveChatManager.newInstance(null);
+//            	LiveChatManager liveChatManager = LiveChatManager.getInstance();
 //            	LiveChatOpt opt = LiveChatOpt.values()[msg.what];
 //                switch (opt) {
 //                case SendMsg: {

@@ -7,7 +7,7 @@
  */
 #include "com_qpidnetwork_request_RequestJniLady.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestLadyController.h"
+#include <manrequesthandler/RequestLadyController.h>
 
 void onQueryLadyMatch(long requestId, bool success, LadyMatch item, string errnum, string errmsg);
 void onSaveLadyMatch(long requestId, bool success, string errnum, string errmsg);
@@ -381,6 +381,7 @@ void onQueryLadyDetail(long requestId, bool success, LadyDetail item, string err
 					"Ljava/util/ArrayList;"
 					"Ljava/util/ArrayList;"
 					"Ljava/util/ArrayList;"
+					"I"
 					")V"
 					);
 
@@ -547,7 +548,8 @@ void onQueryLadyDetail(long requestId, bool success, LadyDetail item, string err
 
 						jThumbList,
 						jPhotoList,
-						jVideoList
+						jVideoList,
+						item.photoLockNum
 						);
 
 				env->DeleteLocalRef(womanid);

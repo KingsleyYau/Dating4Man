@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white" >
+
+        <com.qpidnetwork.dating.admirer.ObservableScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="@dimen/actionbar_height"
+            android:fadeScrollbars="true"
+            android:fadingEdge="@null" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp" >
+
+                <include
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    layout="@layout/include_emf_detail_base_header" />
+
+                <include
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    layout="@layout/include_admire_detail_body" />
+
+                <include
+                    android:id="@+id/includeError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    layout="@layout/include_emf_detail_error"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </com.qpidnetwork.dating.admirer.ObservableScrollView>
+        
+        <com.qpidnetwork.view.MaterialAppBar
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/actionbar_height" />
+    </RelativeLayout>
+
+</RelativeLayout>

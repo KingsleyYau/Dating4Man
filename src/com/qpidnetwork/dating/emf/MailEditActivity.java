@@ -3,7 +3,6 @@ package com.qpidnetwork.dating.emf;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -42,7 +41,6 @@ import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginManager.LoginStatus;
 import com.qpidnetwork.dating.authorization.LoginParam;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.bean.ContactBean;
 import com.qpidnetwork.dating.bean.EMFAttachmentBean;
 import com.qpidnetwork.dating.bean.EMFAttachmentBean.AttachType;
@@ -58,6 +56,7 @@ import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.framework.widget.CircleImageView;
 import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.manager.MonthlyFeeManager;
 import com.qpidnetwork.manager.VirtualGiftManager;
 import com.qpidnetwork.request.OnEMFSendMsgCallback;
 import com.qpidnetwork.request.OnOtherIntegralCheckCallback;
@@ -67,11 +66,13 @@ import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestJniEMF.ReplyType;
 import com.qpidnetwork.request.RequestJniEMF.UploadAttachType;
 import com.qpidnetwork.request.RequestJniLiveChat.UseType;
+import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.EMFSendMsgErrorItem;
 import com.qpidnetwork.request.item.EMFSendMsgItem;
 import com.qpidnetwork.request.item.LadyDetail;
 import com.qpidnetwork.request.item.LoginItem;
+import com.qpidnetwork.request.item.MonthLyFeeTipItem;
 import com.qpidnetwork.request.item.OtherIntegralCheckItem;
 import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.view.ChooseRemoveAttachmentDialog;
@@ -83,6 +84,7 @@ import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialDropDownMenu;
 import com.qpidnetwork.view.MaterialProgressBar;
 import com.qpidnetwork.view.MaterialThreeButtonDialog;
+import com.qpidnetwork.view.MonthlyFeeDialog;
 import com.qpidnetwork.view.ProgressImageHorizontalView;
 
 public class MailEditActivity extends BaseActionBarFragmentActivity
@@ -157,6 +159,8 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 	/* 下载控制 */
 	private List<EMFAttachmentUploader> mUploadList;
 	private List<View> mViewsList;
+
+	private MonthLyFeeTipItem mMonthLyFeeTipItem;
 
 	/**
 	 * 联系人弹窗
@@ -712,10 +716,17 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 					@Override
 					public void OnSecondButtonClick(View v) {
 						// TODO Auto-generated method stub
-						Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
-//						intent.setType("image/*");
-//						intent.setAction(Intent.ACTION_GET_CONTENT);
-						startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+						try{
+							Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
+//							intent.setType("image/*");
+//							intent.setAction(Intent.ACTION_GET_CONTENT);
+							startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+						}catch(Exception e){
+							Intent intent = new Intent();
+							intent.setType("image/*");
+							intent.setAction(Intent.ACTION_GET_CONTENT);
+							startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+						}
 					}
 
 					@Override
@@ -1094,56 +1105,70 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 		}
 			break;
 		case REQUEST_FAIL: {
-			// 请求失败, 弹出对话框
-			// 根据错误码处理
-			switch (callbackItem.errno) {
-			case RequestErrorCode.MBCE10003: {
-				// 信用点 >1 但不足够发送本邮件
-				if (!mChooseRemoveAttachmentDialog.isShowing()
-						&& mAttachmentIdList.size() > 0) {
+			// 首先判断月费类型
+			MemberType type = callbackItem.errItem.memberType;
+			if (type == MemberType.NO_FEED_FIRST_MONTHLY_MEMBER|| type == MemberType.NO_FEED_MONTHLY_MEMBER) {
+				MonthlyFeeManager.getInstance().onMemberTypeUpdate(type);
+				mMonthLyFeeTipItem = MonthlyFeeManager.getInstance().getMonthLyFeeTipItem(callbackItem.errItem.memberType);
+				if (mMonthLyFeeTipItem != null) {
+					MonthlyFeeDialog dialog = new MonthlyFeeDialog(this,R.style.ChoosePhotoDialog);
+					dialog.setData(mMonthLyFeeTipItem);// 设置数据对象
 					if(isActivityVisible()){
-						mChooseRemoveAttachmentDialog.show();
-					}
-					mChooseRemoveAttachmentDialog.textViewBounds
-							.setText(callbackItem.errItem.money);
-					mChooseRemoveAttachmentDialog.textViewRemoveAttachment
-							.setOnClickListener(new OnClickListener() {
-
-								@Override
-								public void onClick(View v) {
-									// TODO Auto-generated method stub
-									mChooseRemoveAttachmentDialog.dismiss();
-								}
-							});
-					mChooseRemoveAttachmentDialog.textViewAddCredit
-							.setOnClickListener(new OnClickListener() {
-
-								@Override
-								public void onClick(View v) {
-									// TODO Auto-generated method stub
-									mChooseRemoveAttachmentDialog.dismiss();
-								}
-							});
-				} else {
-					// 弹出充值页面
-					final GetMoreCreditDialog dialog = new GetMoreCreditDialog(
-							mContext, R.style.ChoosePhotoDialog);
-					if(isActivityVisible()){
-						dialog.show();
+						dialog.show();						
 					}
 				}
-			}
-				break;
-			default: {
-				// 网络超时, 或者其他错误
-				if (!mErrorDialog.isShowing()) {
-					if(isActivityVisible()){
-						mErrorDialog.show();
+			} else {
+				// 根据错误码处理
+				switch (callbackItem.errno) {
+				case RequestErrorCode.MBCE10003: {
+					// 信用点 >1 但不足够发送本邮件
+					if (!mChooseRemoveAttachmentDialog.isShowing()&& mAttachmentIdList.size() > 0) {
+						if (isActivityVisible()) {
+							mChooseRemoveAttachmentDialog.show();
+						}
+						mChooseRemoveAttachmentDialog.textViewBounds.setText(callbackItem.errItem.money);
+						mChooseRemoveAttachmentDialog.textViewRemoveAttachment
+								.setOnClickListener(new OnClickListener() {
+									@Override
+									public void onClick(View v) {
+										// TODO Auto-generated method stub
+										mChooseRemoveAttachmentDialog.dismiss();
+									}
+								});
+						mChooseRemoveAttachmentDialog.textViewAddCredit
+								.setOnClickListener(new OnClickListener() {
+									@Override
+									public void onClick(View v) {
+										// 弹出充值页面
+										final GetMoreCreditDialog dialog = new GetMoreCreditDialog(mContext,
+												R.style.ChoosePhotoDialog);
+										if (isActivityVisible()) {
+											dialog.show();
+										}
+									}
+								});
+					} else {
+						// 弹出充值页面
+						final GetMoreCreditDialog dialog = new GetMoreCreditDialog(
+								mContext, R.style.ChoosePhotoDialog);
+						if (isActivityVisible()) {
+							dialog.show();
+						}
 					}
 				}
+					break;
+				default: {
+					// 网络超时, 或者其他错误
+					if (!mErrorDialog.isShowing()) {
+						if (isActivityVisible()) {
+							mErrorDialog.show();
+						}
+					}
+				}
+					break;
+				}
 			}
-				break;
-			}
+
 		}
 			break;
 		case REQUEST_BOUNDS_SUCCESS: {
@@ -1208,7 +1233,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 					@Override
 					public void onClick(View v) {
 						LadyDetailActivity.launchLadyDetailActivity(mContext,
-								mCurrentLady.womanid, true);
+								mCurrentLady.womanid, false);
 					}
 				});
 

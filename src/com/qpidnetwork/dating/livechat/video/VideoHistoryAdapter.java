@@ -25,7 +25,7 @@ public class VideoHistoryAdapter extends UpdateableAdapter<LCVideoItem>{
 	
 	public VideoHistoryAdapter(Context context, String videoOwnerId){
 		this.mContext = context;
-		mLivechatManager = LiveChatManager.newInstance(context);
+		mLivechatManager = LiveChatManager.getInstance();
 		this.videoOwnerId = videoOwnerId;
 	}
 

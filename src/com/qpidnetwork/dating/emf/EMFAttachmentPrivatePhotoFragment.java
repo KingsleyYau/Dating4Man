@@ -2,6 +2,7 @@ package com.qpidnetwork.dating.emf;
 
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsFragmentActivity;
 import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.tool.ImageViewLoader.ImageViewLoaderCallback;
 import com.qpidnetwork.view.ButtonRaised;
@@ -70,7 +72,7 @@ public class EMFAttachmentPrivatePhotoFragment extends IndexFragment
 	private PrivatePhotoDirection privatePhotoDirection;
 	private String localPath = "";
 	private String description = "";
-	private int credit = 0;
+	private double credit = 0;
 	
 	public static enum PrivatePhotoDirection{
 		WM, //Woman sent to man
@@ -140,7 +142,7 @@ public class EMFAttachmentPrivatePhotoFragment extends IndexFragment
      * @param localPath
      * @param description
      */
-    public void ReloadData(String localPath, String description, int credit) {
+    public void ReloadData(String localPath, String description, double credit) {
     	this.localPath = localPath;
     	this.description = description;
     	this.credit = credit;
@@ -154,12 +156,6 @@ public class EMFAttachmentPrivatePhotoFragment extends IndexFragment
     	}
 
     }
-
-	@Override
-	public void InitHandler() {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	/**
 	 * 点击下载
@@ -298,7 +294,7 @@ public class EMFAttachmentPrivatePhotoFragment extends IndexFragment
 	}
 
 	@Override
-	public void OnDisplayNewImageFinish() {
+	public void OnDisplayNewImageFinish(Bitmap bmp) {
 		// TODO Auto-generated method stub
 //		imageView.SetCanScale(true);
 	}
@@ -307,5 +303,29 @@ public class EMFAttachmentPrivatePhotoFragment extends IndexFragment
 	public void OnLoadPhotoFailed() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public void onFragmentSelected(int page) 
+	{
+		// 判断是否本页
+		if (getIndex() == page)
+		{
+			// 统计
+			AnalyticsFragmentActivity activity = getAnalyticsFragmentActivity();
+			if (null != activity) {
+				activity.onAnalyticsPageSelected(this, page);
+			}
+		}
+	}
+	
+	private AnalyticsFragmentActivity getAnalyticsFragmentActivity()
+	{
+		AnalyticsFragmentActivity activity = null;
+		if (getActivity() instanceof AnalyticsFragmentActivity)
+		{
+			activity = (AnalyticsFragmentActivity)getActivity();
+		}
+		return activity;
 	}
 }

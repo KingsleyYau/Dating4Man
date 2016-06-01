@@ -27,10 +27,12 @@ public class LCMessageItem implements Serializable{
 		Warning,	// 警告消息
 		Emotion,	// 高级表情
 		Voice,		// 语音
+		MagicIcon,  //小高级表情
 		Photo,		// 私密照
 		Video,		// 微视频
 		System,		// 系统消息
 		Custom,     //自定义消息
+		Notify,     //自定义通知类型
 	}
 	
 	/**
@@ -104,6 +106,10 @@ public class LCMessageItem implements Serializable{
 	 */
 	private LCVoiceItem voiceItem;
 	/**
+	 * 小高级表情item
+	 */
+	private LCMagicIconItem magicIconItem;
+	/**
 	 * 图片item
 	 */
 	private LCPhotoItem photoItem;
@@ -116,6 +122,14 @@ public class LCMessageItem implements Serializable{
 	 */
 	private LCSystemItem systemItem;
 	/**
+	 * 自动邀请Item
+	 */
+	private LCAutoInviteItem autoInviteItem;
+	/**
+	 * 特殊通知类消息Item
+	 */
+	private LCNotifyItem notifyItem;
+	/**
 	 * 用户item
 	 */
 	private LCUserItem userItem;
@@ -125,7 +139,8 @@ public class LCMessageItem implements Serializable{
 	static private int mDbTime = 0; 
 	
 	public LCMessageItem() {
-		clear();
+//		clear();
+		clearSelf();
 	}
 	
 	/**
@@ -222,7 +237,8 @@ public class LCMessageItem implements Serializable{
 			, LCEmotionManager emotionMgr
 			, LCVoiceManager voiceMgr
 			, LCPhotoManager photoMgr
-			, LCVideoManager videoMgr) 
+			, LCVideoManager videoMgr
+			, LCMagicIconManager magicIconMgr) 
 	{
 		boolean result = false;
 		this.msgId = msgId;
@@ -266,6 +282,14 @@ public class LCMessageItem implements Serializable{
 			{
 				LCEmotionItem emotionItem = emotionMgr.getEmotion(record.emotionId);
 				setEmotionItem(emotionItem);
+				result = true;
+			}
+		}break;
+		case MagicIcon: {
+			if (null != record.magicIconId)
+			{
+				LCMagicIconItem magicIconItem = magicIconMgr.getMagicIcon(record.magicIconId);
+				setMagicIconItem(magicIconItem);
 				result = true;
 			}
 		}break;
@@ -398,6 +422,39 @@ public class LCMessageItem implements Serializable{
 		return emotionItem;
 	}
 	
+	public void setMagicIconItem(LCMagicIconItem magicIconItem) {
+		if (msgType == MessageType.Unknow
+				&& magicIconItem != null) 
+		{
+			this.magicIconItem = magicIconItem;
+			msgType = MessageType.MagicIcon;
+		}
+	} 
+	public LCMagicIconItem getMagicIconItem() {
+		return magicIconItem;
+	}
+	
+	public void setAutoInviteItem(LCAutoInviteItem autoInviteItem) {
+		this.autoInviteItem = autoInviteItem;
+	}
+	
+	public LCAutoInviteItem getAutoInviteItem() {
+		return autoInviteItem;
+	}
+	
+	public void setNotifyItem(LCNotifyItem notifyItem){
+		if (msgType == MessageType.Unknow
+				&& notifyItem != null) 
+		{
+			this.notifyItem = notifyItem;
+			msgType = MessageType.Notify;
+		}
+	}
+	
+	public LCNotifyItem getNotifyItem() {
+		return notifyItem;
+	}
+	
 	public void setSystemItem(LCSystemItem theSystemItem) {
 		if (msgType == MessageType.Unknow
 				&& theSystemItem != null) 
@@ -417,10 +474,7 @@ public class LCMessageItem implements Serializable{
 		return userItem;
 	}
 	
-	/**
-	 * 重置所有成员变量
-	 */
-	public void clear() 
+	public void clearSelf()
 	{
 		msgId = 0;
 		sendType = SendType.Unknow;
@@ -433,11 +487,37 @@ public class LCMessageItem implements Serializable{
 		textItem = null;
 		warningItem = null;
 		emotionItem = null;
+		magicIconItem = null;
 		voiceItem = null;
 		photoItem = null;
 		videoItem = null;
 		systemItem = null;
+		autoInviteItem = null;
+		notifyItem = null;
 		userItem = null;
+	}
+	
+	/**
+	 * 重置所有成员变量
+	 */
+	public void clear() 
+	{
+//		msgId = 0;
+//		sendType = SendType.Unknow;
+//		fromId = "";
+//		toId = "";
+//		inviteId = "";
+//		createTime = 0;
+//		statusType = StatusType.Unprocess;
+//		msgType = MessageType.Unknow;
+//		textItem = null;
+//		warningItem = null;
+//		emotionItem = null;
+//		voiceItem = null;
+//		photoItem = null;
+//		videoItem = null;
+//		systemItem = null;
+//		userItem = null;
 	}
 	
 	

@@ -6,17 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestJniAuthorization.Verify;
 import com.qpidnetwork.request.RequestOperator;

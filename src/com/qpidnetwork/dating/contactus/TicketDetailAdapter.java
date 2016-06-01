@@ -21,7 +21,6 @@ import android.widget.TextView;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginParam;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.widget.CircleImageView;
 import com.qpidnetwork.manager.FileCacheManager;

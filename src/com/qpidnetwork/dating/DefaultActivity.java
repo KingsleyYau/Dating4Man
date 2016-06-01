@@ -1,12 +1,13 @@
 package com.qpidnetwork.dating;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -15,9 +16,11 @@ import android.widget.TextView;
 import com.qpidnetwork.dating.advertisement.AdvertisementManager;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
+import com.qpidnetwork.dating.home.AppUrlHandler;
 import com.qpidnetwork.dating.home.HomeActivity;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
+import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
 import com.qpidnetwork.manager.WebSiteManager;
@@ -47,7 +50,10 @@ public class DefaultActivity extends BaseFragmentActivity implements OnLoginMana
 	public ProgressBar progressBar;
 	public TextView text;
 	public LinearLayout skip;
-	WebSiteManager siteManager = WebSiteManager.newInstance(mContext);
+	WebSiteManager siteManager = WebSiteManager.getInstance();
+	
+	//外部链接参数启动
+	private String launchModule = "";
 
 	
 	private int[]  imgesResourceIds = new int[]{
@@ -71,9 +77,10 @@ public class DefaultActivity extends BaseFragmentActivity implements OnLoginMana
 			@Override
 			public void OnGetOtherSynConfigItem(boolean isSuccess, String errno,
 					String errmsg, OtherSynConfigItem item) {
-				// TODO Auto-generated method stub
 			}
 		});
+		
+		initLaunchData();
 		
 		/*浮窗广告，读取本次广告数据，并更新最新广告*/
 		AdvertisementManager.getInstance().resetMainAdvertItem();
@@ -98,6 +105,32 @@ public class DefaultActivity extends BaseFragmentActivity implements OnLoginMana
 		
 	}
 	
+	/**
+	 * 初始化外部初始化参数
+	 */
+	private void initLaunchData(){
+		Intent i_getvalue = getIntent();  
+		String action = i_getvalue.getAction();  
+		if(Intent.ACTION_VIEW.equals(action)){  
+		    Uri uri = i_getvalue.getData();  
+		    if(uri != null){  
+//		    	launchModule = uri.getQueryParameter("module");
+		    	
+		    	// 增加GA跟踪代码
+		    	String moduleName = uri.getQueryParameter("module");
+		    	String ladyID = uri.getQueryParameter("ladyid");
+		    	String source = uri.getQueryParameter("source");
+		    	Log.i("hunter", "launchModule: " + launchModule + " source: " + source + " ladyId:" + ladyID);
+		    	launchModule = AppUrlHandler.CreateLinkUrl(moduleName, ladyID, source);
+
+		    	String gaAction = !StringUtil.isEmpty(source) ? source : "unknow";
+		    	String gaLabel = !StringUtil.isEmpty(moduleName) ? moduleName : "index";
+		    	String gaCategory = getString(R.string.OpenApp_Category);
+		    	onAnalyticsEvent(gaCategory, gaAction, gaAction + getString(R.string.OpenApp_Label) + gaLabel);
+		    }  
+		}
+	}
+	
 	@Override public void finish(){
 		super.finish();
 		overridePendingTransition(R.anim.anim_alpha_in_za, R.anim.anim_scale_out_az);  
@@ -119,6 +152,15 @@ public class DefaultActivity extends BaseFragmentActivity implements OnLoginMana
 	@Override public void onResume(){
 		imageView.runAnimate(imageView.mode);
 		super.onResume();
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			proceedToNextActivity();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 	
 	@Override
@@ -234,6 +276,9 @@ public class DefaultActivity extends BaseFragmentActivity implements OnLoginMana
 		} else {
 			Intent intent = new Intent(mContext, HomeActivity.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			if(!TextUtils.isEmpty(launchModule)){
+				intent.putExtra(HomeActivity.START_BROWSER_LINK, launchModule);
+			}
 			startActivity(intent);
 		}
 		

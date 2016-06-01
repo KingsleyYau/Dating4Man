@@ -2,6 +2,8 @@ package com.qpidnetwork.framework.base;
 
 import java.lang.ref.WeakReference;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -9,6 +11,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 public class BaseFragment extends Fragment implements OnClickListener{
+	
+	protected Context mContext;
+	
+	@Override
+    public void onAttach(Activity activity) {
+    	// TODO Auto-generated method stub
+    	super.onAttach(activity);
+    	mContext = activity;
+    }
 	
 	protected Handler mUiHandler = new UiHandler(this) {
         public void handleMessage(android.os.Message msg) {
@@ -68,6 +79,15 @@ public class BaseFragment extends Fragment implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
+		
+	}
+	
+	/*用于Fragment页统计*/
+	public void onFragmentSelected(int arg0){
+		
+	}
+	
+	public void onFragmentPause(int arg0){
 		
 	}
     

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ScreenName KeyWords Define -->
+    <!-- for dialog in full path -->
+    <string name="parent_keywords">;parentkeywords;</string>
+    
+    <!-- ScreenName Define -->
+    <!-- 1. ActivityClassName -->
+    <!-- 2. ParentScreenName_ActivityClassName -->
+    <!-- 3. ParentScreenName_ActivityClassName_tag -->    
+    <!-- 4. ParentScreenName_ActivityClassName_taglevel1_taglevel2... -->
+    <!-- 5. tag -->
+    <!-- 6. ;parentkeywords;tag -->
+    <string name="com.qpidnetwork.dating.DefaultActivity">Default</string>
+	<string name="com.qpidnetwork.dating.ChooseSiteActivity">ChooseSite</string>
+	
+	<string name="com.qpidnetwork.dating.authorization.LoginActivity">Auth.Login</string>	
+	<string name="com.qpidnetwork.dating.authorization.RegisterActivity">Auth.Register</string>
+	<string name="com.qpidnetwork.dating.authorization.RegisterByEmailActivity">Auth.RegisterByEmail</string>
+	<string name="com.qpidnetwork.dating.authorization.RegisterPasswordActivity">Auth.RegisterPassword</string>
+	<string name="com.qpidnetwork.dating.authorization.RegisterByFacebookActivity">Auth.Facebook</string>
+	<string name="com.qpidnetwork.dating.authorization.RegisterFacebookPasswordActivity">Auth.FacebookPassword</string>
+	<string name="com.qpidnetwork.dating.authorization.RegisterResetPasswordActivity">Auth.ResetPassword</string>
+	<string name="com.qpidnetwork.dating.authorization.RegisterResetPasswordSuccessfulAcitiviy">Auth.ResetPasswordSuccessful</string>
+	
+	<string name="com.qpidnetwork.dating.home.HomeActivity_0">Home.Overview</string>
+	<string name="com.qpidnetwork.dating.home.HomeActivity_1_0">Home.OnlineLadies</string>
+	<string name="com.qpidnetwork.dating.home.HomeActivity_1_1">Home.AvaibleForCalls</string>
+	<string name="com.qpidnetwork.dating.home.HomeActivity_1_2">Home.WithVideo</string>
+	<string name="com.qpidnetwork.dating.home.HomeActivity_1_3">Home.NewlyJoin</string>
+	<string name="com.qpidnetwork.dating.home.HomeActivity_1__1">Home.Search</string>
+	<string name="com.qpidnetwork.dating.home.HomeActivity_2">Home.Chatlist</string>
+	<string name="com.qpidnetwork.dating.home.HomeActivity_3">Home.Overview.ChooseSite</string>
+	
+	<string name="com.qpidnetwork.dating.contacts.ContactLabelSearchActivity">Contacts.LabelSearch</string>
+	<string name="com.qpidnetwork.dating.contacts.ContactsListActivity">Contacts.List</string>
+	<string name="com.qpidnetwork.dating.contacts.ContactSearchActivity">Contacts.Search</string>
+	
+	<string name="com.qpidnetwork.dating.quickmatch.QuickMatchActivity_0">QuickMatch.Choose</string>
+	<string name="com.qpidnetwork.dating.quickmatch.QuickMatchActivity_1">QuickMatch.ILike</string>
+    
+	<string name="com.qpidnetwork.dating.emf.EMFListActivity_0">EMF.Inbox</string>
+	<string name="com.qpidnetwork.dating.emf.EMFListActivity_1">EMF.Outbox</string>
+	<string name="EMF.Inbox_com.qpidnetwork.dating.emf.EMFDetailActivity">EMF.InboxMsgViewer</string>
+	<string name="EMF.InboxMsgViewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentShortVideoFragment">EMF.InboxAttachview.Video</string>
+	<string name="EMF.InboxMsgViewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPrivatePhotoFragment">EMF.InboxAttachview.PrivatePhoto</string>
+	<string name="EMF.InboxMsgViewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentVirtualGiftFragment">EMF.InboxAttachview.VirtualGift</string>
+	<string name="EMF.InboxMsgViewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPhotoFragment">EMF.InboxAttachview.Photo</string>
+	<string name="EMF.Outbox_com.qpidnetwork.dating.emf.EMFDetailActivity">EMF.OutboxMsgViewer</string>
+	<string name="EMF.OutboxMsgViewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentShortVideoFragment">EMF.OutboxAttachview.Video</string>
+	<string name="EMF.OutboxMsgViewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPrivatePhotoFragment">EMF.OutboxAttachview.PrivatePhoto</string>
+	<string name="EMF.OutboxMsgViewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentVirtualGiftFragment">EMF.OutboxAttachview.VirtualGift</string>
+	<string name="EMF.OutboxMsgViewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPhotoFragment">EMF.OutboxAttachview.Photo</string>
+	<string name="EMF.Inbox_com.qpidnetwork.dating.emf.EMFSearchActivity">EMF.InboxSearch</string>
+	<string name="EMF.Outbox_com.qpidnetwork.dating.emf.EMFSearchActivity">EMF.OutboxSearch</string>
+	<string name="com.qpidnetwork.dating.emf.MailEditActivity">EMF.Edit</string>
+	<string name="EMF.Edit_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentShortVideoFragment">EMF.Edit.Attachview.Video</string>
+	<string name="EMF.Edit_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPrivatePhotoFragment">EMF.Edit.Attachview.PrivatePhoto</string>
+	<string name="EMF.Edit_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentVirtualGiftFragment">EMF.Edit.Attachview.VirtualGift</string>
+	<string name="EMF.Edit_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPhotoFragment">EMF.Edit.Attachview.Photo</string>
+	<string name="com.qpidnetwork.dating.emf.EmotionChooseActivity">EMF.ChooseVirtualGift</string>
+	<string name="EMF.ChooseVirtualGift_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentShortVideoFragment">EMF.Edit.VirtualGiftview.Video</string>
+	<string name="EMF.ChooseVirtualGift_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPrivatePhotoFragment">EMF.Edit.VirtualGiftview.PrivatePhoto</string>
+	<string name="EMF.ChooseVirtualGift_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentVirtualGiftFragment">EMF.Edit.VirtualGiftview.VirtualGift</string>
+	<string name="EMF.ChooseVirtualGift_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPhotoFragment">EMF.Edit.VirtualGiftview.Photo</string>
+	<string name="EMF.InboxAttachview_com.qpidnetwork.dating.livechat.VideoPlayActivity">EMF.VideoInbox</string>
+	<string name="EMF.OutboxAttachview_com.qpidnetwork.dating.livechat.VideoPlayActivity">EMF.VideoOutbox</string>
+	
+	<string name="com.qpidnetwork.dating.admirer.AdmirersListActivity">Admirer.List</string>
+	<string name="Admirer.List_com.qpidnetwork.dating.emf.EMFSearchActivity">Admirer.Search</string>
+	<string name="Admirer.List_com.qpidnetwork.dating.emf.EMFDetailActivity">Admirer.Viewer</string>
+	<string name="Admirer.Viewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentShortVideoFragment">Admirer.Attachview.Video</string>
+	<string name="Admirer.Viewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPrivatePhotoFragment">Admirer.Attachview.PrivatePhoto</string>
+	<string name="Admirer.Viewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentVirtualGiftFragment">Admirer.Attachview.VirtualGift</string>
+	<string name="Admirer.Viewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPhotoFragment">Admirer.Attachview.Photo</string>
+	<string name="Admirer.Search_com.qpidnetwork.dating.emf.EMFDetailActivity">Admirer.Search.Viewer</string>
+	<string name="Admirer.Search.Viewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentShortVideoFragment">Admirer.Attachview.Video</string>
+	<string name="Admirer.Search.Viewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPrivatePhotoFragment">Admirer.Attachview.PrivatePhoto</string>
+	<string name="Admirer.Search.Viewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentVirtualGiftFragment">Admirer.Attachview.VirtualGift</string>
+	<string name="Admirer.Search.Viewer_com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity_EMFAttachmentPhotoFragment">Admirer.Attachview.Photo</string>
+	<string name="com.qpidnetwork.dating.admirer.AdmireVirtualGiftDetailActivity">Admirer.VirtualGift.Viewer</string>
+	
+	<string name="com.qpidnetwork.dating.lovecall.LoveCallListActivity_0">LoveCall.Scheduled</string>
+	<string name="LoveCall.Scheduled_com.qpidnetwork.dating.lovecall.LoveCallDetailActivity">LoveCall.ScheduledDetail</string>
+	<string name="com.qpidnetwork.dating.lovecall.LoveCallListActivity_1">LoveCall.Request</string>
+	<string name="LoveCall.Request_com.qpidnetwork.dating.lovecall.LoveCallDetailActivity">LoveCall.RequestDetail</string>
+	
+	<string name="com.qpidnetwork.dating.livechat.ChatActivity">LiveChat.Chat</string>
+	<string name="com.qpidnetwork.dating.livechat.picture.PictureSelectActivity">LiveChat.PictureSelect</string>
+	<string name="com.qpidnetwork.dating.livechat.LivechatPrivatePhotoPreviewActivity_PrivatePhotoPreviewFragment">LiveChat.PrivatePhotoView</string>
+	<string name="com.qpidnetwork.dating.livechat.video.VideoHistoryListActivity">LiveChat.VideoHistoryList</string>
+	<string name="LiveChat.VideoHistoryList_com.qpidnetwork.dating.livechat.VideoPlayActivity">LiveChat.VideoInRecent</string>
+	<string name="LiveChat.Chat_com.qpidnetwork.dating.livechat.VideoPlayActivity">LiveChat.VideoInChat</string>
+	<string name="com.qpidnetwork.dating.livechat.invite.LivechatInviteListActivity">LiveChat.InviteList</string>
+	
+	<string name="com.qpidnetwork.dating.lady.LadyDetailActivity">Lady.Detail</string>
+	<string name="com.qpidnetwork.dating.lady.LadyLabelActivity">Lady.Label</string>
+	<string name="com.qpidnetwork.dating.lady.VideoDetailActivity">Lady.VideoDetail</string>
+	<string name="com.qpidnetwork.dating.lady.NormalPhotoPreviewActivity_NormalPhotoFragment">Lady.PhotoAlbum.NormalPhoto</string>
+	<string name="com.qpidnetwork.dating.lady.NormalPhotoPreviewActivity_LockPhotoFragment">Lady.PhotoAlbum.LockedPhoto</string>
+	
+	<string name="com.qpidnetwork.dating.profile.MyProfileActivity">MyProfile.Main</string>
+	<string name="com.qpidnetwork.dating.profile.MyProfileDetailActivity">MyProfile.ProfileDetailIndex</string>
+	<string name="com.qpidnetwork.dating.profile.MyProfileDetailInterestActivity">MyProfile.EditInterest</string>
+	<string name="com.qpidnetwork.dating.profile.MyProfileDetailSelfIntroActivity">MyProfile.EditSelfIntro</string>
+	<string name="com.qpidnetwork.dating.profile.MyProfileMatchCriteriaActivity">MyProfile.EditMatchCriteria</string>
+	<string name="com.qpidnetwork.dating.profile.MyProfilePhotoActivity">MyProfile.Photo</string>
+	<string name="com.qpidnetwork.dating.profile.MyProfilePhoneVerifyActivity">MyProfile.PhoneVerifyIndex</string>
+	<string name="com.qpidnetwork.dating.profile.MyProfilePhoneVerifyMobileActivity">MyProfile.MobileVerify</string>
+	<string name="com.qpidnetwork.dating.profile.MyProfilePhoneVerifyLandlineActivity">MyProfile.LandlineVerify</string>
+	<string name="com.qpidnetwork.dating.profile.MyProfilePhoneVerifyMobileCodeActivity">MyProfile.CheckCodeVerify</string>
+	<string name="com.qpidnetwork.dating.profile.MyProfileSelectCountryActivity">MyProfile.PhoneVerify.SelectCountry</string>
+	<string name="com.qpidnetwork.dating.profile.MyProfileChangePasswordActivity">MyProfile.ChangePassword</string>
+	<string name="MyProfile.Main_com.qpidnetwork.dating.WebViewActivity">MyBonusPoints</string>
+	
+	<string name="com.qpidnetwork.dating.setting.SettingActivity">Setting.Main</string>
+	<string name="Setting.Main_com.qpidnetwork.dating.WebViewActivity">Help</string>
+	
+	<string name="com.qpidnetwork.view.GetMoreCreditDialog">;parentkeywords;CreditAdd</string>
+	<string name="com.qpidnetwork.dating.credit.BuyCreditActivity">BuyCredit</string>
+
+	<string name="com.qpidnetwork.dating.contactus.ContactTicketListActivity">ContactUs.ContactTicketList</string>	
+	<string name="com.qpidnetwork.dating.contactus.AttachmentPhotoPreview">ContactUs.AttachPhotoPreview</string>
+	<string name="com.qpidnetwork.dating.contactus.TicketCreateActivity">ContactUs.Create</string>
+	<string name="com.qpidnetwork.dating.contactus.TicketDetailListActivity">ContactUs.DetailList</string>
+	<string name="com.qpidnetwork.dating.contactus.TicketReplyActivity">ContactUs.Reply</string>
+	
+	<string name="com.qpidnetwork.dating.advertisement.AdvertWebviewActivity">Advert.Webview</string>
+	
+	<!-- Event Define -->
+	<string name="LiveChatF_Category">LiveChat</string>
+	<string name="LiveChatF_Action_TakePhoto">TakePhoto</string>
+	<string name="LiveChatF_Label_TakePhoto">LiveChat.TakePhoto</string>
+	<string name="LiveChatF_Action_Photo">Photo</string>
+	<string name="LiveChatF_Label_Photo">LiveChat.Photo</string>
+	<string name="LiveChatF_Action_Voice">Voice</string>
+	<string name="LiveChatF_Label_Voice">LiveChat.Voice</string>
+	<string name="LiveChatF_Action_AnimatedEmotions">AnimatedEmotions</string>
+	<string name="LiveChatF_Label_AnimatedEmotions">LiveChat.AnimatedEmotions</string>
+	<string name="LiveChatF_Action_MagicIcon">MagicIcon</string>
+	<string name="LiveChatF_Label_MagicIcon">LiveChat.MagicIcon</string>
+	
+	<string name="BuyCredit_Category">AppError</string>
+	<string name="BuyCredit_Action_SSLError">BuyCredit_SSLError</string>
+	
+	<string name="ChooseSite_Category">ChooseSite</string>
+	<string name="ChooseSite_Action">To</string>
+	<string name="ChooseSite_Label">.ChooseSite.</string>
+	
+	<string name="OpenApp_Category">OpenAPP</string>
+	<string name="OpenApp_Label">-</string>
+</resources>

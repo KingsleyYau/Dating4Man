@@ -19,24 +19,24 @@ import android.text.TextUtils;
 import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.KickOffNotification;
-import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.LoginManager;
+import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.LoginParam;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.bean.ContactBean;
 import com.qpidnetwork.dating.bean.LoveCallBean;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.contacts.ContactSearchType.LabelType;
-import com.qpidnetwork.dating.googleanalytics.GAFragmentActivity;
 import com.qpidnetwork.dating.lady.LadyDetailManager;
 import com.qpidnetwork.dating.lady.LadyDetailManager.OnLadyDetailManagerQueryLadyDetailCallback;
 import com.qpidnetwork.dating.livechat.LiveChatNotification;
 import com.qpidnetwork.dating.setting.SettingPerfence;
 import com.qpidnetwork.dating.setting.SettingPerfence.NotificationItem;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.util.SystemUtil;
 import com.qpidnetwork.livechat.LCEmotionItem;
+import com.qpidnetwork.livechat.LCMagicIconItem;
 import com.qpidnetwork.livechat.LCMessageItem;
 import com.qpidnetwork.livechat.LCMessageItem.MessageType;
 import com.qpidnetwork.livechat.LCMessageItem.SendType;
@@ -44,6 +44,7 @@ import com.qpidnetwork.livechat.LCUserItem;
 import com.qpidnetwork.livechat.LCUserItem.ChatType;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.LiveChatManagerEmotionListener;
+import com.qpidnetwork.livechat.LiveChatManagerMagicIconListener;
 import com.qpidnetwork.livechat.LiveChatManagerMessageListener;
 import com.qpidnetwork.livechat.LiveChatManagerOtherListener;
 import com.qpidnetwork.livechat.LiveChatManagerPhotoListener;
@@ -55,6 +56,7 @@ import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TryTicketEventType;
+import com.qpidnetwork.livechat.jni.LiveChatTalkUserListItem;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnLadyRecentContactListCallback;
 import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
@@ -64,13 +66,14 @@ import com.qpidnetwork.request.item.LadyDetail;
 import com.qpidnetwork.request.item.LadyRecentContactItem;
 import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
+import com.qpidnetwork.request.item.MagicIconConfig;
 import com.qpidnetwork.request.item.OtherEmotionConfigItem;
 
 public class ContactManager implements OnLoginManagerCallback,
 		LiveChatManagerOtherListener, LiveChatManagerEmotionListener,
 		LiveChatManagerMessageListener, LiveChatManagerPhotoListener,
 		LiveChatManagerVideoListener, LiveChatManagerVoiceListener,
-		LiveChatManagerTryTicketListener {
+		LiveChatManagerTryTicketListener,LiveChatManagerMagicIconListener {
 
 	public static final String LIVE_CHAT_KICK_OFF = "kickoff";
 
@@ -220,7 +223,7 @@ public class ContactManager implements OnLoginManagerCallback,
 					}
 					
 					Intent intent = new Intent();
-					intent.setAction(GAFragmentActivity.LIVECHAT_KICKOFF_ACTION);
+					intent.setAction(BaseFragmentActivity.LIVECHAT_KICKOFF_ACTION);
 					intent.putExtra(LIVE_CHAT_KICK_OFF, msg.arg1);
 					QpidApplication.getContext().sendBroadcast(intent);
 				}
@@ -291,7 +294,7 @@ public class ContactManager implements OnLoginManagerCallback,
 		mCallbackList = new ArrayList<OnContactUpdateCallback>();
 		mContactList = new ArrayList<ContactBean>();
 		mContactsMap = new HashMap<String, ContactBean>();
-		mLiveChatManager = LiveChatManager.newInstance(null);
+		mLiveChatManager = LiveChatManager.getInstance();
 		mLocalContactMap = new HashMap<String, List<ContactBean>>();
 		mInviteCallbackList = new ArrayList<OnNewInviteUpdateCallback>();
 		resetContact();
@@ -744,7 +747,8 @@ public class ContactManager implements OnLoginManagerCallback,
 	public List<ContactBean> getContactsByIdOrName(String key) {
 		key = key.toUpperCase(Locale.ENGLISH);
 		List<ContactBean> tempList = new ArrayList<ContactBean>();
-		Pattern p = Pattern.compile("^(.*" + key + ".*)$");
+		String keyEncode = Pattern.quote(key);
+		Pattern p = Pattern.compile("^(.*" + keyEncode + ".*)$");
 		Log.d("contact",
 				"ContactManager::getContactsByIdOrName() synchronized mContactList begin");
 		synchronized (mContactList) {
@@ -912,34 +916,40 @@ public class ContactManager implements OnLoginManagerCallback,
 								bean.videoCount = item.videoList.size();
 							}
 							bean.isInchating = true;
-							if (userItem.getMsgList().size() > 0) {
-								/* 生成联系人列表最后一条提示消息 */
-								for (int i = userItem.getMsgList().size() - 1; i >= 0; i--) {
-									LCMessageItem msgItem = userItem
-											.getMsgList().get(i);
-									if (msgItem.msgType == MessageType.Text
-											|| msgItem.msgType == MessageType.Emotion
-											|| msgItem.msgType == MessageType.Photo
-											|| msgItem.msgType == MessageType.Voice
-											|| msgItem.msgType == MessageType.Video) {
-										/* 通过最后一条正常通讯消息生成提示，否则界面使用默认最后更新时间提示 */
-										if (msgItem.createTime > bean.lasttime) {
-											bean.lasttime = msgItem.createTime;
-											bean.msgHint = generateMsgHint(msgItem);
+							synchronized (userItem.getMsgList())
+							{
+								if (!userItem.getMsgList().isEmpty()) {
+									/* 生成联系人列表最后一条提示消息 */
+									for (int i = userItem.getMsgList().size() - 1; i >= 0; i--) {
+										LCMessageItem msgItem = userItem
+												.getMsgList().get(i);
+										if (msgItem.msgType == MessageType.Text
+												|| msgItem.msgType == MessageType.Emotion
+												|| msgItem.msgType == MessageType.Photo
+												|| msgItem.msgType == MessageType.Voice
+												|| msgItem.msgType == MessageType.Video
+												|| msgItem.msgType == MessageType.MagicIcon) {
+											/* 通过最后一条正常通讯消息生成提示，否则界面使用默认最后更新时间提示 */
+											if (msgItem.createTime > bean.lasttime) {
+												bean.lasttime = msgItem.createTime;
+												bean.msgHint = generateMsgHint(msgItem);
+											}
+											break;
 										}
-										break;
 									}
+								} else {
+									bean.lasttime = (int) (System
+											.currentTimeMillis() / 1000);
+									Log.w(tag, "Something wrong womanid: "
+											+ userItem.userId);
 								}
-							} else {
-								bean.lasttime = (int) (System
-										.currentTimeMillis() / 1000);
-								Log.w(tag, "Something wrong womanid: "
-										+ userItem.userId);
 							}
+							boolean isContain = true;
 							/* 添加到现有联系人 */
 							synchronized (mContactList) {
 								/* 防止异步回调多次导致添加联系人重复 */
 								if (!mContactsMap.containsKey(bean.womanid)) {
+									isContain = false;
 									mContactList.add(bean);
 									mContactsMap.put(bean.womanid, bean);
 									if (isInvite) {
@@ -956,6 +966,9 @@ public class ContactManager implements OnLoginManagerCallback,
 										}
 									}
 								}
+							}
+							if(!isContain){
+								onContactListUpdateCallback();
 							}
 						}
 					}
@@ -995,7 +1008,9 @@ public class ContactManager implements OnLoginManagerCallback,
 			if (msgItem.sendType == SendType.Send) {
 				msg = msgs_[2];
 			} else {
-				msg = String.format(msgs_[5], msgItem.getUserItem().userName);
+				LCUserItem userItem = msgItem.getUserItem();
+				String userName =  userItem.userName;
+				msg = String.format(msgs_[5], userName);
 			}
 			break;
 		case Voice: // 语音
@@ -1017,6 +1032,15 @@ public class ContactManager implements OnLoginManagerCallback,
 				msg = msgs_[7];
 			} else {
 				msg = String.format(msgs_[8], msgItem.getUserItem().userName);
+			}
+			break;
+		case MagicIcon: // 小高级表情
+			if (msgItem.sendType == SendType.Send) {
+				msg = msgs_[9];
+			} else {
+				LCUserItem userItem = msgItem.getUserItem();
+				String userName =  userItem.userName;
+				msg = String.format(msgs_[10], userName);
 			}
 			break;
 		case System: // 系统消息
@@ -1089,20 +1113,24 @@ public class ContactManager implements OnLoginManagerCallback,
 					} else {
 						bean.isInchating = false;
 					}
-					if (userItem.getMsgList().size() > 0) {
-						for (int i = userItem.getMsgList().size() - 1; i >= 0; i--) {
-							LCMessageItem item = userItem.getMsgList().get(i);
-							if (item.msgType == MessageType.Text
-									|| item.msgType == MessageType.Emotion
-									|| item.msgType == MessageType.Photo
-									|| item.msgType == MessageType.Voice
-									|| item.msgType == MessageType.Video) {
-								/* 通过最后一条正常通讯消息生成提示，否则界面使用默认最后更新时间提示 */
-								if (item.createTime > bean.lasttime) {
-									bean.lasttime = item.createTime;
-									bean.msgHint = generateMsgHint(item);
+					synchronized (userItem.getMsgList())
+					{
+						if (!userItem.getMsgList().isEmpty()) {
+							for (int i = userItem.getMsgList().size() - 1; i >= 0; i--) {
+								LCMessageItem item = userItem.getMsgList().get(i);
+								if (item.msgType == MessageType.Text
+										|| item.msgType == MessageType.Emotion
+										|| item.msgType == MessageType.Photo
+										|| item.msgType == MessageType.Voice
+										|| item.msgType == MessageType.Video
+										|| item.msgType == MessageType.MagicIcon) {
+									/* 通过最后一条正常通讯消息生成提示，否则界面使用默认最后更新时间提示 */
+									if (item.createTime > bean.lasttime) {
+										bean.lasttime = item.createTime;
+										bean.msgHint = generateMsgHint(item);
+									}
+									break;
 								}
-								break;
 							}
 						}
 					}
@@ -1179,7 +1207,8 @@ public class ContactManager implements OnLoginManagerCallback,
 				if (item.getUserItem().chatType == ChatType.InChatCharge
 						|| item.getUserItem().chatType == ChatType.InChatUseTryTicket) {
 					// 消息为inchat用户发出
-					if (item.getUserItem().userId.compareTo(mWomanId) != 0) {
+					if ((item.getUserItem().userId.compareTo(mWomanId) != 0)||
+							SystemUtil.isBackground(mContext)) {
 						// 非当前在聊女士
 						Message msg = Message.obtain();
 						RequestBaseResponse obj = new RequestBaseResponse();
@@ -1473,6 +1502,13 @@ public class ContactManager implements OnLoginManagerCallback,
 			LCUserItem[] userList) {
 		onReceiveUsersStatus(userList);
 	}
+	
+	@Override
+	public void OnGetUsersInfo(LiveChatErrType errType, String errmsg,
+			LiveChatTalkUserListItem[] itemList) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public void OnUpdateStatus(LCUserItem userItem) {
@@ -1690,4 +1726,40 @@ public class ContactManager implements OnLoginManagerCallback,
 			onReceiveTalkEvent(item);
 		}
 	}
-}
+	/*
+	 * ======================= LiveChatManagerMagicIconListener
+	 * ===================
+	 */
+	@Override
+	public void OnGetMagicIconConfig(boolean success, String errno,
+			String errmsg, MagicIconConfig item) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnSendMagicIcon(LiveChatErrType errType, String errmsg,
+			LCMessageItem item) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnRecvMagicIcon(LCMessageItem item) {
+		/* 收到小高级表情，更新联系人列表 */
+		onReceiveMessage(item);
+	}
+
+	@Override
+	public void OnGetMagicIconSrcImage(boolean success,
+			LCMagicIconItem magicIconItem) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnGetMagicIconThumbImage(boolean success,
+			LCMagicIconItem magicIconItem) {
+		// TODO Auto-generated method stub
+		
+	}}

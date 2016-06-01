@@ -219,7 +219,7 @@ public class LCEmotionManager implements LCEmotionDownloader.LCEmotionDownloader
 	public boolean GetConfigItemWithFile() {
 		boolean result = false;
         try {  
-        	String key = "OtherEmotionConfigItem_" + WebSiteManager.newInstance(null).GetWebSite().getSiteId();
+        	String key = "OtherEmotionConfigItem_" + WebSiteManager.getInstance().GetWebSite().getSiteId();
             SharedPreferences mSharedPreferences = mContext.getSharedPreferences("base64", Context.MODE_PRIVATE);  
             String personBase64 = mSharedPreferences.getString(key, "");  
             byte[] base64Bytes = Base64.decode(personBase64.getBytes(), Base64.DEFAULT);  
@@ -246,7 +246,7 @@ public class LCEmotionManager implements LCEmotionDownloader.LCEmotionDownloader
 			&& null != mContext) 
 		{
 			try {
-				String key = "OtherEmotionConfigItem_" + WebSiteManager.newInstance(null).GetWebSite().getSiteId();
+				String key = "OtherEmotionConfigItem_" + WebSiteManager.getInstance().GetWebSite().getSiteId();
 				SharedPreferences mSharedPreferences = mContext.getSharedPreferences("base64", Context.MODE_PRIVATE); 
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();  
 		        ObjectOutputStream oos;
@@ -289,6 +289,7 @@ public class LCEmotionManager implements LCEmotionDownloader.LCEmotionDownloader
 	{
 		boolean result = false;
 		if (null != configItem) {
+			result = true;
 			// 停止图片文件下载
 			StopAllDownloadImage();
 			// 停止3gp文件下载

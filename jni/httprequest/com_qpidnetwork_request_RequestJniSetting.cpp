@@ -7,7 +7,7 @@
  */
 #include "com_qpidnetwork_request_RequestJniSetting.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestSettingController.h"
+#include <manrequesthandler/RequestSettingController.h>
 
 void onChangePassword(long requestId, bool success, string errnum, string errmsg);
 

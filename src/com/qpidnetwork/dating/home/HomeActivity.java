@@ -8,7 +8,6 @@ import java.util.List;
 import me.tangke.slidemenu.SlideMenu;
 import me.tangke.slidemenu.SlideMenu.OnSlideStateChangeListener;
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
@@ -20,6 +19,7 @@ import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -56,6 +56,7 @@ import com.qpidnetwork.livechat.LiveChatManagerOtherListener;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
+import com.qpidnetwork.livechat.jni.LiveChatTalkUserListItem;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
 import com.qpidnetwork.manager.FileCacheManager;
@@ -82,7 +83,7 @@ import com.qpidnetwork.tool.CrashPerfence;
 import com.qpidnetwork.tool.CrashPerfence.CrashParam;
 import com.qpidnetwork.view.MaterialDialogAlert;
 
-@SuppressLint("RtlHardcoded")
+@SuppressLint({ "RtlHardcoded", "UseValueOf" })
 public class HomeActivity extends BaseFragmentActivity implements
 		OnLoginManagerCallback, OnChangeWebsiteCallback,
 		LiveChatManagerOtherListener, LiveChatManagerMessageListener,
@@ -94,6 +95,9 @@ public class HomeActivity extends BaseFragmentActivity implements
 
 	public static final String START_EMF_LIST = "start_emf_list";
 	public static final String START_LIVECHAT_LIST = "start_livechat_list";
+	public static final String START_BROWSER_LINK = "start_brower_link";
+	public static final String OPEN_LEFT_MENU = "open_left_menu";// 打开左侧导航菜单
+	public static final String OPEN_RIGHT_MENU = "open_right_menu";// 打开右侧chat列表
 
 	// 广告传入参数
 	public static final String START_ADVERT = "";
@@ -138,7 +142,7 @@ public class HomeActivity extends BaseFragmentActivity implements
 		/**
 		 * 强制显示客服消息
 		 */
-		REQUEST_FORCED_SHOW_TICKET,
+		REQUEST_FORCED_SHOW_TICKET,REQUEST_LOGIN_CALLBACK,
 	}
 
 	/**
@@ -176,23 +180,16 @@ public class HomeActivity extends BaseFragmentActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-
+//		showContacts();
 		// 初始化登录状态管理
 		LoginManager.getInstance().AddListenner(this);
 
 		// 初始化livechat
-		LiveChatManager.newInstance(this).RegisterOtherListener(this);
-		LiveChatManager.newInstance(this).RegisterMessageListener(this);
+		LiveChatManager.getInstance().RegisterOtherListener(this);
+		LiveChatManager.getInstance().RegisterMessageListener(this);
 
 		// 初始化站点改变响应
 		WebSiteManager.getInstance().AddListenner(this);
-
-		// 刷新onlinelady
-		// 刷新在线女士列表
-		if (contentViewController != null) {
-			contentViewController.ClearLadyList();
-			contentViewController.QueryOnlineLadyList(false);
-		}
 
 		mContactManager = ContactManager.getInstance();
 		mContactManager.registerContactUpdate(this);
@@ -210,14 +207,16 @@ public class HomeActivity extends BaseFragmentActivity implements
 			AdWordsConversionReporter.reportWithConversionId(this.getApplicationContext(),"1072471539", "TPsJCNDx1GAQ87uy_wM", "0.00", false);
 		}
 
+		// 统计中间页(OnlineLady)
+		onAnalyticsPageSelected(1);
 	}
 
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		LiveChatManager.newInstance(this).UnregisterOtherListener(this);
-		LiveChatManager.newInstance(this).UnregisterMessageListener(this);
-		WebSiteManager.newInstance(this).RemoveListenner(this);
+		LiveChatManager.getInstance().UnregisterOtherListener(this);
+		LiveChatManager.getInstance().UnregisterMessageListener(this);
+		WebSiteManager.getInstance().RemoveListenner(this);
 		mContactManager.unregisterContactUpdata(this);
 		mContactManager.unregisterInviteUpdata(this);
 		super.onDestroy();
@@ -280,6 +279,8 @@ public class HomeActivity extends BaseFragmentActivity implements
 				.ordinal());
 		mHandler.removeMessages(RequestFlag.REQUEST_NEED_UPLOAD_CRASH.ordinal());
 		mHandler.removeMessages(RequestFlag.REQUEST_FORCED_SHOW_TICKET
+				.ordinal());
+		mHandler.removeMessages(RequestFlag.REQUEST_LOGIN_CALLBACK
 				.ordinal());
 	}
 
@@ -497,6 +498,20 @@ public class HomeActivity extends BaseFragmentActivity implements
 			}
 		}
 			break;
+		case REQUEST_LOGIN_CALLBACK: {
+			// 需要刷新未读EMF条数
+			MsgTotal(false);
+
+			// 获取LoveCall未处理数
+			GetLoveCallRequestCount();
+
+			// 获取男士余额
+			GetCount();
+			
+			//刷新女士列表
+			contentViewController.QueryOnlineLadyList(false);
+		}
+			break;
 		default:
 			break;
 		}
@@ -569,15 +584,18 @@ public class HomeActivity extends BaseFragmentActivity implements
 	public void OnLogout(LiveChatErrType errType, String errmsg,
 			boolean isAutoLogin) {
 		// TODO Auto-generated method stub
-		runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				contactViewController.listenToLogoutActivity();
-			}
-
-		});
+		if(!isAutoLogin){
+			//修改原有刷新机制，只有当被踢注销时才清除，自动重连时不清楚刷新
+			runOnUiThread(new Runnable() {
+	
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					contactViewController.listenToLogoutActivity();
+				}
+	
+			});
+		}
 
 	}
 
@@ -612,6 +630,13 @@ public class HomeActivity extends BaseFragmentActivity implements
 			LCUserItem[] userList) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public void OnGetUsersInfo(LiveChatErrType errType, String errmsg,
+			LiveChatTalkUserListItem[] itemList) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -696,8 +721,8 @@ public class HomeActivity extends BaseFragmentActivity implements
 				+ getTaskId() + " )");
 
 		// 如果未选择过站点
-		if (WebSiteManager.newInstance(mContext).GetWebSite() == null) {
-			WebSiteManager.newInstance(mContext).ChangeWebSite(
+		if (WebSiteManager.getInstance().GetWebSite() == null) {
+			WebSiteManager.getInstance().ChangeWebSite(
 					WebSiteType.ChnLove);
 		}
 
@@ -751,6 +776,19 @@ public class HomeActivity extends BaseFragmentActivity implements
 						}
 					}
 				}
+			} else if (bundle.containsKey(START_BROWSER_LINK)) {
+				String moduleName = bundle.getString(START_BROWSER_LINK);
+				if (!TextUtils.isEmpty(moduleName)) {
+					// 打开指定模块
+					AppUrlHandler.AppUrlHandle(this, moduleName);
+				}
+			} else if (bundle.containsKey(OPEN_LEFT_MENU)) {//打开左侧菜单
+				if (mDrawerLayout != null) {
+					mDrawerLayout.openDrawer(Gravity.LEFT);
+				}
+
+			} else if (bundle.containsKey(OPEN_RIGHT_MENU)) {//打开右侧菜单
+				slideMenu.open(true, true);
 			}
 		}
 	}
@@ -770,6 +808,10 @@ public class HomeActivity extends BaseFragmentActivity implements
 			}
 			// 弹出CrashLog上传询问
 			mPopMsgList.add(RequestFlag.REQUEST_NEED_UPLOAD_CRASH.ordinal());
+			//自动登陆或者换站登陆成功刷新点数、未读意向信及未读Lovecall数目
+			Message msg = Message.obtain();
+			msg.what = RequestFlag.REQUEST_LOGIN_CALLBACK.ordinal();
+			sendUiMessage(msg);
 		}
 	}
 
@@ -916,10 +958,16 @@ public class HomeActivity extends BaseFragmentActivity implements
 		contactViewController.reloadDataIfNull();
 		contentViewController.OnOpen();
 		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+		
+		// 统计右侧页(Contact)
+		onAnalyticsPageSelected(2);
 	}
 
 	private void onRightSlideMenuClose() {
 		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+		
+		// 统计中间页(OnlineLady)
+		onAnalyticsPageSelected(1);
 	}
 
 	private void onRightSlideMenuScrolling() {
@@ -927,11 +975,13 @@ public class HomeActivity extends BaseFragmentActivity implements
 	}
 
 	private void onLeftDrawerOpen() {
-
+		// 统计左侧页(Menu)
+		onAnalyticsPageSelected(0);
 	}
 
 	private void onLeftDrawerClose() {
-
+		// 统计中间页(OnlineLady)
+		onAnalyticsPageSelected(1);
 	}
 
 	@Override
@@ -1024,6 +1074,12 @@ public class HomeActivity extends BaseFragmentActivity implements
 	public void OnClickContact(View v) {
 		// 打开右边菜单
 		slideMenu.open(true, true);
+	}
+	
+	@Override
+	public void OnListSelected(int index) {
+		// 统计中间页的子页(OnlineLady)
+		onAnalyticsPageSelected(1, index);
 	}
 
 	@Override
@@ -1120,4 +1176,28 @@ public class HomeActivity extends BaseFragmentActivity implements
 			}
 		}		
 	}
+
+//	 private void showContacts() {
+//	     if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//	             != PackageManager.PERMISSION_GRANTED) {
+//	    	 Log.d("test", "showContacts");
+//	         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//	                 1);
+//	     } else {
+//	    	 Log.d("test", "showContacts1");
+//	     }
+//	 }
+//
+//	 @Override
+//	 public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//	         int[] grantResults) {
+//		 Log.d("test", "showContacts2");
+//	     if (requestCode == 1
+//	             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//	         showContacts();
+//	         Log.d("test", "showContacts3");
+//	     }
+//	     
+//	 }
+
 }

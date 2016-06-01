@@ -8,6 +8,8 @@ import android.net.http.SslError;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,28 +21,36 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
-import android.webkit.WebView.HitTestResult;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
 import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.authorization.LoginManager;
+import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.framework.base.BaseActionBarFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
+import com.qpidnetwork.manager.MonthlyFeeManager;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
+import com.qpidnetwork.request.item.LoginErrorItem;
+import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.request.item.OtherSynConfigItem;
+import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogAlert;
 
 @SuppressLint("SetJavaScriptEnabled")
 @SuppressWarnings("deprecation")
-public class BuyCreditActivity extends BaseActionBarFragmentActivity implements OnConfigManagerCallback{
+public class BuyCreditActivity extends BaseActionBarFragmentActivity implements OnConfigManagerCallback, OnLoginManagerCallback{
+	private boolean isProceSslError = true;	// 控制是否proceed onReceivedSslError() 
 	
 	protected final String tag = getClass().getName();
+	private static final int LOGIN_CALLBACK = 10001;
 	
 	public static final String CREDIT_ORDER_NUMBER = "creditNum";
 	
@@ -65,6 +75,14 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 	
 	private String orderId;//点击订单进入
 	
+	//error page
+	private View errorPage;
+	private ButtonRaised btnErrorRetry;
+	
+	private boolean isSessionOutTimeError = false;
+	private boolean isLoadError = false;
+	private boolean isReload = false; //记录是否重新加载，重新加载成功需清除history
+	
 	@SuppressLint("JavascriptInterface") @Override
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub
@@ -75,6 +93,13 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 		getCustomActionBar().getButtonById(R.id.common_button_back).setBackgroundResource(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
 		getCustomActionBar().setButtonIconById(R.id.common_button_back, R.drawable.ic_close_grey600_24dp);
 		getCustomActionBar().setAppbarBackgroundColor(Color.WHITE);
+		
+		//error page
+		errorPage = (View)findViewById(R.id.errorPage);
+		btnErrorRetry = (ButtonRaised)findViewById(R.id.btnErrorRetry);
+		btnErrorRetry.setButtonTitle(getString(R.string.common_btn_tapRetry));
+		btnErrorRetry.setOnClickListener(this);
+		btnErrorRetry.requestFocus();
 		
 		Bundle bundle = getIntent().getExtras();
 		if(bundle != null){
@@ -106,17 +131,15 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 		mWebView.setWebChromeClient(client);
 		
 //		showProgressDialog("Loading");
-		
-		/*getInstance 前必须createInstance */
-		CookieSyncManager.createInstance(this);
+		LoginManager.getInstance().AddListenner(this);
 		
 		ConfigManager.getInstance().GetOtherSynConfigItem(this);
 	}
 	
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
+		LoginManager.getInstance().RemoveListenner(this);
 		if (mWebView != null) {
 			mWebPage.removeView(mWebView);
 			mWebView.clearCache(true);
@@ -124,6 +147,9 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 			mWebView.destroy();
 			mWebView = null;
 		}
+		
+		//买点成功刷新会员状态
+		MonthlyFeeManager.getInstance().QueryMemberType();
 		
 		hideProgressDialog();
 	}
@@ -162,6 +188,12 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 		public void onPageFinished(WebView view, String url) {
 //			hideProgressDialog();
 			/*重定向可能导致多次onPageStarted 但仅一次onPageFinished 导致dialog无法隐藏*/
+			if((!isLoadError)&&(!isSessionOutTimeError)){
+				errorPage.setVisibility(View.GONE);
+			}
+			if(isReload){
+				mWebView.clearHistory();
+			}
 			hideProgressDialogIgnoreCount();
 			
 			if(isBlockLoadingNetworkImage){
@@ -175,7 +207,13 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			Log.d("test_credits", "WebViewClient.shouldOverrideUrlLoading(" + url + ")");
+//			Log.d("test_credits", "WebViewClient.shouldOverrideUrlLoading(" + url + ")");
+			if( url.contains("MBCE0003")) {
+	    		//处理session过期重新登陆
+				isSessionOutTimeError = true;
+				errorPage.setVisibility(View.VISIBLE);
+				return true;
+	    	}
 			if(url.contains("term") || url.contains("privacy")){
 				// 修改如下：（链接以默认浏览器打开）
 				Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -199,8 +237,26 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 
 		@Override
 		public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-			handler.proceed();
+			if (isProceSslError) {
+				handler.proceed();
+			} 
+			else {
+				handler.cancel();
+			}
+			
+			// 统计event
+			onAnalyticsEvent(getString(R.string.BuyCredit_Category)
+					, getString(R.string.BuyCredit_Action_SSLError)
+					, String.valueOf(error.getPrimaryError()));
+//			super.onReceivedSslError(view, handler, error);
 		}
+		
+		@Override
+		public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+			//普通页面错误
+			isLoadError = true;
+			errorPage.setVisibility(View.VISIBLE);
+		};
 	};
 	
 	WebChromeClient client = new WebChromeClient() {
@@ -210,7 +266,7 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 			
 			MaterialDialogAlert dialog = new MaterialDialogAlert(BuyCreditActivity.this);
 			dialog.setCancelable(false);
-			dialog.setMessage(message);
+			dialog.setMessage(Html.fromHtml(message));
 			dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), new OnClickListener(){
 
 				@Override
@@ -230,7 +286,7 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 			
 			MaterialDialogAlert dialog = new MaterialDialogAlert(BuyCreditActivity.this);
 			dialog.setTitle(getString(R.string.title_payment_failed));
-			dialog.setMessage(message);
+			dialog.setMessage(Html.fromHtml(message));
 			dialog.addButton(dialog.createButton(getString(R.string.btn_try_again), new OnClickListener(){
 
 				@Override
@@ -259,7 +315,7 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 		
 		MaterialDialogAlert dialog = new MaterialDialogAlert(BuyCreditActivity.this);
 		dialog.setTitle(getString(R.string.title_payment_success));
-		dialog.setMessage(message);
+		dialog.setMessage(Html.fromHtml(message));
 		dialog.setCancelable(false);
 		dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), new OnClickListener(){
 
@@ -284,7 +340,7 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 		
 		MaterialDialogAlert dialog = new MaterialDialogAlert(BuyCreditActivity.this);
 		dialog.setTitle(getString(R.string.title_payment_failed));
-		dialog.setMessage(message);
+		dialog.setMessage(Html.fromHtml(message));
 		dialog.setCancelable(false);
 		dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), new OnClickListener(){
 
@@ -308,7 +364,7 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 	public void doShowNotifyDialog(String msg) {
 		
 		MaterialDialogAlert dialog = new MaterialDialogAlert(BuyCreditActivity.this);
-		dialog.setMessage(message);
+		dialog.setMessage(Html.fromHtml(message));
 		dialog.setCancelable(false);
 		dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), null));
 		
@@ -333,9 +389,11 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 	
 	private void loadUrl(){
 		/*Cookie 认证*/
+		/*getInstance 前必须createInstance */
+		CookieSyncManager.createInstance(this);
 		CookieManager cookieManager = CookieManager.getInstance();
 		cookieManager.setAcceptCookie(true);
-		String domain = WebSiteManager.newInstance(this).GetWebSite().getAppSiteHost();
+		String domain = WebSiteManager.getInstance().GetWebSite().getAppSiteHost();
 		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
 		cookieManager.setCookie(domain, phpSession); // 这样行 TODO 报异常
 		CookieSyncManager.getInstance().sync();
@@ -355,6 +413,55 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 	}
 	
 	@Override
+	public void onClick(View v) {
+		super.onClick(v);
+		switch (v.getId()) {
+		case R.id.btnErrorRetry:{
+//			errorPage.setVisibility(View.GONE);
+			if(isSessionOutTimeError){
+				showProgressDialog("Loading...");
+				LoginManager.getInstance().Logout();
+				LoginManager.getInstance().AutoLogin();
+			}else{
+				if(!TextUtils.isEmpty(addCredits2Url) || !TextUtils.isEmpty(addCreditsUrl)){
+					isLoadError = false;
+					isReload = true;
+					loadUrl();
+				}else{
+					ConfigManager.getInstance().GetOtherSynConfigItem(this);
+				}
+			}
+		}break;
+
+		default:
+			break;
+		}
+	}
+	
+	@Override
+	protected void handleUiMessage(Message msg) {
+		super.handleUiMessage(msg);
+		switch (msg.what) {
+		case LOGIN_CALLBACK:{
+			RequestBaseResponse response = (RequestBaseResponse)msg.obj;
+			if(response.isSuccess){
+				//session 过期重新登陆
+				isSessionOutTimeError = false;			
+				isReload = true;
+				loadUrl();
+			}else{
+				//显示错误页（加载页面错误）
+				hideProgressDialogIgnoreCount();
+				errorPage.setVisibility(View.VISIBLE);
+			}
+		}break;
+
+		default:
+			break;
+		}
+	}
+	
+	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
 		if (mWebView != null && mWebView.canGoBack()) {
@@ -370,7 +477,10 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 		if(isSuccess){
 			addCreditsUrl = item.pub.addCreditsUrl;
 			addCredits2Url = item.pub.addCredits2Url;
+			isLoadError = false;
 			loadUrl();
+		}else{
+			errorPage.setVisibility(View.VISIBLE);
 		}		
 	}
 	
@@ -388,6 +498,21 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void OnLogin(boolean isSuccess, String errno, String errmsg,
+			LoginItem item, LoginErrorItem errItem) {
+		Message msg = Message.obtain();
+		msg.what = LOGIN_CALLBACK;
+		RequestBaseResponse response = new RequestBaseResponse(isSuccess, errno, errmsg, item);
+		msg.obj = response;
+		sendUiMessage(msg);		
+	}
+
+	@Override
+	public void OnLogout(boolean bActive) {
+		
 	}
 	
 }

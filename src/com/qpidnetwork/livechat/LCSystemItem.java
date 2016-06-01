@@ -15,7 +15,29 @@ public class LCSystemItem implements Serializable{
 	 */
 	public String message;
 	
+	/**
+	 * 链接 item 
+	 */
+	public LCSystemLinkItem linkItem;
+	
+	/**
+	 * 操作相关的数据
+	 */
+	public Object data;
+	
+	
 	public LCSystemItem() {
 		message = "";
+	}
+	
+	public void init(String message) {
+		this.message = message;
+		linkItem = null;
+	}
+	
+	public void initWithLinkMsg(String message, LCSystemLinkItem linkItem, Object data) {
+		this.message = message;
+		this.linkItem = linkItem;
+		this.data = data;
 	}
 }

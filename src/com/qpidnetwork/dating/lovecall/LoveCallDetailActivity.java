@@ -340,8 +340,10 @@ public class LoveCallDetailActivity extends BaseActionBarFragmentActivity {
 	private void showLovecallOuttime(String errMs){
 		MaterialDialogAlert dialog = new MaterialDialogAlert(this);
 		dialog.setMessage(errMs);
-		dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), null));	
-		dialog.show();
+		dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), null));
+		if(isActivityVisible()){
+			dialog.show();
+		}
 	}
 	
 	/**
@@ -360,8 +362,9 @@ public class LoveCallDetailActivity extends BaseActionBarFragmentActivity {
 			}
 		}));
 		dialog.addButton(dialog.createButton(getString(R.string.common_btn_cancel), null));
-		
-		dialog.show();
+		if(isActivityVisible()){
+			dialog.show();
+		}
 	}
 	
 	/**
@@ -400,8 +403,9 @@ public class LoveCallDetailActivity extends BaseActionBarFragmentActivity {
 			}
 		}));
 		dialog.addButton(dialog.createButton(getString(R.string.common_btn_cancel), null));
-		
-		dialog.show();
+		if(isActivityVisible()){
+			dialog.show();
+		}
 	}
 	
 	private void makeCall() {

@@ -22,13 +22,15 @@
     
     <!-- theme -->
     <color name="theme_actionbar_indicator">#92FFFFFF</color>
-    
+    <color name="theme_preview_bg">#C5EFFE</color>
         
     <!-- theme -->
     <color name="theme_actionbar_bg_cd">#149CEB</color>
     <color name="them_actionbar_bg_cl">#ff4444</color>
     <color name="them_actionbar_bg_ida">#fe7800</color>
     <color name="them_actionbar_bg_ld">#0f9d58</color>
+    <color name="them_btn_enable">#80C6FE</color>
+    
     
     <color name="theme_actionbar_secoundary">#FFFFFF</color>
 
@@ -52,6 +54,7 @@
     
     <!-- 半透明 -->
     <color name="transparent">#9FFF</color>
+    <color name="transparent_full">#00000000</color>
     
     <!-- popwindow -->
     <color name="pop_item_press">#01568D</color>

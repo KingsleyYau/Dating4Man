@@ -75,6 +75,14 @@ JNIEXPORT jstring JNICALL Java_com_qpidnetwork_request_RequestJni_GetCookies
 
 /*
  * Class:     com_qpidnetwork_request_RequestJni
+ * Method:    GetCookiesInfo
+ * Signature: ()[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_qpidnetwork_request_RequestJni_GetCookiesInfo
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJni
  * Method:    StopRequest
  * Signature: (J)V
  */

@@ -7,7 +7,7 @@
  */
 #include "com_qpidnetwork_request_RequestJniQuickMatch.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestQuickMatchController.h"
+#include <manrequesthandler/RequestQuickMatchController.h>
 
 void onQueryQuickMatchLadyList(long requestId, bool success, list<QuickMatchLady> itemList, string errnum, string errmsg);
 void onSubmitQuickMatchMarkLadyList(long requestId, bool success, string errnum, string errmsg);

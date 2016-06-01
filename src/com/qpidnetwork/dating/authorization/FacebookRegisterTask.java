@@ -12,6 +12,7 @@ import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.analysis.AdAnakysisManager;
 import com.qpidnetwork.dating.analysis.AnalysisItem;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsManager;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
 import com.qpidnetwork.request.OnLoginWithFacebookCallback;
@@ -122,6 +123,11 @@ public class FacebookRegisterTask implements OnLoginWithFacebookCallback,
 					break;
 				case REGISTER_CALLBACK: {
 					MessageCallbackItem response = (MessageCallbackItem) msg.obj;
+					if( response.isSuccess ) {
+						// 注册跟踪
+						AnalyticsManager.newInstance().RegisterSuccess(AnalyticsManager.RegisterType.Facebook);
+					}
+					
 					if (mRegisterCallback != null) {
 						mRegisterCallback.OnLoginWithFacebook(
 								response.isSuccess, response.errno,

@@ -532,6 +532,9 @@ public class DiskBasedCache implements Cache {
 
     static String readString(InputStream is) throws IOException {
         int n = (int) readLong(is);
+        if((n >= 1024*1024) || (n < 0)){
+        	throw new IOException();
+        }
         byte[] b = streamToBytes(is, n);
         return new String(b, "UTF-8");
     }

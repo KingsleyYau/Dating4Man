@@ -73,7 +73,7 @@ public class ExpressionGridAdapter extends BaseAdapter {
 			size.y = display.getHeight();
 		}
 		
-		int item_size = (int)(((float)size.x - (int)(5.0f * density)) / 6);
+		int item_size = (int)(((float)size.x - (int)(5.0f * density)) / 5);
 
 		
 		LinearLayout holder = new LinearLayout(context);

@@ -2,10 +2,11 @@ package com.qpidnetwork.dating.home;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,12 +17,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.qpidnetwork.dating.BaseFragment;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.WebViewActivity;
 import com.qpidnetwork.dating.admirer.AdmirersListActivity;
@@ -29,7 +30,6 @@ import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginManager.LoginStatus;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.LoginParam;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.authorization.RegisterActivity;
 import com.qpidnetwork.dating.contacts.ContactsListActivity;
 import com.qpidnetwork.dating.credit.BuyCreditActivity;
@@ -40,12 +40,16 @@ import com.qpidnetwork.dating.lovecall.LoveCallListActivity;
 import com.qpidnetwork.dating.profile.MyProfileActivity;
 import com.qpidnetwork.dating.quickmatch.QuickMatchActivity;
 import com.qpidnetwork.dating.setting.SettingActivity;
+import com.qpidnetwork.framework.base.BaseFragment;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.framework.widget.CircleImageView;
 import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.manager.MonthlyFeeManager;
+import com.qpidnetwork.manager.MonthlyFeeManager.OnMemberMonthlyTypeUpdate;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.manager.WebSiteManager.WebSite;
 import com.qpidnetwork.manager.WebSiteManager.WebSiteType;
+import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.tool.ImageViewLoader;
@@ -53,7 +57,10 @@ import com.qpidnetwork.view.ChooseWebSiteDialog;
 import com.qpidnetwork.view.ViewTools;
 
 @SuppressLint("InflateParams")
-public class MenuFragment extends BaseFragment implements OnLoginManagerCallback {
+public class MenuFragment extends BaseFragment implements OnLoginManagerCallback , OnMemberMonthlyTypeUpdate{
+	
+	private static final int ON_MEMBER_TYPE_UPDATE = 1;
+	
 	private ListView lvMainmenu;
 	private MenuItemAdapter menuAdapter;
 	public MenuHelper menuHelper;
@@ -64,6 +71,9 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 	private CircleImageView ivPhoto;
 	private ImageViewLoader loader;
 	private TextView tvUsername;
+	
+	/*footer menu*/
+	private LinearLayout llSiteMenu;
 	
 	/*credit*/
 	private RelativeLayout rlCredit;
@@ -76,6 +86,8 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 	
 	private ImageButton imageButtonHelp;
 	private ImageButton imageButtonSetting;
+	private View monthlyNoPaid;
+	private View monthlyPaid;
 	
 	final static class HeaderClickId{
 		public final static int HELP = 1001;
@@ -100,16 +112,27 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 		View view = inflater.inflate(R.layout.fragment_main_menu, null);
 		lvMainmenu = (ListView)view.findViewById(R.id.lvMainmenu);
 		addHeader(inflater);
-		//addFooter(inflater);
 		initMainMenu();
+		addFooter(inflater);
 		
 		// 登录成功
 		LoginManager.getInstance().AddListenner(this);
 		
-		// 刷新数据
+		//会员月费状态更新
+		MonthlyFeeManager.getInstance().AddMemberTypeListener(this);
+		
+		// 刷新数th
 		ReloadData();
 		
 		return view;
+	}
+	
+	@Override
+	public void onDetach() {
+		// TODO Auto-generated method stub
+		super.onDetach();
+		//会员月费状态更新
+		MonthlyFeeManager.getInstance().RemoveMemberTypeListener(this);
 	}
 	
 	private void addHeader(LayoutInflater inflater){
@@ -164,69 +187,55 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 				// TODO Auto-generated method stub
 				final ChooseWebSiteDialog dialog = new ChooseWebSiteDialog(mContext); 
 				
-				WebSite website = WebSiteManager.newInstance(mContext).GetWebSite();
-				WebSite websiteCD = WebSiteManager.newInstance(mContext).mWebSiteMap.get(WebSiteType.CharmDate.name());
-				WebSite websiteCL = WebSiteManager.newInstance(mContext).mWebSiteMap.get(WebSiteType.ChnLove.name());
-				WebSite websiteIDA = WebSiteManager.newInstance(mContext).mWebSiteMap.get(WebSiteType.IDateAsia.name());
-				WebSite websiteLD = WebSiteManager.newInstance(mContext).mWebSiteMap.get(WebSiteType.LatamDate.name());
+				final WebSite website = WebSiteManager.getInstance().GetWebSite();
+				final WebSite websiteCD = WebSiteManager.getInstance().mWebSiteMap.get(WebSiteType.CharmDate.name());
+				final WebSite websiteCL = WebSiteManager.getInstance().mWebSiteMap.get(WebSiteType.ChnLove.name());
+				final WebSite websiteIDA = WebSiteManager.getInstance().mWebSiteMap.get(WebSiteType.IDateAsia.name());
+				final WebSite websiteLD = WebSiteManager.getInstance().mWebSiteMap.get(WebSiteType.LatamDate.name());
 				
 				View view = dialog.AddItem(R.drawable.img_cd_selection_40dp, websiteCD.getSiteName(), websiteCD.getSiteDesc(), (website.getSiteId() == websiteCD.getSiteId()? true : false));
 				view.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						WebSiteManager.newInstance(mContext).ChangeWebSite(WebSiteType.CharmDate);
 						dialog.dismiss();
-						
-						ReloadData();
-						
-						LoginManager.getInstance().Logout();
-						LoginManager.getInstance().AutoLogin();
-						
+						onWebSiteChange(WebSiteType.CharmDate);
 					}
 				});
 				view = dialog.AddItem(R.drawable.img_cl_selection_40dp, websiteCL.getSiteName(), websiteCL.getSiteDesc(), (website.getSiteId() == websiteCL.getSiteId()? true : false));
 				view.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						WebSiteManager.newInstance(mContext).ChangeWebSite(WebSiteType.ChnLove);
 						dialog.dismiss();
-						
-						ReloadData();
-						
-						LoginManager.getInstance().Logout();
-						LoginManager.getInstance().AutoLogin();
+						onWebSiteChange(WebSiteType.ChnLove);
 					}
 				});
 				view = dialog.AddItem(R.drawable.img_ida_selection_40dp, websiteIDA.getSiteName(), websiteIDA.getSiteDesc(), (website.getSiteId() == websiteIDA.getSiteId()? true : false));
 				view.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						WebSiteManager.newInstance(mContext).ChangeWebSite(WebSiteType.IDateAsia);
 						dialog.dismiss();
-						
-						ReloadData();
-						
-						LoginManager.getInstance().Logout();
-						LoginManager.getInstance().AutoLogin();
+						onWebSiteChange(WebSiteType.IDateAsia);
 					}
 				});
 				view = dialog.AddItem(R.drawable.img_ld_selection_40dp, websiteLD.getSiteName(), websiteLD.getSiteDesc(), (website.getSiteId() == websiteLD.getSiteId()? true : false));
 				view.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						WebSiteManager.newInstance(mContext).ChangeWebSite(WebSiteType.LatamDate);
 						dialog.dismiss();
-						ReloadData();
-						
-						LoginManager.getInstance().Logout();
-						LoginManager.getInstance().AutoLogin();
+						onWebSiteChange(WebSiteType.LatamDate);
 					}
 				});
 				dialog.show();
+				
+				// 跟踪dialog行为
+				homeActivity.onAnalyticsPageSelected(3);
+				dialog.setOnDismissListener(new OnDismissListener() {
+					
+					@Override
+					public void onDismiss(DialogInterface arg0) {
+						homeActivity.onAnalyticsPageSelected(0);
+					}
+				});
 			}
 		});
 		
@@ -268,17 +277,158 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 			}
 		});
 		
+		monthlyNoPaid = (View)header.findViewById(R.id.monthlyNoPaid);
+		monthlyNoPaid.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// 跳去充值模块
+				Intent intent = new Intent(mContext,
+						BuyCreditActivity.class);
+				startActivity(intent);
+			}
+		});
+		monthlyPaid = (View)header.findViewById(R.id.monthlyPaid);
+		if(LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED){
+			MemberType type = MonthlyFeeManager.getInstance().getMemberType();
+			switch (type) {
+			case NORMAL_MEMBER:{
+				monthlyNoPaid.setVisibility(View.GONE);
+				monthlyPaid.setVisibility(View.GONE);	
+			}break;
+			case FEED_MONTHLY_MEMBER:{
+				monthlyNoPaid.setVisibility(View.GONE);
+				monthlyPaid.setVisibility(View.VISIBLE);	
+			}break;
+			case NO_FEED_FIRST_MONTHLY_MEMBER:
+			case NO_FEED_MONTHLY_MEMBER:{
+				monthlyNoPaid.setVisibility(View.VISIBLE);
+				monthlyPaid.setVisibility(View.GONE);	
+			}break;
+
+			default:
+				break;
+			}
+		}
+		
 		lvMainmenu.addHeaderView(header);
 		
 	}
 	
-	/*private void addFooter(LayoutInflater inflater){
+	private void addFooter(LayoutInflater inflater){
 		View footer = (View)inflater.inflate(R.layout.mainmenu_footer, null);
-		rlChangeSite = (RelativeLayout)footer.findViewById(R.id.rlChangeSite);
-		tvCurrentSite =(TextView)footer.findViewById(R.id.tvCurrentSite);
-		btnChangeSite =(Button)footer.findViewById(R.id.btnChangeSite);
+		llSiteMenu = (LinearLayout)footer.findViewById(R.id.llSiteMenu);
+		final WebSite website = WebSiteManager.getInstance().GetWebSite();
+		final WebSite websiteCD = WebSiteManager.getInstance().mWebSiteMap.get(WebSiteType.CharmDate.name());
+		final WebSite websiteCL = WebSiteManager.getInstance().mWebSiteMap.get(WebSiteType.ChnLove.name());
+		final WebSite websiteIDA = WebSiteManager.getInstance().mWebSiteMap.get(WebSiteType.IDateAsia.name());
+		final WebSite websiteLD = WebSiteManager.getInstance().mWebSiteMap.get(WebSiteType.LatamDate.name());
+		View cdView = createSiteItem(R.drawable.img_cd_selection_40dp, websiteCD.getSiteName(), websiteCD.getSiteDesc());
+		cdView.setId(R.id.site_charmdating);
+		cdView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(llSiteMenu != null){
+					llSiteMenu.findViewById(R.id.site_charmdating).setVisibility(View.GONE);
+					llSiteMenu.findViewById(R.id.site_chnlove).setVisibility(View.VISIBLE);
+					llSiteMenu.findViewById(R.id.site_idateasia).setVisibility(View.VISIBLE);
+					llSiteMenu.findViewById(R.id.site_latamdate).setVisibility(View.VISIBLE);
+				}
+				onWebSiteChange(WebSiteType.CharmDate);
+			}
+		});
+		View clView = createSiteItem(R.drawable.img_cl_selection_40dp, websiteCL.getSiteName(), websiteCL.getSiteDesc());
+		clView.setId(R.id.site_chnlove);
+		clView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(llSiteMenu != null){
+					llSiteMenu.findViewById(R.id.site_charmdating).setVisibility(View.VISIBLE);
+					llSiteMenu.findViewById(R.id.site_chnlove).setVisibility(View.GONE);
+					llSiteMenu.findViewById(R.id.site_idateasia).setVisibility(View.VISIBLE);
+					llSiteMenu.findViewById(R.id.site_latamdate).setVisibility(View.VISIBLE);
+				}
+				onWebSiteChange(WebSiteType.ChnLove);
+			}
+		});
+		View idaView = createSiteItem(R.drawable.img_ida_selection_40dp, websiteIDA.getSiteName(), websiteIDA.getSiteDesc());
+		idaView.setId(R.id.site_idateasia);
+		idaView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(llSiteMenu != null){
+					llSiteMenu.findViewById(R.id.site_charmdating).setVisibility(View.VISIBLE);
+					llSiteMenu.findViewById(R.id.site_chnlove).setVisibility(View.VISIBLE);
+					llSiteMenu.findViewById(R.id.site_idateasia).setVisibility(View.GONE);
+					llSiteMenu.findViewById(R.id.site_latamdate).setVisibility(View.VISIBLE);
+				}
+				onWebSiteChange(WebSiteType.IDateAsia);
+			}
+		});
+		View ldView = createSiteItem(R.drawable.img_ld_selection_40dp, websiteLD.getSiteName(), websiteLD.getSiteDesc());
+		ldView.setId(R.id.site_latamdate);
+		ldView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(llSiteMenu != null){
+					llSiteMenu.findViewById(R.id.site_charmdating).setVisibility(View.VISIBLE);
+					llSiteMenu.findViewById(R.id.site_chnlove).setVisibility(View.VISIBLE);
+					llSiteMenu.findViewById(R.id.site_idateasia).setVisibility(View.VISIBLE);
+					llSiteMenu.findViewById(R.id.site_latamdate).setVisibility(View.GONE);
+				}
+				onWebSiteChange(WebSiteType.LatamDate);
+			}
+		});
+		
+		if(website.getSiteId() == websiteCD.getSiteId()){
+			cdView.setVisibility(View.GONE);
+		}else if(website.getSiteId() == websiteCL.getSiteId()){
+			clView.setVisibility(View.GONE);
+		}else if(website.getSiteId() == websiteIDA.getSiteId()){
+			idaView.setVisibility(View.GONE);
+		}else if(website.getSiteId() == websiteLD.getSiteId()){
+			ldView.setVisibility(View.GONE);
+		}
+		
+		llSiteMenu.addView(cdView);
+		llSiteMenu.addView(clView);
+		llSiteMenu.addView(idaView);
+		llSiteMenu.addView(ldView);
+		
 		lvMainmenu.addFooterView(footer);
-	}*/
+	}
+	
+	private View createSiteItem(int imageId, String tips, String desc) {
+    	LayoutInflater layoutInfalter = LayoutInflater.from(getActivity());
+    	View view = layoutInfalter.inflate(R.layout.layout_website_item, null);
+    	
+    	ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+    	imageView.setImageResource(imageId);
+    	TextView textViewName = (TextView) view.findViewById(R.id.textViewName);
+    	textViewName.setText(tips);
+    	TextView textViewDesc = (TextView) view.findViewById(R.id.textViewDesc);
+    	textViewDesc.setText(desc);
+    	ImageView location = (ImageView) view.findViewById(R.id.select_indicator);
+    	location.setVisibility(View.GONE);
+    	return view;
+    }
+	
+	private void onWebSiteChange(WebSiteType type){
+		WebSite website = WebSiteManager.getInstance().GetWebSite();
+		WebSite site = WebSiteManager.getInstance().mWebSiteMap.get(type.name());
+		
+		WebSiteManager.getInstance().ChangeWebSite(type);
+		ReloadData();
+		LoginManager.getInstance().Logout();
+		LoginManager.getInstance().AutoLogin();
+		
+		// 统计event
+		homeActivity.onAnalyticsEvent(
+			getString(R.string.ChooseSite_Category)
+			, website.getSiteShortName() + getString(R.string.ChooseSite_Action) + site.getSiteShortName()
+			, website.getSiteShortName() + getString(R.string.ChooseSite_Label) + site.getSiteShortName());
+	
+	}
 	
 	private void initMainMenu(){
 		homeActivity = (HomeActivity)mContext;
@@ -286,9 +436,9 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 		menuHelper = new MenuHelper(mContext);
 		menuHelper.addMenuItem(MenuType.MENU_QUICK_MATCH, R.drawable.ic_favorite_white_24dp, getString(R.string.menu_quickmatch), 0);
 		menuHelper.addMenuItem(MenuType.MENU_MAIL_BOX, R.drawable.ic_email_white_24dp, getString(R.string.menu_mailbox), 0);
-		menuHelper.addMenuItem(MenuType.MENU_LOVE_CALLS, R.drawable.ic_love_call_white_24dp, getString(R.string.menu_lovecalls), 0);
-		menuHelper.addMenuItem(MenuType.MENU_MY_ADMIRERS, R.drawable.ic_female_symble_white_24dp, getString(R.string.menu_admirers), 0);
 		menuHelper.addMenuItem(MenuType.MENU_MY_CONTACTS, R.drawable.ic_female_contact_white_24dp, getString(R.string.menu_contacts), 0);
+		menuHelper.addMenuItem(MenuType.MENU_MY_ADMIRERS, R.drawable.ic_female_symble_white_24dp, getString(R.string.menu_admirers), 0);
+		menuHelper.addMenuItem(MenuType.MENU_LOVE_CALLS, R.drawable.ic_love_call_white_24dp, getString(R.string.menu_lovecalls), 0);
 		//menuHelper.addMenuItem(MenuType.MENU_SETTINGS, R.drawable.menu_icon_settings, getString(R.string.menu_setting), 0);
 		//menuHelper.addMenuItem(MenuType.MENU_HELPS, R.drawable.menu_icon_helps, getString(R.string.menu_helps), 0);
 		menuAdapter = menuHelper.create();
@@ -335,7 +485,7 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 						startActivity(intent);
 					}
 					break;
-				case 3:
+				case 5:
 					if(!inNeedLogined()){
 						MenuItemBean bean = menuHelper.getMenuItemByType(MenuType.MENU_LOVE_CALLS);
 						intent.setClass(mContext, LoveCallListActivity.class);
@@ -352,7 +502,7 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 						startActivity(intent);
 					}
 					break;
-				case 5:
+				case 3:
 					if(!inNeedLogined()){
 						intent.setClass(mContext, ContactsListActivity.class);
 						startActivity(intent);
@@ -373,7 +523,7 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 					startActivity(intent);
 					break;
 				case HeaderClickId.HELP:
-					String url = WebSiteManager.newInstance(mContext).GetWebSite().getHelpLink();
+					String url = WebSiteManager.getInstance().GetWebSite().getHelpLink();
 					intent = WebViewActivity.getIntent(mContext, url);
 					intent.putExtra(WebViewActivity.WEB_TITLE, "Help");
 					startActivity(intent);
@@ -408,19 +558,38 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 		Message msg = Message.obtain();
 		if( isSuccess ) {
 			// 登录成功
-			mHandler.sendMessage(msg);
+			sendUiMessage(msg);
 		}
 	}
-
+	
 	@Override
-	public void InitHandler() {
-		// TODO Auto-generated method stub
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(android.os.Message msg) {
-				ReloadData();
+	protected void handleUiMessage(Message msg) {
+		super.handleUiMessage(msg);
+		if(msg.what == ON_MEMBER_TYPE_UPDATE){
+			MemberType type = MemberType.values()[msg.arg1];
+			if(LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED){
+				switch (type) {
+				case NORMAL_MEMBER:{
+					monthlyNoPaid.setVisibility(View.GONE);
+					monthlyPaid.setVisibility(View.GONE);	
+				}break;
+				case FEED_MONTHLY_MEMBER:{
+					monthlyNoPaid.setVisibility(View.GONE);
+					monthlyPaid.setVisibility(View.VISIBLE);	
+				}break;
+				case NO_FEED_FIRST_MONTHLY_MEMBER:
+				case NO_FEED_MONTHLY_MEMBER:{
+					monthlyNoPaid.setVisibility(View.VISIBLE);
+					monthlyPaid.setVisibility(View.GONE);	
+				}break;
+
+				default:
+					break;
+				}
 			}
-		};
+			return;
+		}
+		ReloadData();
 	}
 	
 	/**
@@ -433,6 +602,8 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 			// 处于未登录状态
 			tvUsername.setText("Login");
 			ivPhoto.setImageResource(R.drawable.default_photo_64dp);
+			monthlyNoPaid.setVisibility(View.GONE);
+			monthlyPaid.setVisibility(View.GONE);
 			tvCredit.setText("0");
 		}break;
 		case LOGINED:{
@@ -467,7 +638,7 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 		default:
 			break;
 		}
-		tvCurrentSite.setText(WebSiteManager.newInstance(mContext).GetWebSite().getSiteName());
+		tvCurrentSite.setText(WebSiteManager.getInstance().GetWebSite().getSiteName());
 	}
 	
 	private boolean inNeedLogined(){
@@ -484,5 +655,13 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		ReloadData();
+	}
+
+	@Override
+	public void onMemberTypeUpdate(MemberType memberType) {
+		Message msg = Message.obtain();
+		msg.what = ON_MEMBER_TYPE_UPDATE;
+		msg.arg1 = memberType.ordinal();
+		sendUiMessage(msg);
 	}
 }

@@ -7,8 +7,6 @@ package com.qpidnetwork.view;
 
 import java.util.List;
 
-import com.qpidnetwork.framework.util.SystemUtil;
-
 import android.content.Context;
 import android.graphics.Point;
 import android.hardware.Camera;
@@ -19,6 +17,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import com.qpidnetwork.framework.util.SystemUtil;
 
 public class CameraView extends SurfaceView implements SurfaceHolder.Callback, PictureCallback{
 	

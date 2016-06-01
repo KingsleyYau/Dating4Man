@@ -1,5 +1,6 @@
 package com.qpidnetwork.livechat;
 
+import com.qpidnetwork.livechat.jni.LiveChatTalkUserListItem;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
@@ -65,6 +66,14 @@ public interface LiveChatManagerOtherListener {
 	 * @param userStatusArray	用户在线状态数组
 	 */
 	public void OnGetUserStatus(LiveChatErrType errType, String errmsg, LCUserItem[] userList);
+	
+	/**
+	 * 批量获取女士信息回调
+	 * @param errType
+	 * @param errmsg
+	 * @param itemList
+	 */
+	public void OnGetUsersInfo(LiveChatErrType errType, String errmsg, LiveChatTalkUserListItem[] itemList);
 	
 	/**
 	 * 接收他人在线状态更新消息回调

@@ -29,6 +29,7 @@ import com.qpidnetwork.dating.bean.PrivatePhotoBean;
 import com.qpidnetwork.dating.bean.ShortVideoBean;
 import com.qpidnetwork.dating.emf.EMFAttachmentPrivatePhotoFragment.OnClickBuy;
 import com.qpidnetwork.dating.emf.EMFAttachmentPrivatePhotoFragment.PrivatePhotoDirection;
+import com.qpidnetwork.framework.base.BaseFragment;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.ImageUtil;
 import com.qpidnetwork.framework.util.Log;
@@ -107,7 +108,6 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 
 				// 创建新的
 
-				Log.i("hunter", "the url: " + item.photoUrl);
 				// 显示
 				String localPath = "";
 				if (item.photoLocalUrl != null
@@ -162,7 +162,7 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 												.ReloadData(
 														localPhotoPath,
 														item.privatePhoto.photoDesc,
-														1);
+														1.0);
 									} else {
 										// 请求接口获取私密照预览图
 										PrivatePhotoView(item.privatePhoto,
@@ -333,7 +333,6 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 		public void destroyItem(ViewGroup container, int position, Object object) {
 			// TODO Auto-generated method stub
 			// 清空引用
-			Log.i("hunter", "current destroy position: " + position);
 			mEMFAttachmentPhotoFragment.remove(object);
 			mEMFAttachmentPrivatePhotoragment.remove(object);
 			mEMFAttachmentShortVideoFragment.remove(object);
@@ -374,6 +373,7 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 
 	private ViewPagerFixed mViewPager;
 	private EMFAttachmentActivityPagerAdapter mAdapter;
+	private boolean mInitPage = true;
 
 	private ImageButton buttonCancel;
 
@@ -432,6 +432,9 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 
 		// 选择默认项
 		mViewPager.setCurrentItem(mCurrIndex, true);
+		
+		// 统计设置为page activity
+		SetPageActivity(true);
 	}
 
 	@Override
@@ -620,7 +623,9 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 				// 不够信用点
 				final GetMoreCreditDialog dialog = new GetMoreCreditDialog(
 						mContext, R.style.ChoosePhotoDialog);
-				dialog.show();
+				if(isActivityVisible()){
+					dialog.show();
+				}
 			}
 				break;
 			default: {
@@ -706,6 +711,14 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 		// TODO Auto-generated method stub
 		for (IndexFragment item : mAdapter.mIndexFragment) {
 			item.onPageScrolled(arg0, arg1, arg2);
+			
+			// 若page未初始化
+			if (mInitPage) {
+				// 回调Fragment被选中
+				FragmentSelected(item, arg0);
+				// page初始化完成
+				mInitPage = false;
+			}
 		}
 	}
 
@@ -716,6 +729,11 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 				+ "arg0 : " + String.valueOf(arg0) + " )");
 		for (IndexFragment item : mAdapter.mIndexFragment) {
 			item.onPageSelected(arg0);
+			
+			// 回调Fragment被选中
+			FragmentSelected(item, arg0);
+			// page初始化完成
+			mInitPage = false;
 		}
 	}
 
@@ -779,6 +797,17 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 					sendBroadcast(intent);
 				}
 			}
+		}
+	}
+	
+	/**
+	 * 回调Fragment被选中的函数
+	 * @param page
+	 */
+	private void FragmentSelected(BaseFragment fragment, int page)
+	{
+		if (null != fragment) {
+			fragment.onFragmentSelected(page);
 		}
 	}
 }

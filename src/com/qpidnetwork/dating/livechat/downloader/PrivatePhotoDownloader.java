@@ -45,7 +45,7 @@ public class PrivatePhotoDownloader implements LiveChatManagerPhotoListener {
 	private Context mContext;
 
 	public PrivatePhotoDownloader(Context context) {
-		mLiveChatManager = LiveChatManager.newInstance(null);
+		mLiveChatManager = LiveChatManager.getInstance();
 		mContext = context;
 	}
 

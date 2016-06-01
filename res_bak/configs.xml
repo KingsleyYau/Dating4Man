@@ -20,6 +20,12 @@
         <item name="webHost_charmingdate" type="string">http://mobile.charmdate.com</item>
         <item name="webHost_latamdate" type="string">http://mobile.latamdate.com</item>
     </array>
+    <array name="webShortNameArray">
+        <item name="webShortName_chnlove" type="string">CL</item>
+        <item name="webShortName_idateasia" type="string">IDA</item>
+        <item name="webShortName_charmingdate" type="string">CD</item>
+        <item name="webShortName_latamdate" type="string">LD</item>
+    </array>
     <array name="webKeyArray">
         <item name="webKey_chnlove" type="string">ChnLove</item>
         <item name="webKey_idateasia" type="string">IDateAsia</item>
@@ -33,10 +39,10 @@
         <item name="webName_latamdate" type="string">LatamDate.com</item>
     </array>
     <array name="webDescArray">
-        <item name="webDesc_chnlove" type="string">Find Chinese Lovers</item>
-        <item name="webDesc_idateasia" type="string">East Asian Singles</item>
-        <item name="webDesc_charmingdate" type="string">Russia &amp; Ukraine Ladies</item>
-        <item name="webDesc_latamdate" type="string">Latin American Beauties</item>
+        <item name="webDesc_chnlove" type="string">Dating in China</item>
+        <item name="webDesc_idateasia" type="string">Dating in Asia</item>
+        <item name="webDesc_charmingdate" type="string">Dating in Russia &amp; Ukraine</item>
+        <item name="webDesc_latamdate" type="string">Dating in Latin American</item>
     </array>
     <array name="wwwHostArray">
         <item name="wwwHost_chnlove" type="string">http://www.chnlove.com</item>

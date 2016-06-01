@@ -1,0 +1,50 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:background="@drawable/circle_yellow_white_stroke"
+        android:padding="2dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_premium_honour_24dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:background="@drawable/circle_angle_transparent_white_rect"
+        android:gravity="left|center"
+        android:padding="4dp" >
+        
+                <LinearLayout
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginRight="4dp"
+            android:background="@drawable/circle_yellow_white_stroke"
+            android:padding="2dp" >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/circle_green_bg"
+                android:src="@drawable/ic_done_white_18dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            android:paddingBottom="1dp"
+            android:text="@string/livechat_monthly_premuim"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+
+</LinearLayout>

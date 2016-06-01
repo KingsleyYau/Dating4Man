@@ -24,6 +24,12 @@
     <item name="emo_item_img" type="id">false</item>
     <item name="emo_item_progress" type="id">false</item>
     
+    <!-- site menu -->
+    <item name="site_charmdating" type="id"/>
+    <item name="site_chnlove" type="id"/>
+    <item name="site_idateasia" type="id"/>
+    <item name="site_latamdate" type="id"/>
+    
     <!-- slidingmenu -->
     <item name="widget_slidingmenu_selected_view" type="id"/> 
     <item name="activity_content_viewpager" type="id"/>

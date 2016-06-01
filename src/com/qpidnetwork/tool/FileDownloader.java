@@ -83,6 +83,7 @@ public class FileDownloader {
 		
 		Log.d("FileDownloader", "StartDownload( url : " + url + ", localPath : " + localPath + " )");
 		
+		
 		final FileDownloader loader = this;
 		
 		// Instantiate the RequestQueue.
@@ -219,6 +220,8 @@ public class FileDownloader {
 			FileOutputStream fos = null;
 			File tmpFile = null;
 			boolean bFlag = false;
+			long contentLength = -1;
+			int downloadLength = 0;
 			
 			try {
 				tmpFile = File.createTempFile("tmp", "");
@@ -226,6 +229,7 @@ public class FileDownloader {
 				
 				InputStream in = null;
 				if( mBigFile && response.entity != null ) {
+					contentLength = response.entity.getContentLength();
 					in = response.entity.getContent();
 				}
 				if( in != null ) {
@@ -235,6 +239,11 @@ public class FileDownloader {
 					int len = 0;
 					while ( (len = in.read(buffer)) != -1 ) {
 						fos.write(buffer, 0, len);
+						downloadLength += len;
+						if((contentLength > 0) && (mCallback != null)){
+							int progress = (int)(downloadLength*100/contentLength);
+							mCallback.onUpdate(mLoader, progress);
+						}
 		            }
 				} else if( response.data != null ) {
 					fos.write(response.data, 0, response.data.length);

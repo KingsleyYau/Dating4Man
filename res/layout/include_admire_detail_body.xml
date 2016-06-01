@@ -1,0 +1,127 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:button="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical" 
+        android:background="@drawable/circle_angle_solid_white_grey_stroke">
+
+        <RelativeLayout
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp" >
+            
+            <com.qpidnetwork.dating.admirer.VirtualGiftView
+                android:id="@+id/vgPlayer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/vgBg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" 
+                android:background="@drawable/circle_angle_soild_gray_rect_normal"
+        		android:scaleType="centerCrop"/>
+
+            <com.qpidnetwork.view.MaterialProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                app:matProg_barColor="@color/white"
+                app:matProg_progressIndeterminate="true" />
+
+            <TextView
+                android:id="@+id/tvRetry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@drawable/circle_angle_solid_white_grey_stroke"
+                android:drawableLeft="@drawable/ad_button_015_refresh_down_arrow"
+                android:gravity="center_vertical"
+                android:paddingBottom="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="20dp"
+                android:paddingTop="8dp"
+                android:text="Retry" 
+                android:visibility="gone"/>
+
+            <ImageButton
+                android:id="@+id/buttonPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/touch_feedback_dark_grey_round"
+                android:padding="16dp"
+                android:src="@drawable/ic_play_circle_outline_white_48dp" 
+                android:visibility="gone"/>
+        </RelativeLayout>
+		<LinearLayout 
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:orientation="vertical"
+		    android:layout_marginTop="16dp"
+		    android:padding="16dp">
+            <TextView 
+                android:id="@+id/tvAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+		    <TextView
+	            android:id="@+id/tvEMFdetail"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginBottom="16dp"
+	            android:layout_marginTop="16dp"
+	            android:textColor="@color/text_color_dark"
+	            android:textSize="16sp"
+	            android:visibility="gone"/>
+		    <TextView
+		        android:id="@+id/tvTo" 
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:gravity="right"
+		        android:visibility="gone"/>
+		    <TextView
+		        android:id="@+id/tvSendTime" 
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:gravity="right"
+		        android:visibility="gone"/>
+		</LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llAttachment"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left|center"
+        android:orientation="vertical"
+        android:visibility="gone" >
+    </LinearLayout>
+
+    <com.qpidnetwork.view.ButtonRaised
+        android:id="@+id/btnReply"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginBottom="56dp"
+        android:layout_marginTop="32dp"
+        android:clickable="true"
+        android:visibility="gone"
+        button:background="@color/white"
+        button:elevation="0dp"
+        button:icon="@drawable/ic_reply_all_grey600_24dp"
+        button:title="@string/emf_reply"
+        button:title_color="@color/text_color_dark"
+        button:touch_feedback="@drawable/touch_feedback_round_border_white" />
+
+</merge>

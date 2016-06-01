@@ -18,6 +18,7 @@ import com.qpidnetwork.livechat.LiveChatManagerOtherListener;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
+import com.qpidnetwork.livechat.jni.LiveChatTalkUserListItem;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJniEMF.ReplyType;
 import com.qpidnetwork.view.TitleTabBar;
@@ -57,6 +58,10 @@ public class EMFListActivity extends BaseTabbarTitleFragmentActivity implements 
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);
+		
+		// 统计设置为page activity
+		SetPageActivity(true);
+		
 		this.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(WebSiteManager.getInstance().GetWebSite().getSiteColor())));
 		//Log.d("EMFLisActivity", "onCreate( TaskId : " + getTaskId() +" )");
 
@@ -82,14 +87,20 @@ public class EMFListActivity extends BaseTabbarTitleFragmentActivity implements 
 //		}, R.drawable.ic_more_vert_white_24dp);
 		tabBar.SelectTab(0);
 		
-		
 		getFloatButton().setId(R.id.common_button_send);
 		getFloatButton().setOnClickListener(this);
 		getFloatButton().setVisibility(View.VISIBLE);
 		
-		LiveChatManager.newInstance(null).RegisterOtherListener(this);
+		LiveChatManager.getInstance().RegisterOtherListener(this);
 		// 清空emf消息中心
-		EMFNotification.newInstance(this).Cancel();
+		EMFNotification.newInstance(this.getApplicationContext()).Cancel();
+	}
+	
+	@Override
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		LiveChatManager.getInstance().UnregisterOtherListener(this);
 	}
 	
 	@Override
@@ -144,6 +155,13 @@ public class EMFListActivity extends BaseTabbarTitleFragmentActivity implements 
 		// TODO Auto-generated method stub
 		super.onPageSelected(arg0);
 		onTabSelectedRefresh();
+	}
+	
+	@Override
+	public void onTabSelected(int index) {
+		super.onTabSelected(index);
+		// 统计切换页
+		onAnalyticsPageSelected(index);
 	}
 	
 	private void onTabSelectedRefresh(){
@@ -290,6 +308,13 @@ public class EMFListActivity extends BaseTabbarTitleFragmentActivity implements 
 	@Override
 	public void OnGetUserStatus(LiveChatErrType errType, String errmsg,
 			LCUserItem[] userList) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void OnGetUsersInfo(LiveChatErrType errType, String errmsg,
+			LiveChatTalkUserListItem[] itemList) {
 		// TODO Auto-generated method stub
 		
 	}

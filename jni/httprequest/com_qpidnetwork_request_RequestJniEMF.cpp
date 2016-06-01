@@ -6,7 +6,7 @@
  */
 #include "com_qpidnetwork_request_RequestJniEMF.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestEMFController.h"
+#include <manrequesthandler/RequestEMFController.h>
 
 void OnInboxList(long requestId, bool success, const string& errnum, const string& errmsg, int pageIndex, int pageSize, int dataCount, const EMFInboxList& inboxList);
 void OnInboxMsg(long requestId, bool success, const string& errnum, const string& errmsg, const EMFInboxMsgItem& item);
@@ -65,12 +65,18 @@ jobjectArray GetPrivatePhotoJArray(JNIEnv* env, const EMFPrivatePhotoList& list)
 					"Ljava/lang/String;"	// photoDesc
 					")V");
 
+			jstring jsendId = env->NewStringUTF((*iter).sendId.c_str());
+			jstring jphotoId = env->NewStringUTF((*iter).photoId.c_str());
+			jstring jphotoDesc = env->NewStringUTF((*iter).photoDesc.c_str());
 			jobject jItem = env->NewObject(jCls, init,
-					env->NewStringUTF((*iter).sendId.c_str()),
-					env->NewStringUTF((*iter).photoId.c_str()),
+					jsendId,
+					jphotoId,
 					(*iter).photoFee,
-					env->NewStringUTF((*iter).photoDesc.c_str())
+					jphotoDesc
 					);
+			env->DeleteLocalRef(jsendId);
+			env->DeleteLocalRef(jphotoId);
+			env->DeleteLocalRef(jphotoDesc);
 
 			env->SetObjectArrayElement(photoArray, iIndex, jItem);
 			env->DeleteLocalRef(jItem);
@@ -97,12 +103,18 @@ jobjectArray GetShortVideoJArray(JNIEnv* env, const EMFShortVideoList& list)
 					"Ljava/lang/String;"	// photoDesc
 					")V");
 
+			jstring jsendId = env->NewStringUTF((*iter).sendId.c_str());
+			jstring jvideoId = env->NewStringUTF((*iter).videoId.c_str());
+			jstring jvideoDesc = env->NewStringUTF((*iter).videoDesc.c_str());
 			jobject jItem = env->NewObject(jCls, init,
-					env->NewStringUTF((*iter).sendId.c_str()),
-					env->NewStringUTF((*iter).videoId.c_str()),
+					jsendId,
+					jvideoId,
 					(*iter).videoFee,
-					env->NewStringUTF((*iter).videoDesc.c_str())
+					jvideoDesc
 					);
+			env->DeleteLocalRef(jsendId);
+			env->DeleteLocalRef(jvideoId);
+			env->DeleteLocalRef(jvideoDesc);
 
 			env->SetObjectArrayElement(videoArray, iIndex, jItem);
 			env->DeleteLocalRef(jItem);
@@ -194,26 +206,48 @@ void OnInboxList(long requestId, bool success, const string& errnum, const strin
 							"Ljava/lang/String;"	// intro
 							")V");
 
+					jstring jid = env->NewStringUTF(itr->id.c_str());
+					jstring jwomanid = env->NewStringUTF(itr->womanid.c_str());
+					jstring jfirstname = env->NewStringUTF(itr->firstname.c_str());
+					jstring jlastname = env->NewStringUTF(itr->lastname.c_str());
+					jstring jweight = env->NewStringUTF(itr->weight.c_str());
+					jstring jheight = env->NewStringUTF(itr->height.c_str());
+					jstring jcountry = env->NewStringUTF(itr->country.c_str());
+					jstring jprovince = env->NewStringUTF(itr->province.c_str());
+					jstring jsendTime = env->NewStringUTF(itr->sendTime.c_str());
+					jstring jphotoURL = env->NewStringUTF(itr->photoURL.c_str());
+					jstring jintro = env->NewStringUTF(itr->intro.c_str());
 					jobject jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(itr->id.c_str()),
+							jid,
 							itr->attachnum,
 							itr->virtual_gifts,
-							env->NewStringUTF(itr->womanid.c_str()),
+							jwomanid,
 							itr->readflag,
 							itr->rflag,
 							itr->fflag,
 							itr->pflag,
-							env->NewStringUTF(itr->firstname.c_str()),
-							env->NewStringUTF(itr->lastname.c_str()),
-							env->NewStringUTF(itr->weight.c_str()),
-							env->NewStringUTF(itr->height.c_str()),
-							env->NewStringUTF(itr->country.c_str()),
-							env->NewStringUTF(itr->province.c_str()),
+							jfirstname,
+							jlastname,
+							jweight,
+							jheight,
+							jcountry,
+							jprovince,
 							itr->age,
-							env->NewStringUTF(itr->sendTime.c_str()),
-							env->NewStringUTF(itr->photoURL.c_str()),
-							env->NewStringUTF(itr->intro.c_str())
+							jsendTime,
+							jphotoURL,
+							jintro
 							);
+					env->DeleteLocalRef(jid);
+					env->DeleteLocalRef(jwomanid);
+					env->DeleteLocalRef(jfirstname);
+					env->DeleteLocalRef(jlastname);
+					env->DeleteLocalRef(jweight);
+					env->DeleteLocalRef(jheight);
+					env->DeleteLocalRef(jcountry);
+					env->DeleteLocalRef(jprovince);
+					env->DeleteLocalRef(jsendTime);
+					env->DeleteLocalRef(jphotoURL);
+					env->DeleteLocalRef(jintro);
 
 					env->SetObjectArrayElement(jItemArray, i, jItem);
 
@@ -355,25 +389,51 @@ void OnInboxMsg(long requestId, bool success, const string& errnum, const string
 
 				jobjectArray shortVideoArray = GetShortVideoJArray(env, item.shortVideoList);
 
+				jstring jid = env->NewStringUTF(item.id.c_str());
+				jstring jwomanid = env->NewStringUTF(item.womanid.c_str());
+				jstring jfirstname = env->NewStringUTF(item.firstname.c_str());
+				jstring jlastname = env->NewStringUTF(item.lastname.c_str());
+				jstring jweight = env->NewStringUTF(item.weight.c_str());
+				jstring jheight = env->NewStringUTF(item.height.c_str());
+				jstring jcountry = env->NewStringUTF(item.country.c_str());
+				jstring jprovince = env->NewStringUTF(item.province.c_str());
+				jstring jphotoURL = env->NewStringUTF(item.photoURL.c_str());
+				jstring jbody = env->NewStringUTF(item.body.c_str());
+				jstring jnotetoman = env->NewStringUTF(item.notetoman.c_str());
+				jstring jsendTime = env->NewStringUTF(item.sendTime.c_str());
+				jstring jvgId = env->NewStringUTF(item.vgId.c_str());
 				jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(item.id.c_str()),
-							env->NewStringUTF(item.womanid.c_str()),
-							env->NewStringUTF(item.firstname.c_str()),
-							env->NewStringUTF(item.lastname.c_str()),
-							env->NewStringUTF(item.weight.c_str()),
-							env->NewStringUTF(item.height.c_str()),
-							env->NewStringUTF(item.country.c_str()),
-							env->NewStringUTF(item.province.c_str()),
+							jid,
+							jwomanid,
+							jfirstname,
+							jlastname,
+							jweight,
+							jheight,
+							jcountry,
+							jprovince,
 							item.age,
-							env->NewStringUTF(item.photoURL.c_str()),
-							env->NewStringUTF(item.body.c_str()),
-							env->NewStringUTF(item.notetoman.c_str()),
+							jphotoURL,
+							jbody,
+							jnotetoman,
 							jPhotosURLArray,
-							env->NewStringUTF(item.sendTime.c_str()),
+							jsendTime,
 							privatePhotoArray,
 							shortVideoArray,
-							env->NewStringUTF(item.vgId.c_str())
+							jvgId
 							);
+				env->DeleteLocalRef(jid);
+				env->DeleteLocalRef(jwomanid);
+				env->DeleteLocalRef(jfirstname);
+				env->DeleteLocalRef(jlastname);
+				env->DeleteLocalRef(jweight);
+				env->DeleteLocalRef(jheight);
+				env->DeleteLocalRef(jcountry);
+				env->DeleteLocalRef(jprovince);
+				env->DeleteLocalRef(jphotoURL);
+				env->DeleteLocalRef(jbody);
+				env->DeleteLocalRef(jnotetoman);
+				env->DeleteLocalRef(jsendTime);
+				env->DeleteLocalRef(jvgId);
 
 				FileLog("httprequest", "EMF.Native::OnInboxMsg() NewObject() OK, jItem:%p", jItem);
 
@@ -504,23 +564,45 @@ void OnOutboxList(long requestId, bool success, const string& errnum, const stri
 							"Ljava/lang/String;"	// intro
 							")V");
 
+					jstring jid = env->NewStringUTF(itr->id.c_str());
+					jstring jwomanid = env->NewStringUTF(itr->womanid.c_str());
+					jstring jfirstname = env->NewStringUTF(itr->firstname.c_str());
+					jstring jlastname = env->NewStringUTF(itr->lastname.c_str());
+					jstring jweight = env->NewStringUTF(itr->weight.c_str());
+					jstring jheight = env->NewStringUTF(itr->height.c_str());
+					jstring jcountry = env->NewStringUTF(itr->country.c_str());
+					jstring jprovince = env->NewStringUTF(itr->province.c_str());
+					jstring jsendTime = env->NewStringUTF(itr->sendTime.c_str());
+					jstring jphotoURL = env->NewStringUTF(itr->photoURL.c_str());
+					jstring jintro = env->NewStringUTF(itr->intro.c_str());
 					jobject jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(itr->id.c_str()),
+							jid,
 							itr->attachnum,
 							itr->virtual_gifts,
 							itr->progress,
-							env->NewStringUTF(itr->womanid.c_str()),
-							env->NewStringUTF(itr->firstname.c_str()),
-							env->NewStringUTF(itr->lastname.c_str()),
-							env->NewStringUTF(itr->weight.c_str()),
-							env->NewStringUTF(itr->height.c_str()),
-							env->NewStringUTF(itr->country.c_str()),
-							env->NewStringUTF(itr->province.c_str()),
+							jwomanid,
+							jfirstname,
+							jlastname,
+							jweight,
+							jheight,
+							jcountry,
+							jprovince,
 							itr->age,
-							env->NewStringUTF(itr->sendTime.c_str()),
-							env->NewStringUTF(itr->photoURL.c_str()),
-							env->NewStringUTF(itr->intro.c_str())
+							jsendTime,
+							jphotoURL,
+							jintro
 							);
+					env->DeleteLocalRef(jid);
+					env->DeleteLocalRef(jwomanid);
+					env->DeleteLocalRef(jfirstname);
+					env->DeleteLocalRef(jlastname);
+					env->DeleteLocalRef(jweight);
+					env->DeleteLocalRef(jheight);
+					env->DeleteLocalRef(jcountry);
+					env->DeleteLocalRef(jprovince);
+					env->DeleteLocalRef(jsendTime);
+					env->DeleteLocalRef(jphotoURL);
+					env->DeleteLocalRef(jintro);
 
 					env->SetObjectArrayElement(jItemArray, i, jItem);
 
@@ -655,23 +737,47 @@ void OnOutboxMsg(long requestId, bool success, const string& errnum, const strin
 
 				jobjectArray privatePhotoArray = GetPrivatePhotoJArray(env, item.privatePhotoList);
 
+				jstring jid = env->NewStringUTF(item.id.c_str());
+				jstring jvgId = env->NewStringUTF(item.vgId.c_str());
+				jstring jcontent = env->NewStringUTF(item.content.c_str());
+				jstring jsendTime = env->NewStringUTF(item.sendTime.c_str());
+				jstring jphotoURL = env->NewStringUTF(item.photoURL.c_str());
+				jstring jwomanid = env->NewStringUTF(item.womanid.c_str());
+				jstring jfirstname = env->NewStringUTF(item.firstname.c_str());
+				jstring jlastname = env->NewStringUTF(item.lastname.c_str());
+				jstring jweight = env->NewStringUTF(item.weight.c_str());
+				jstring jheight = env->NewStringUTF(item.height.c_str());
+				jstring jcountry = env->NewStringUTF(item.country.c_str());
+				jstring jprovince = env->NewStringUTF(item.province.c_str());
 				jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(item.id.c_str()),
-							env->NewStringUTF(item.vgId.c_str()),
-							env->NewStringUTF(item.content.c_str()),
-							env->NewStringUTF(item.sendTime.c_str()),
+							jid,
+							jvgId,
+							jcontent,
+							jsendTime,
 							jPhotosURLArray,
-							env->NewStringUTF(item.photoURL.c_str()),
-							env->NewStringUTF(item.womanid.c_str()),
-							env->NewStringUTF(item.firstname.c_str()),
-							env->NewStringUTF(item.lastname.c_str()),
-							env->NewStringUTF(item.weight.c_str()),
-							env->NewStringUTF(item.height.c_str()),
-							env->NewStringUTF(item.country.c_str()),
-							env->NewStringUTF(item.province.c_str()),
+							jphotoURL,
+							jwomanid,
+							jfirstname,
+							jlastname,
+							jweight,
+							jheight,
+							jcountry,
+							jprovince,
 							item.age,
 							privatePhotoArray
 							);
+				env->DeleteLocalRef(jid);
+				env->DeleteLocalRef(jvgId);
+				env->DeleteLocalRef(jcontent);
+				env->DeleteLocalRef(jsendTime);
+				env->DeleteLocalRef(jphotoURL);
+				env->DeleteLocalRef(jwomanid);
+				env->DeleteLocalRef(jfirstname);
+				env->DeleteLocalRef(jlastname);
+				env->DeleteLocalRef(jweight);
+				env->DeleteLocalRef(jheight);
+				env->DeleteLocalRef(jcountry);
+				env->DeleteLocalRef(jprovince);
 
 				env->DeleteLocalRef(privatePhotoArray);
 				env->DeleteLocalRef(jPhotosURLArray);
@@ -915,10 +1021,12 @@ void OnSendMsg(long requestId, bool success, const string& errnum, const string&
 						"I"						// sendTime
 						")V");
 
+			jstring jmessageId = env->NewStringUTF(item.messageId.c_str());
 			jItem = env->NewObject(jItemCls, init,
-						env->NewStringUTF(item.messageId.c_str()),
+						jmessageId,
 						item.sendTime
 						);
+			env->DeleteLocalRef(jmessageId);
 
 			env->DeleteLocalRef(jItemCls);
 		}
@@ -932,11 +1040,15 @@ void OnSendMsg(long requestId, bool success, const string& errnum, const string&
 		if(NULL != jItemCls) {
 			jmethodID init = env->GetMethodID(jItemCls, "<init>", "("
 						"Ljava/lang/String;"	// money
+						"I"      				//memberType
 						")V");
 
+			jstring jmoney = env->NewStringUTF(errItem.money.c_str());
 			jErrItem = env->NewObject(jItemCls, init,
-						env->NewStringUTF(errItem.money.c_str())
+						jmoney,
+						errItem.memberType
 						);
+			env->DeleteLocalRef(jmoney);
 
 			env->DeleteLocalRef(jItemCls);
 		}
@@ -1302,25 +1414,49 @@ void OnAdmirerList(long requestId, bool success, const string& errnum, const str
 							"Ljava/lang/String;"	// photoURL
 							"Ljava/lang/String;"	// sendTime
 							"I"	                    //attachnum
+							"I"						// template_type
 							")V");
 
+					jstring jid = env->NewStringUTF(itr->id.c_str());
+					jstring jidcode = env->NewStringUTF(itr->idcode.c_str());
+					jstring jwomanid = env->NewStringUTF(itr->womanid.c_str());
+					jstring jfirstname = env->NewStringUTF(itr->firstname.c_str());
+					jstring jweight = env->NewStringUTF(itr->weight.c_str());
+					jstring jheight = env->NewStringUTF(itr->height.c_str());
+					jstring jcountry = env->NewStringUTF(itr->country.c_str());
+					jstring jprovince = env->NewStringUTF(itr->province.c_str());
+					jstring jmtab = env->NewStringUTF(itr->mtab.c_str());
+					jstring jphotoURL = env->NewStringUTF(itr->photoURL.c_str());
+					jstring jsendTime = env->NewStringUTF(itr->sendTime.c_str());
 					jobject jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(itr->id.c_str()),
-							env->NewStringUTF(itr->idcode.c_str()),
+							jid,
+							jidcode,
 							itr->readflag,
 							itr->replyflag,
-							env->NewStringUTF(itr->womanid.c_str()),
-							env->NewStringUTF(itr->firstname.c_str()),
-							env->NewStringUTF(itr->weight.c_str()),
-							env->NewStringUTF(itr->height.c_str()),
-							env->NewStringUTF(itr->country.c_str()),
-							env->NewStringUTF(itr->province.c_str()),
-							env->NewStringUTF(itr->mtab.c_str()),
+							jwomanid,
+							jfirstname,
+							jweight,
+							jheight,
+							jcountry,
+							jprovince,
+							jmtab,
 							itr->age,
-							env->NewStringUTF(itr->photoURL.c_str()),
-							env->NewStringUTF(itr->sendTime.c_str()),
-							itr->attachnum
+							jphotoURL,
+							jsendTime,
+							itr->attachnum,
+							itr->template_type
 							);
+					env->DeleteLocalRef(jid);
+					env->DeleteLocalRef(jidcode);
+					env->DeleteLocalRef(jwomanid);
+					env->DeleteLocalRef(jfirstname);
+					env->DeleteLocalRef(jweight);
+					env->DeleteLocalRef(jheight);
+					env->DeleteLocalRef(jcountry);
+					env->DeleteLocalRef(jprovince);
+					env->DeleteLocalRef(jmtab);
+					env->DeleteLocalRef(jphotoURL);
+					env->DeleteLocalRef(jsendTime);
 
 					env->SetObjectArrayElement(jItemArray, i, jItem);
 
@@ -1453,23 +1589,49 @@ void OnAdmirerViewer(long requestId, bool success, const string& errnum, const s
 					env->DeleteLocalRef(url);
 				}
 
+				jstring jid = env->NewStringUTF(item.id.c_str());
+				jstring jbody = env->NewStringUTF(item.body.c_str());
+				jstring jwomanid = env->NewStringUTF(item.womanid.c_str());
+				jstring jfirstname = env->NewStringUTF(item.firstname.c_str());
+				jstring jweight = env->NewStringUTF(item.weight.c_str());
+				jstring jheight = env->NewStringUTF(item.height.c_str());
+				jstring jcountry = env->NewStringUTF(item.country.c_str());
+				jstring jprovince = env->NewStringUTF(item.province.c_str());
+				jstring jmtab = env->NewStringUTF(item.mtab.c_str());
+				jstring jphotoURL = env->NewStringUTF(item.photoURL.c_str());
+				jstring jsendTime = env->NewStringUTF(item.sendTime.c_str());
+				jstring jtemplate = env->NewStringUTF(item.template_type.c_str());
+				jstring jvgId = env->NewStringUTF(item.vg_id.c_str());
 				jItem = env->NewObject(jItemCls, init,
-						env->NewStringUTF(item.id.c_str()),
-						env->NewStringUTF(item.body.c_str()),
-						jPhotosURLArray,
-						env->NewStringUTF(item.womanid.c_str()),
-						env->NewStringUTF(item.firstname.c_str()),
-						env->NewStringUTF(item.weight.c_str()),
-						env->NewStringUTF(item.height.c_str()),
-						env->NewStringUTF(item.country.c_str()),
-						env->NewStringUTF(item.province.c_str()),
-						env->NewStringUTF(item.mtab.c_str()),
-						item.age,
-						env->NewStringUTF(item.photoURL.c_str()),
-						env->NewStringUTF(item.sendTime.c_str()),
-						env->NewStringUTF(item.template_type.c_str()),
-						env->NewStringUTF(item.vg_id.c_str())
-						);
+							jid,
+							jbody,
+							jPhotosURLArray,
+							jwomanid,
+							jfirstname,
+							jweight,
+							jheight,
+							jcountry,
+							jprovince,
+							jmtab,
+							item.age,
+							jphotoURL,
+							jsendTime,
+							jtemplate,
+							jvgId
+							);
+				env->DeleteLocalRef(jid);
+				env->DeleteLocalRef(jbody);
+				env->DeleteLocalRef(jwomanid);
+				env->DeleteLocalRef(jfirstname);
+				env->DeleteLocalRef(jweight);
+				env->DeleteLocalRef(jheight);
+				env->DeleteLocalRef(jcountry);
+				env->DeleteLocalRef(jprovince);
+				env->DeleteLocalRef(jmtab);
+				env->DeleteLocalRef(jphotoURL);
+				env->DeleteLocalRef(jsendTime);
+				env->DeleteLocalRef(jtemplate);
+				env->DeleteLocalRef(jvgId);
 
 				env->DeleteLocalRef(jPhotosURLArray);
 				env->DeleteLocalRef(jItemCls);
@@ -1592,18 +1754,34 @@ void OnBlockList(long requestId, bool success, const string& errnum, const strin
 							"I"						// blockreason
 							")V");
 
+					jstring jwomanid = env->NewStringUTF(itr->womanid.c_str());
+					jstring jfirstname = env->NewStringUTF(itr->firstname.c_str());
+					jstring jweight = env->NewStringUTF(itr->weight.c_str());
+					jstring jheight = env->NewStringUTF(itr->height.c_str());
+					jstring jcountry = env->NewStringUTF(itr->country.c_str());
+					jstring jprovince = env->NewStringUTF(itr->province.c_str());
+					jstring jcity = env->NewStringUTF(itr->city.c_str());
+					jstring jphotoURL = env->NewStringUTF(itr->photoURL.c_str());
 					jobject jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(itr->womanid.c_str()),
-							env->NewStringUTF(itr->firstname.c_str()),
+							jwomanid,
+							jfirstname,
 							itr->age,
-							env->NewStringUTF(itr->weight.c_str()),
-							env->NewStringUTF(itr->height.c_str()),
-							env->NewStringUTF(itr->country.c_str()),
-							env->NewStringUTF(itr->province.c_str()),
-							env->NewStringUTF(itr->city.c_str()),
-							env->NewStringUTF(itr->photoURL.c_str()),
+							jweight,
+							jheight,
+							jcountry,
+							jprovince,
+							jcity,
+							jphotoURL,
 							itr->blockreason
 							);
+					env->DeleteLocalRef(jwomanid);
+					env->DeleteLocalRef(jfirstname);
+					env->DeleteLocalRef(jweight);
+					env->DeleteLocalRef(jheight);
+					env->DeleteLocalRef(jcountry);
+					env->DeleteLocalRef(jprovince);
+					env->DeleteLocalRef(jcity);
+					env->DeleteLocalRef(jphotoURL);
 
 					env->SetObjectArrayElement(jItemArray, i, jItem);
 

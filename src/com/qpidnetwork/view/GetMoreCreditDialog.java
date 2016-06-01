@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -29,14 +28,14 @@ import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.credit.BuyCreditActivity;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsDialog;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.manager.WebSiteManager;
 
 @SuppressLint("InflateParams")
-public class GetMoreCreditDialog extends Dialog implements OnClickListener{
+public class GetMoreCreditDialog extends AnalyticsDialog implements OnClickListener{
 	
 	private float density = this.getContext().getResources().getDisplayMetrics().density;
-	private Context mContext;
 	private GridView gridView;
 	private RelativeLayout header;
 	private TextView tvMore;
@@ -49,13 +48,10 @@ public class GetMoreCreditDialog extends Dialog implements OnClickListener{
 	
 	public GetMoreCreditDialog(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
-        mContext = context;
 	}
     
     @SuppressLint("NewApi") public GetMoreCreditDialog(Context context, int theme) {
         super(context, theme);
-        mContext = context;
     }
     
     @SuppressWarnings("deprecation")
@@ -87,7 +83,7 @@ public class GetMoreCreditDialog extends Dialog implements OnClickListener{
         tvMore = (TextView)findViewById(R.id.tvMore);
         header.setLayoutParams(new LinearLayout.LayoutParams((int)dialog_width, (int)(72.0f * density)));
         
-        siteManager = WebSiteManager.newInstance(this.getContext());
+        siteManager = WebSiteManager.getInstance();
         if (siteManager != null){
         	switch (siteManager.GetWebSite().getSiteColor()){
         	case R.color.theme_actionbar_bg_cd:
@@ -148,7 +144,7 @@ public class GetMoreCreditDialog extends Dialog implements OnClickListener{
     	
     	Map<String, String> map3 = new HashMap<String, String>();
     	map3.put(keyCredit, "32");
-    	map3.put(keyMoney, "$172");
+    	map3.put(keyMoney, "$179");
     	map3.put(keySPID, "SP004");
     	
     	Map<String, String> map4 = new HashMap<String, String>();
@@ -169,6 +165,7 @@ public class GetMoreCreditDialog extends Dialog implements OnClickListener{
 		// TODO Auto-generated method stub
 		Intent intent = new Intent(mContext, BuyCreditActivity.class);
 		mContext.startActivity(intent);
+		dismiss();
 	}
 	
 	

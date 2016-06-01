@@ -4,14 +4,17 @@ package com.qpidnetwork.dating.emf;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.tool.ImageViewLoader.ImageViewLoaderCallback;
@@ -99,7 +102,9 @@ public class EMFAttachmentPhotoFragment extends IndexFragment
 	 * 刷新界面
 	 */
 	private void UpdateView() {
-		progress.setVisibility(View.VISIBLE);
+		if(!TextUtils.isEmpty(url)){
+			progress.setVisibility(View.VISIBLE);
+		}
     	if( localPath.length() > 0 ) {
     		if( loader != null ) {
         		Context context = getActivity();
@@ -118,12 +123,6 @@ public class EMFAttachmentPhotoFragment extends IndexFragment
                 		this);
     		}
     	}
-	}
-
-	@Override
-	public void InitHandler() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -152,7 +151,7 @@ public class EMFAttachmentPhotoFragment extends IndexFragment
 	}
 
 	@Override
-	public void OnDisplayNewImageFinish() {
+	public void OnDisplayNewImageFinish(Bitmap bmp) {
 		// TODO Auto-generated method stub
 		imageView.SetCanScale(true);
 		((Activity) mContext).runOnUiThread(this);
@@ -171,4 +170,27 @@ public class EMFAttachmentPhotoFragment extends IndexFragment
 		progress.setVisibility(View.GONE);
 	}
  
+	@Override
+	public void onFragmentSelected(int page) 
+	{
+		// 判断是否本页
+		if (getIndex() == page)
+		{
+			// 统计
+			AnalyticsFragmentActivity activity = getAnalyticsFragmentActivity();
+			if (null != activity) {
+				activity.onAnalyticsPageSelected(this, page);
+			}
+		}
+	}
+	
+	private AnalyticsFragmentActivity getAnalyticsFragmentActivity()
+	{
+		AnalyticsFragmentActivity activity = null;
+		if (getActivity() instanceof AnalyticsFragmentActivity)
+		{
+			activity = (AnalyticsFragmentActivity)getActivity();
+		}
+		return activity;
+	}
 }

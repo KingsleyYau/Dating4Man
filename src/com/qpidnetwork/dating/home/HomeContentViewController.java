@@ -32,6 +32,7 @@ import com.qpidnetwork.dating.lady.LadyDetailManager;
 import com.qpidnetwork.dating.lady.LadyListItem;
 import com.qpidnetwork.dating.lady.LadyListManager;
 import com.qpidnetwork.dating.lovecall.DirectCallManager;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.SystemUtil;
 import com.qpidnetwork.framework.widget.pinterest.MultiColumnListView;
@@ -71,6 +72,7 @@ public class HomeContentViewController implements View.OnClickListener {
 		void OnClickOpenDrawer(View v);
 		void OnClickSearch(boolean bShowSearch);
 		void OnClickContact(View v);
+		void OnListSelected(int index);
 		void OnRequest(String tips);
 		void OnRequestFinish(boolean bSuccess, String tips);
 	}
@@ -98,7 +100,7 @@ public class HomeContentViewController implements View.OnClickListener {
 	/**
 	 * 搜索界面
 	 */
-
+	private final int mDefaultItem = 0;
 	public String mTitle = "Online Ladies";
 	public String mNoDataMessage = "";
 	public SearchType mSearchType = SearchType.DEFAULT;
@@ -274,87 +276,35 @@ public class HomeContentViewController implements View.OnClickListener {
 			@Override
 			public void onClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				// TODO Auto-generated method stub
-				ClearLadyList();
 				resetSearchCriteria();
-				switch (arg2){
-				case 0:
-					mTitle = mContext.getString(R.string.lady_category_online);
-					appbar.getTitileView().setText(mTitle);
-					mSearchType = SearchType.DEFAULT;
-					mOnlineType = OnlineType.ONLINE;
-					if(mLadyList != null){
-						mLadyList.clear();
-					}
-					QueryOnlineLadyList(false);
-					break;
-					
-				case 1:
-					mTitle = mContext.getString(R.string.lady_category_with_call);
-					appbar.getTitileView().setText(mTitle);
-					mSearchType = SearchType.WITHPHONE;
-					if(mLadyList != null){
-						mLadyList.clear();
-					}
-					QueryOnlineLadyList(false);
-					break;
-					
-				case 2:
-					mTitle = mContext.getString(R.string.lady_category_with_video);
-					appbar.getTitileView().setText(mTitle);
-					mSearchType = SearchType.WITHVIDEO;
-					if(mLadyList != null){
-						mLadyList.clear();
-					}
-					QueryOnlineLadyList(false);
-					break;
-					
-				case 3:
-					mTitle = mContext.getString(R.string.lady_category_newest);
-					appbar.getTitileView().setText(mTitle);
-					mSearchType = SearchType.DEFAULT;  /**Newest 改爲使用default, 按最新的排在最前面**/
-					mOrderType = OrderType.NEWST;
-					if(mLadyList != null){
-						mLadyList.clear();
-					}
-					QueryOnlineLadyList(false);
-					break;
-				default :
-					break;
-						
-				}
-				
-
+				SelectProc(arg2);
 			}
 		});
 		
 		ladySearcher = new HomeLadySearchWindow(mContext);
 		ladySearcher.setCallback(new HomeLadySearchWindow.Callback() {
-			
-
-			
 			@Override
 			public void OnClickGo(View v, String ladyId) {
 				// TODO Auto-generated method stub
-				ClearLadyList();
 				appbar.getTitileView().setText(mContext.getResources().getString(R.string.common_btn_search));
 				dropList.setSelectedItem(-1);
+				resetSearchCriteria();
 				mSearchType = SearchType.BYID;
 		    	mAge1 = -1;
 		    	mAge2 = -1;
 		    	mOnlineType = OnlineType.DEFAULT;
 		    	mWomanId = ladyId;
 		    	mOrderType = OrderType.DEFAULT;
-				QueryOnlineLadyList(false);
-				
+				SelectProc(-1);
 			}
 
 			@Override
 			public void OnClickSearch(View v, int minAge, int maxAge,
 					boolean isOnline) {
 				// TODO Auto-generated method stub
-				ClearLadyList();
 				appbar.getTitileView().setText(mContext.getResources().getString(R.string.common_btn_search));
 				dropList.setSelectedItem(-1);
+				resetSearchCriteria();
 				mSearchType = SearchType.DEFAULT;
 		    	mAge1 = minAge;
 		    	mAge2 = maxAge;
@@ -362,14 +312,9 @@ public class HomeContentViewController implements View.OnClickListener {
 		    	Log.v("is online", isOnline + "");
 		    	mWomanId = "";
 		    	mOrderType = OrderType.DEFAULT;
-				QueryOnlineLadyList(false);
+				SelectProc(-1);
 			}
 		});
-		
-		
-		
-		
-		
 		
 		mGridView = (MultiColumnListView)view.findViewById(R.id.ladylist);
 		mGridView.setSmoothScrollbarEnabled(true);
@@ -406,6 +351,11 @@ public class HomeContentViewController implements View.OnClickListener {
 		
 		refreshView.setSwipeableChildren(R.id.ladylist);
 		
+		// 设置默认页
+		dropList.setSelectedItem(mDefaultItem);
+		resetSearchCriteria();
+		SelectProc(mDefaultItem);
+		
 		return view;
 	}
 	
@@ -416,10 +366,64 @@ public class HomeContentViewController implements View.OnClickListener {
     	mOnlineType = OnlineType.DEFAULT;
     	mOrderType = OrderType.DEFAULT;
     	mWomanId = "";
-    	
-    	
 	}
 	
+	private void SelectProc(int arg)
+	{
+		ClearLadyList();
+		switch (arg){
+		case 0:
+			mTitle = mContext.getString(R.string.lady_category_online);
+			appbar.getTitileView().setText(mTitle);
+			mSearchType = SearchType.DEFAULT;
+			mOnlineType = OnlineType.ONLINE;
+			if(mLadyList != null){
+				mLadyList.clear();
+			}
+			QueryOnlineLadyList(false);
+			break;
+			
+		case 1:
+			mTitle = mContext.getString(R.string.lady_category_with_call);
+			appbar.getTitileView().setText(mTitle);
+			mSearchType = SearchType.WITHPHONE;
+			if(mLadyList != null){
+				mLadyList.clear();
+			}
+			QueryOnlineLadyList(false);
+			break;
+			
+		case 2:
+			mTitle = mContext.getString(R.string.lady_category_with_video);
+			appbar.getTitileView().setText(mTitle);
+			mSearchType = SearchType.WITHVIDEO;
+			if(mLadyList != null){
+				mLadyList.clear();
+			}
+			QueryOnlineLadyList(false);
+			break;
+			
+		case 3:
+			mTitle = mContext.getString(R.string.lady_category_newest);
+			appbar.getTitileView().setText(mTitle);
+			mSearchType = SearchType.DEFAULT;  /**Newest 改爲使用default, 按最新的排在最前面**/
+			mOrderType = OrderType.NEWST;
+			if(mLadyList != null){
+				mLadyList.clear();
+			}
+			QueryOnlineLadyList(false);
+			break;
+		case -1:
+			QueryOnlineLadyList(false);
+			break;
+		default :
+			break;
+		}
+		
+		if (null != mCallback) {
+			mCallback.OnListSelected(arg);
+		}
+	}
 	
 
 	@Override
@@ -550,7 +554,13 @@ public class HomeContentViewController implements View.OnClickListener {
 					
 					if (!obj.errno.equals("MBCE61005")){   //RequestErrorCode 裏面沒有這個錯誤代碼.
 						dialog.addButton(dialog.createButton(mContext.getString(R.string.common_btn_cancel), null));
-						dialog.show();
+						if((mContext != null) && (mContext instanceof BaseFragmentActivity)){
+							if(((BaseFragmentActivity)mContext).isActivityVisible()){
+								dialog.show();
+							}
+						}else{
+							dialog.show();
+						}
 						return;
 					}
 					
@@ -566,7 +576,13 @@ public class HomeContentViewController implements View.OnClickListener {
 					}));
 					
 					dialog.addButton(dialog.createButton(mContext.getString(R.string.common_btn_cancel), null));
-					dialog.show();
+					if((mContext != null) && (mContext instanceof BaseFragmentActivity)){
+						if(((BaseFragmentActivity)mContext).isActivityVisible()){
+							dialog.show();
+						}
+					}else{
+						dialog.show();
+					}
 					
 					if( mCallback != null ) {
 						mCallback.OnRequestFinish(false, null);
@@ -591,9 +607,9 @@ public class HomeContentViewController implements View.OnClickListener {
 						boolean isShowBadge = false;
 						LCMessageItem item = (LCMessageItem) msg.obj;
 						if( ContactManager.getInstance().mWomanId.compareTo(item.fromId) != 0 ) {
-							if( item != null && item.getUserItem() != null && LiveChatManager.newInstance(null).GetChatingUsers() != null ) {
+							if( item != null && item.getUserItem() != null && LiveChatManager.getInstance().GetChatingUsers() != null ) {
 								if (item.getUserItem().chatType == ChatType.Invite
-										&& LiveChatManager.newInstance(null).GetChatingUsers().size() == 0) 
+										&& LiveChatManager.getInstance().GetChatingUsers().size() == 0) 
 									{
 										// 邀请消息而且没有inchat用户
 										// 若当前没有inchat状态会话，每当收到邀请消息，则显示“点”。
@@ -718,7 +734,7 @@ public class HomeContentViewController implements View.OnClickListener {
 
 	}
 	
-	public void ClearLadyList() {
+	private void ClearLadyList() {
 		mLadyList.clear();
 		mAdapter.notifyDataSetChanged();
 	}
@@ -841,14 +857,12 @@ public class HomeContentViewController implements View.OnClickListener {
 	
 	public void OnChangeWebsite(WebSite website) {
 		// TODO Auto-generated method stub
-		ClearLadyList();
-		resetSearchCriteria();
-		dropList.setSelectedItem(0);
-		mSearchType = SearchType.DEFAULT;
-		mOnlineType = OnlineType.ONLINE;
-		appbar.getTitileView().setText(mContext.getString(R.string.lady_category_online));
 		appbar.setAppbarBackgroundColor(mContext.getResources().getColor(website.getSiteColor()));
-		QueryOnlineLadyList(false);
+
+		// 设置默认页
+		dropList.setSelectedItem(mDefaultItem);
+		resetSearchCriteria();
+		SelectProc(mDefaultItem);
 	}
 	
 	public void OnRecvMessage(LCMessageItem item) {

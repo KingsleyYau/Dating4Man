@@ -6,7 +6,7 @@
  */
 #include "com_qpidnetwork_request_RequestJniAdvert.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestAdvertController.h"
+#include <manrequesthandler/RequestAdvertController.h>
 
 void OnMainAdvert(long requestId, bool success, const string& errnum, const string& errmsg, const AdMainAdvertItem& item);
 void OnWomanListAdvert(long requestId, bool success, const string& errnum, const string& errmsg, const AdWomanListAdvertItem& item);
@@ -30,12 +30,18 @@ jobject GetPushAdvertJObject(JNIEnv* env, const AdPushAdvertItem& item)
 					"I"						// opentype
 					")V");
 
+		jstring jpushId = env->NewStringUTF(item.pushId.c_str());
+		jstring jmessage = env->NewStringUTF(item.message.c_str());
+		jstring jadurl = env->NewStringUTF(item.adurl.c_str());
 		jItem = env->NewObject(jItemCls, init,
-					env->NewStringUTF(item.pushId.c_str()),
-					env->NewStringUTF(item.message.c_str()),
-					env->NewStringUTF(item.adurl.c_str()),
+					jpushId,
+					jmessage,
+					jadurl,
 					item.openType
 					);
+		env->DeleteLocalRef(jpushId);
+		env->DeleteLocalRef(jmessage);
+		env->DeleteLocalRef(jadurl);
 
 		env->DeleteLocalRef(jItemCls);
 	}
@@ -109,16 +115,22 @@ void OnMainAdvert(long requestId, bool success, const string& errnum, const stri
 					"I"						// valid
 					")V");
 
+		jstring jadvertId = env->NewStringUTF(item.advertId.c_str());
+		jstring jimage = env->NewStringUTF(item.image.c_str());
+		jstring jadurl = env->NewStringUTF(item.adurl.c_str());
 		jItem = env->NewObject(jItemCls, init,
-					env->NewStringUTF(item.advertId.c_str()),
-					env->NewStringUTF(item.image.c_str()),
+					jadvertId,
+					jimage,
 					item.width,
 					item.height,
-					env->NewStringUTF(item.adurl.c_str()),
+					jadurl,
 					item.openType,
 					item.isShow,
 					item.valid
 					);
+		env->DeleteLocalRef(jadvertId);
+		env->DeleteLocalRef(jimage);
+		env->DeleteLocalRef(jadurl);
 
 		env->DeleteLocalRef(jItemCls);
 	}
@@ -227,14 +239,20 @@ void OnWomanListAdvert(long requestId, bool success, const string& errnum, const
 					"I"						// opentype
 					")V");
 
+		jstring jadvertId = env->NewStringUTF(item.advertId.c_str());
+		jstring jimage = env->NewStringUTF(item.image.c_str());
+		jstring jadurl = env->NewStringUTF(item.adurl.c_str());
 		jItem = env->NewObject(jItemCls, init,
-					env->NewStringUTF(item.advertId.c_str()),
-					env->NewStringUTF(item.image.c_str()),
+					jadvertId,
+					jimage,
 					item.width,
 					item.height,
-					env->NewStringUTF(item.adurl.c_str()),
+					jadurl,
 					item.openType
 					);
+		env->DeleteLocalRef(jadvertId);
+		env->DeleteLocalRef(jimage);
+		env->DeleteLocalRef(jadurl);
 
 		env->DeleteLocalRef(jItemCls);
 	}

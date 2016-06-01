@@ -27,7 +27,7 @@ public class TitleTabBar extends LinearLayout implements View.OnClickListener {
 	
 	private LayoutInflater mInflater = null;
 	private ArrayList<View> mTabs = new ArrayList<View>();
-	private int mIndex = 0;
+	private int mIndex = -1;
 	private LinearLayout mContainer;
 
 	private TitleTabBarListener mListener = null;

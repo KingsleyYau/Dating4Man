@@ -20,6 +20,12 @@
         <item name="webHost_charmingdate" type="string">http://mobile.charmdate.com</item>
         <item name="webHost_latamdate" type="string">http://mobile.latamdate.com</item>
     </array>
+    <array name="webShortNameArray">
+        <item name="webShortName_chnlove" type="string">CL</item>
+        <item name="webShortName_idateasia" type="string">IDA</item>
+        <item name="webShortName_charmingdate" type="string">CD</item>
+        <item name="webShortName_latamdate" type="string">LD</item>
+    </array>
     <array name="webKeyArray">
         <item name="webKey_chnlove" type="string">ChnLove</item>
         <item name="webKey_idateasia" type="string">IDateAsia</item>

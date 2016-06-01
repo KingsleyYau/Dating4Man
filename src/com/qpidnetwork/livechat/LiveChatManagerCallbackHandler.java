@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.qpidnetwork.framework.util.Log;
+import com.qpidnetwork.livechat.jni.LCPaidThemeInfo;
+import com.qpidnetwork.livechat.jni.LiveChatTalkUserListItem;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TryTicketEventType;
 import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
 import com.qpidnetwork.request.item.Coupon;
+import com.qpidnetwork.request.item.MagicIconConfig;
 import com.qpidnetwork.request.item.OtherEmotionConfigItem;
+import com.qpidnetwork.request.item.ThemeItem;
 
 /**
  * LiveChatManager回调处理类
@@ -24,6 +28,7 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 													 , LiveChatManagerPhotoListener
 													 , LiveChatManagerVideoListener
 													 , LiveChatManagerVoiceListener
+													 , LiveChatManagerThemeListener
 {
 	/**
 	 * 回调OtherListener的object列表
@@ -42,6 +47,10 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 	 */
 	private ArrayList<LiveChatManagerEmotionListener> mEmotionListeners;
 	/**
+	 * 回调MagicIconListener的object列表
+	 */
+	private ArrayList<LiveChatManagerMagicIconListener> mMagicIconListeners;
+	/**
 	 * 回调PhotoListener的object列表
 	 */
 	private ArrayList<LiveChatManagerPhotoListener> mPhotoListeners;
@@ -53,6 +62,10 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 	 * 回调VoiceListener的object列表
 	 */
 	private ArrayList<LiveChatManagerVoiceListener> mVoiceListeners;
+	/**
+	 * 回调ThemeListener的object列表
+	 */
+	private ArrayList<LiveChatManagerThemeListener> mThemeListeners;
 	
 	
 	public LiveChatManagerCallbackHandler() {
@@ -60,9 +73,11 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 		mTryTicketListeners = new ArrayList<LiveChatManagerTryTicketListener>();
 		mMessageListeners = new ArrayList<LiveChatManagerMessageListener>();
 		mEmotionListeners = new ArrayList<LiveChatManagerEmotionListener>();
+		mMagicIconListeners = new ArrayList<LiveChatManagerMagicIconListener>();
 		mPhotoListeners = new ArrayList<LiveChatManagerPhotoListener>();
 		mVideoListeners = new ArrayList<LiveChatManagerVideoListener>();
 		mVoiceListeners = new ArrayList<LiveChatManagerVoiceListener>();
+		mThemeListeners = new ArrayList<LiveChatManagerThemeListener>();
 	}
 	
 	// ----------------------- 注册/注销回调 -----------------------
@@ -283,6 +298,60 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 	}
 	
 	/**
+	 * 注册小高级表情(MagicIcon)回调
+	 * @param listener
+	 * @return
+	 */
+	public boolean RegisterMagicIconListener(LiveChatManagerMagicIconListener listener) 
+	{
+		boolean result = false;
+		synchronized(mMagicIconListeners) 
+		{
+			if (null != listener) {
+				boolean isExist = false;
+				
+				for (Iterator<LiveChatManagerMagicIconListener> iter = mMagicIconListeners.iterator(); iter.hasNext(); ) {
+					LiveChatManagerMagicIconListener theListener = iter.next();
+					if (theListener == listener) {
+						isExist = true;
+						break;
+					}
+				}
+				
+				if (!isExist) {
+					result = mMagicIconListeners.add(listener);
+				}
+				else {
+					Log.d("livechat", String.format("%s::%s() fail, listener:%s is exist", "LiveChatManagerCallbackHandler", "RegisterMagicIconListener", listener.getClass().getSimpleName()));
+				}
+			}
+			else {
+				Log.e("livechat", String.format("%s::%s() fail, listener is null", "LiveChatManagerCallbackHandler", "RegisterListener"));
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * 注销小高级表情(MagicIcon)回调
+	 * @param listener
+	 * @return
+	 */
+	public boolean UnregisterMagicIconListener(LiveChatManagerMagicIconListener listener) 
+	{
+		boolean result = false;
+		synchronized(mMagicIconListeners)
+		{
+			result = mMagicIconListeners.remove(listener);
+		}
+
+		if (!result) {
+			Log.e("livechat", String.format("%s::%s() fail, listener:%s", "LiveChatManagerCallbackHandler", "UnregisterMagicIconListener", listener.getClass().getSimpleName()));
+		}
+		return result;
+	}
+	
+	/**
 	 * 注册私密照(Photo)回调
 	 * @param listener
 	 * @return
@@ -444,6 +513,60 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 		return result;
 	}
 	
+	/**
+	 * 注册主题(Theme)回调
+	 * @param listener
+	 * @return
+	 */
+	public boolean RegisterThemeListener(LiveChatManagerThemeListener listener) 
+	{
+		boolean result = false;
+		synchronized(mThemeListeners) 
+		{
+			if (null != listener) {
+				boolean isExist = false;
+				
+				for (Iterator<LiveChatManagerThemeListener> iter = mThemeListeners.iterator(); iter.hasNext(); ) {
+					LiveChatManagerThemeListener theListener = iter.next();
+					if (theListener == listener) {
+						isExist = true;
+						break;
+					}
+				}
+				
+				if (!isExist) {
+					result = mThemeListeners.add(listener);
+				}
+				else {
+					Log.d("livechat", String.format("%s::%s() fail, listener:%s is exist", "LiveChatManagerCallbackHandler", "RegisterThemeListener", listener.getClass().getSimpleName()));
+				}
+			}
+			else {
+				Log.e("livechat", String.format("%s::%s() fail, listener is null", "LiveChatManagerCallbackHandler", "RegisterListener"));
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * 注销主题(Theme)回调
+	 * @param listener
+	 * @return
+	 */
+	public boolean UnregisterThemeListener(LiveChatManagerThemeListener listener) 
+	{
+		boolean result = false;
+		synchronized(mThemeListeners)
+		{
+			result = mThemeListeners.remove(listener);
+		}
+
+		if (!result) {
+			Log.e("livechat", String.format("%s::%s() fail, listener:%s", "LiveChatManagerCallbackHandler", "UnregisterThemeListener", listener.getClass().getSimpleName()));
+		}
+		return result;
+	}
+	
 	// ---------------------------- Other ----------------------------
 	/**
 	 * 登录回调
@@ -562,6 +685,21 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 			for (Iterator<LiveChatManagerOtherListener> iter = mOtherListeners.iterator(); iter.hasNext(); ) {
 				LiveChatManagerOtherListener listener = iter.next();
 				listener.OnGetUserStatus(errType, errmsg, userList);
+			}
+		}
+	}
+	
+	/**
+	 * 批量获取女士信息回调
+	 * @param userItem	用户item
+	 */
+	public void OnGetUsersInfo(LiveChatErrType errType, String errmsg, LiveChatTalkUserListItem[] itemList)
+	{
+		synchronized(mOtherListeners) 
+		{
+			for (Iterator<LiveChatManagerOtherListener> iter = mOtherListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerOtherListener listener = iter.next();
+				listener.OnGetUsersInfo(errType, errmsg, itemList);
 			}
 		}
 	}
@@ -1036,6 +1174,90 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 		}
 	}
 	
+	// ---------------- 小高表回调函数（Magic Icon） ----------------
+	/**
+	 * 获取小高级表情配置回调
+	 * @param success	是否成功
+	 * @param errType	处理结果错误代码
+	 * @param errmsg	处理结果描述
+	 */
+	public void OnGetMagicIconConfig(boolean success, String errno, String errmsg, MagicIconConfig item)
+	{
+		synchronized(mMagicIconListeners) 
+		{
+			for (Iterator<LiveChatManagerMagicIconListener> iter = mMagicIconListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerMagicIconListener listener = iter.next();
+				listener.OnGetMagicIconConfig(success,errno, errmsg, item);
+			}
+		}
+	}
+	
+	/**
+	 * 发送小高级表情回调
+	 * @param errType	处理结果错误代码
+	 * @param errmsg	处理结果描述
+	 * @param item		消息item
+	 * @return
+	 */
+	public void OnSendMagicIcon(LiveChatErrType errType, String errmsg, LCMessageItem item)
+	{
+		synchronized(mMagicIconListeners) 
+		{
+			for (Iterator<LiveChatManagerMagicIconListener> iter = mMagicIconListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerMagicIconListener listener = iter.next();
+				listener.OnSendMagicIcon(errType, errmsg, item);
+			}
+		}
+	}
+	
+	/**
+	 * 接收小高级表情消息回调
+	 * @param item		消息item
+	 */
+	public void OnRecvMagicIcon(LCMessageItem item)
+	{
+		synchronized(mMagicIconListeners) 
+		{
+			for (Iterator<LiveChatManagerMagicIconListener> iter = mMagicIconListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerMagicIconListener listener = iter.next();
+				listener.OnRecvMagicIcon(item);
+			}
+		}
+	}
+	
+	/**
+	 * 下载小高级表情图片原图成功回调
+	 * @param success
+	 * @param magicIconItem
+	 */
+	public void OnGetMagicIconSrcImage(boolean success, LCMagicIconItem magicIconItem)
+	{
+		synchronized(mMagicIconListeners) 
+		{
+			for (Iterator<LiveChatManagerMagicIconListener> iter = mMagicIconListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerMagicIconListener listener = iter.next();
+				listener.OnGetMagicIconSrcImage(success, magicIconItem);
+			}
+		}
+	}
+	
+	/**
+	 * 下载小高级表情拇子图成功回调
+	 * @param success
+	 * @param magicIconItem
+	 */
+	public void OnGetMagicIconThumbImage(boolean success, LCMagicIconItem magicIconItem)
+	{
+		synchronized(mMagicIconListeners) 
+		{
+			for (Iterator<LiveChatManagerMagicIconListener> iter = mMagicIconListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerMagicIconListener listener = iter.next();
+				listener.OnGetMagicIconThumbImage(success, magicIconItem);
+			}
+		}
+	}
+	
+	
 	// ---------------- 微视频回调函数(Video) ----------------
 	/**
 	 * 获取视频图片文件回调
@@ -1162,6 +1384,112 @@ public class LiveChatManagerCallbackHandler implements LiveChatManagerOtherListe
 			for (Iterator<LiveChatManagerOtherListener> iter = mOtherListeners.iterator(); iter.hasNext(); ) {
 				LiveChatManagerOtherListener listener = iter.next();
 				listener.OnRecvEMFNotice(fromId, noticeType);
+			}
+		}
+	}
+
+	// ---------------- LiveChat主题回调函数(Other) ----------------
+	@Override
+	public void OnGetPaidTheme(LiveChatErrType errType, String errmsg,
+			String userId, LCPaidThemeInfo[] paidThemeList) {
+		synchronized(mThemeListeners) 
+		{
+			for (Iterator<LiveChatManagerThemeListener> iter = mThemeListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerThemeListener listener = iter.next();
+				listener.OnGetPaidTheme(errType, errmsg, userId, paidThemeList);
+			}
+		}		
+	}
+
+	@Override
+	public void OnGetAllPaidTheme(boolean isSuccess, String errmsg, LCPaidThemeInfo[] paidThemeList, ThemeItem[] themeList) {
+		synchronized(mThemeListeners) 
+		{
+			for (Iterator<LiveChatManagerThemeListener> iter = mThemeListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerThemeListener listener = iter.next();
+				listener.OnGetAllPaidTheme(isSuccess, errmsg, paidThemeList, themeList);
+			}
+		}		
+	}
+
+	@Override
+	public void OnManFeeTheme(LiveChatErrType errType, String womanId, String themeId, String errmsg,
+			LCPaidThemeInfo paidThemeInfo) {
+		synchronized(mThemeListeners) 
+		{
+			for (Iterator<LiveChatManagerThemeListener> iter = mThemeListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerThemeListener listener = iter.next();
+				listener.OnManFeeTheme(errType, womanId, themeId, errmsg, paidThemeInfo);
+			}
+		}			
+	}
+
+	@Override
+	public void OnManApplyTheme(LiveChatErrType errType, String womanId, String themeId, String errmsg,
+			LCPaidThemeInfo paidThemeInfo) {
+		synchronized(mThemeListeners) 
+		{
+			for (Iterator<LiveChatManagerThemeListener> iter = mThemeListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerThemeListener listener = iter.next();
+				listener.OnManApplyTheme(errType, womanId, themeId, errmsg, paidThemeInfo);
+			}
+		}
+	}
+
+	@Override
+	public void OnPlayThemeMotion(LiveChatErrType errType, String errmsg,
+			String womanId, String themeId) {
+		synchronized(mThemeListeners) 
+		{
+			for (Iterator<LiveChatManagerThemeListener> iter = mThemeListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerThemeListener listener = iter.next();
+				listener.OnPlayThemeMotion(errType, errmsg, womanId, themeId);
+			}
+		}		
+	}
+
+	@Override
+	public void OnRecvThemeMotion(String themeId, String manId, String womanId) {
+		synchronized(mThemeListeners) 
+		{
+			for (Iterator<LiveChatManagerThemeListener> iter = mThemeListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerThemeListener listener = iter.next();
+				listener.OnRecvThemeMotion(themeId, manId, womanId);
+			}
+		}		
+	}
+
+	@Override
+	public void OnRecvThemeRecommend(String themeId, String manId,
+			String womanId) {
+		synchronized(mThemeListeners) 
+		{
+			for (Iterator<LiveChatManagerThemeListener> iter = mThemeListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerThemeListener listener = iter.next();
+				listener.OnRecvThemeRecommend(themeId, manId, womanId);
+			}
+		}		
+	}
+
+	@Override
+	public void onThemeDownloadUpdate(String themeId, int progress) {
+		synchronized(mThemeListeners) 
+		{
+			for (Iterator<LiveChatManagerThemeListener> iter = mThemeListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerThemeListener listener = iter.next();
+				listener.onThemeDownloadUpdate(themeId, progress);
+			}
+		}
+	}
+
+	@Override
+	public void onThemeDownloadFinish(boolean isSuccess, String themeId,
+			String sourceDir) {
+		synchronized(mThemeListeners) 
+		{
+			for (Iterator<LiveChatManagerThemeListener> iter = mThemeListeners.iterator(); iter.hasNext(); ) {
+				LiveChatManagerThemeListener listener = iter.next();
+				listener.onThemeDownloadFinish(isSuccess, themeId, sourceDir);
 			}
 		}
 	}

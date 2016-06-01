@@ -1,5 +1,9 @@
 package com.qpidnetwork.livechat.jni;
 
+import com.qpidnetwork.livechat.jni.LiveChatClient.UserStatusType;
+
+import android.util.Log;
+
 
 /**
  * 获取邀请/在聊用户列表user item
@@ -25,6 +29,7 @@ public class LiveChatTalkUserListItem {
 			boolean videoChat,
 			int videoCount,
 			int marryType,
+			int childrenType,
 			int statusType,
 			int userType,
 			int orderValue,
@@ -44,7 +49,13 @@ public class LiveChatTalkUserListItem {
 		this.province = province;
 		this.videoChat = videoChat;
 		this.marryType = MarryType.values()[marryType];
-		this.statusType = LiveChatClient.UserStatusType.values()[statusType];
+		this.childrenType = ChildrenType.values()[childrenType];
+		if(statusType>= UserStatusType.USTATUS_UNKNOW.ordinal() 
+				&& statusType <= UserStatusType.USTATUS_HIDDEN.ordinal()){
+			this.statusType = LiveChatClient.UserStatusType.values()[statusType];
+		}else{
+			this.statusType = UserStatusType.USTATUS_OFFLINE_OR_HIDDEN;
+		}
 		this.userType = UserType.values()[userType];
 		this.orderValue = orderValue;
 		this.deviceType = DeviceType.values()[deviceType];
@@ -56,9 +67,21 @@ public class LiveChatTalkUserListItem {
 	 * 婚姻状况类型
 	 */
 	public enum MarryType {
+		Unknow,			// 未知
+		NeverMarried,	// 未婚
+		Disvorced,		// 离婚
+		Widowed,		// 丧偶
+		Separated,		// 分居
+		Married,		// 已婚
+	}
+	
+	/**
+	 * 子女状况类型
+	 */
+	public enum ChildrenType {
 		Unknow,		// 未知
-		NotMarry,	// 未婚
-		Married,	// 已婚
+		NoChildren,	// 没有子女
+		Yes,		// 有子女
 	}
 	
 	/**
@@ -150,6 +173,11 @@ public class LiveChatTalkUserListItem {
 	 * 婚姻状况
 	 */
 	public MarryType marryType;
+	
+	/**
+	 * 子女状况
+	 */
+	public ChildrenType childrenType;
 	
 	/**
 	 * 在线状态类型

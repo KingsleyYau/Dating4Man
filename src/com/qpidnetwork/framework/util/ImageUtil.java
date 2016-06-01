@@ -19,6 +19,8 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
@@ -63,7 +65,6 @@ public class ImageUtil {
 	public static Bitmap scaleImageFile(String srcPath, float destWidth, float destHeight) { 
 		
 		if((destWidth == 0)||(destHeight == 0)){
-			Log.i("hunter", "scaleImageFile destWidth: " + destWidth + " destHeight: " + destHeight);
 			return null;
 		}
 		
@@ -102,7 +103,6 @@ public class ImageUtil {
 	public static Bitmap scaleBitmap(Bitmap image, float destWidth, float destHeight) {
 		
 		if((destWidth == 0)||(destHeight == 0)){
-			Log.i("hunter", "scaleBitmap destWidth: " + destWidth + " destHeight: " + destHeight);
 			return null;
 		}
 	      
@@ -141,6 +141,90 @@ public class ImageUtil {
 	}
 	
 	/**
+	 * 根据文件路径获取图片，并精确缩放
+	 * @param path		图片文件路径
+	 * @param scale		缩放比例
+	 * @param destHeight
+	 * @return
+	 */
+	public static Bitmap preciseScaleBitmap(String path, float scale)
+	{
+		Bitmap bitmap = null;
+		
+		// 确保参数正确且图片加载成功
+		BitmapFactory.Options opts = getImageInfoWithFile(path);
+		if (scale > 0 
+			&& null != opts && opts.outWidth > 0 && opts.outHeight > 0)
+		{
+			if (scale < 1) 
+			{
+				// ---- 缩小图片处理 ----
+				// 找到最小加载图片(1/samplesSize)的比例(减少内存占用)
+				int samplesSize = 1;
+				float ratio = 1;
+				while (true) {
+					float temp = ratio / 2;
+					if (temp > scale) {
+						ratio = temp;
+						samplesSize++;
+					}
+					else {
+						break;
+					}
+				}
+				
+				// 加载图片缩小的图片(减少内存占用)
+				BitmapFactory.Options newOpts = new BitmapFactory.Options();
+				newOpts.inSampleSize = samplesSize;  
+			    newOpts.inJustDecodeBounds = false;
+			    bitmap = BitmapFactory.decodeFile(path, newOpts);
+			    
+			    // 精确缩放
+			    if (scale != ratio) 
+			    {
+			    	// 计算精度
+			    	float ratio2 = scale / ratio;
+			    	Bitmap tempBitmap = bitmap;
+			    	
+			    	// 缩放并生成新bitmap 
+			    	Matrix matrix = new Matrix();
+			    	matrix.postScale(ratio2, ratio2);
+			    	bitmap = Bitmap.createBitmap(
+			    				tempBitmap
+			    				, 0, 0
+			    				, tempBitmap.getWidth(), tempBitmap.getHeight()
+			    				, matrix ,true);
+			    	
+			    	// 释放临时bitmap
+			    	tempBitmap.recycle();
+			    }
+			}
+			else if (scale > 1) {
+				// ---- 放大图片处理 ----
+				// 加载图片
+				Bitmap tempBitmap = loadImageFile(path); 
+				
+		    	// 放大并生成新bitmap 
+		    	Matrix matrix = new Matrix();
+		    	matrix.postScale(scale, scale);
+		    	bitmap = Bitmap.createBitmap(
+		    				tempBitmap
+		    				, 0, 0
+		    				, tempBitmap.getWidth(), tempBitmap.getHeight()
+		    				, matrix ,true);
+		    	
+		    	// 释放临时bitmap
+		    	tempBitmap.recycle();
+			}
+			else {
+				// ---- 不用缩放 ----
+				bitmap = loadImageFile(path);
+			}
+		}
+		return bitmap;
+	}
+	
+	/**
 	 * 根据给定高宽比进行图片剪切
 	 * @param bitmap 源图片
 	 * @param srcWidth 原图片宽 
@@ -151,7 +235,6 @@ public class ImageUtil {
 	public static Bitmap crop(Bitmap bitmap, int srcWidth, int srcHeight, float radio){
 		
 		if((srcWidth == 0)||(srcHeight == 0)||(radio == 0)){
-			Log.i("hunter", "crop srcWidth: " + srcWidth + " srcHeight: " + srcHeight + " radio: " + radio);
 			return null;
 		}
 
@@ -308,8 +391,11 @@ public class ImageUtil {
 		    }else{
 		    	matrix.postScale(scaleHeight, scaleHeight);
 		    }
-		    resizeBitmap = Bitmap.createBitmap(tempBitmap, 0, 0, bmpWidth, bmpHeight, matrix, false);  
-		    tempBitmap.recycle();
+		    resizeBitmap = Bitmap.createBitmap(tempBitmap, 0, 0, bmpWidth, bmpHeight, matrix, false);
+		    if(resizeBitmap != tempBitmap){
+		    	//解决createBitmap 与原图一样，回收导致recycled异常
+		    	tempBitmap.recycle();
+		    }
 		}
 	    return resizeBitmap;
 	}
@@ -326,8 +412,11 @@ public class ImageUtil {
 		    Matrix matrix = new Matrix();    
 		    float scaleHeight = (float) reqHeight / bmpHeight; 
 		    matrix.postScale(scaleHeight, scaleHeight);
-		    resizeBitmap = Bitmap.createBitmap(tempBitmap, 0, 0, bmpWidth, bmpHeight, matrix, false);  
-		    tempBitmap.recycle();
+		    resizeBitmap = Bitmap.createBitmap(tempBitmap, 0, 0, bmpWidth, bmpHeight, matrix, false);
+		    if(resizeBitmap != tempBitmap){
+		    	//解决createBitmap 与原图一样，回收导致recycled异常
+		    	tempBitmap.recycle();
+		    }
 		}
 	    return resizeBitmap;
 	}
@@ -340,8 +429,11 @@ public class ImageUtil {
 	    Matrix matrix = new Matrix();    
 	    float scaleHeight = (float) reqHeight / bmpHeight; 
 	    matrix.postScale(scaleHeight, scaleHeight);
-	    Bitmap resizeBitmap = Bitmap.createBitmap(inBmp, 0, 0, bmpWidth, bmpHeight, matrix, false);  
-	    inBmp.recycle();
+	    Bitmap resizeBitmap = Bitmap.createBitmap(inBmp, 0, 0, bmpWidth, bmpHeight, matrix, false);
+	    if(resizeBitmap != inBmp){
+	    	//解决createBitmap 与原图一样，回收导致recycled异常
+	    	inBmp.recycle();
+	    }
 	    return resizeBitmap;
 	}
 	
@@ -521,10 +613,10 @@ public class ImageUtil {
 	    	
 	    	// 获取插入后的文件路径
 	    	Uri uri = Uri.parse(path);
-	    	Log.d("SaveImageToGallery", "path : " + path + ", " + 
-	    			"getHost : " + uri.getHost() + ", " +
-	    			"getPath : " + uri.getPath()
-	    			);
+//	    	Log.d("SaveImageToGallery", "path : " + path + ", " + 
+//	    			"getHost : " + uri.getHost() + ", " +
+//	    			"getPath : " + uri.getPath()
+//	    			);
 	    	String[] proj = { MediaStore.Images.Media.DATA };   
 	    	Cursor actualimagecursor = activity.managedQuery(uri,proj,null,null,null);  
 	    	int actual_image_column_index = actualimagecursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);   
@@ -566,4 +658,181 @@ public class ImageUtil {
 	    
 	    return result;
 	}
+	
+	/**
+	 * 平铺类型
+	 */
+	public enum TileType {
+		Top,	// 顶部平铺
+		Bottom	// 底部平铺
+	}
+	/**
+	 * 平铺绘画Bitmap
+	 * @param desBitmap	目标bitmap
+	 * @param srcBitmap	源bitmap
+	 * @param tileType	平铺类型
+	 * @return 绘画是否成功
+	 */
+	public static boolean tileImage(Bitmap desBitmap, Bitmap srcBitmap, TileType tileType)
+	{
+		boolean result = false;
+		if (null != desBitmap && null != srcBitmap)
+		{
+			// 计算平铺的y坐标
+			int y = 0;
+			switch(tileType)
+			{
+			case Top:
+				y = 0;
+				break;
+			case Bottom:
+				y = desBitmap.getHeight() - srcBitmap.getHeight();
+				break;
+			}
+			// 计算需要平铺多少个srcBitmap
+			int tileCount = desBitmap.getWidth() / srcBitmap.getWidth() 
+					+ (desBitmap.getWidth() % srcBitmap.getWidth() > 0 ? 1 : 0);
+			
+			// 画平铺图片
+			Canvas canvas = new Canvas(desBitmap);
+			for (int i = 0; i < tileCount; i++)
+			{
+				canvas.drawBitmap(srcBitmap, srcBitmap.getWidth()*i, y, null);
+			}
+			canvas.save();
+		}
+		return result;
+	}
+	
+	/**
+	 * 绘画角图类型
+	 */
+	public enum CornerType {
+		LeftTop,		// 左上角 
+		LeftBottom,		// 左下角
+		RightTop,		// 右上角
+		RightBottom,	// 右下角
+	}
+	/**
+	 * 绘画角图
+	 * @param desBitmap		目标bitmap
+	 * @param srcBitmap		源bitmap
+	 * @param cornerType	角图类型
+	 * @return 绘画是否成功
+	 */
+	public static boolean cornerImage(Bitmap desBitmap, Bitmap srcBitmap, CornerType cornerType)
+	{
+		boolean result = false;
+		if (null != desBitmap && null != srcBitmap)
+		{
+			// 计算起始坐标
+			int x = 0;
+			int y = 0;
+			switch (cornerType)
+			{
+			case LeftTop:
+				x = 0;
+				y = 0;
+				break;
+			case LeftBottom:
+				x = 0;
+				y = desBitmap.getHeight() - srcBitmap.getHeight();
+				break;
+			case RightTop:
+				x = desBitmap.getWidth() - srcBitmap.getWidth();
+				y = 0;
+				break;
+			case RightBottom:
+				x = desBitmap.getWidth() - srcBitmap.getWidth();
+				y = desBitmap.getHeight() - srcBitmap.getHeight();
+				break;
+			}
+			
+			// 画平铺图片
+			Canvas canvas = new Canvas(desBitmap);
+			canvas.drawBitmap(srcBitmap, x, y, null);
+			canvas.save();
+		}
+		return result;
+	}
+	
+	/**
+	 * 设置图片颜色
+	 * @param bitmap	目标bitmap
+	 * @param color		颜色值
+	 * @return
+	 */
+	public static boolean setImageColor(Bitmap bitmap, int color)
+	{
+		boolean result = false;
+		if (null != bitmap) {
+			Paint paint = new Paint();
+			Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+			RectF rectF = new RectF(rect);
+			        
+			paint.setAntiAlias(true);
+			paint.setColor(color);
+			
+			Canvas canvas = new Canvas(bitmap);
+			canvas.drawRect (rectF, paint);
+		}
+		return result;
+	}
+	
+	/**
+	 * 加载图片
+	 * @param srcPath	文件路径
+	 * @return
+	 */
+	public static Bitmap loadImageFile(String srcPath)
+	{
+		Bitmap bitmap = null;
+		
+		if (!StringUtil.isEmpty(srcPath))
+		{
+	        BitmapFactory.Options newOpts = new BitmapFactory.Options();  
+	        newOpts.inJustDecodeBounds = false;
+	        bitmap = BitmapFactory.decodeFile(srcPath, newOpts);
+		}
+        
+		return bitmap;
+	}
+	
+	/**
+	 * 获取图片信息
+	 * @param srcPath	文件路径
+	 * @return
+	 */
+	public static BitmapFactory.Options getImageInfoWithFile(String srcPath)
+	{
+		BitmapFactory.Options newOpts = null;
+		if (!StringUtil.isEmpty(srcPath))
+		{
+			newOpts = new BitmapFactory.Options();  
+	        newOpts.inJustDecodeBounds = true;
+	        BitmapFactory.decodeFile(srcPath, newOpts);
+		}
+		return newOpts;
+	}
+	
+	/**
+	 * 获取已有图片的灰度图
+	 * @param old
+	 * @return
+	 */
+	public static Bitmap getGreyImage(Bitmap old) {     
+        int width, height;     
+        height = old.getHeight();     
+        width = old.getWidth();         
+        Bitmap newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(newBitmap);     
+        Paint paint = new Paint();  
+        float[] ColorMatrixFilter = {0.3f, 0.59f, 0.11f, 0, 0, 0.3f, 0.59f, 0.11f, 
+        		0, 0, 0.3f, 0.59f, 0.11f, 0, 0, 0, 0, 0, 1, 0};
+        ColorMatrix cm = new ColorMatrix(ColorMatrixFilter);     
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);     
+        paint.setColorFilter(f);     
+        c.drawBitmap(old, 0, 0, paint);     
+        return newBitmap;     
+    } 
 }

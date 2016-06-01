@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" 
+    android:background="@drawable/touch_feedback_round_white_stroke_18dp"
+    android:padding="4dp"
+    android:gravity="center_vertical">
+    
+    <ImageView android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:padding="2dp"
+        android:background="@drawable/circle_yellow_white_stroke"
+        android:src="@drawable/ic_premium_honour_24dp"
+        android:scaleType="centerCrop"/>
+    
+    <TextView 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/livechat_monthly_get_premuim"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="8dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="14sp"/>
+</LinearLayout>

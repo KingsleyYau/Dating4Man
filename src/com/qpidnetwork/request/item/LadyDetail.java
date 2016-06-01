@@ -42,6 +42,7 @@ public class LadyDetail implements Serializable{
 	 * @param thumbList			拇指图URL列表
 	 * @param photoList			图片URL列表
 	 * @param videoList			视频列表
+	 * @param photoLockNum     	锁定的相片数量
 	 */
 	public LadyDetail(
 			String womanid,
@@ -73,7 +74,8 @@ public class LadyDetail implements Serializable{
 			
 			ArrayList<String> thumbList,
 			ArrayList<String> photoList,
-			ArrayList<VideoItem> videoList
+			ArrayList<VideoItem> videoList,
+			int photoLockNum
 			) {
 		this.womanid = womanid;
 		this.firstname = firstname;
@@ -108,6 +110,7 @@ public class LadyDetail implements Serializable{
 		this.thumbList = thumbList;
 		this.photoList = photoList;
 		this.videoList = videoList;
+		this.photoLockNum = photoLockNum;
 	}
 	
 	public String womanid;
@@ -151,5 +154,7 @@ public class LadyDetail implements Serializable{
 	public ArrayList<String> photoList;
 	
 	public ArrayList<VideoItem> videoList;
+	
+	public int photoLockNum;
 	
 }

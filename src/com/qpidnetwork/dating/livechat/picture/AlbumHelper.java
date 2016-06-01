@@ -78,7 +78,9 @@ public class AlbumHelper {
 				Thumbnails.DATA };
 		Cursor cursor = cr.query(Thumbnails.EXTERNAL_CONTENT_URI, projection,
 				null, null, null);
-		getThumbnailColumnData(cursor);
+		if(cursor != null){
+			getThumbnailColumnData(cursor);
+		}
 	}
 	
 	/**

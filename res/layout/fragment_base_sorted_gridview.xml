@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/brown" >
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <com.qpidnetwork.framework.widget.stickygridheaders.StickyGridHeadersGridView
+            android:id="@+id/sortedGridView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:horizontalSpacing="0dp"
+            android:numColumns="2"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:scrollbars="none"
+            android:verticalSpacing="0dp" >
+        </com.qpidnetwork.framework.widget.stickygridheaders.StickyGridHeadersGridView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+    
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeLayoutEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/emptyView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:textColor="@color/text_color_grey"/>
+        </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" 
+        android:id="@+id/llInitContainer"
+        android:background="#F2F2F2"
+        android:gravity="center"
+        android:visibility="gone">
+        <include
+            android:id="@+id/includeError"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/layout_error_page"/>
+    </LinearLayout>
+
+</RelativeLayout>

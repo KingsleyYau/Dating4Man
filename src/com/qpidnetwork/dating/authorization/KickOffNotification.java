@@ -116,7 +116,7 @@ public class KickOffNotification {
     }
 	
 	public void Cancel() {
-		mNotification.cancelAll();
+		mNotification.cancel(mCurNotificationId);
 	}
 
 }

@@ -7,7 +7,7 @@
  */
 #include "com_qpidnetwork_request_RequestJniTicket.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestTicketController.h"
+#include <manrequesthandler/RequestTicketController.h>
 
 void OnTicketList(long requestId, bool success, const string& errnum, const string& errmsg, int pageIndex, int pageSize, int dataCount, const TicketList& ticketList);
 void OnTicketDetail(long requestId, bool success, const string& errnum, const string& errmsg, const TicketDetailItem& item);
@@ -86,13 +86,17 @@ void OnTicketList(long requestId, bool success, const string& errnum, const stri
 							"I"						// addDate
 							")V");
 
+					jstring jticketId = env->NewStringUTF(itr->ticketId.c_str());
+					jstring jtitle = env->NewStringUTF(itr->title.c_str());
 					jobject jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(itr->ticketId.c_str()),
-							env->NewStringUTF(itr->title.c_str()),
+							jticketId,
+							jtitle,
 							itr->unreadNum,
 							itr->status,
 							itr->addDate
 							);
+					env->DeleteLocalRef(jticketId);
+					env->DeleteLocalRef(jtitle);
 
 					env->SetObjectArrayElement(jItemArray, i, jItem);
 
@@ -226,18 +230,25 @@ void OnTicketDetail(long requestId, bool success, const string& errnum, const st
 							"[Ljava/lang/String;"	// fileList
 							")V");
 
+					jstring jfromName = env->NewStringUTF(contentItr->fromName.c_str());
+					jstring jtoName = env->NewStringUTF(contentItr->toName.c_str());
+					jstring jmessage = env->NewStringUTF(contentItr->message.c_str());
 					jobject jContentItem = env->NewObject(jContentItemCls, init,
 							contentItr->method,
-							env->NewStringUTF(contentItr->fromName.c_str()),
-							env->NewStringUTF(contentItr->toName.c_str()),
+							jfromName,
+							jtoName,
 							contentItr->sendDate,
-							env->NewStringUTF(contentItr->message.c_str()),
+							jmessage,
 							jFileArray
 							);
+					env->DeleteLocalRef(jfromName);
+					env->DeleteLocalRef(jtoName);
+					env->DeleteLocalRef(jmessage);
 
 					env->SetObjectArrayElement(jContentItemArray, iContentIndex, jContentItem);
 
 					env->DeleteLocalRef(jContentItem);
+					env->DeleteLocalRef(jFileArray);
 				}
 				env->DeleteLocalRef(jContentItemCls);
 			}
@@ -256,12 +267,18 @@ void OnTicketDetail(long requestId, bool success, const string& errnum, const st
 						";"
 						")V");
 
+				jstring jtitle = env->NewStringUTF(item.title.c_str());
 				jItem = env->NewObject(jDetailItemCls, init,
-							env->NewStringUTF(item.title.c_str()),
+							jtitle,
 							item.status,
 							jContentItemArray
 							);
+				env->DeleteLocalRef(jtitle);
 			}
+		}
+
+		if (NULL != jContentItemArray) {
+			env->DeleteLocalRef(jContentItemArray);
 		}
 	}
 

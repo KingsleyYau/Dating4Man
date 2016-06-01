@@ -80,3 +80,19 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+extern/cardview/.project
+
+*.properties
+
+extern/cardview/.project
+
+extern/cardview/lint.xml
+
+extern/cardview/.project
+
+extern/cardview/project.properties
+
+extern/google-play-services_lib/.project
+
+*.properties

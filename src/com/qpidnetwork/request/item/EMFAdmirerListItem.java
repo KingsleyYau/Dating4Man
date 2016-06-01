@@ -40,7 +40,8 @@ public class EMFAdmirerListItem {
 		 int age,
 		 String photoURL,
 		 String sendTime,
-		 int attachnum
+		 int attachnum,
+		 int templateType
 		 	) {
 		this.id = id;
 		this.idcode = idcode;
@@ -57,6 +58,12 @@ public class EMFAdmirerListItem {
 		this.photoURL = photoURL;
 		this.sendTime = sendTime;
 		this.attachnum = attachnum;
+		
+		if( templateType < 0 || templateType >= TemplateType.values().length ) {
+			this.mTemplateType = TemplateType.values()[0];
+		} else {
+			this.mTemplateType = TemplateType.values()[templateType];
+		}
 	}
 	
 	public String id;
@@ -74,6 +81,12 @@ public class EMFAdmirerListItem {
 	public String photoURL;
 	public String sendTime;
 	public int attachnum;
+	
+	public enum TemplateType {
+		Text,
+		VirtualGift
+	}
+	public TemplateType mTemplateType;
 	
 	@Override
 	public boolean equals(Object o) {

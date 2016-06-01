@@ -114,10 +114,50 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetVideo
 /*
  * Class:     com_qpidnetwork_request_RequestJniLiveChat
  * Method:    GetVideo
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Lcom/qpidnetwork/request/OnGetVideoCallback;)J
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Lcom/qpidnetwork/request/OnLCGetVideoCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetVideo
   (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jstring, jint, jstring, jobject);
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJniLiveChat
+ * Method:    GetMagicIconConfig
+ * Signature: (Lcom/qpidnetwork/request/OnGetMagicIconConfigCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetMagicIconConfig
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJniLiveChat
+ * Method:    ChatRecharge
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnLCChatRechargeCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_ChatRecharge
+  (JNIEnv *, jclass, jstring, jstring, jstring, jobject);
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJniLiveChat
+ * Method:    GetThemeConfig
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnGetThemeConfigCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetThemeConfig
+  (JNIEnv *, jclass, jstring, jstring, jobject);
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJniLiveChat
+ * Method:    GetThemeDetail
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnGetThemeDetailCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetThemeDetail
+  (JNIEnv *, jclass, jstring, jstring, jstring, jobject);
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJniLiveChat
+ * Method:    CheckFunctions
+ * Signature: ([IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnCheckFunctionsCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_CheckFunctions
+  (JNIEnv *, jclass, jintArray, jint, jstring, jstring, jstring, jobject);
 
 #ifdef __cplusplus
 }

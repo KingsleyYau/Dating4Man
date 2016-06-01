@@ -23,11 +23,11 @@ import android.widget.Toast;
 
 import com.facebook.Session;
 import com.facebook.SessionLoginBehavior;
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnOtherOnlineCountCallback;
@@ -259,7 +259,7 @@ public class LoginActivity extends BaseFragmentActivity
 	 */
 	public void OnlineCount() {
 		RequestJniOther.OnlineCount(
-				WebSiteManager.newInstance(this).GetWebSite().getSiteId(), 
+				WebSiteManager.getInstance().GetWebSite().getSiteId(), 
 				new OnOtherOnlineCountCallback() {
 					
 					@Override
@@ -462,7 +462,7 @@ public class LoginActivity extends BaseFragmentActivity
 			// 获取站点在线人数成功
 			OtherOnlineCountItem[] otherOnlineCountItem = (OtherOnlineCountItem[])obj.body;
 			for(int i = 0; i < otherOnlineCountItem.length; i++) {
-				if( otherOnlineCountItem[i].site == WebSiteManager.newInstance(mContext).GetWebSite().getSiteId() ) {
+				if( otherOnlineCountItem[i].site == WebSiteManager.getInstance().GetWebSite().getSiteId() ) {
 					textViewOnline.setText(String.valueOf(otherOnlineCountItem[i].onlineCount));
 					break;
 				}

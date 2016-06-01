@@ -34,8 +34,7 @@ import com.qpidnetwork.view.ProgressImageView;
 @SuppressLint("HandlerLeak")
 public class ImageViewLoader {
 	public interface ImageViewLoaderCallback {
-		public void OnDisplayNewImageFinish();
-
+		public void OnDisplayNewImageFinish(Bitmap bmp);
 		public void OnLoadPhotoFailed();
 	}
 
@@ -230,11 +229,17 @@ public class ImageViewLoader {
 								msg.obj = tempBitmap;
 								mHandler.sendMessage(msg);
 							}
+							
+							if (callback != null) {
+								callback.OnDisplayNewImageFinish(tempBitmap);
+							}
+						}else{
+							if (callback != null) {
+								callback.OnDisplayNewImageFinish(bitmap);
+							}
 						}
 
-						if (callback != null) {
-							callback.OnDisplayNewImageFinish();
-						}
+						
 					}
 
 					@Override
@@ -395,12 +400,16 @@ public class ImageViewLoader {
 										msg.obj = bitmapBig;
 										mHandler.sendMessage(msg);
 									}
+									
+									if (callback != null) {
+										callback.OnDisplayNewImageFinish(bitmapBig);
+									}
+								}else{
+									if (callback != null) {
+										callback.OnDisplayNewImageFinish(bitmap);
+									}
 								}
-
-								// 回调
-								if (callback != null) {
-									callback.OnDisplayNewImageFinish();
-								}
+								
 							}
 
 							@Override
@@ -546,30 +555,32 @@ public class ImageViewLoader {
 	{
 		Point destSize = new Point(destWidth, destHeight);
 		
-		int theMinSize = minSize > 0 ? minSize : 200;
-
-		// 若内存不足以显示，则缩小显示尺寸
-        long freeMemory = Runtime.getRuntime().freeMemory();
-        while (freeMemory < destSize.x * destSize.y * 3
-        		&& destSize.x > 2
-        		&& destSize.y > 2)
-        {
-        	// 判断长边是否小于最小显示尺寸
-        	if (destSize.x > destSize.y) {
-        		if (destSize.x < theMinSize) {
-        			break;
-        		}
-        	}
-        	else {
-        		if (destSize.y < theMinSize) {
-        			break;
-        		}
-        	}
-        	
-        	// 缩小
-        	destSize.x /= 2;
-        	destSize.y /= 2;
-        }
+//		int theMinSize = minSize > 0 ? minSize : 200;
+//
+//		// 若内存不足以显示，则缩小显示尺寸
+//        long freeMemory = Runtime.getRuntime().freeMemory();
+//        while (freeMemory < destSize.x * destSize.y * 3
+//        		&& destSize.x > 2
+//        		&& destSize.y > 2)
+//        {
+//        	// 判断长边是否小于最小显示尺寸
+//        	if (destSize.x > destSize.y) {
+//        		if (destSize.x < theMinSize) {
+//        			break;
+//        		}
+//        	}
+//        	else {
+//        		if (destSize.y < theMinSize) {
+//        			break;
+//        		}
+//        	}
+//        	
+//        	// 缩小
+//        	destSize.x /= 2;
+//        	destSize.y /= 2;
+//        }
+		destSize.x = destWidth;
+		destSize.y = destHeight;
 		return destSize;
 	}
 }

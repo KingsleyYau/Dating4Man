@@ -186,6 +186,34 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 	InitClassHelper(env, LIVECHAT_LCVIDEO_TIME_CLASS, &jLCVideoItem);
 	gJavaItemMap.insert(JavaItemMap::value_type(LIVECHAT_LCVIDEO_TIME_CLASS, jLCVideoItem));
 
+	jobject jLCMagicConfigItem;
+	InitClassHelper(env, LIVECHAT_MAGIC_CONFIG_ITEM_CLASS, &jLCMagicConfigItem);
+	gJavaItemMap.insert(JavaItemMap::value_type(LIVECHAT_MAGIC_CONFIG_ITEM_CLASS, jLCMagicConfigItem));
+
+	jobject jLCMagicIconItem;
+	InitClassHelper(env, LIVECHAT_MAGIC_ICON_TIME_CLASS, &jLCMagicIconItem);
+	gJavaItemMap.insert(JavaItemMap::value_type(LIVECHAT_MAGIC_ICON_TIME_CLASS, jLCMagicIconItem));
+
+	jobject jLCMagicTypeItem;
+	InitClassHelper(env, LIVECHAT_MAGIC_TYPE_TIME_CLASS, &jLCMagicTypeItem);
+	gJavaItemMap.insert(JavaItemMap::value_type(LIVECHAT_MAGIC_TYPE_TIME_CLASS, jLCMagicTypeItem));
+
+	jobject jLCThemeConfigItem;
+	InitClassHelper(env, LIVECHAT_THEME_CONFIG_CLASS, &jLCThemeConfigItem);
+	gJavaItemMap.insert(JavaItemMap::value_type(LIVECHAT_THEME_CONFIG_CLASS, jLCThemeConfigItem));
+
+	jobject jLCThemeTypeItem;
+	InitClassHelper(env, LIVECHAT_THEME_TYPE_CLASS, &jLCThemeTypeItem);
+	gJavaItemMap.insert(JavaItemMap::value_type(LIVECHAT_THEME_TYPE_CLASS, jLCThemeTypeItem));
+
+	jobject jLCThemeTagItem;
+	InitClassHelper(env, LIVECHAT_THEME_TAG_CLASS, &jLCThemeTagItem);
+	gJavaItemMap.insert(JavaItemMap::value_type(LIVECHAT_THEME_TAG_CLASS, jLCThemeTagItem));
+
+	jobject jLCThemeItem;
+	InitClassHelper(env, LIVECHAT_THEME_ITEM_CLASS, &jLCThemeItem);
+	gJavaItemMap.insert(JavaItemMap::value_type(LIVECHAT_THEME_ITEM_CLASS, jLCThemeItem));
+
 	/* 6.EMF模块*/
 	jobject jEMFPrivatePhotoItem;
 	InitClassHelper(env, EMF_PRIVATEPHOTO_ITEM_CLASS, &jEMFPrivatePhotoItem);
@@ -330,6 +358,11 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 	jobject jTicketContentItem;
 	InitClassHelper(env, TICKET_TICKETCONTENTITEM_CLASS, &jTicketContentItem);
 	gJavaItemMap.insert(JavaItemMap::value_type(TICKET_TICKETCONTENTITEM_CLASS, jTicketContentItem));
+
+	/* 13. 月费模块 */
+	jobject jMonthlyFeeTipItem;
+	InitClassHelper(env, MONTHLY_FEE_TIP_CLASS, &jMonthlyFeeTipItem);
+	gJavaItemMap.insert(JavaItemMap::value_type(MONTHLY_FEE_TIP_CLASS, jMonthlyFeeTipItem));
 
 	return JNI_VERSION_1_4;
 }

@@ -1,12 +1,9 @@
 package com.qpidnetwork.framework.util;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
@@ -14,7 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.http.util.CharArrayBuffer;
+//import org.apache.http.util.CharArrayBuffer;
 
 @SuppressWarnings("deprecation")
 public class StringUtil {
@@ -68,27 +65,27 @@ public class StringUtil {
 		return sb.toString();
 	}
 
-	/**
-	 * 读取输入流，返回字符串
-	 * 
-	 * @param instream
-	 * @param charset
-	 * @return
-	 */
-	public static String readInputStream(InputStream instream, int contentLength, Charset charset) throws IOException {
-		Reader reader = new InputStreamReader(new BufferedInputStream(instream), charset);
-		CharArrayBuffer buffer = new CharArrayBuffer(contentLength);
-		try {
-			char[] tmp = new char[1024];
-			int l;
-			while ((l = reader.read(tmp)) != -1) {
-				buffer.append(tmp, 0, l);
-			}
-		} finally {
-			reader.close();
-		}
-		return buffer.toString();
-	}
+//	/**
+//	 * 读取输入流，返回字符串
+//	 * 
+//	 * @param instream
+//	 * @param charset
+//	 * @return
+//	 */
+//	public static String readInputStream(InputStream instream, int contentLength, Charset charset) throws IOException {
+//		Reader reader = new InputStreamReader(new BufferedInputStream(instream), charset);
+//		CharArrayBuffer buffer = new CharArrayBuffer(contentLength);
+//		try {
+//			char[] tmp = new char[1024];
+//			int l;
+//			while ((l = reader.read(tmp)) != -1) {
+//				buffer.append(tmp, 0, l);
+//			}
+//		} finally {
+//			reader.close();
+//		}
+//		return buffer.toString();
+//	}
 
 	/**
 	 * 合成URI所需要的参数形式

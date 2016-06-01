@@ -2,14 +2,13 @@ package com.qpidnetwork.dating.profile;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestEnum.Children;
 import com.qpidnetwork.request.RequestEnum.Education;

@@ -1,7 +1,6 @@
 package com.qpidnetwork.dating.livechat.expression;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -108,16 +107,21 @@ public class EmotionMainFragment extends BaseFragment{
 	
 	
 	private void onEmotionSelected(){
-		ivEmotion.setBackgroundColor(getResources().getColor(R.color.thin_grey));
-		ivEmotionHistory.setBackgroundColor(Color.TRANSPARENT);
+//		ivEmotion.setBackgroundColor(getResources().getColor(R.color.thin_grey));
+//		ivEmotionHistory.setBackgroundColor(Color.TRANSPARENT);
+		ivEmotion.setImageResource(R.drawable.ic_premium_emotion_blue_24dp);
+		ivEmotionHistory.setImageResource(R.drawable.ic_history_grey600_24dp);
 		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)indicator.getLayoutParams();
 		params.leftMargin = UnitConversion.dip2px(getActivity(), 48);
 		indicator.setLayoutParams(params);
 	}
 	
 	private void onEmotionHistorySelected(){
-		ivEmotionHistory.setBackgroundColor(getResources().getColor(R.color.thin_grey));
-		ivEmotion.setBackgroundColor(Color.TRANSPARENT);
+//		ivEmotionHistory.setBackgroundColor(getResources().getColor(R.color.thin_grey));
+//		ivEmotion.setBackgroundColor(Color.TRANSPARENT);
+		ivEmotion.setImageResource(R.drawable.ic_premium_emotion_24dp);
+		ivEmotionHistory.setImageResource(R.drawable.ic_history_blue_24dp);
+		
 		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)indicator.getLayoutParams();
 		params.leftMargin = UnitConversion.dip2px(getActivity(), 0);
 		indicator.setLayoutParams(params);

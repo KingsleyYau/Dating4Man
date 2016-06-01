@@ -7,8 +7,8 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.request.item.ProfileItem;
 import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.MaterialAppBar;

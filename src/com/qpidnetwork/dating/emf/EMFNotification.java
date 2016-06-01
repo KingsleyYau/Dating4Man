@@ -135,6 +135,6 @@ public class EMFNotification {
     }
 	
 	public void Cancel() {
-		mNotification.cancelAll();
+		mNotification.cancel(mCurNotificationId);
 	}
 }

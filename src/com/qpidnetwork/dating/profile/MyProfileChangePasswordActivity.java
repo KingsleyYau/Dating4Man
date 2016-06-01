@@ -2,15 +2,14 @@ package com.qpidnetwork.dating.profile;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.view.MaterialAppBar;

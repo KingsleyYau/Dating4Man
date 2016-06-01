@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -13,8 +14,8 @@ import android.os.Build;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -76,7 +77,7 @@ public class MaterialNameCardDialog extends Dialog implements OnClickListener{
 
 	}
 	
-	@SuppressLint("InflateParams")
+	@SuppressLint({ "InflateParams", "NewApi" })
 	@SuppressWarnings("deprecation")
 	private View createView(){
 		
@@ -129,19 +130,6 @@ public class MaterialNameCardDialog extends Dialog implements OnClickListener{
 			String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(contactItem.photoBigURL);
 			new ImageViewLoader(mContext).DisplayImage(image, contactItem.photoBigURL, localPath, new ImageViewLoaderCallback(){
 
-				@Override
-				public void OnDisplayNewImageFinish() {
-					// TODO Auto-generated method stub
-					((Activity) mContext).runOnUiThread(new Runnable(){
-
-						@Override
-						public void run() {
-							// TODO Auto-generated method stub
-							if (isShowing())progress.setVisibility(View.GONE);
-						}
-						
-					});
-				}
 
 				@Override
 				public void OnLoadPhotoFailed() {
@@ -156,6 +144,20 @@ public class MaterialNameCardDialog extends Dialog implements OnClickListener{
 						
 					});
 				
+				}
+
+				@Override
+				public void OnDisplayNewImageFinish(Bitmap bmp) {
+					// TODO Auto-generated method stub
+					((Activity) mContext).runOnUiThread(new Runnable(){
+
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							if (isShowing())progress.setVisibility(View.GONE);
+						}
+						
+					});
 				}
 				
 			} );

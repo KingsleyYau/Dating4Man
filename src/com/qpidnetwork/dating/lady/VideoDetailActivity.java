@@ -47,10 +47,13 @@ import com.qpidnetwork.framework.util.DateUtil;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.ToastUtil;
 import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.manager.MonthlyFeeManager;
 import com.qpidnetwork.request.OnVSPlayVideoCallback;
 import com.qpidnetwork.request.OnVSSaveVideoCallback;
 import com.qpidnetwork.request.OnVSVideoDetailCallback;
+import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 import com.qpidnetwork.request.RequestOperator;
+import com.qpidnetwork.request.item.MonthLyFeeTipItem;
 import com.qpidnetwork.request.item.VSPlayVideoItem;
 import com.qpidnetwork.request.item.VSVideoDetailItem;
 import com.qpidnetwork.tool.ImageViewLoader;
@@ -58,6 +61,7 @@ import com.qpidnetwork.view.FlatToast;
 import com.qpidnetwork.view.FlatToast.StikyToastType;
 import com.qpidnetwork.view.GetMoreCreditDialog;
 import com.qpidnetwork.view.MaterialDialogAlert;
+import com.qpidnetwork.view.MonthlyFeeDialog;
 import com.qpidnetwork.view.QpidGallery;
 import com.qpidnetwork.view.VideoView;
 import com.qpidnetwork.view.VideoView.MySizeChangeLinstener;
@@ -161,6 +165,8 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 	private String mCurrentVideoUrl; //用于记录当前正在播放的视频的url
 	private QpidGallery galleryLadyVideos; //视频列表
 	private VideoGalleryAdapter videoGalleryAdapter;
+	
+	private MonthLyFeeTipItem mMonthLyFeeTipItem;
 	
 
 	
@@ -917,15 +923,31 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 		case PLAY_VEDIO_FAILED:
 			
 			cancelToastImmediately();
-			
 			RequestFailBean bean = (RequestFailBean)msg.obj;
-			if ("MBCE45003".equals(bean.errno.trim())) {
-				GetMoreCreditDialog dialog = new GetMoreCreditDialog(VideoDetailActivity.this);
-				if(isActivityVisible()){
-					dialog.show();
+			
+			//先判断月费类型
+			MemberType type = MemberType.values()[msg.arg1];
+			if (type == MemberType.NO_FEED_FIRST_MONTHLY_MEMBER|| type == MemberType.NO_FEED_MONTHLY_MEMBER) {
+				MonthlyFeeManager.getInstance().onMemberTypeUpdate(type);
+				mMonthLyFeeTipItem = MonthlyFeeManager.getInstance().getMonthLyFeeTipItem(type);
+				if (mMonthLyFeeTipItem != null) {
+					MonthlyFeeDialog dialog = new MonthlyFeeDialog(this,R.style.ChoosePhotoDialog);
+					dialog.setData(mMonthLyFeeTipItem);// 设置数据对象
+					if(isActivityVisible()){
+						dialog.show();						
+					}
+					break;
 				}
-				break;
-			}
+			}else{
+				if ("MBCE45003".equals(bean.errno.trim())) {
+					GetMoreCreditDialog dialog = new GetMoreCreditDialog(VideoDetailActivity.this);
+					if(isActivityVisible()){
+						dialog.show();
+					}
+					break;
+				}
+			} 
+			
 			
 			if (bean.errmsg != null) {
 				FlatToast.showStickToast(VideoDetailActivity.this, "Failed", StikyToastType.FAILED);
@@ -997,7 +1019,7 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 		RequestOperator.getInstance().PlayVideo(mLadyDetail.ladyId, mVideoDetailList.get(mCurrentPosition).id, new OnVSPlayVideoCallback() {
 			
 			@Override
-			public void OnVSPlayVideo(boolean isSuccess, String errno, String errmsg,
+			public void OnVSPlayVideo(boolean isSuccess, String errno, String errmsg, int memberType,
 					VSPlayVideoItem item) {
 				Message msg = Message.obtain();
 				if( isSuccess && (item != null)){
@@ -1007,6 +1029,7 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 					RequestFailBean bean = new RequestFailBean(errno, errmsg);
 					msg.what = PLAY_VEDIO_FAILED;
 					msg.obj = bean;
+					msg.arg1 = memberType;
 				}
 				sendUiMessage(msg);
 			}

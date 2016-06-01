@@ -6,6 +6,8 @@ import java.util.Calendar;
 
 import android.content.Context;
 
+import com.qpidnetwork.manager.FileCacheManager;
+
 public class Log {
 
 	/**
@@ -18,35 +20,13 @@ public class Log {
 	 * </code>
 	 */
 	private static int LOG_LEVEL = android.util.Log.DEBUG;
-
-	private static boolean VERBOSE = false;
-	private static boolean DEBUG = false;
-	private static boolean INFO = false;
-	private static boolean WARN = false;
-	private static boolean ERROR = false;
 	
 	/**
 	 * file log param
 	 */
-	private static String mDirPath = "";
 	private static Context mContext = null;
 	private static boolean mIsWriteFileLog = false;
 
-	static {
-		switch (LOG_LEVEL) {
-		case android.util.Log.VERBOSE:
-			VERBOSE = true;
-		case android.util.Log.DEBUG:
-			DEBUG = true;
-		case android.util.Log.INFO:
-			INFO = true;
-		case android.util.Log.WARN:
-			WARN = true;
-		case android.util.Log.ERROR:
-			ERROR = true;
-		}
-	}
-	
 	/**
 	 * 设置log级别
 	 * @param level	log级别（如：android.util.Log.DEBUG等）
@@ -57,13 +37,13 @@ public class Log {
 	}
 
 	public static void v(String tag, String msg, Object... args) {
-		if (VERBOSE) {
+		if (android.util.Log.VERBOSE >= LOG_LEVEL) {
 			android.util.Log.v(tag, String.format(msg, args));
 		}
 	}
 
 	public static void d(String tag, String msg, Object... args) {
-		if (DEBUG) {
+		if (android.util.Log.DEBUG >= LOG_LEVEL) {
 			String m = String.format(msg, args);
 			// m = (m.length() > 300 ? m.substring(0, 300) : m);
 			android.util.Log.d(tag, m);
@@ -71,52 +51,52 @@ public class Log {
 	}
 
 	public static void i(String tag, String msg, Object... args) {
-		if (INFO) {
+		if (android.util.Log.INFO >= LOG_LEVEL) {
 			android.util.Log.i(tag, String.format(msg, args));
 		}
 	}
 
 	public static void w(String tag, String msg, Object... args) {
-		if (WARN) {
+		if (android.util.Log.WARN >= LOG_LEVEL) {
 			android.util.Log.w(tag, String.format(msg, args));
 		}
 	}
 
 	public static void w(String tag, String msg, Throwable tr, Object... args) {
-		if (WARN) {
+		if (android.util.Log.WARN >= LOG_LEVEL) {
 			android.util.Log.w(tag, String.format(msg, args), tr);
 		}
 	}
 
 	public static void e(String tag, String msg, Object... args) {
-		if (ERROR) {
+		if (android.util.Log.ERROR >= LOG_LEVEL) {
 			android.util.Log.e(tag, String.format(msg, args));
 		}
 	}
 
 	public static void e(String tag, String msg, Throwable tr, Object... args) {
-		if (ERROR) {
+		if (android.util.Log.ERROR >= LOG_LEVEL) {
 			android.util.Log.e(tag, String.format(msg, args), tr);
 		}
 	}
 	
-	public static boolean initFileLog(String dirPath, Context context) {
-		boolean result = false;
-		if (!dirPath.isEmpty() && null != context) {
-			mDirPath = dirPath;
-			mContext = context;
-			result = true;
-		}
-		return result;
+	public static void initFileLog(Context context) {
+		mContext = context;
 	}
 	
-	public static void setWriteFileLog(boolean isWrite)
-	{
+	public static void setWriteFileLog(boolean isWrite){
 		mIsWriteFileLog = isWrite;
 	}
 	
-	public static void file(String tag, String msg, Object... agrs) {
-		writeLog(mContext, mDirPath, tag, String.format(msg, agrs));
+	public synchronized static void file(String tag, String msg, Object... agrs) {
+		if(mIsWriteFileLog){
+			try{
+	            String dirPath = FileCacheManager.getInstance().GetCrashInfoPath();
+				writeLog(mContext, dirPath, tag, String.format(msg, agrs));
+			}catch(Exception e){
+				
+			}
+		}
 	}
 	
 	private static void writeLog(Context context, String dirPath, String tag, String strLog){

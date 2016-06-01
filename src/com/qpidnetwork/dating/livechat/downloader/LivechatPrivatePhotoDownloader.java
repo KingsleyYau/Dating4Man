@@ -23,7 +23,7 @@ public class LivechatPrivatePhotoDownloader implements
 	private OnDownloadCallback callback;
 
 	public LivechatPrivatePhotoDownloader(Context context) {
-		mLiveChatManager = LiveChatManager.newInstance(context);
+		mLiveChatManager = LiveChatManager.getInstance();
 	}
 
 	public void startDownload(LCMessageItem bean, PhotoSizeType photoType, OnDownloadCallback callback) {

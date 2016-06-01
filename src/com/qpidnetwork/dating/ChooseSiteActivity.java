@@ -114,7 +114,7 @@ public class ChooseSiteActivity extends BaseFragmentActivity implements OnPageCh
 		super.onCreate(savedInstanceState);
 		siteName = WebSiteManager.getInstance().getDefaultSortedSiteNames();
 		siteDescrip = WebSiteManager.getInstance().getDefaultSortedSiteDescs();
-		siteManager = WebSiteManager.newInstance(ChooseSiteActivity.this);
+		siteManager = WebSiteManager.getInstance();
 	}
 	
 	/**
@@ -253,7 +253,7 @@ public class ChooseSiteActivity extends BaseFragmentActivity implements OnPageCh
 	 */
 	public void OnlineCount() {
 		RequestJniOther.OnlineCount(
-				WebSiteManager.newInstance(this).GetWebSite().getSiteId(), 
+				WebSiteManager.getInstance().GetWebSite().getSiteId(), 
 				new OnOtherOnlineCountCallback() {
 					
 					@Override

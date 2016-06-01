@@ -9,16 +9,17 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE    := livechat-interface
+LOCAL_MODULE := livechat-interface
 
 LOCAL_MODULE_FILENAME := liblivechat-interface
 
 LOCAL_CFLAGS = -fpermissive -Wno-write-strings
 
-LOCAL_C_INCLUDES += $(LIBRARY_PATH)
+LOCAL_C_INCLUDES := $(LIBRARY_PATH)
+LOCAL_C_INCLUDES += $(LIBRARY_THIRDY_PARTY_PATH)
 
 LOCAL_LDLIBS += -llog
-LOCAL_LDLIBS += -lz
+#LOCAL_LDLIBS += -lz
 
 LOCAL_STATIC_LIBRARIES += common
 LOCAL_STATIC_LIBRARIES += livechat

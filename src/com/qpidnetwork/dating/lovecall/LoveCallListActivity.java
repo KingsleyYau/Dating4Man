@@ -25,6 +25,10 @@ public class LoveCallListActivity extends BaseTabbarTitleFragmentActivity{
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);
+		
+		// 统计设置为page activity
+		SetPageActivity(true);
+		
 		this.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(WebSiteManager.getInstance().GetWebSite().getSiteColor())));
 		
 		TitleTabBar tabBar = getTitleTabBar();
@@ -117,5 +121,12 @@ public class LoveCallListActivity extends BaseTabbarTitleFragmentActivity{
 				fragment.TabSelectTimeoutRefresh(newRequesrUpdate);
 			}
 		}
+	}
+	
+	@Override
+	public void onTabSelected(int index) {
+		super.onTabSelected(index);
+		// 统计切换页
+		onAnalyticsPageSelected(index);
 	}
 }

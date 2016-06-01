@@ -13,10 +13,10 @@ import android.os.Parcelable;
 import android.view.View;
 import android.widget.Toast;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.home.HomeActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnRegisterCallback;
 import com.qpidnetwork.request.OnRequestCallback;
@@ -330,7 +330,7 @@ public class RegisterPasswordActivity extends BaseFragmentActivity
 		editTextEmail.setHint(getString(R.string.Enter_your_email_address));
 		editTextPassword.setHint(getString(R.string.Choose_a_password));
 		
-		siteManager = WebSiteManager.newInstance(mContext);
+		siteManager = WebSiteManager.getInstance();
 		if (siteManager != null) appbar.setAppbarBackgroundColor((mContext.getResources().getColor(siteManager.GetWebSite().getSiteColor())));
 		
 	}

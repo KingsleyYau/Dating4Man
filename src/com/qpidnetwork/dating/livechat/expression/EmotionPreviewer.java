@@ -50,7 +50,7 @@ public class EmotionPreviewer extends PopupWindow implements LiveChatManagerEmot
 		this.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		this.setTouchable(true);
 		this.setFocusable(true);
-		mLiveChatManager = LiveChatManager.newInstance(null);
+		mLiveChatManager = LiveChatManager.getInstance();
 		
 		
 		

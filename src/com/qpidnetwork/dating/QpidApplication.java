@@ -31,7 +31,7 @@ import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.PhoneInfoManager;
 import com.qpidnetwork.dating.authorization.RegisterManager;
 import com.qpidnetwork.dating.contacts.ContactManager;
-import com.qpidnetwork.dating.googleanalytics.GAManager;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsManager;
 import com.qpidnetwork.dating.lady.LadyDetailManager;
 import com.qpidnetwork.dating.quickmatch.QuickMatchManager;
 import com.qpidnetwork.framework.util.Log;
@@ -40,6 +40,7 @@ import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.manager.MonthlyFeeManager;
 import com.qpidnetwork.manager.VirtualGiftManager;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
@@ -98,9 +99,6 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 			Log.SetLevel(android.util.Log.ERROR);
 		}
 		
-		// Jni错误捕捉
-		CrashHandlerJni.SetCrashLogDirectory(WebSiteManager.CACHE_PATH_PRE + "/crash");
-		
 		// 初始化handler
 		initHandler();
 		
@@ -108,11 +106,39 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 		
 		// 初始化GA管理器
 		if (isDebug || isDemo) {
-			GAManager.newInstance().init(this, R.xml.tracker_demo);
+			AnalyticsManager.newInstance().init(this, R.xml.tracker_demo);
 		}
 		else {
-			GAManager.newInstance().init(this, R.xml.tracker);
+			AnalyticsManager.newInstance().init(this, R.xml.tracker);
 		}
+		
+	   	//deviceType
+	   	DisplayMetrics dm = SystemUtil.getDisplayMetrics(this);
+	   	double diagonalPixels = Math.sqrt(Math.pow(dm.widthPixels, 2) + Math.pow(dm.heightPixels, 2));
+		double screenSize = diagonalPixels / (160 * dm.density); // 求出几寸（不是很精确）
+		DEVICE_TYPE = screenSize >= 6 ? "34" : "30";
+
+	   	// 请求管理类
+	   	RequestOperator.newInstance(this);
+	   	
+		// 创建文件缓存管理器
+	   	FileCacheManager.newInstance(this);
+		
+		// 创建站点切换管理器
+		WebSiteManager wm = WebSiteManager.newInstance(this);
+
+		// crash日志管理器
+		CrashHandler.newInstance(this);
+
+		// 创建月费管理器
+		MonthlyFeeManager.newInstance(this);
+
+		// 设置Jni错误捕捉log目录
+		CrashHandlerJni.SetCrashLogDirectory(WebSiteManager.getInstance().GetCachePath() + "/crash");
+		
+		// 设置RequestJni的Cookies目录
+		RequestJni.SetCookiesDirectory(WebSiteManager.getInstance().GetCachePath());
+		RequestJni.CleanCookies();
 		
 		// 设置demo请求环境
 		if( isDemo ) {
@@ -132,29 +158,11 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 	        	// 设备Id
 	    		TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 	    		RequestJni.SetDeviceId(tm);
+	    		
+//	    		Log.d("test", "deviceId:%s", RequestJni.GetDeviceId(tm));
 	        }  
 	    } catch (NameNotFoundException e) {  
 	    } 
-	   	
-	   	//deviceType
-	   	DisplayMetrics dm = SystemUtil.getDisplayMetrics(this);
-	   	double diagonalPixels = Math.sqrt(Math.pow(dm.widthPixels, 2) + Math.pow(dm.heightPixels, 2));
-		double screenSize = diagonalPixels / (160 * dm.density); // 求出几寸（不是很精确）
-		DEVICE_TYPE = screenSize >= 6 ? "34" : "30";
-
-	   	// 请求管理类
-	   	RequestOperator.newInstance(this);
-	   	
-		// 创建文件缓存管理器
-	   	FileCacheManager.newInstance(this);
-		
-		// 创建站点切换管理器
-		WebSiteManager wm = WebSiteManager.newInstance(this);
-		RequestJni.SetCookiesDirectory(WebSiteManager.CACHE_PATH_PRE);
-		RequestJni.CleanCookies();
-		
-		// crash日志管理器
-		CrashHandler.newInstance(this);
 		
 		// 创建登录状态个管理器
 		LoginManager lm = LoginManager.newInstance(this);
@@ -183,6 +191,7 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 		// 女士详情管理器
 		LadyDetailManager ldm = LadyDetailManager.newInstance(this);
 		liveChatManager.RegisterOtherListener(ldm);
+		lm.AddListenner(ldm);
 		
 		// 最近联系人
 		ContactManager ctm = ContactManager.newInstance(this);
@@ -221,6 +230,9 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 		startService(intentAdvertService);
 		bindService(intentAdvertService, mAdvertConnection, Context.BIND_AUTO_CREATE);
 		
+		/*清除EMF本地缓存的私密照及Video缓存*/
+		clearLocalSource();
+		
 //		EnableHttpResponseCache();
 		
 		// test for install referrer by Samson 
@@ -228,10 +240,21 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 //		it.setPackage("com.qpidnetwork.dating");
 //		it.putExtra("referrer", "utm_source%3DQpidnetworkCom%26utm_medium%3Dcpc%26utm_term%3Dandroid%252Bbrowser%26utm_content%3Dmaxthon%2520browser%2520for%2520android%26utm_campaign%3DYou%2520never%2520know%2520fast.");
 //		sendBroadcast(it);
+
 	}
 	
 	public static synchronized Context getContext(){
 		return mContext;
+	}
+	
+	/**
+	 * 清除本地缓存文件
+	 */
+	private void clearLocalSource(){
+		//清除本地缓存私密照（EMF）
+		FileCacheManager.getInstance().clearAllPrivatePhotoCache();
+		//清除本地缓存video(EMF)
+		FileCacheManager.getInstance().clearAllVideoCache();
 	}
 	
 	

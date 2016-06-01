@@ -53,8 +53,9 @@ public class WebSiteManager {
 	 * 缓存路径前序
 	 */
 //	public static String CACHE_PATH_PRE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/qpidnetwork/";
-	public static String CACHE_PATH_PRE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/QpidDating/";
-
+//	public static String CACHE_PATH_PRE = Environment.getExternalStorageDirectory().getAbsolutePath() + "/QpidDating/";
+	private String mCachePath = "";
+	
 	/**
 	 * 本地配置文件
 	 */
@@ -98,8 +99,15 @@ public class WebSiteManager {
 
 	private WebSiteManager(Context context) {
 		mContext = context;
+//		File appDir = mContext.getFilesDir();
+//		mCachePath = appDir.getAbsolutePath() + "/QpidDating/";
+		mCachePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/QpidDating/";
 	}
 
+	public String GetCachePath() {
+		return mCachePath;
+	}
+	
 	/**
 	 * 初始化数据
 	 */
@@ -257,14 +265,14 @@ public class WebSiteManager {
 		return DatabaseHelper.getInstance(mContext, mWebSite.databaseName);
 	}
 
-	/**
-	 * 获取缓存路径
-	 * 
-	 * @return 缓存路径
-	 */
-	public String GetCachePath() {
-		return mWebSite.cachePath;
-	}
+//	/**
+//	 * 获取缓存路径
+//	 * 
+//	 * @return 缓存路径
+//	 */
+//	public String GetCachePath() {
+//		return mWebSite.cachePath;
+//	}
 
 	/**
 	 * 获取facebook关注连接
@@ -278,6 +286,7 @@ public class WebSiteManager {
 		Resources res = context.getResources();
 		TypedArray siteIdArray = res.obtainTypedArray(R.array.siteIdArray);
 		TypedArray webHostArray = res.obtainTypedArray(R.array.webHostArray);
+		TypedArray webShortNameArray = res.obtainTypedArray(R.array.webShortNameArray);
 		TypedArray webKeyArray = res.obtainTypedArray(R.array.webKeyArray);
 		TypedArray webNameArray = res.obtainTypedArray(R.array.webNameArray);
 		TypedArray webDescArray = res.obtainTypedArray(R.array.webDescArray);
@@ -295,13 +304,14 @@ public class WebSiteManager {
 		for (int index = 0; index < siteCount; index++) {
 			int siteId = siteIdArray.getInteger(index, 0);
 			String appSiteHost = webHostArray.getString(index);
+			String siteShortName = webShortNameArray.getString(index);
 			String siteKey = webKeyArray.getString(index);
 			String siteName = webNameArray.getString(index);
 			String siteDesc = webDescArray.getString(index);
 			String webSiteHost = wwwHostArray.getString(index);
 			int siteTheme = appThemeArray.getResourceId(index, R.style.AppTheme);
 			int siteColor = appColorArray.getResourceId(index, R.color.blue_color);
-			String cachePath = CACHE_PATH_PRE + siteName;
+			String cachePath = mCachePath + siteName;
 			String databaseName = siteName;
 			String facebookLink = facebookArray.getString(index);
 			String helpLink = helpArray.getString(index);
@@ -309,6 +319,7 @@ public class WebSiteManager {
 			WebSite webSite = new WebSite(
 					siteId, 
 					appSiteHost, 
+					siteShortName,
 					siteKey,
 					siteName, 
 					siteDesc,
@@ -353,6 +364,7 @@ public class WebSiteManager {
 
 		private int siteId; 			// 站点Id
 		private String appSiteHost;		// app 使用服务器地址
+		private String siteShortName;	// 站点名称简写
 		private String siteKey; 		// 站点名字
 		private String siteName; 		// 站点名字
 		private String siteDesc;		// 站点描述
@@ -368,6 +380,7 @@ public class WebSiteManager {
 		public WebSite(
 				int siteId, 
 				String appSiteHost, 
+				String siteShortName,
 				String siteKey,
 				String siteName,
 				String siteDesc, 
@@ -382,6 +395,7 @@ public class WebSiteManager {
 				) {
 			this.siteId = siteId;
 			this.appSiteHost = appSiteHost;
+			this.siteShortName = siteShortName;
 			this.siteKey = siteKey;
 			this.siteName = siteName;
 			this.siteDesc = siteDesc;
@@ -422,6 +436,14 @@ public class WebSiteManager {
 
 		public void setWebSiteHost(String webSiteHost) {
 			this.webSiteHost = webSiteHost;
+		}
+		
+		public String getSiteShortName() {
+			return siteShortName;
+		}
+		
+		public void setSiteShortName(String siteShortName) {
+			this.siteShortName= siteShortName;
 		}
 
 		public String getSiteKey() {

@@ -3,7 +3,7 @@
  *
  *  Created on: 2015-04-14
  *      Author: Samson.Fan
- * Description:
+ * Description: 男士端LiveChat JNI接口
  */
 
 #include "com_qpidnetwork_livechat_jni_LiveChatClient.h"
@@ -13,6 +13,7 @@
 #include <common/CommonFunc.h>
 #include <livechat/JniIntToType.h>	// 处理 jint 转  枚举type
 #include <livechat/LiveChatJniCallbackItemDef.h>
+#include <common/CheckMemoryLeak.h>
 #include <common/KLog.h>
 
 using namespace std;
@@ -97,35 +98,55 @@ jobject GetTalkUserListItem(JNIEnv* env, const TalkUserListItem& item)
 	jclass jItemCls = GetJObjectClassWithMap(env, LIVECHAT_TALKUSERLISTTIME_CLASS);
 	if (NULL != jItemCls) {
 		jmethodID init = env->GetMethodID(jItemCls, "<init>"
-				, "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZIIIIIIILjava/lang/String;)V");
+				, "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZIIIIIIIILjava/lang/String;)V");
 
 		int sexType = UserSexTypeToInt(item.sexType);
 		int marryType = MarryTypeToInt(item.marryType);
+		int childrenType = ChildrenTypeToInt(item.childrenType);
 		int statusType = UserStatusTypeToInt(item.status);
 		int userType = UserTypeToInt(item.userType);
 		int deviceType = DeviceTypeToInt(item.deviceType);
 		int clientType = ClientTypeToInt(item.clientType);
+		jstring juserId = env->NewStringUTF(item.userId.c_str());
+		jstring juserName = env->NewStringUTF(item.userName.c_str());
+		jstring jserver = env->NewStringUTF(item.server.c_str());
+		jstring jimgUrl = env->NewStringUTF(item.imgUrl.c_str());
+		jstring jweight = env->NewStringUTF(item.weight.c_str());
+		jstring jheight = env->NewStringUTF(item.height.c_str());
+		jstring jcountry = env->NewStringUTF(item.country.c_str());
+		jstring jprovince = env->NewStringUTF(item.province.c_str());
+		jstring jclientVersion = env->NewStringUTF(item.clientVersion.c_str());
 		jItem = env->NewObject(jItemCls, init,
-					env->NewStringUTF(item.userId.c_str()),
-					env->NewStringUTF(item.userName.c_str()),
-					env->NewStringUTF(item.server.c_str()),
-					env->NewStringUTF(item.imgUrl.c_str()),
+					juserId,
+					juserName,
+					jserver,
+					jimgUrl,
 					sexType,
 					item.age,
-					env->NewStringUTF(item.weight.c_str()),
-					env->NewStringUTF(item.height.c_str()),
-					env->NewStringUTF(item.country.c_str()),
-					env->NewStringUTF(item.province.c_str()),
+					jweight,
+					jheight,
+					jcountry,
+					jprovince,
 					item.videoChat,
 					item.videoCount,
 					marryType,
+					childrenType,
 					statusType,
 					userType,
 					item.orderValue,
 					deviceType,
 					clientType,
-					env->NewStringUTF(item.clientVersion.c_str())
+					jclientVersion
 					);
+		env->DeleteLocalRef(juserId);
+		env->DeleteLocalRef(juserName);
+		env->DeleteLocalRef(jserver);
+		env->DeleteLocalRef(jimgUrl);
+		env->DeleteLocalRef(jweight);
+		env->DeleteLocalRef(jheight);
+		env->DeleteLocalRef(jcountry);
+		env->DeleteLocalRef(jprovince);
+		env->DeleteLocalRef(jclientVersion);
 	}
 
 	return jItem;
@@ -156,6 +177,31 @@ jobjectArray GetTalkUserList(JNIEnv* env, const TalkUserList& list)
 	return array;
 }
 
+jobjectArray GetUserInfoList(JNIEnv* env, const UserInfoList& list)
+{
+	jobjectArray array = NULL;
+	jclass jItemCls = GetJObjectClassWithMap(env, LIVECHAT_TALKUSERLISTTIME_CLASS);
+	if (NULL != jItemCls) {
+		array = env->NewObjectArray(list.size(), jItemCls, NULL);
+		if (NULL != array) {
+			int i = 0;
+			for(UserInfoList::const_iterator itr = list.begin();
+				itr != list.end();
+				itr++)
+			{
+				jobject jItem = GetTalkUserListItem(env, (*itr));
+				if (NULL != jItem) {
+					env->SetObjectArrayElement(array, i, jItem);
+					i++;
+				}
+				env->DeleteLocalRef(jItem);
+			}
+		}
+	}
+
+	return array;
+}
+
 jobject GetTalkSessionListItem(JNIEnv* env, const TalkSessionListItem& item)
 {
 	jobject jItem = NULL;
@@ -164,12 +210,16 @@ jobject GetTalkSessionListItem(JNIEnv* env, const TalkSessionListItem& item)
 		jmethodID init = env->GetMethodID(jItemCls, "<init>"
 				, "(Ljava/lang/String;Ljava/lang/String;ZI)V");
 
+		jstring jtargetId = env->NewStringUTF(item.targetId.c_str());
+		jstring jinvitedId = env->NewStringUTF(item.invitedId.c_str());
 		jItem = env->NewObject(jItemCls, init,
-					env->NewStringUTF(item.targetId.c_str()),
-					env->NewStringUTF(item.invitedId.c_str()),
+					jtargetId,
+					jinvitedId,
 					item.charget,
 					item.chatTime
 					);
+		env->DeleteLocalRef(jtargetId);
+		env->DeleteLocalRef(jinvitedId);
 	}
 
 	return jItem;
@@ -340,10 +390,12 @@ public:
 							")V");
 
 					int statusType = UserStatusTypeToInt(itr->statusType);
+					jstring juserId = env->NewStringUTF(itr->userId.c_str());
 					jobject jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(itr->userId.c_str()),
+							juserId,
 							statusType
 							);
+					env->DeleteLocalRef(juserId);
 					env->SetObjectArrayElement(jItemArray, i, jItem);
 					env->DeleteLocalRef(jItem);
 
@@ -407,19 +459,19 @@ public:
 
 		ReleaseEnv(isAttachThread);
 	}
-	virtual void OnSendMessage(const string& inUserId, const string& inMessage, int inTicket, LCC_ERR_TYPE err, const string& errmsg) {
+	virtual void OnSendTextMessage(const string& inUserId, const string& inMessage, int inTicket, LCC_ERR_TYPE err, const string& errmsg) {
 		JNIEnv* env = NULL;
 		bool isAttachThread = false;
 		GetEnv(&env, &isAttachThread);
 
-		FileLog("LiveChatClient", "OnSendMessage() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+		FileLog("LiveChatClient", "OnSendTextMessage() callback, env:%p, isAttachThread:%d", env, isAttachThread);
 
 		jclass jCallbackCls = env->GetObjectClass(gListener);
 		string signure = "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V";
 		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnSendMessage", signure.c_str());
 		if (NULL != gListener && NULL != jCallback)
 		{
-			FileLog("LiveChatClient", "OnSendMessage() callback now");
+			FileLog("LiveChatClient", "OnSendTextMessage() callback now");
 
 			int errType = LccErrTypeToInt(err);
 			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
@@ -432,7 +484,7 @@ public:
 			env->DeleteLocalRef(juserId);
 			env->DeleteLocalRef(jerrmsg);
 
-			FileLog("LiveChatClient", "OnSendMessage() callback ok");
+			FileLog("LiveChatClient", "OnSendTextMessage() callback ok");
 		}
 
 		ReleaseEnv(isAttachThread);
@@ -741,7 +793,11 @@ public:
 
 		ReleaseEnv(isAttachThread);
 	}
-	virtual void OnShowPhoto(LCC_ERR_TYPE err, const string& errmsg, int ticket) {
+	virtual void OnSendLadyPhoto(LCC_ERR_TYPE err, const string& errmsg, int ticket) {
+
+	}
+	virtual void OnShowPhoto(LCC_ERR_TYPE err, const string& errmsg, int ticket) 
+	{
 		JNIEnv* env = NULL;
 		bool isAttachThread = false;
 		GetEnv(&env, &isAttachThread);
@@ -794,6 +850,10 @@ public:
 
 		ReleaseEnv(isAttachThread);
 	}
+	virtual void OnSendLadyVideo(LCC_ERR_TYPE err, const string& errmsg, int ticket)
+	{
+
+	}
 	virtual void OnGetUserInfo(const string& inUserId, LCC_ERR_TYPE err, const string& errmsg, const UserInfoItem& item)
 	{
 		JNIEnv* env = NULL;
@@ -804,7 +864,7 @@ public:
 		jobject jItem = GetTalkUserListItem(env, item);
 
 		jclass jCallbackCls = env->GetObjectClass(gListener);
-		string signure = "(ILjava/lang/String;";
+		string signure = "(ILjava/lang/String;Ljava/lang/String;";
 		signure += "L";
 		signure += LIVECHAT_TALKUSERLISTTIME_CLASS;
 		signure += ";";
@@ -818,7 +878,7 @@ public:
 			int errType = LccErrTypeToInt(err);
 			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
 
-			env->CallVoidMethod(gListener, jCallback, errType, jerrmsg, jItem);
+			env->CallVoidMethod(gListener, jCallback, errType, jerrmsg, jInUserId, jItem);
 
 			env->DeleteLocalRef(jInUserId);
 			env->DeleteLocalRef(jerrmsg);
@@ -832,9 +892,43 @@ public:
 
 		ReleaseEnv(isAttachThread);
 	}
-	virtual void OnGetUsersInfo(LCC_ERR_TYPE err, const string& errmsg, const UserInfoList& userList)
+	virtual void OnGetUsersInfo(LCC_ERR_TYPE err, const string& errmsg, int seq, const UserInfoList& userList)
 	{
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
 
+		/*UserInfo list*/
+		FileLog("LiveChatClient", "OnGetUsersInfo() callback, begin");
+		jobjectArray juserInfoList = GetUserInfoList(env, userList);
+
+		/*callback*/
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(ILjava/lang/String;";
+		signure += "[L";
+		signure += LIVECHAT_TALKUSERLISTTIME_CLASS;
+		signure += ";";
+		signure += ")V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnGetUsersInfo", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnGetUsersInfo() callback now");
+
+			int errType = LccErrTypeToInt(err);
+			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, errType, jerrmsg, juserInfoList);
+
+			env->DeleteLocalRef(jerrmsg);
+
+			FileLog("LiveChatClient", "OnGetUsersInfo() callback ok");
+		}
+
+		if (NULL != juserInfoList) {
+			env->DeleteLocalRef(juserInfoList);
+		}
+
+		ReleaseEnv(isAttachThread);
 	}
 	// 获取联系人/黑名单列表
 	virtual void OnGetContactList(CONTACT_LIST_TYPE inListType, LCC_ERR_TYPE err, const string& errmsg, const TalkUserList& list)
@@ -931,11 +1025,6 @@ public:
 		ReleaseEnv(isAttachThread);
 	}
 
-	virtual void OnGetRecentContact(LCC_ERR_TYPE err, const string& errmsg, const list<string>& userList)
-	{
-		// 仅女士端
-	}
-
 	virtual void OnSearchOnlineMan(LCC_ERR_TYPE err, const string& errmsg, const list<string>& userList)
 	{
 		// 仅女士端
@@ -960,6 +1049,516 @@ public:
 	{
 		// 仅女士端
 	}
+	virtual void OnGetLadyCondition(const string& inUserId, LCC_ERR_TYPE err, const string& errmsg, const LadyConditionItem& item)
+	{
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnGetLadyCondition() err:%d, errmsg:%s, env:%p, isAttachThread:%d", err, errmsg.c_str(), env, isAttachThread);
+
+		jobject jLadyCondition = NULL;
+		jclass jLadyConditionCls = GetJObjectClassWithMap(env, LIVECHAT_LADYCONDITION_CLASS);
+		if (NULL != jLadyConditionCls) {
+			jmethodID init = env->GetMethodID(jLadyConditionCls, "<init>"
+					, "(Ljava/lang/String;ZZZZZZZZZZZZZZZZII)V");
+
+			jstring jwomanId = env->NewStringUTF(item.womanId.c_str());
+			jLadyCondition = env->NewObject(jLadyConditionCls, init
+						, jwomanId
+						, item.marriageCondition	// 是否判断婚姻状况
+						, item.neverMarried				// 是否从未结婚
+						, item.divorced					// 是否离婚
+						, item.widowed					// 是否丧偶
+						, item.separated					// 是否分居
+						, item.married					// 是否已婚
+						, item.childCondition			// 是否判断子女状况
+						, item.noChild					// 是否没有子女
+						, item.countryCondition		// 是否判断国籍
+						, item.unitedstates				// 是否美国国籍
+						, item.canada						// 是否加拿大国籍
+						, item.newzealand					// 是否新西兰国籍
+						, item.australia					// 是否澳大利亚国籍
+						, item.unitedkingdom				// 是否英国国籍
+						, item.germany					// 是否德国国籍
+						, item.othercountries				// 是否其它国籍
+						, item.startAge					// 起始年龄
+						, item.endAge						// 结束年龄
+						);
+			env->DeleteLocalRef(jwomanId);
+		}
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(ILjava/lang/String;Ljava/lang/String;";
+		signure += "L";
+		signure += LIVECHAT_LADYCONDITION_CLASS;
+		signure += ";";
+		signure += ")V";
+
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnGetLadyCondition", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnGetLadyCondition() callback now");
+
+			int errType = LccErrTypeToInt(err);
+			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+			jstring jwomanId = env->NewStringUTF(inUserId.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, errType, jerrmsg, jwomanId, jLadyCondition);
+
+			env->DeleteLocalRef(jwomanId);
+			env->DeleteLocalRef(jerrmsg);
+
+			FileLog("LiveChatClient", "OnGetLadyCondition() callback ok");
+		}
+
+		if (NULL != jLadyCondition) {
+			env->DeleteLocalRef(jLadyCondition);
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+	virtual void OnGetLadyCustomTemplate(const string& inUserId, LCC_ERR_TYPE err, const string& errmsg, const vector<string>& contents, const vector<bool>& flags)
+	{
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnGetLadyCustomTemplate() err:%d, errmsg:%s, env:%p, isAttachThread:%d", err, errmsg.c_str(), env, isAttachThread);
+
+		jclass jStringCls = env->FindClass("java/lang/String");
+		jobjectArray jContentArray = env->NewObjectArray(contents.size(), jStringCls, NULL);
+		if (NULL != jContentArray) {
+			for (int i = 0; i < contents.size(); i++)
+			{
+				jstring content = env->NewStringUTF(contents[i].c_str());
+				env->SetObjectArrayElement(jContentArray, i, content);
+				env->DeleteLocalRef(content);
+			}
+		}
+
+		jbooleanArray jFlagArray = env->NewBooleanArray(flags.size());
+		if (NULL != jFlagArray) {
+			for (int i = 0; i < flags.size(); i++)
+			{
+				jboolean flag = flags[i];
+				env->SetBooleanArrayRegion(jFlagArray, i, 1, &flag);
+			}
+		}
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(ILjava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Z)V";
+
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnGetLadyCustomTemplate", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnGetLadyCustomTemplate() callback now");
+
+			int errType = LccErrTypeToInt(err);
+			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+			jstring jwomanId = env->NewStringUTF(inUserId.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, errType, jerrmsg, jwomanId, jContentArray, jFlagArray);
+
+			env->DeleteLocalRef(jwomanId);
+			env->DeleteLocalRef(jerrmsg);
+
+			FileLog("LiveChatClient", "OnGetLadyCustomTemplate() callback ok");
+		}
+
+		if (NULL != jContentArray) {
+			env->DeleteLocalRef(jContentArray);
+		}
+
+		if (NULL != jFlagArray) {
+			env->DeleteLocalRef(jFlagArray);
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+	virtual void OnSendMagicIcon(const string& inUserId, const string& inIconId, int inTicket, LCC_ERR_TYPE err, const string& errmsg)
+	{
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnSendMagicIcon() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnSendMagicIcon", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnSendMagicIcon() callback now");
+
+			int errType = LccErrTypeToInt(err);
+			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+			jstring juserId = env->NewStringUTF(inUserId.c_str());
+			jstring jmagicIconId = env->NewStringUTF(inIconId.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, errType, jerrmsg, juserId, jmagicIconId, inTicket);
+
+			env->DeleteLocalRef(jmagicIconId);
+			env->DeleteLocalRef(juserId);
+			env->DeleteLocalRef(jerrmsg);
+
+			FileLog("LiveChatClient", "OnSendMagicIcon() callback ok");
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+
+	virtual void OnGetPaidTheme(const string& inUserId, LCC_ERR_TYPE err, const string& errmsg, const ThemeInfoList& themeList){
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnGetPaidTheme() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+
+		/*create paid theme list*/
+		jobjectArray jpaidThemeArray = NULL;
+		jclass jItemCls = GetJObjectClassWithMap(env, LIVECHAT_PAID_THEME_INFO);
+		if(NULL != jItemCls){
+			jpaidThemeArray = env->NewObjectArray(themeList.size(), jItemCls, NULL);
+			jmethodID jitemInit = env->GetMethodID(jItemCls, "<init>", "("
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"IIII"
+					")V");
+			ThemeInfoList::const_iterator themeInfoIter;
+			int iIndex;
+			for(iIndex = 0, themeInfoIter = themeList.begin();
+					themeInfoIter != themeList.end();
+					iIndex++, themeInfoIter++){
+				jstring jthemeId = env->NewStringUTF(themeInfoIter->themeId.c_str());
+				jstring jmanId = env->NewStringUTF(themeInfoIter->manId.c_str());
+				jstring jwomanId = env->NewStringUTF(themeInfoIter->womanId.c_str());
+
+				jobject jpaidThemeInfo = env->NewObject(jItemCls, jitemInit, jthemeId, jmanId, jwomanId,
+						themeInfoIter->startTime, themeInfoIter->endTime, themeInfoIter->nowTime, themeInfoIter->updateTime);
+				env->SetObjectArrayElement(jpaidThemeArray, iIndex, jpaidThemeInfo);
+				env->DeleteLocalRef(jpaidThemeInfo);
+
+				env->DeleteLocalRef(jthemeId);
+				env->DeleteLocalRef(jmanId);
+				env->DeleteLocalRef(jwomanId);
+			}
+		}
+
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(ILjava/lang/String;Ljava/lang/String;"
+				"[L"
+				LIVECHAT_PAID_THEME_INFO
+				";"
+				")V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnGetPaidTheme", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnGetPaidTheme() callback now");
+
+			int errType = LccErrTypeToInt(err);
+			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+			jstring juserId = env->NewStringUTF(inUserId.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, errType, jerrmsg, juserId, jpaidThemeArray);
+
+			env->DeleteLocalRef(juserId);
+			env->DeleteLocalRef(jerrmsg);
+
+			FileLog("LiveChatClient", "OnGetPaidTheme() callback ok");
+		}
+
+		if(NULL != jpaidThemeArray){
+			env->DeleteLocalRef(jpaidThemeArray);
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+
+	virtual void OnGetAllPaidTheme(LCC_ERR_TYPE err, const string& errmsg, const ThemeInfoList& themeInfoList){
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnGetAllPaidTheme() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+
+		/*create paid theme list*/
+		jobjectArray jpaidThemeArray = NULL;
+		jclass jItemCls = GetJObjectClassWithMap(env, LIVECHAT_PAID_THEME_INFO);
+		if(NULL != jItemCls){
+			jpaidThemeArray = env->NewObjectArray(themeInfoList.size(), jItemCls, NULL);
+			jmethodID jitemInit = env->GetMethodID(jItemCls, "<init>", "("
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"IIII"
+					")V");
+			ThemeInfoList::const_iterator themeInfoIter;
+			int iIndex;
+			for(iIndex = 0, themeInfoIter = themeInfoList.begin();
+					themeInfoIter != themeInfoList.end();
+					iIndex++, themeInfoIter++){
+				jstring jthemeId = env->NewStringUTF(themeInfoIter->themeId.c_str());
+				jstring jmanId = env->NewStringUTF(themeInfoIter->manId.c_str());
+				jstring jwomanId = env->NewStringUTF(themeInfoIter->womanId.c_str());
+
+				jobject jpaidThemeInfo = env->NewObject(jItemCls, jitemInit, jthemeId, jmanId, jwomanId,
+						themeInfoIter->startTime, themeInfoIter->endTime, themeInfoIter->nowTime, themeInfoIter->updateTime);
+				env->SetObjectArrayElement(jpaidThemeArray, iIndex, jpaidThemeInfo);
+				env->DeleteLocalRef(jpaidThemeInfo);
+
+				env->DeleteLocalRef(jthemeId);
+				env->DeleteLocalRef(jmanId);
+				env->DeleteLocalRef(jwomanId);
+			}
+		}
+
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(ILjava/lang/String;"
+				"[L"
+				LIVECHAT_PAID_THEME_INFO
+				";"
+				")V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnGetAllPaidTheme", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnGetAllPaidTheme() callback now");
+
+			int errType = LccErrTypeToInt(err);
+			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, errType, jerrmsg, jpaidThemeArray);
+
+			env->DeleteLocalRef(jerrmsg);
+
+			FileLog("LiveChatClient", "OnGetAllPaidTheme() callback ok");
+		}
+
+		if(NULL != jpaidThemeArray){
+			env->DeleteLocalRef(jpaidThemeArray);
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+
+	virtual void OnManFeeTheme(const string& inUserId, const string& inThemeId, LCC_ERR_TYPE err, const string& errmsg, const ThemeInfoItem& item){
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnManFeeTheme() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+
+		/*create paid themeInfo*/
+		jobject jpaidThemeInfo = NULL;
+		jclass jItemCls = GetJObjectClassWithMap(env, LIVECHAT_PAID_THEME_INFO);
+		if(NULL != jItemCls){
+			jmethodID jitemInit = env->GetMethodID(jItemCls, "<init>", "("
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"IIII"
+					")V");
+			jstring jthemeId = env->NewStringUTF(item.themeId.c_str());
+			jstring jmanId = env->NewStringUTF(item.manId.c_str());
+			jstring jwomanId = env->NewStringUTF(item.womanId.c_str());
+
+			jpaidThemeInfo = env->NewObject(jItemCls, jitemInit, jthemeId, jmanId, jwomanId,
+					item.startTime, item.endTime, item.nowTime, item.updateTime);
+
+			env->DeleteLocalRef(jthemeId);
+			env->DeleteLocalRef(jmanId);
+			env->DeleteLocalRef(jwomanId);
+		}
+
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;"
+				"L"
+				LIVECHAT_PAID_THEME_INFO
+				";"
+				")V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnManFeeTheme", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnManFeeTheme() callback now");
+
+			int errType = LccErrTypeToInt(err);
+			jstring jcallbackWomanId = env->NewStringUTF(inUserId.c_str());
+			jstring jcallbackThemeId = env->NewStringUTF(inThemeId.c_str());
+			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, errType, jcallbackWomanId, jcallbackThemeId, jerrmsg, jpaidThemeInfo);
+
+			env->DeleteLocalRef(jcallbackWomanId);
+			env->DeleteLocalRef(jcallbackThemeId);
+			env->DeleteLocalRef(jerrmsg);
+
+			FileLog("LiveChatClient", "OnManFeeTheme() callback ok");
+		}
+
+		if(NULL != jpaidThemeInfo){
+			env->DeleteLocalRef(jpaidThemeInfo);
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+
+	virtual void OnManApplyTheme(const string& inUserId, const string& inThemeId, LCC_ERR_TYPE err, const string& errmsg, const ThemeInfoItem& item){
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnManApplyTheme() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+
+		/*create paid themeInfo*/
+		jobject jpaidThemeInfo = NULL;
+		jclass jItemCls = GetJObjectClassWithMap(env, LIVECHAT_PAID_THEME_INFO);
+		if(NULL != jItemCls){
+			jmethodID jitemInit = env->GetMethodID(jItemCls, "<init>", "("
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"IIII"
+					")V");
+			jstring jthemeId = env->NewStringUTF(item.themeId.c_str());
+			jstring jmanId = env->NewStringUTF(item.manId.c_str());
+			jstring jwomanId = env->NewStringUTF(item.womanId.c_str());
+
+			jpaidThemeInfo = env->NewObject(jItemCls, jitemInit, jthemeId, jmanId, jwomanId,
+					item.startTime, item.endTime, item.nowTime, item.updateTime);
+
+			env->DeleteLocalRef(jthemeId);
+			env->DeleteLocalRef(jmanId);
+			env->DeleteLocalRef(jwomanId);
+		}
+
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;"
+				"L"
+				LIVECHAT_PAID_THEME_INFO
+				";"
+				")V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnManApplyTheme", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnManApplyTheme() callback now");
+
+			int errType = LccErrTypeToInt(err);
+			jstring jcallbackWomanId = env->NewStringUTF(inUserId.c_str());
+			jstring jcallbackThemeId = env->NewStringUTF(inThemeId.c_str());
+			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, errType, jcallbackWomanId, jcallbackThemeId, jerrmsg, jpaidThemeInfo);
+
+			env->DeleteLocalRef(jcallbackWomanId);
+			env->DeleteLocalRef(jcallbackThemeId);
+			env->DeleteLocalRef(jerrmsg);
+
+			FileLog("LiveChatClient", "OnManApplyTheme() callback ok");
+		}
+
+		if(NULL != jpaidThemeInfo){
+			env->DeleteLocalRef(jpaidThemeInfo);
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+
+	virtual void OnPlayThemeMotion(const string& inUserId, const string& inThemeId, LCC_ERR_TYPE err, const string& errmsg, bool success){
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnPlayThemeMotion() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnPlayThemeMotion", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnManApplyTheme() callback now");
+
+			int errType = LccErrTypeToInt(err);
+			jstring juserId = env->NewStringUTF(inUserId.c_str());
+			jstring jthemeId = env->NewStringUTF(inThemeId.c_str());
+			jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, errType, jerrmsg, juserId, jthemeId);
+
+			env->DeleteLocalRef(jerrmsg);
+			env->DeleteLocalRef(jthemeId);
+			env->DeleteLocalRef(juserId);
+
+			FileLog("LiveChatClient", "OnPlayThemeMotion() callback ok");
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+
+	virtual void OnRecvThemeMotion(const string& themeId, const string& manId, const string& womanId){
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnRecvThemeMotion() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnRecvThemeMotion", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnRecvThemeMotion() callback now");
+
+			jstring jthemeId = env->NewStringUTF(themeId.c_str());
+			jstring jmanId = env->NewStringUTF(manId.c_str());
+			jstring jwomanId = env->NewStringUTF(womanId.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, jthemeId, jmanId, jwomanId);
+
+			env->DeleteLocalRef(jthemeId);
+			env->DeleteLocalRef(jmanId);
+			env->DeleteLocalRef(jwomanId);
+
+			FileLog("LiveChatClient", "OnRecvThemeMotion() callback ok");
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+
+	virtual void OnRecvThemeRecommend(const string& themeId, const string& manId, const string& womanId){
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnRecvThemeRecommend() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnRecvThemeRecommend", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnRecvThemeRecommend() callback now");
+
+			jstring jthemeId = env->NewStringUTF(themeId.c_str());
+			jstring jmanId = env->NewStringUTF(manId.c_str());
+			jstring jwomanId = env->NewStringUTF(womanId.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, jthemeId, jmanId, jwomanId);
+
+			env->DeleteLocalRef(jthemeId);
+			env->DeleteLocalRef(jmanId);
+			env->DeleteLocalRef(jwomanId);
+
+			FileLog("LiveChatClient", "OnRecvThemeRecommend() callback ok");
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+
 	// --------------------- 服务器主动请求 -------------------------------
 	virtual void OnRecvMessage(const string& toId, const string& fromId, const string& fromName, const string& inviteId, bool charge, int ticket, TALK_MSG_TYPE msgType, const string& message) {
 		JNIEnv* env = NULL;
@@ -1316,7 +1915,8 @@ public:
 
 		ReleaseEnv(isAttachThread);
 	}
-	virtual void OnRecvPhoto(const string& toId, const string& fromId, const string& fromName, const string& inviteId, const string& photoId, const string& sendId, bool charge, const string& photoDesc, int ticket) {
+	virtual void OnRecvPhoto(const string& toId, const string& fromId, const string& fromName, const string& inviteId, const string& photoId, const string& sendId, bool charge, const string& photoDesc, int ticket)
+	{
 		JNIEnv* env = NULL;
 		bool isAttachThread = false;
 		GetEnv(&env, &isAttachThread);
@@ -1352,6 +1952,10 @@ public:
 		}
 
 		ReleaseEnv(isAttachThread);
+	}
+	virtual void OnRecvShowPhoto(const string& toId, const string& fromId, const string& fromName, const string& inviteId, const string& photoId, const string& sendId, bool charge, const string& photoDesc, int ticket)
+	{
+
 	}
 	virtual void OnRecvVideo(const string& toId, const string& fromId, const string& fromName, const string& inviteId, const string& videoId, const string& sendId, bool charge, const string& videoDesc, int ticket)
 	{
@@ -1391,6 +1995,10 @@ public:
 
 		ReleaseEnv(isAttachThread);
 	}
+	virtual void OnRecvShowVideo(const string& toId, const string& fromId, const string& fromName, const string& inviteId, const string& videoId, const string& sendId, bool charge, const string& videoDesc, int ticket)
+	{
+
+	}
 	virtual void OnRecvLadyVoiceCode(const string& voiceCode)
 	{
 		// 仅女士端
@@ -1398,6 +2006,107 @@ public:
 	virtual void OnRecvIdentifyCode(const unsigned char* data, long dataLen)
 	{
 		// 仅女士端
+	}
+	virtual void OnRecvAutoInviteMsg(const string& womanId, const string& manId, const string& key)
+	{
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		bool isGetEnvSuccess = GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnRecvAutoInviteMsg() callback, env:%p, isAttachThread:%d, isGetEnvSuccess:%d"
+				, env, isAttachThread, isGetEnvSuccess);
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnRecvAutoInviteMsg", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnRecvAutoInviteMsg() callback now");
+
+			jstring jwomanId = env->NewStringUTF(womanId.c_str());
+			jstring jmanId = env->NewStringUTF(manId.c_str());
+			jstring jkey = env->NewStringUTF(key.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, jwomanId, jmanId, jkey);
+
+			env->DeleteLocalRef(jwomanId);
+			env->DeleteLocalRef(jmanId);
+			env->DeleteLocalRef(jkey);
+
+			FileLog("LiveChatClient", "OnRecvAutoInviteMsg() callback ok");
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+	virtual void OnRecvAutoChargeResult(const string& manId, double money, TAUTO_CHARGE_TYPE type, bool result, const string& code, const string& msg)
+	{
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnRecvAutoChargeResult() callback, env:%p, isAttachThread:%d", env, isAttachThread);
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(Ljava/lang/String;DIZLjava/lang/String;Ljava/lang/String;)V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnRecvAutoChargeResult", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnRecvAutoChargeResult() callback now");
+
+			jstring jmanId = env->NewStringUTF(manId.c_str());
+			jdouble jmoney = money;
+			jint jtype = AutoChargeTypeToInt(type);
+			jstring jcode = env->NewStringUTF(code.c_str());
+			jstring jmsg = env->NewStringUTF(msg.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, jmanId, jmoney, jtype, result, jcode, jmsg);
+
+			env->DeleteLocalRef(jmanId);
+			env->DeleteLocalRef(jcode);
+			env->DeleteLocalRef(jmsg);
+
+			FileLog("LiveChatClient", "OnRecvAutoChargeResult() callback ok");
+		}
+
+		ReleaseEnv(isAttachThread);
+	}
+	virtual void OnRecvMagicIcon(const string& toId, const string& fromId, const string& fromName, const string& inviteId, bool charge, int ticket, TALK_MSG_TYPE msgType, const string& iconId)
+	{
+		JNIEnv* env = NULL;
+		bool isAttachThread = false;
+		GetEnv(&env, &isAttachThread);
+
+		FileLog("LiveChatClient", "OnRecvMagicIcon() callback, toId:%s, fromId:%s, fromName:%s, inviteId:%s"
+					", charge:%d, ticket:%d, msgType:%d, iconId:%s, env:%p, isAttachThread:%d"
+					, toId.c_str(), fromId.c_str(), fromName.c_str(), inviteId.c_str()
+					, charge, ticket, msgType, iconId.c_str(), env, isAttachThread);
+
+		jclass jCallbackCls = env->GetObjectClass(gListener);
+		string signure = "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZIILjava/lang/String;)V";
+		jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnRecvMagicIcon", signure.c_str());
+		if (NULL != gListener && NULL != jCallback)
+		{
+			FileLog("LiveChatClient", "OnRecvMagicIcon() callback now");
+
+			jstring jtoId = env->NewStringUTF(toId.c_str());
+			jstring jfromId = env->NewStringUTF(fromId.c_str());
+			jstring jfromName = env->NewStringUTF(fromName.c_str());
+			jstring jinviteId = env->NewStringUTF(inviteId.c_str());
+			int iMsgType = TalkMsgTypeToInt(msgType);
+			jstring jmagicIconId = env->NewStringUTF(iconId.c_str());
+
+			env->CallVoidMethod(gListener, jCallback, jtoId, jfromId, jfromName, jinviteId, charge, ticket, iMsgType, jmagicIconId);
+
+			env->DeleteLocalRef(jtoId);
+			env->DeleteLocalRef(jfromId);
+			env->DeleteLocalRef(jfromName);
+			env->DeleteLocalRef(jinviteId);
+			env->DeleteLocalRef(jmagicIconId);
+
+			FileLog("LiveChatClient", "OnRecvMagicIcon() callback ok");
+		}
+
+		ReleaseEnv(isAttachThread);
 	}
 };
 static LiveChatClientListener g_listener;
@@ -1454,6 +2163,8 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 	InsertJObjectClassToMap(env, LIVECHAT_TALKSESSIONLISTTIME_CLASS);
 	InsertJObjectClassToMap(env, LIVECHAT_TALKUSERLISTTIME_CLASS);
 	InsertJObjectClassToMap(env, LIVECHAT_TALKLISTINFO_CLASS);
+	InsertJObjectClassToMap(env, LIVECHAT_LADYCONDITION_CLASS);
+	InsertJObjectClassToMap(env, LIVECHAT_PAID_THEME_INFO);
 	return JNI_VERSION_1_4;
 }
 
@@ -1687,7 +2398,7 @@ JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_Send
 
 	string strUserId = GetJString(env, userId);
 	string strMessage = GetJString(env, message);
-	return g_liveChatClient->SendMessage(strUserId, strMessage, illegal, ticket);
+	return g_liveChatClient->SendTextMessage(strUserId, strMessage, illegal, ticket);
 }
 
 /*
@@ -1755,6 +2466,22 @@ JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_Send
 	string strUserId = GetJString(env, userId);
 	string strVoiceId = GetJString(env, voiceId);
 	return g_liveChatClient->SendVoice(strUserId, strVoiceId, voiceLength, ticket);
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    SendMagicIcon
+ * Signature: (Ljava/lang/String;Ljava/lang/String;I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_SendMagicIcon
+  (JNIEnv *env, jclass cls, jstring userId, jstring magicIconId, jint ticket){
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+
+	string strUserId = GetJString(env, userId);
+	string strMagicIconId = GetJString(env, magicIconId);
+	return g_liveChatClient->SendMagicIcon(strUserId, strMagicIconId, ticket);
 }
 
 /*
@@ -1866,6 +2593,33 @@ JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetU
 
 /*
  * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    GetUsersInfo
+ * Signature: ([Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetUsersInfo
+  (JNIEnv *env, jclass cls, jobjectArray userIds)
+{
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+
+	// 获取user Id列表
+	list<string> userIdList;
+	if (NULL != userIds) {
+		for (int i = 0; i < env->GetArrayLength(userIds); i++) {
+			jstring userId = (jstring)env->GetObjectArrayElement(userIds, i);
+			string strUserId = GetJString(env, userId);
+			if (!strUserId.empty()) {
+				userIdList.push_back(strUserId);
+			}
+		}
+	}
+
+	return g_liveChatClient->GetUsersInfo(userIdList);
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
  * Method:    GetBlockList
  * Signature: ()Z
  */
@@ -1923,5 +2677,155 @@ JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetB
 	}
 
 	return g_liveChatClient->GetBlockUsers();
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    GetLadyCondition
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetLadyCondition
+  (JNIEnv *env, jclass cls, jstring userId)
+{
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+
+	string strUserId = GetJString(env, userId);
+	return g_liveChatClient->GetLadyCondition(strUserId);
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    GetLadyCustomTemplate
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetLadyCustomTemplate
+  (JNIEnv *env, jclass cls, jstring userId)
+{
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+
+	string strUserId = GetJString(env, userId);
+	return g_liveChatClient->GetLadyCustomTemplate(strUserId);
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    UploadPopLadyAutoInvite
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_UploadPopLadyAutoInvite
+  (JNIEnv *env, jclass cls, jstring userId, jstring msg, jstring key)
+{
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+
+	string strUserId = GetJString(env, userId);
+	string strMsgId = GetJString(env, msg);
+	string strKey = GetJString(env, key);
+	return g_liveChatClient->UploadPopLadyAutoInvite(strUserId, strMsgId, strKey);
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    UploadAutoChargeStatus
+ * Signature: (Z)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_UploadAutoChargeStatus
+  (JNIEnv *env, jclass cls, jboolean isCharge)
+{
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+
+	return g_liveChatClient->UploadAutoChargeStatus(isCharge);
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    GetPaidTheme
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetPaidTheme
+  (JNIEnv *env, jclass cls, jstring userId){
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+	string strUserId = GetJString(env, userId);
+	return g_liveChatClient->GetPaidTheme(strUserId);
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    GetAllPaidTheme
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetAllPaidTheme
+  (JNIEnv *env, jclass cls){
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+	return g_liveChatClient->GetAllPaidTheme();
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    UploadThemeListVer
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_UploadThemeListVer
+  (JNIEnv *env, jclass cls, jint themeVer){
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+	return g_liveChatClient->UploadThemeListVer(themeVer);
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    ManFeeTheme
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_ManFeeTheme
+  (JNIEnv *env, jclass cls, jstring userId, jstring themeId){
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+	string strUserId = GetJString(env, userId);
+	string strThemeId = GetJString(env, themeId);
+	return g_liveChatClient->ManFeeTheme(strUserId, strThemeId);
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    ManApplyTheme
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_ManApplyTheme
+  (JNIEnv *env, jclass cls, jstring userId, jstring themeId){
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+	string strUserId = GetJString(env, userId);
+	string strThemeId = GetJString(env, themeId);
+	return g_liveChatClient->ManApplyTheme(strUserId, strThemeId);
+}
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    PlayThemeMotion
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_PlayThemeMotion
+  (JNIEnv *env, jclass cls, jstring userId, jstring themeId){
+	if (NULL == g_liveChatClient) {
+		return false;
+	}
+	string strUserId = GetJString(env, userId);
+	string strThemeId = GetJString(env, themeId);
+	return g_liveChatClient->PlayThemeMotion(strUserId, strThemeId);
 }
 

@@ -7,11 +7,11 @@
  */
 #include "com_qpidnetwork_request_RequestJniVideoShow.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestVideoShowController.h"
+#include <manrequesthandler/RequestVideoShowController.h>
 
 void OnVideoList(long requestId, bool success, const string& errnum, const string& errmsg, int pageIndex, int pageSize, int dataCount, const VSVideoList& list);
 void OnVideoDetail(long requestId, bool success, const string& errnum, const string& errmsg, const VSVideoDetailList& list);
-void OnPlayVideo(long requestId, bool success, const string& errnum, const string& errmsg, const VSPlayVideoItem& item);
+void OnPlayVideo(long requestId, bool success, const string& errnum, const string& errmsg, int memberType, const VSPlayVideoItem& item);
 void OnWatchedVideoList(long requestId, bool success, const string& errnum, const string& errmsg, int pageIndex, int pageSize, int dataCount, const VSWatchedVideoList& list);
 void OnSaveVideo(long requestId, bool success, const string& errnum, const string& errmsg);
 void OnRemoveVideo(long requestId, bool success, const string& errnum, const string& errmsg);
@@ -94,18 +94,36 @@ void OnVideoList(long requestId, bool success, const string& errnum, const strin
 							"Ljava/lang/String;"	// province
 							")V");
 
+					jstring jvideoId = env->NewStringUTF(itr->videoId.c_str());
+					jstring jtime = env->NewStringUTF(itr->time.c_str());
+					jstring jthumbURL = env->NewStringUTF(itr->thumbURL.c_str());
+					jstring jwomanId = env->NewStringUTF(itr->womanId.c_str());
+					jstring jfirstname = env->NewStringUTF(itr->firstname.c_str());
+					jstring jweight = env->NewStringUTF(itr->weight.c_str());
+					jstring jheight = env->NewStringUTF(itr->height.c_str());
+					jstring jcountry = env->NewStringUTF(itr->country.c_str());
+					jstring jprovince = env->NewStringUTF(itr->province.c_str());
 					jobject jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(itr->videoId.c_str()),
-							env->NewStringUTF(itr->time.c_str()),
-							env->NewStringUTF(itr->thumbURL.c_str()),
-							env->NewStringUTF(itr->womanId.c_str()),
-							env->NewStringUTF(itr->firstname.c_str()),
+							jvideoId,
+							jtime,
+							jthumbURL,
+							jwomanId,
+							jfirstname,
 							itr->age,
-							env->NewStringUTF(itr->weight.c_str()),
-							env->NewStringUTF(itr->height.c_str()),
-							env->NewStringUTF(itr->country.c_str()),
-							env->NewStringUTF(itr->province.c_str())
+							jweight,
+							jheight,
+							jcountry,
+							jprovince
 							);
+					env->DeleteLocalRef(jvideoId);
+					env->DeleteLocalRef(jtime);
+					env->DeleteLocalRef(jthumbURL);
+					env->DeleteLocalRef(jwomanId);
+					env->DeleteLocalRef(jfirstname);
+					env->DeleteLocalRef(jweight);
+					env->DeleteLocalRef(jheight);
+					env->DeleteLocalRef(jcountry);
+					env->DeleteLocalRef(jprovince);
 
 					env->SetObjectArrayElement(jItemArray, i, jItem);
 
@@ -228,19 +246,39 @@ void OnVideoDetail(long requestId, bool success, const string& errnum, const str
 							"Ljava/lang/String;"	// viewtime2
 							")V");
 
+					jstring jid = env->NewStringUTF(itr->id.c_str());
+					jstring jtitle = env->NewStringUTF(itr->title.c_str());
+					jstring jwomanId = env->NewStringUTF(itr->womanId.c_str());
+					jstring jthumbURL = env->NewStringUTF(itr->thumbURL.c_str());
+					jstring jtime = env->NewStringUTF(itr->time.c_str());
+					jstring jphotoURL = env->NewStringUTF(itr->photoURL.c_str());
+					jstring jvideoSize = env->NewStringUTF(itr->videoSize.c_str());
+					jstring jtranscription = env->NewStringUTF(itr->transcription.c_str());
+					jstring jviewTime1 = env->NewStringUTF(itr->viewTime1.c_str());
+					jstring jviewTime2 = env->NewStringUTF(itr->viewTime2.c_str());
 					jobject jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(itr->id.c_str()),
-							env->NewStringUTF(itr->title.c_str()),
-							env->NewStringUTF(itr->womanId.c_str()),
-							env->NewStringUTF(itr->thumbURL.c_str()),
-							env->NewStringUTF(itr->time.c_str()),
-							env->NewStringUTF(itr->photoURL.c_str()),
+							jid,
+							jtitle,
+							jwomanId,
+							jthumbURL,
+							jtime,
+							jphotoURL,
 							itr->videoFav,
-							env->NewStringUTF(itr->videoSize.c_str()),
-							env->NewStringUTF(itr->transcription.c_str()),
-							env->NewStringUTF(itr->viewTime1.c_str()),
-							env->NewStringUTF(itr->viewTime2.c_str())
+							jvideoSize,
+							jtranscription,
+							jviewTime1,
+							jviewTime2
 							);
+					env->DeleteLocalRef(jid);
+					env->DeleteLocalRef(jtitle);
+					env->DeleteLocalRef(jwomanId);
+					env->DeleteLocalRef(jthumbURL);
+					env->DeleteLocalRef(jtime);
+					env->DeleteLocalRef(jphotoURL);
+					env->DeleteLocalRef(jvideoSize);
+					env->DeleteLocalRef(jtranscription);
+					env->DeleteLocalRef(jviewTime1);
+					env->DeleteLocalRef(jviewTime2);
 
 					env->SetObjectArrayElement(jItemArray, i, jItem);
 
@@ -328,7 +366,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniVideoShow_PlayVid
 	return requestId;
 }
 
-void OnPlayVideo(long requestId, bool success, const string& errnum, const string& errmsg, const VSPlayVideoItem& item)
+void OnPlayVideo(long requestId, bool success, const string& errnum, const string& errmsg, int memberType, const VSPlayVideoItem& item)
 {
 	FileLog("httprequest", "VideoShow.Native::OnPlayVideo( success : %s )", success?"true":"false");
 
@@ -357,12 +395,20 @@ void OnPlayVideo(long requestId, bool success, const string& errnum, const strin
 							"Ljava/lang/String;"	// viewTime2
 							")V");
 
+				jstring jvideoURL = env->NewStringUTF(item.videoURL.c_str());
+				jstring jtranscription = env->NewStringUTF(item.transcription.c_str());
+				jstring jviewTime1 = env->NewStringUTF(item.viewTime1.c_str());
+				jstring jviewTime2 = env->NewStringUTF(item.viewTime2.c_str());
 				jItem = env->NewObject(jItemCls, init,
-						env->NewStringUTF(item.videoURL.c_str()),
-						env->NewStringUTF(item.transcription.c_str()),
-						env->NewStringUTF(item.viewTime1.c_str()),
-						env->NewStringUTF(item.viewTime2.c_str())
-						);
+							jvideoURL,
+							jtranscription,
+							jviewTime1,
+							jviewTime2
+							);
+				env->DeleteLocalRef(jvideoURL);
+				env->DeleteLocalRef(jtranscription);
+				env->DeleteLocalRef(jviewTime1);
+				env->DeleteLocalRef(jviewTime2);
 
 				env->DeleteLocalRef(jItemCls);
 			}
@@ -374,7 +420,7 @@ void OnPlayVideo(long requestId, bool success, const string& errnum, const strin
 
 	jclass jCallbackCls = env->GetObjectClass(jCallbackObj);
 
-	string signure = "(ZLjava/lang/String;Ljava/lang/String;";
+	string signure = "(ZLjava/lang/String;Ljava/lang/String;I";
 	signure += "L";
 	signure += VS_PLAYVIDEO_ITEM_CLASS;
 	signure += ";";
@@ -385,7 +431,7 @@ void OnPlayVideo(long requestId, bool success, const string& errnum, const strin
 		jstring jerrno = env->NewStringUTF(errnum.c_str());
 		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
 
-		env->CallVoidMethod(jCallbackObj, jCallback, success, jerrno, jerrmsg, jItem);
+		env->CallVoidMethod(jCallbackObj, jCallback, success, jerrno, jerrmsg, memberType, jItem);
 
 		env->DeleteLocalRef(jerrno);
 		env->DeleteLocalRef(jerrmsg);
@@ -478,21 +524,43 @@ void OnWatchedVideoList(long requestId, bool success, const string& errnum, cons
 							"J"						// validTime
 							")V");
 
+					jstring jvideoId = env->NewStringUTF(itr->videoId.c_str());
+					jstring jtime = env->NewStringUTF(itr->time.c_str());
+					jstring jthumbURL = env->NewStringUTF(itr->thumbURL.c_str());
+					jstring jwomanId = env->NewStringUTF(itr->womanId.c_str());
+					jstring jfirstname = env->NewStringUTF(itr->firstname.c_str());
+					jstring jweight = env->NewStringUTF(itr->weight.c_str());
+					jstring jheight = env->NewStringUTF(itr->height.c_str());
+					jstring jcountry = env->NewStringUTF(itr->country.c_str());
+					jstring jprovince = env->NewStringUTF(itr->province.c_str());
+					jstring jviewTime1 = env->NewStringUTF(itr->viewTime1.c_str());
+					jstring jviewTime2 = env->NewStringUTF(itr->viewTime2.c_str());
 					jobject jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(itr->videoId.c_str()),
-							env->NewStringUTF(itr->time.c_str()),
-							env->NewStringUTF(itr->thumbURL.c_str()),
-							env->NewStringUTF(itr->womanId.c_str()),
-							env->NewStringUTF(itr->firstname.c_str()),
+							jvideoId,
+							jtime,
+							jthumbURL,
+							jwomanId,
+							jfirstname,
 							itr->age,
-							env->NewStringUTF(itr->weight.c_str()),
-							env->NewStringUTF(itr->height.c_str()),
-							env->NewStringUTF(itr->country.c_str()),
-							env->NewStringUTF(itr->province.c_str()),
-							env->NewStringUTF(itr->viewTime1.c_str()),
-							env->NewStringUTF(itr->viewTime2.c_str()),
+							jweight,
+							jheight,
+							jcountry,
+							jprovince,
+							jviewTime1,
+							jviewTime2,
 							itr->validTime
 							);
+					env->DeleteLocalRef(jvideoId);
+					env->DeleteLocalRef(jtime);
+					env->DeleteLocalRef(jthumbURL);
+					env->DeleteLocalRef(jwomanId);
+					env->DeleteLocalRef(jfirstname);
+					env->DeleteLocalRef(jweight);
+					env->DeleteLocalRef(jheight);
+					env->DeleteLocalRef(jcountry);
+					env->DeleteLocalRef(jprovince);
+					env->DeleteLocalRef(jviewTime1);
+					env->DeleteLocalRef(jviewTime2);
 
 					env->SetObjectArrayElement(jItemArray, i, jItem);
 
@@ -764,18 +832,36 @@ void OnSavedVideoList(long requestId, bool success, const string& errnum, const 
 							"Ljava/lang/String;"	// province
 							")V");
 
+					jstring jvideoId = env->NewStringUTF(itr->videoId.c_str());
+					jstring jtime = env->NewStringUTF(itr->time.c_str());
+					jstring jthumbURL = env->NewStringUTF(itr->thumbURL.c_str());
+					jstring jwomanId = env->NewStringUTF(itr->womanId.c_str());
+					jstring jfirstname = env->NewStringUTF(itr->firstname.c_str());
+					jstring jweight = env->NewStringUTF(itr->weight.c_str());
+					jstring jheight = env->NewStringUTF(itr->height.c_str());
+					jstring jcountry = env->NewStringUTF(itr->country.c_str());
+					jstring jprovince = env->NewStringUTF(itr->province.c_str());
 					jobject jItem = env->NewObject(jItemCls, init,
-							env->NewStringUTF(itr->videoId.c_str()),
-							env->NewStringUTF(itr->time.c_str()),
-							env->NewStringUTF(itr->thumbURL.c_str()),
-							env->NewStringUTF(itr->womanId.c_str()),
-							env->NewStringUTF(itr->firstname.c_str()),
+							jvideoId,
+							jtime,
+							jthumbURL,
+							jwomanId,
+							jfirstname,
 							itr->age,
-							env->NewStringUTF(itr->weight.c_str()),
-							env->NewStringUTF(itr->height.c_str()),
-							env->NewStringUTF(itr->country.c_str()),
-							env->NewStringUTF(itr->province.c_str())
+							jweight,
+							jheight,
+							jcountry,
+							jprovince
 							);
+					env->DeleteLocalRef(jvideoId);
+					env->DeleteLocalRef(jtime);
+					env->DeleteLocalRef(jthumbURL);
+					env->DeleteLocalRef(jwomanId);
+					env->DeleteLocalRef(jfirstname);
+					env->DeleteLocalRef(jweight);
+					env->DeleteLocalRef(jheight);
+					env->DeleteLocalRef(jcountry);
+					env->DeleteLocalRef(jprovince);
 
 					env->SetObjectArrayElement(jItemArray, i, jItem);
 

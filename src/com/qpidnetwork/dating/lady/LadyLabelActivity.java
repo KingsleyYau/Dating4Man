@@ -9,17 +9,16 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.R.color;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.request.OnLadySignListCallback;
 import com.qpidnetwork.request.OnRequestCallback;

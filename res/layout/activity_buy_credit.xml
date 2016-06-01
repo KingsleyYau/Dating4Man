@@ -12,6 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
     
+    <include
+        android:id="@+id/errorPage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/include_load_error_retry" 
+        android:visibility="gone" />
 
 
 </RelativeLayout>

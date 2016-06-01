@@ -209,17 +209,20 @@ public class LCVideoManager {
 	public ArrayList<LCMessageItem> getMessageItem(String videoId, ArrayList<LCMessageItem> msgList)
 	{
 		ArrayList<LCMessageItem> result = new ArrayList<LCMessageItem>();
-		if (null != msgList && msgList.size() > 0) 
+		if (null != msgList) 
 		{
 			synchronized (msgList) 
 			{
-				for (LCMessageItem item : msgList) 
+				if (!msgList.isEmpty())
 				{
-					if (item.msgType == MessageType.Video
-						&& null != item.getVideoItem()
-						&& item.getVideoItem().videoId.compareTo(videoId) == 0)
+					for (LCMessageItem item : msgList) 
 					{
-						result.add(item);
+						if (item.msgType == MessageType.Video
+							&& null != item.getVideoItem()
+							&& item.getVideoItem().videoId.compareTo(videoId) == 0)
+						{
+							result.add(item);
+						}
 					}
 				}
 			}
@@ -233,9 +236,13 @@ public class LCVideoManager {
 	 */
 	public void combineMessageItem(ArrayList<LCMessageItem> msgList)
 	{
-		if (null != msgList && msgList.size() > 0) 
+		if (null == msgList) {
+			return;
+		}
+		
+		synchronized (msgList) 
 		{
-			synchronized (msgList) 
+			if (!msgList.isEmpty()) 
 			{
 				// 女士发送视频消息列表
 				ArrayList<LCMessageItem> womanList = new ArrayList<LCMessageItem>();

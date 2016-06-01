@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,15 +17,19 @@ import android.webkit.WebViewClient;
 import com.qpidnetwork.dating.R.color;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
+import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.MaterialAppBar;
 
 @SuppressWarnings("deprecation")
 public class WebViewActivity extends BaseFragmentActivity implements OnLoginManagerCallback {
+	
+	private static final int LOGIN_CALLBACK = 10001;
 	
 	public static final String WEB_URL = "web_url";
 	public static final String WEB_TITLE = "web_title";
@@ -33,6 +38,13 @@ public class WebViewActivity extends BaseFragmentActivity implements OnLoginMana
 	private String mUrl = "";
 	private String mTitle = "";
 	private MaterialAppBar appbar;
+	
+	//error page
+	private View errorPage;
+	private ButtonRaised btnErrorRetry;
+	
+	private boolean isSessionOutTimeError = false;
+	private boolean isLoadError = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +85,7 @@ public class WebViewActivity extends BaseFragmentActivity implements OnLoginMana
 		mWebView = (WebView) findViewById(R.id.webView);
 
 		// 域名
-		String domain = WebSiteManager.newInstance(this).GetWebSite().getAppSiteHost();
+		String domain = WebSiteManager.getInstance().GetWebSite().getAppSiteHost();
 		// Cookie 认证
 		CookieSyncManager.createInstance(this);
 		CookieManager cookieManager = CookieManager.getInstance();
@@ -94,13 +106,18 @@ public class WebViewActivity extends BaseFragmentActivity implements OnLoginMana
 			public void onPageFinished(WebView view, String url) {
 				// TODO Auto-generated method stub
 				super.onPageFinished(view, url);
-				hideProgressDialog();
+				if((!isLoadError)&&(!isSessionOutTimeError)){
+					errorPage.setVisibility(View.GONE);
+				}
+				hideProgressDialogIgnoreCount();
 			}
 			
 		    @Override  
-		    public boolean shouldOverrideUrlLoading(WebView view, String url) {  
+		    public boolean shouldOverrideUrlLoading(WebView view, String url) { 
 		    	if( url.contains("MBCE0003")) {
-		    		LoginManager.getInstance().AutoLogin();
+		    		//处理session过期重新登陆
+					isSessionOutTimeError = true;
+					errorPage.setVisibility(View.VISIBLE);
 		    	} else {
 			    	view.loadUrl(url); 
 		    	}
@@ -116,6 +133,13 @@ public class WebViewActivity extends BaseFragmentActivity implements OnLoginMana
 			        handler.cancel();
 				}
 		    }
+			
+			@Override
+			public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+				//普通页面错误
+				isLoadError = true;
+				errorPage.setVisibility(View.VISIBLE);
+			};
 		}); 
 		
 		appbar = (MaterialAppBar)findViewById(R.id.appbar);
@@ -138,7 +162,34 @@ public class WebViewActivity extends BaseFragmentActivity implements OnLoginMana
 				}
 			}
 		});
+		
+		//error page
+		errorPage = (View)findViewById(R.id.errorPage);
+		btnErrorRetry = (ButtonRaised)findViewById(R.id.btnErrorRetry);
+		btnErrorRetry.setButtonTitle(getString(R.string.common_btn_tapRetry));
+		btnErrorRetry.setOnClickListener(this);
+		btnErrorRetry.requestFocus();
 
+	}
+	
+	@Override
+	public void onClick(View v) {
+		super.onClick(v);
+		switch (v.getId()) {
+		case R.id.btnErrorRetry:{
+			if(isSessionOutTimeError){
+				showProgressDialog("Loading...");
+				LoginManager.getInstance().Logout();
+				LoginManager.getInstance().AutoLogin();
+			}else{
+				isLoadError = false;
+				mWebView.reload();
+			}
+		}break;
+
+		default:
+			break;
+		}
 	}
 	
 	@Override
@@ -157,6 +208,50 @@ public class WebViewActivity extends BaseFragmentActivity implements OnLoginMana
 		return super.onKeyDown(keyCode, event);
 	}
 	
+	@Override
+	protected void handleUiMessage(Message msg) {
+		super.handleUiMessage(msg);
+		switch (msg.what) {
+		case LOGIN_CALLBACK:{
+			RequestBaseResponse response = (RequestBaseResponse)msg.obj;
+			if(response.isSuccess){
+				//session 过期重新登陆
+				isSessionOutTimeError = false;
+				reloadDestUrl();
+			}else{
+				//显示错误页（加载页面错误）
+				hideProgressDialogIgnoreCount();
+				errorPage.setVisibility(View.VISIBLE);
+			}
+		}break;
+
+		default:
+			break;
+		}
+	}
+	
+	/***
+	 * Session 过期重登录后重新同步Cookie 然后重现加载Url
+	 */
+	private void reloadDestUrl(){
+		/*加载男士资料*/
+		String domain = WebSiteManager.getInstance().GetWebSite().getAppSiteHost();
+		
+		CookieSyncManager.createInstance(this);
+		CookieManager cookieManager = CookieManager.getInstance();
+		cookieManager.setAcceptCookie(true);
+		
+		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
+		cookieManager.setCookie(domain, phpSession); // 
+		CookieSyncManager.getInstance().sync();
+		
+		mWebView.clearCache(true);
+		
+		if( mUrl != null && mUrl.length() > 0 ) {
+			mWebView.loadUrl(mUrl);
+		}
+	}
+	
 	public static Intent getIntent(Context context, String url){
 		Intent intent = new Intent(context, WebViewActivity.class);
 		intent.putExtra(WEB_URL, url);
@@ -166,20 +261,33 @@ public class WebViewActivity extends BaseFragmentActivity implements OnLoginMana
 	@Override
 	public void OnLogin(boolean isSuccess, String errno, String errmsg,
 			LoginItem item, LoginErrorItem errItem) {
-		// TODO Auto-generated method stub
-		if( isSuccess ) {
-			if( mUrl != null && mUrl.length() > 0 ) {
-				mWebView.loadUrl(mUrl);
-			}
-		} else {
-			finish();
-		}
+		Message msg = Message.obtain();
+		msg.what = LOGIN_CALLBACK;
+		RequestBaseResponse response = new RequestBaseResponse(isSuccess, errno, errmsg, item);
+		msg.obj = response;
+		sendUiMessage(msg);
 	}
 
 	@Override
 	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * 忽视计数器直接隐藏progressDialog
+	 */
+	public void hideProgressDialogIgnoreCount(){
+		try {
+			if( mProgressDialogCount > 0 ) {
+				mProgressDialogCount = 0;
+				if( progressDialog != null ) {
+					progressDialog.dismiss();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

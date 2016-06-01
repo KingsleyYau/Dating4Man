@@ -1,6 +1,7 @@
 package com.qpidnetwork.manager;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
@@ -24,7 +25,9 @@ public class FileCacheManager {
 	static String LC_VOICE_DIR = "livechat/voice";
 	static String LC_PHTOT_DIR = "livechat/photo";
 	static String LC_VIDEO_DIR = "livechat/video";
+	static String LC_MAGICICON_DIR = "livechat/magicIcon";
 	static String LC_TAKE_PHOTO_TEM_DIR = "livechat/photo/temp";
+	static String LC_THEME_DIR = "livechat/theme";
 	static String LOG_DIR = "log";
 	static String TEMP = "temp";
 	static String EMF = "emf";
@@ -78,6 +81,18 @@ public class FileCacheManager {
 	public String getPrivatePhotoTempSavePath(){
 		/*创建图片目录*/
 		String path = mMainPath + "/" + LC_TAKE_PHOTO_TEM_DIR + "/";
+		File file = new File(path);
+		file.mkdir();
+		return path;
+	}
+	
+	/**
+	 * LiveChat 下载主题sd存放路径
+	 * @return
+	 */
+	public String getThemeSavePath(){
+		/*创建图片目录*/
+		String path = mMainPath + "/" + LC_THEME_DIR + "/";
 		File file = new File(path);
 		file.mkdir();
 		return path;
@@ -227,6 +242,19 @@ public class FileCacheManager {
 	public String GetLCVideoPath() {
 		/* 创建虚拟礼物路径 */
 		String path = mMainPath + "/" + LC_VIDEO_DIR + "/";
+		File file = new File(path);
+		file.mkdirs();
+		
+		return path;
+	}
+	
+	/**
+	 * 获取livechat小高情目录
+	 * @return
+	 */
+	public String GetLCMagicIconPath() {
+		/* 创建虚拟礼物路径 */
+		String path = mMainPath + "/" + LC_MAGICICON_DIR + "/";
 		File file = new File(path);
 		file.mkdirs();
 		
@@ -493,8 +521,10 @@ public class FileCacheManager {
 				file.delete();
 			} else if ( file.isDirectory() ) {
 				File[] files = file.listFiles();
-				for (int i = 0; i < files.length; i++) {
-					delete(files[i], true);
+				if(files != null){
+					for (int i = 0; i < files.length; i++) {
+						delete(files[i], true);
+					}
 				}
 			}			
 		}
@@ -502,4 +532,39 @@ public class FileCacheManager {
 		if( deleteSelf )
 			file.delete();
 	}
+	
+	/**
+	 * 清除指定目录下private photo缓存（EMF相关）
+	 */
+	public void clearAllPrivatePhotoCache(){
+		String path = mMainPath + "/" + PRIVATE_PHOTO + "/";
+		clearAllFileByDirectory(path);
+	}
+	
+	/**
+	 * 清除指定目录下vide缓存（EMF相关）
+	 */
+	public void clearAllVideoCache(){
+		String path = mMainPath + "/" + EMF_VIDEO + "/";
+		clearAllFileByDirectory(path);
+	}
+	
+	/**
+	 * 清除指定目录下所有文件
+	 * @param directory
+	 */
+	private void clearAllFileByDirectory(String directory){
+		if (!directory.isEmpty()){
+			String dirPath = directory + "*";
+			String cmd = "rm -f " + dirPath;
+			try {
+				Runtime.getRuntime().exec(cmd);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+		}
+	}
+	
+	
 }

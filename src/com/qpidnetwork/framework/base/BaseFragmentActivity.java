@@ -3,7 +3,10 @@ package com.qpidnetwork.framework.base;
 import java.lang.ref.WeakReference;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,8 +17,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 
+import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
-import com.qpidnetwork.dating.googleanalytics.GAFragmentActivity;
+import com.qpidnetwork.dating.authorization.LoginActivity;
+import com.qpidnetwork.dating.authorization.RegisterActivity;
+import com.qpidnetwork.dating.contacts.ContactManager;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsFragmentActivity;
+import com.qpidnetwork.dating.home.HomeActivity;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.view.FlatToast;
 import com.qpidnetwork.view.MaterialProgressDialog;
 
@@ -24,7 +33,10 @@ import com.qpidnetwork.view.MaterialProgressDialog;
  * @author Hunter 
  * @since 2015.5.13
  */
-public abstract class BaseFragmentActivity extends GAFragmentActivity implements OnClickListener{
+public abstract class BaseFragmentActivity extends AnalyticsFragmentActivity implements OnClickListener{
+	
+	public static final String LIVECHAT_KICKOFF_ACTION = "kickoff";
+	
 	protected Activity mContext;
 	protected FlatToast mToast;
 	protected MaterialProgressDialog progressDialog;
@@ -36,6 +48,23 @@ public abstract class BaseFragmentActivity extends GAFragmentActivity implements
 	 * 初始化界面
 	 */
 	public abstract void InitView();
+	
+	
+	private BroadcastReceiver kickoffReceiver = new BroadcastReceiver(){
+		public void onReceive(android.content.Context context, android.content.Intent intent) {
+			String action = intent.getAction();
+			if(action.equals(LIVECHAT_KICKOFF_ACTION)){
+				Bundle bundle = intent.getExtras();
+				if(bundle != null && bundle.containsKey(ContactManager.LIVE_CHAT_KICK_OFF)){
+					final KickOfflineType type = KickOfflineType.values()[bundle.getInt(ContactManager.LIVE_CHAT_KICK_OFF)];
+					Intent jumpIntent = new Intent(BaseFragmentActivity.this, HomeActivity.class);
+					jumpIntent.putExtra(ContactManager.LIVE_CHAT_KICK_OFF, type);
+					jumpIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(jumpIntent);
+				}
+			}
+		};
+	};
 	
 	@Override
 	protected void onCreate(Bundle arg0) {
@@ -63,6 +92,25 @@ public abstract class BaseFragmentActivity extends GAFragmentActivity implements
 		// TODO Auto-generated method stub
 		super.onResume();
 		isActivityVisible = true;
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(LIVECHAT_KICKOFF_ACTION);
+		registerReceiver(kickoffReceiver, filter);
+		
+		if(QpidApplication.isKickOff){
+			Intent intent = null;
+			if(!(this instanceof RegisterActivity)&& (!(this instanceof LoginActivity))){
+				if(this instanceof HomeActivity){
+					Intent loginIntent = new Intent(this,
+							RegisterActivity.class);
+					startActivity(loginIntent);
+				}else{
+					intent = new Intent(BaseFragmentActivity.this, HomeActivity.class);
+					intent.putExtra(ContactManager.LIVE_CHAT_KICK_OFF, QpidApplication.kickOffType);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -70,6 +118,11 @@ public abstract class BaseFragmentActivity extends GAFragmentActivity implements
 		// TODO Auto-generated method stub
 		super.onPause();
 		isActivityVisible = false;
+		try{
+			unregisterReceiver(kickoffReceiver);
+		}catch(IllegalArgumentException e){
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

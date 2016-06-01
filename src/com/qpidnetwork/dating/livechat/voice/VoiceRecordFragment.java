@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.ScaleAnimation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -213,10 +212,12 @@ public class VoiceRecordFragment extends BaseFragment {
 	private Runnable delayTask = new Runnable() {
 		@Override
 		public void run() {
-			if(recordStatus == RecordStatus.START_RECORD){
-				playPickUpToSend();
-			}else if(recordStatus == RecordStatus.RELEASE_TO_CANCEL){
-				playPickUpToCancel(true);
+			if (null != getActivity()) {
+				if(recordStatus == RecordStatus.START_RECORD){
+					playPickUpToSend();
+				}else if(recordStatus == RecordStatus.RELEASE_TO_CANCEL){
+					playPickUpToCancel(true);
+				}
 			}
 		}
 	};

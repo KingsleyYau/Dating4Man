@@ -23,6 +23,10 @@ public class EmotionPlayer extends View{
 	private Context mConetext;
 	private boolean isPlaying = false;
 	
+	private int mRepeat = -1;//重复播放次数，默认循环播放
+	private int mCurrentIndex = 0; //当前已经播放次数
+	private OnAnimationListener mAnimationListener;
+	
 	public EmotionPlayer(Context context){
 		super(context);
 		mConetext = context;
@@ -66,7 +70,14 @@ public class EmotionPlayer extends View{
 				currentFrame++;	
 			}else{
 				//动画播放到最后一帧，重头播放
+				mCurrentIndex ++;
 				currentFrame = 0;
+				if(mRepeat != -1){
+					if(mRepeat ==  mCurrentIndex){
+						stop();
+						return;
+					}
+				}
 			}
 			long start = System.currentTimeMillis();
 			if(reInvalidate()){
@@ -91,6 +102,15 @@ public class EmotionPlayer extends View{
 		}
 	}
 	
+	/**
+	 * 设置循环播放次数
+	 * @param repeat
+	 */
+	public void setRepeat(int repeat){
+//		Log.i("hunter", "EmotionPlayer setRepeat: " + repeat);
+		mRepeat = repeat;
+	}
+	
 	private void init(){
 		currentFrame = 0;
 		reInvalidate();
@@ -112,6 +132,10 @@ public class EmotionPlayer extends View{
 	
 	public void play(){
 		isPlaying = true;
+		mCurrentIndex = 0;
+		if(mAnimationListener != null){
+			mAnimationListener.onAnimationStart();
+		}
 		refreshFrames();
 	}
 	
@@ -132,9 +156,13 @@ public class EmotionPlayer extends View{
 	
 	public void stop(){
 		isPlaying = false;
+		mCurrentIndex = 0;
 		mHandler.removeCallbacks(animationTimer);
 		currentFrame = 0;
 		reInvalidate();
+		if(mAnimationListener != null){
+			mAnimationListener.onAnimationStop();
+		}
 	}
 	
 	private boolean reInvalidate(){
@@ -153,5 +181,18 @@ public class EmotionPlayer extends View{
 			}
 		}
 		return isInvalidate;
+	}
+	
+	/**
+	 * 设置动画监听器
+	 * @param listener
+	 */
+	public void setAnimationListener(OnAnimationListener listener){
+		mAnimationListener = listener;
+	}
+	
+	public interface OnAnimationListener{
+		public void onAnimationStart();
+		public void onAnimationStop();
 	}
 }

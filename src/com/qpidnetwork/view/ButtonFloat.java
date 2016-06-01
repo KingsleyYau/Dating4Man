@@ -2,6 +2,7 @@ package com.qpidnetwork.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
@@ -16,6 +17,8 @@ public class ButtonFloat extends CardView{
 	private float desity = this.getContext().getResources().getDisplayMetrics().density;
 	private int elevation = (int)(2.00 * desity);
 	private int radius = (int)(0.00 * desity);
+	
+	private ImageView iconView;
 	
 	public ButtonFloat(Context context) {
 		super(context);
@@ -74,19 +77,29 @@ public class ButtonFloat extends CardView{
 			view.setOrientation(LinearLayout.HORIZONTAL);
 		}
 		
-		ImageView icon = new ImageView(this.getContext());
+		iconView = new ImageView(this.getContext());
 		LinearLayout.LayoutParams ic_params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		icon.setImageResource(iconResourceId);
-		icon.setLayoutParams(ic_params);
+		iconView.setImageResource(iconResourceId);
+		iconView.setLayoutParams(ic_params);
 		
 		
 
 		
-		view.addView(icon);
+		view.addView(iconView);
 		if (touch != 0) view.setBackgroundResource(touch);
 		
 		
 		return view;
+	}
+	
+	public void setIcon(int resourceId){
+		if (iconView == null) return;
+		iconView.setImageResource(resourceId);
+	}
+	
+	public void setIcon(Drawable drawable){
+		if (iconView == null) return;
+		iconView.setImageDrawable(drawable);
 	}
 	
 	public void setButtonBackground(int color){

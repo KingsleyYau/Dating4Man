@@ -71,6 +71,12 @@ public class RequestJni {
     static public native String GetCookies(String site);
     
     /**
+     * 获取所有cookies
+     * @return
+     */
+    static public native String[] GetCookiesInfo();
+    
+    /**
      * 停止请求
      * @param requestId		请求Id
      */

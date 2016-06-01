@@ -1,5 +1,9 @@
 package com.qpidnetwork.request;
 
+import java.util.List;
+
+import com.qpidnetwork.livechat.jni.LiveChatTalkUserListItem.DeviceType;
+
 /**
  * 5.Live Chat
  * @author Max.Chiu
@@ -284,7 +288,7 @@ public class RequestJniLiveChat {
 	}
 	
 	/**
-	 * 6.14.获取微视频文件URL（http post）（New）
+	 * 6.14.获取微视频文件URL（http post）
 	 * @param womanId		女士ID
 	 * @param videoid		视频ID
 	 * @param inviteid		邀请ID
@@ -313,4 +317,89 @@ public class RequestJniLiveChat {
 			int toflag,
 			String sendid,
 			OnGetVideoCallback callback);
+	
+	/**
+	 * 6.15 查询小高级表情配置
+	 * @param callback
+	 * @return
+	 */
+	static public native long GetMagicIconConfig(OnGetMagicIconConfigCallback callback);
+	
+	/**
+	 * 6.16.开聊自动买点（http post）
+	 * @param womanId		女士ID
+	 * @param callback		回调
+	 * @return
+	 */
+	static public native long ChatRecharge(String womanId, String user_sid, String user_id, OnLCChatRechargeCallback callback);
+	
+	/**
+	 * 6.17 获取主题配置
+	 * @param user_sid
+	 * @param user_id
+	 * @param callback
+	 * @return
+	 */
+	static public native long GetThemeConfig(String user_sid, String user_id, OnGetThemeConfigCallback callback);
+	
+	/**
+	 * 6.17 获取指定主题详情
+	 * @param themeIds 制定主题ID列表
+	 * @param user_sid
+	 * @param user_id
+	 * @param callback
+	 * @return
+	 */
+	public static long GetThemeDetail(List<String> themeIds, String user_sid, String user_id, OnGetThemeDetailCallback callback){
+		String themes = "";
+		if(themeIds != null){
+			for(int i=0; i < themeIds.size(); i++){
+				if(i != (themeIds.size()-1)){
+					themes += themeIds.get(i) + ",";
+				}else{
+					themes += themeIds.get(i);
+				}
+			}
+		}
+		return GetThemeDetail(themes, user_sid, user_id, callback);
+	}
+	static public native long GetThemeDetail(String themeIds, String user_sid, String user_id, OnGetThemeDetailCallback callback);
+	
+	/**
+	 * 功能点列表
+	 */
+	public enum FunctionType{
+		CHAT_TEXT, 
+		CHAT_VIDEO,
+		CHAT_EMOTION,
+		CHAT_TRYTIKET,
+		CHAT_GAME,
+		CHAT_VOICE,
+		CHAT_MAGICICON,
+		CHAT_PRIVATEPHOTO,
+		CHAT_SHORTVIDEO; 
+	}
+	/**
+	 * 6.19检测功能是否开通
+	 * @param functionList 待检测功能列表
+	 * @param type 设备类型
+	 * @param versionCode 待检测版本号
+	 * @param user_sid session id
+	 * @param user_id 用户ID
+	 * @return
+	 */
+	public static long CheckFunctions(List<FunctionType> functionList,
+				DeviceType type, String versionCode, String user_sid, String user_id,
+				OnCheckFunctionsCallback callback){
+		int[] functions = null;
+		if(functionList != null){
+			functions = new int[functionList.size()];
+			for(int i=0; i<functionList.size(); i++){
+				functions[i] = functionList.get(i).ordinal();
+			}
+		}
+		return CheckFunctions(functions, type.ordinal(), versionCode, user_sid, user_id, callback);
+	}
+	
+	static protected native long CheckFunctions( int[] functionIds, int deviceType, String versionCode, String user_sid, String user_id, OnCheckFunctionsCallback callback);
 }

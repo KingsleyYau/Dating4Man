@@ -17,19 +17,21 @@ LOCAL_MODULE_FILENAME := libhttprequest
 
 LOCAL_C_INCLUDES := $(LIBRARY_PATH)
 LOCAL_C_INCLUDES += $(LIBRARY_THIRDY_PARTY_PATH)
-LOCAL_C_INCLUDES += $(LIBRARY_THIRDY_PARTY_PATH)/curl/include
-LOCAL_C_INCLUDES += $(LIBRARY_PATH)/manrequesthandler
-LOCAL_C_INCLUDES += $(LIBRARY_PATH)/manrequesthandler/item
-LOCAL_C_INCLUDES += $(LIBRARY_PATH)/httpclient
+#LOCAL_C_INCLUDES += $(LIBRARY_THIRDY_PARTY_PATH)/curl/include
+#LOCAL_C_INCLUDES += $(LIBRARY_PATH)/manrequesthandler
+#LOCAL_C_INCLUDES += $(LIBRARY_PATH)/manrequesthandler/item
+#LOCAL_C_INCLUDES += $(LIBRARY_PATH)/httpclient
 
 LOCAL_CFLAGS = -fpermissive -Wno-write-strings
 
 LOCAL_LDLIBS += -llog
 
 LOCAL_LDFLAGS += -L$(LIBRARY_THIRDY_PARTY_PATH)/openssl/lib/$(TARGET_ARCH)
-LOCAL_LDLIBS += -lz -lssl -lcrypto
+LOCAL_LDLIBS += -lssl -lcrypto #-lz 
 
+#LOCAL_STATIC_LIBRARIES += z
 LOCAL_STATIC_LIBRARIES += manrequesthandler
+LOCAL_STATIC_LIBRARIES += livechat
 #LOCAL_STATIC_LIBRARIES += common
 #LOCAL_STATIC_LIBRARIES += json
 #LOCAL_STATIC_LIBRARIES += xml

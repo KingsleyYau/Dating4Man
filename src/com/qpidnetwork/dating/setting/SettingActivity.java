@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.WebViewActivity;
@@ -23,6 +21,7 @@ import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.contactus.ContactTicketListActivity;
 import com.qpidnetwork.dating.setting.SettingPerfence.NotificationItem;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnOtherVersionCheckCallback;
@@ -213,7 +212,7 @@ public class SettingActivity extends BaseFragmentActivity implements OnOtherVers
 	 */
 	public void onClickFacebook(View v) {
 		// 使用系統瀏覽器打開
-		String link = WebSiteManager.newInstance(mContext).GetFacebookLink();
+		String link = WebSiteManager.getInstance().GetFacebookLink();
 		Uri uri = Uri.parse(link);
 		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 		startActivity(intent);
@@ -225,7 +224,7 @@ public class SettingActivity extends BaseFragmentActivity implements OnOtherVers
 	 */
 	public void onClickFAQTerms(View v){
 		/*跳转到帮助FAQ页面*/
-		String url = WebSiteManager.newInstance(mContext).GetWebSite().getHelpLink();
+		String url = WebSiteManager.getInstance().GetWebSite().getHelpLink();
 		Intent intent = WebViewActivity.getIntent(mContext, url);
 		intent.putExtra(WebViewActivity.WEB_TITLE, "Help");
 		startActivity(intent);

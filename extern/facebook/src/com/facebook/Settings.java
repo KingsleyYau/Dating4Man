@@ -316,22 +316,27 @@ public final class Settings {
         final Request.Callback callback) {
         // grab the application context ahead of time, since we will return to the caller immediately.
         final Context applicationContext = context.getApplicationContext();
-        Settings.getExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                final Response response = Settings.publishInstallAndWaitForResponse(applicationContext, applicationId);
-                if (callback != null) {
-                    // invoke the callback on the main thread.
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onCompleted(response);
-                        }
-                    });
-                }
-            }
-        });
+        try{
+	        Settings.getExecutor().execute(new Runnable() {
+	            @Override
+	            public void run() {
+	                final Response response = Settings.publishInstallAndWaitForResponse(applicationContext, applicationId);
+	                if (callback != null) {
+	                    // invoke the callback on the main thread.
+	                    Handler handler = new Handler(Looper.getMainLooper());
+	                    handler.post(new Runnable() {
+	                        @Override
+	                        public void run() {
+	                            callback.onCompleted(response);
+	                        }
+	                    });
+	                }
+	            }
+	        });
+        }catch(RejectedExecutionException e){
+        	e.printStackTrace();
+        }
+	       
     }
 
     static Response publishInstallAndWaitForResponse(

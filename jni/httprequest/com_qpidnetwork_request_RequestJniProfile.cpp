@@ -7,7 +7,7 @@
  */
 #include "com_qpidnetwork_request_RequestJniProfile.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestProfileController.h"
+#include <manrequesthandler/RequestProfileController.h>
 
 void onGetMyProfile(long requestId, bool success, ProfileItem item, string errnum, string errmsg);
 void onUpdateMyProfile(long requestId, bool success, bool rsModified, string errnum, string errmsg);

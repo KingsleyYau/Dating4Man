@@ -15,7 +15,6 @@ import com.qpidnetwork.dating.contacts.ContactsAdapter.OnContactListItemLongClic
 import com.qpidnetwork.dating.lady.LadyDetailActivity;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.base.BaseListFragment;
-import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.ToastUtil;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.request.OnRequestCallback;
@@ -87,7 +86,7 @@ public class ContactsListFragment extends BaseListFragment implements
 						womanId[0] = bean.womanid;
 						if(bean.isInchating){
 							/*删除联系人，如果在聊，先EndChat*/
-							LiveChatManager.newInstance(getActivity()).EndTalk(bean.womanid);
+							LiveChatManager.getInstance().EndTalk(bean.womanid);
 						}
 						removeContact(womanId);
 					}
@@ -215,8 +214,8 @@ public class ContactsListFragment extends BaseListFragment implements
 	public void onContactListItemLongClick(final int position) {
 		MaterialDialogSingleChoice dialog = new MaterialDialogSingleChoice(
 				getActivity(), new String[] {
-						getString(R.string.common_btn_delete),
 						getString(R.string.view_profile),
+						getString(R.string.common_btn_delete),
 						getString(R.string.common_btn_cancel) },
 				new MaterialDialogSingleChoice.OnClickCallback() {
 
@@ -225,16 +224,17 @@ public class ContactsListFragment extends BaseListFragment implements
 							View v, int which) {
 						// TODO Auto-generated method stub
 						if (which == 0) {
+							LadyDetailActivity
+							.launchLadyDetailActivity(
+									getActivity(),
+									mAdapter.getDataList().get(
+											position).womanid,
+									true);
+							
+						} else if (which == 1) {
 							ContactBean bean = mAdapter.getDataList()
 									.get(position);
 							showRemoveContactConfirm(bean);
-						} else if (which == 1) {
-							LadyDetailActivity
-									.launchLadyDetailActivity(
-											getActivity(),
-											mAdapter.getDataList().get(
-													position).womanid,
-											true);
 						}
 					}
 				}, -1);

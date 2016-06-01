@@ -17,7 +17,6 @@ import android.widget.GridView;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.livechat.ChatActivity;
 import com.qpidnetwork.dating.livechat.expression.NormalEmotionFragment.OnItemClickCallback;
 import com.qpidnetwork.framework.base.BaseFragment;
@@ -65,14 +64,14 @@ public class EmotionHistoryFragment extends BaseFragment implements LiveChatMana
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
 		
-		mLiveChatManager = LiveChatManager.newInstance(null);
+		mLiveChatManager = LiveChatManager.getInstance();
 		OtherEmotionConfigItem item = mLiveChatManager.GetEmotionConfigItem();
 		if(item != null){
 			updateEmotionGridview(Arrays.asList(item.manEmotionList));
 		}else{
 			pbDownload.setVisibility(View.VISIBLE);
 			mLiveChatManager.RegisterEmotionListener(this);
-			boolean isSuccess = LiveChatManager.newInstance(null).GetEmotionConfig();
+			boolean isSuccess = LiveChatManager.getInstance().GetEmotionConfig();
 			if(!isSuccess){
 				pbDownload.setVisibility(View.GONE);
 				mLiveChatManager.UnregisterEmotionListener(this);
@@ -82,7 +81,7 @@ public class EmotionHistoryFragment extends BaseFragment implements LiveChatMana
 	}
 	
 	private void updateEmotionGridview(List<OtherEmotionConfigEmotionItem> emotionList){
-		String curSite = WebSiteManager.newInstance(getActivity()).GetWebSite().getSiteName();
+		String curSite = WebSiteManager.getInstance().GetWebSite().getSiteName();
 		String userId = LoginManager.getInstance().GetLoginParam().item.manid;
 		premiumIds = EmotionHistoryUtil.getItemStringIds(getActivity(), userId, curSite, "premium");
 		premiumdataList = new ArrayList<OtherEmotionConfigEmotionItem>();
@@ -132,7 +131,7 @@ public class EmotionHistoryFragment extends BaseFragment implements LiveChatMana
 			premiumdataList.add(0,getEmotionItemById(emotionId, Arrays.asList(mLiveChatManager.GetEmotionConfigItem().manEmotionList)));
 		} 
 		
-		String curSite = WebSiteManager.newInstance(getActivity()).GetWebSite().getSiteName();
+		String curSite = WebSiteManager.getInstance().GetWebSite().getSiteName();
 		String userId = LoginManager.getInstance().GetLoginParam().item.manid;
 		
 		EmotionHistoryUtil.saveItemStringIds(premiumIds, getActivity(), userId, curSite, "premium");

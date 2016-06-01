@@ -27,10 +27,15 @@ import com.facebook.model.GraphUser;
 import com.google.ads.conversiontracking.AdWordsConversionReporter;
 import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.authorization.LoginParam.LoginType;
-import com.qpidnetwork.dating.googleanalytics.GAManager;
+import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.dating.credit.AutoChargeManager;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsManager;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
+import com.qpidnetwork.manager.MonthlyFeeManager;
+import com.qpidnetwork.manager.ThemeConfigManager;
+import com.qpidnetwork.request.OnGetThemeConfigCallback;
 import com.qpidnetwork.request.OnLoginCallback;
 import com.qpidnetwork.request.OnLoginWithFacebookCallback;
 import com.qpidnetwork.request.RequestErrorCode;
@@ -41,6 +46,7 @@ import com.qpidnetwork.request.item.LoginFacebookItem;
 import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.request.item.OtherSynConfigItem;
 import com.qpidnetwork.request.item.RegisterItem;
+import com.qpidnetwork.request.item.ThemeConfig;
 
 /**
  * 认证模块
@@ -53,7 +59,9 @@ public class LoginManager implements Session.StatusCallback,
 {
 	
 	private static final int ADWORDS_REGISTER_SUCCESS_UPDATE = 1;//adwords 注册成功跟踪
-	private static final int LOGIN_STATUS_UPDATE = ADWORDS_REGISTER_SUCCESS_UPDATE + 1; // 登录状态改变  
+	private static final int LOGIN_STATUS_UPDATE = ADWORDS_REGISTER_SUCCESS_UPDATE + 1; // 登录状态改变
+	private static final int REGISTER_STATUS_UPDATE = LOGIN_STATUS_UPDATE + 1; //注册成功更新
+	private static final int GET_THEME_CONFIG_CALLBACK = REGISTER_STATUS_UPDATE + 1;//获取主题配置成功返回
 
 	public interface OnLoginManagerCallback {
 		/**
@@ -162,7 +170,36 @@ public class LoginManager implements Session.StatusCallback,
 				if (msg.what == LOGIN_STATUS_UPDATE) 
 				{
 					MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
-					LoginStatusChangeProc(obj);
+					if(!obj.isSuccess){
+						//failed 
+						LoginStatusChangeProc(obj);
+					}else{
+						// 登录成功, 处理是否记住密码, 自动登录等
+						LoginPerfence.SaveLoginParam(
+								mContext, 
+								new LoginParam(obj.email, obj.password, obj.accessToken, obj.type, obj.loginItem));
+						
+						//更新自动充值配置到AutoChargeManager
+						if(obj.loginItem != null){
+							AutoChargeManager.getInstatnce().setRechargeCredit(obj.loginItem.rechargeCredit);
+						}
+						
+						AnalyticsManager.newInstance().setGAUserId(obj.loginItem.ga_uid);
+						
+						getThemeConfig(obj.loginItem.sessionid, obj.loginItem.manid);
+					}
+					
+					// test
+//					String cookies = "";
+//					String[] cookiesList = RequestJni.GetCookiesInfo();
+//					for (String cookie : cookiesList)
+//					{
+//						if (!cookies.isEmpty()) {
+//							cookies += ", ";
+//						}
+//						cookies += cookie;
+//					}
+//					Log.d("test", "cookies:%s", cookies);
 				}
 				else if (msg.what == ADWORDS_REGISTER_SUCCESS_UPDATE)
 				{
@@ -170,6 +207,21 @@ public class LoginManager implements Session.StatusCallback,
 					if(!QpidApplication.isDemo){
 						AdWordsConversionReporter.reportWithConversionId(mContext.getApplicationContext(), "1072471539", "WDf5CKKc-VUQ87uy_wM", "0.00", true);
 					}
+				}else if(msg.what == REGISTER_STATUS_UPDATE){
+					MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
+					LoginStatusChangeProc(obj);
+				}else if(msg.what == GET_THEME_CONFIG_CALLBACK){
+					RequestBaseResponse response = (RequestBaseResponse)msg.obj;
+					if(response.isSuccess){
+						// 改变状态
+			        	mLoginStatus = LoginStatus.LOGINED;
+			        	mbIsAutoLogin = true;
+					}else{
+						mLoginStatus = LoginStatus.NONE;
+					}
+					// 通知其他模块
+					LoginParam param = GetLoginParam();
+					notifyAllListener(response.isSuccess, "", "", param.item, null);
 				}
 			}
 		};
@@ -458,7 +510,11 @@ public class LoginManager implements Session.StatusCallback,
 				obj.accessToken = finalAccessToken;
 				obj.type = LoginType.Facebook;
 				msg.obj = obj;
-				msg.what = LOGIN_STATUS_UPDATE;
+				if(item != null && item.is_reg){
+					msg.what = REGISTER_STATUS_UPDATE;
+				}else{
+					msg.what = LOGIN_STATUS_UPDATE;
+				}
 				mHandler.sendMessage(msg);
 				
 				if(isSuccess 
@@ -561,11 +617,7 @@ public class LoginManager implements Session.StatusCallback,
 		
     	if( bCallback ) {
     		// 通知其他模块
-    		for(OnLoginManagerCallback callback : mCallbackList) {
-    			if( callback != null ) {
-    				callback.OnLogin(false, RequestErrorCode.LOCAL_ERROR_CODE_NERVER_LOGIN, "Login fail!", null, null);
-    			} 
-    		}
+    		notifyAllListener(false, RequestErrorCode.LOCAL_ERROR_CODE_NERVER_LOGIN, "Login fail!", null, null);
     	}
     }
     
@@ -651,7 +703,7 @@ public class LoginManager implements Session.StatusCallback,
 		obj.password = password;
 		obj.type = LoginType.Default;
 		msg.obj = obj;
-		msg.what = LOGIN_STATUS_UPDATE;
+		msg.what = REGISTER_STATUS_UPDATE;
 		mHandler.sendMessage(msg);
 		
 		if(item.login) {
@@ -676,11 +728,16 @@ public class LoginManager implements Session.StatusCallback,
 					mContext, 
 					new LoginParam(obj.email, obj.password, obj.accessToken, obj.type, obj.loginItem));
 			
+			//更新自动充值配置到AutoChargeManager
+			if(obj.loginItem != null){
+				AutoChargeManager.getInstatnce().setRechargeCredit(obj.loginItem.rechargeCredit);
+			}
+			
 			// 提交GAUserID到Google Analytics
-			GAManager.newInstance().setGAUserId(obj.loginItem.ga_uid);
-			// for test
-			//String gaUserId = "53FB07A0EF8972C1DB43324E1A339F11";	// MD5("test_samson_2015")
-			//GAManager.newInstance().setGAUserId(gaUserId);
+			//测试GA提交用户Id
+//			Log.file("LoginManager", "AnalyticsManager setGAUserId usrId： " + obj.loginItem.ga_uid);
+			
+			AnalyticsManager.newInstance().setGAUserId(obj.loginItem.ga_uid);
 		} else {
         	mLoginStatus = LoginStatus.NONE;
 			switch (obj.errno) {
@@ -696,11 +753,28 @@ public class LoginManager implements Session.StatusCallback,
 				break;
 			}
 		}
+		notifyAllListener(obj.isSuccess, obj.errno, obj.errmsg, obj.loginItem, obj.loginErrorItem);
 		
+	}
+	
+	/**
+	 * 登陆完成通知其他模块
+	 * @param isSuccess
+	 * @param errno
+	 * @param errmsg
+	 * @param item
+	 * @param errItem
+	 */
+	private void notifyAllListener(boolean isSuccess, String errno, String errmsg, LoginItem item, LoginErrorItem errItem){
+		if(isSuccess){
+			//登陆成功刷新月费配置
+			MonthlyFeeManager.getInstance().QueryMemberType();
+			MonthlyFeeManager.getInstance().GetMonthlyFeeTips();
+		}
 		// 通知其他模块
 		for(OnLoginManagerCallback callback : mCallbackList) {
 			if( callback != null ) {
-				callback.OnLogin(obj.isSuccess, obj.errno, obj.errmsg, obj.loginItem, obj.loginErrorItem);
+				callback.OnLogin(isSuccess, errno, errmsg, item, errItem);
 			} 
 		}
 	}
@@ -756,5 +830,26 @@ public class LoginManager implements Session.StatusCallback,
 			graphUser = user;
 			LoginWithFacebook("", "", "", "", "", "");
         }
+	}
+	
+	/**
+	 * 获取主题配置
+	 * @param user_sid
+	 * @param user_id
+	 */
+	private void getThemeConfig(String user_sid, String user_id){
+		ThemeConfigManager.newInstance().GetThemeConfig(user_sid, user_id, new OnGetThemeConfigCallback() {
+			
+			@Override
+			public void OnGetThemeConfig(boolean isSuccess, String errno,
+					String errmsg, ThemeConfig config) {
+				// TODO Auto-generated method stub
+				Message msg = Message.obtain();
+				RequestBaseResponse response = new RequestBaseResponse(isSuccess, errno, errmsg, config);
+				msg.what = GET_THEME_CONFIG_CALLBACK;
+				msg.obj = response;
+				mHandler.sendMessage(msg);
+			}
+		});
 	}
 }

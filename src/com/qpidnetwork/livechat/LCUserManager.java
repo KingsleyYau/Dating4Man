@@ -118,10 +118,10 @@ public class LCUserManager {
 		synchronized(mUserMap) 
 		{
 			// 清除所有用户的聊天记录
-			for (Entry<String, LCUserItem> entry: mUserMap.entrySet()) {
-				LCUserItem item = entry.getValue();
-				item.clearMsgList();
-			}
+//			for (Entry<String, LCUserItem> entry: mUserMap.entrySet()) {
+//				LCUserItem item = entry.getValue();
+//				item.clearMsgList();
+//			}
 			mUserMap.clear();
 		}
 		return true;
@@ -155,8 +155,13 @@ public class LCUserManager {
 		synchronized(mUserMap) {
 			for (Entry<String, LCUserItem> entry: mUserMap.entrySet()) {
 				LCUserItem item = entry.getValue();
-				if (item.chatType == ChatType.Invite) {
-					list.add(item);
+				synchronized (item.msgList)
+				{
+					if (item.chatType == ChatType.Invite
+						&& !item.msgList.isEmpty()) 
+					{
+						list.add(item);
+					}
 				}
 			}
 			try{
@@ -189,7 +194,7 @@ public class LCUserManager {
 	} 
 	
 	/**
-	 * 获取有待发消息的用户列表
+	 * 获取有待发消息的用户队列
 	 * @return
 	 */
 	public ArrayList<LCUserItem> getToSendUsers()
@@ -198,9 +203,12 @@ public class LCUserManager {
 		synchronized(mUserMap) {
 			for (Entry<String, LCUserItem> entry: mUserMap.entrySet()) {
 				LCUserItem item = entry.getValue();
-				if (item.sendMsgList.size() > 0) 
+				synchronized (item.sendMsgList)
 				{
-					list.add(item);
+					if (!item.sendMsgList.isEmpty()) 
+					{
+						list.add(item);
+					}
 				}
 			}
 		}

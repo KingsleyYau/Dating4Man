@@ -175,8 +175,15 @@ public class TicketCreateActivity extends BaseActionBarFragmentActivity
 	 * 选择截屏图片
 	 */
 	private void onScreenShotSelected() {
-		Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
-		startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		try{
+			Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
+			startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		}catch(Exception e){
+			Intent intent = new Intent();
+			intent.setType("image/*");
+			intent.setAction(Intent.ACTION_GET_CONTENT);
+			startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		}
 	}
 
 	@Override

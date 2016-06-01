@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:button="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="64dp"
+        android:layout_height="190dp"
+        android:gravity="center|top"
+        android:orientation="vertical" >
+
+        <com.qpidnetwork.view.ButtonFloat
+            android:id="@+id/chatButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginBottom="4dp"
+            android:clickable="true"
+            button:background="@color/white"
+            button:cardUseCompatPadding="false"
+            button:elevation="4dp"
+            button:icon="@drawable/ic_chat_grey600_24dp"
+            button:radius="26dp"
+            button:touch_feedback="@drawable/touch_feedback_holo_dark" />
+
+        <com.qpidnetwork.view.ButtonFloat
+            android:id="@+id/mailButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginBottom="4dp"
+            android:clickable="true"
+            button:background="@color/white"
+            button:cardUseCompatPadding="false"
+            button:elevation="4dp"
+            button:icon="@drawable/ic_email_grey600_24dp"
+            button:radius="26dp"
+            button:touch_feedback="@drawable/touch_feedback_holo_dark" />
+
+        <com.qpidnetwork.view.ButtonFloat
+            android:id="@+id/favoriteButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:clickable="true"
+            button:background="@color/white"
+            button:cardUseCompatPadding="false"
+            button:elevation="4dp"
+            button:icon="@drawable/ic_favorite_grey600_24dp"
+            button:radius="26dp"
+            button:touch_feedback="@drawable/touch_feedback_holo_dark" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -6,23 +6,16 @@ import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.AppEventsLogger;
 import com.facebook.Session;
 import com.facebook.SessionLoginBehavior;
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
-import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
-import com.qpidnetwork.dating.contacts.ContactManager;
-import com.qpidnetwork.dating.googleanalytics.GAFragmentActivity;
 import com.qpidnetwork.dating.home.AppUrlHandler;
-import com.qpidnetwork.dating.home.HomeActivity;
-import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
 import com.qpidnetwork.request.RequestErrorCode;
@@ -30,7 +23,6 @@ import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.request.item.OtherSynConfigItem;
 import com.qpidnetwork.view.ButtonRaised;
-import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MovingImageView;
 import com.qpidnetwork.view.MovingImageView.Callback;
 import com.qpidnetwork.view.MovingImageView.TranslateMode;
@@ -126,10 +118,7 @@ public class RegisterActivity extends BaseFragmentActivity
 		
 		// 增加登录状态改变监听
         if (!mFloatingBg.isAutoStopped) mFloatingBg.runAnimate(mFloatingBg.mode);
-		
-        // Call the 'activateApp' method to log an app event for use in analytics and advertising reporting.  Do so in
-        // the onResume methods of the primary Activities that an app may be launched into.
-        AppEventsLogger.activateApp(this);
+        
     }
     @Override
     public void onPause() {
@@ -137,10 +126,7 @@ public class RegisterActivity extends BaseFragmentActivity
         
 		// 删除登录状态改变监听
         mFloatingBg.stopAnimate();
-		
-        // Call the 'deactivateApp' method to log an app event for use in analytics and advertising
-        // reporting.  Do so in the onPause methods of the primary Activities that an app may be launched into.
-        AppEventsLogger.deactivateApp(this);
+        
     }
 
     @Override

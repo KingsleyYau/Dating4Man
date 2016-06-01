@@ -59,6 +59,24 @@ public class LCVoiceManager {
 	}
 	
 	/**
+	 * 清除所有图片
+	 */
+	public void removeAllVoiceFile()
+	{
+		if (!mDirPath.isEmpty())
+		{
+			String dirPath = mDirPath + "*";
+			String cmd = "rm -f " + dirPath;
+			try {
+				Runtime.getRuntime().exec(cmd);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
 	 * 获取语音本地缓存文件路径
 	 * @param item		语音item
 	 * @return

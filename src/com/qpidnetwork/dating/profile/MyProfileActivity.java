@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.view.View;
@@ -17,23 +16,26 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.WebViewActivity;
 import com.qpidnetwork.dating.authorization.LoginManager;
+import com.qpidnetwork.dating.authorization.LoginManager.LoginStatus;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.credit.BuyCreditActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.CompatUtil;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.framework.widget.CircleImageView;
 import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.manager.MonthlyFeeManager;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnGetMyProfileCallback;
 import com.qpidnetwork.request.OnOtherGetCountCallback;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestOperator;
+import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 import com.qpidnetwork.request.item.OtherGetCountItem;
 import com.qpidnetwork.request.item.ProfileItem;
 import com.qpidnetwork.tool.ImageViewLoader;
@@ -88,6 +90,11 @@ public class MyProfileActivity extends BaseFragmentActivity implements MaterialT
 
 	private ProfileItem mProfileItem;
 	private OtherGetCountItem mOtherGetCountItem;
+	/**
+	 * 月费相关
+	 */
+	private View monthlyNoPaid;
+	private View monthlyPaid;
 	
 	
 	@Override
@@ -157,7 +164,7 @@ public class MyProfileActivity extends BaseFragmentActivity implements MaterialT
 	}
 	
 	public void onClickBonusPoints(View v) {
-		String url = WebSiteManager.newInstance(mContext).GetWebSite().getBounsLink();
+		String url = WebSiteManager.getInstance().GetWebSite().getBounsLink();
 		Intent intent = WebViewActivity.getIntent(mContext, url);
 		intent.putExtra(WebViewActivity.WEB_TITLE, "Bouns Points");
 		startActivity(intent);
@@ -465,6 +472,39 @@ public class MyProfileActivity extends BaseFragmentActivity implements MaterialT
 //				finish();
 //			}
 //		});
+		
+		monthlyNoPaid = (View)findViewById(R.id.monthlyNoPaid);
+		monthlyNoPaid.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// 跳去充值模块
+				Intent intent = new Intent(mContext,
+						BuyCreditActivity.class);
+				startActivity(intent);
+				finish();
+			}
+		});
+		monthlyPaid = (View)findViewById(R.id.monthlyPaid);
+		MemberType type = MonthlyFeeManager.getInstance().getMemberType();
+		switch (type) {
+		case NORMAL_MEMBER:{
+			monthlyNoPaid.setVisibility(View.GONE);
+			monthlyPaid.setVisibility(View.GONE);	
+		}break;
+		case FEED_MONTHLY_MEMBER:{
+			monthlyNoPaid.setVisibility(View.GONE);
+			monthlyPaid.setVisibility(View.VISIBLE);	
+		}break;
+		case NO_FEED_FIRST_MONTHLY_MEMBER:
+		case NO_FEED_MONTHLY_MEMBER:{
+			monthlyNoPaid.setVisibility(View.VISIBLE);
+			monthlyPaid.setVisibility(View.GONE);	
+		}break;
+
+		default:
+			break;
+		}
 	}
 	
 	@Override
@@ -562,8 +602,15 @@ public class MyProfileActivity extends BaseFragmentActivity implements MaterialT
 	@Override
 	public void OnSecondButtonClick(View v) {
 		// TODO Auto-generated method stub
-		Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
-		startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		try{
+			Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
+			startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		}catch(Exception e){
+			Intent intent = new Intent();
+			intent.setType("image/*");
+			intent.setAction(Intent.ACTION_GET_CONTENT);
+			startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		}
 	}
 
 	@Override

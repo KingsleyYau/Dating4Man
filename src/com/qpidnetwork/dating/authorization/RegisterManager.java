@@ -1,10 +1,10 @@
 package com.qpidnetwork.dating.authorization;
 
+import android.content.Context;
+
 import com.qpidnetwork.dating.authorization.RegisterPasswordActivity.RegisterParam;
 import com.qpidnetwork.request.OnLoginWithFacebookCallback;
 import com.qpidnetwork.request.OnRegisterCallback;
-
-import android.content.Context;
 
 public class RegisterManager {
 	

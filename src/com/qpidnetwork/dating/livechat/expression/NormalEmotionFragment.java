@@ -51,7 +51,7 @@ public class NormalEmotionFragment extends BaseFragment implements LiveChatManag
 	public void onActivityCreated(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
-		mLiveChatManager = LiveChatManager.newInstance(null);
+		mLiveChatManager = LiveChatManager.getInstance();
 		OtherEmotionConfigItem item = mLiveChatManager.GetEmotionConfigItem();
 		if(item != null){
 			gvEmotion.setAdapter(new EmotionGridviewAdapter(getActivity(), Arrays.asList(item.manEmotionList), gvEmotion, itemClickCallback));

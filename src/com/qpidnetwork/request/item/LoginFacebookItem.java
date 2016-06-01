@@ -36,6 +36,8 @@ public class LoginFacebookItem implements Serializable {
 		this.livechat = false;
 		this.admirer = false;
 		this.bpemf = false;
+		
+		this.rechargeCredit = 0;
 	}
 	/**
 	 * 登录成功回调
@@ -63,6 +65,8 @@ public class LoginFacebookItem implements Serializable {
 	 * @param livechat			LiveChat详细风控标识（true：有风控，false：无）
 	 * @param admirer			意向信风控标识（true：有风控，false：无）
 	 * @param bpemf				EMF风控标识（true：有风控，false：无）
+	 * 
+	 * @param rechargeCredit	自动买点配置（0：无权限，大于0：每次买点的数量）
 	 */
 	public LoginFacebookItem(
 			String manid,
@@ -88,7 +92,9 @@ public class LoginFacebookItem implements Serializable {
 			boolean ladyprofile,
 			boolean livechat,
 			boolean admirer,
-			boolean bpemf
+			boolean bpemf,
+			
+			int rechargeCredit
 			) {
 		this.manid = manid;
 		this.email = email;
@@ -126,6 +132,8 @@ public class LoginFacebookItem implements Serializable {
 		this.livechat = livechat;
 		this.admirer = admirer;
 		this.bpemf = bpemf;
+		
+		this.rechargeCredit = rechargeCredit;
 	}
 	
 	public String manid;
@@ -152,4 +160,6 @@ public class LoginFacebookItem implements Serializable {
 	public boolean livechat;
 	public boolean admirer;
 	public boolean bpemf;
+	
+	public int rechargeCredit;
 }

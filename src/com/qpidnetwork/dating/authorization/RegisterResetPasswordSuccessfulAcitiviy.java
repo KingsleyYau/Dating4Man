@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.view.MaterialAppBar;
 
 public class RegisterResetPasswordSuccessfulAcitiviy extends BaseFragmentActivity {

@@ -121,6 +121,14 @@ JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_Send
 
 /*
  * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    SendMagicIcon
+ * Signature: (Ljava/lang/String;Ljava/lang/String;I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_SendMagicIcon
+  (JNIEnv *, jclass, jstring, jstring, jint);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
  * Method:    UseTryTicket
  * Signature: (Ljava/lang/String;)Z
  */
@@ -169,6 +177,14 @@ JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetU
 
 /*
  * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    GetUsersInfo
+ * Signature: ([Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetUsersInfo
+  (JNIEnv *, jclass, jobjectArray);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
  * Method:    GetBlockList
  * Signature: ()Z
  */
@@ -198,6 +214,86 @@ JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_Uplo
  */
 JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetBlockUsers
   (JNIEnv *, jclass);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    GetLadyCondition
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetLadyCondition
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    GetLadyCustomTemplate
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetLadyCustomTemplate
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    UploadPopLadyAutoInvite
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_UploadPopLadyAutoInvite
+  (JNIEnv *, jclass, jstring, jstring, jstring);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    UploadAutoChargeStatus
+ * Signature: (Z)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_UploadAutoChargeStatus
+  (JNIEnv *, jclass, jboolean);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    GetPaidTheme
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetPaidTheme
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    GetAllPaidTheme
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_GetAllPaidTheme
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    UploadThemeListVer
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_UploadThemeListVer
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    ManFeeTheme
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_ManFeeTheme
+  (JNIEnv *, jclass, jstring, jstring);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    ManApplyTheme
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_ManApplyTheme
+  (JNIEnv *, jclass, jstring, jstring);
+
+/*
+ * Class:     com_qpidnetwork_livechat_jni_LiveChatClient
+ * Method:    PlayThemeMotion
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_qpidnetwork_livechat_jni_LiveChatClient_PlayThemeMotion
+  (JNIEnv *, jclass, jstring, jstring);
 
 #ifdef __cplusplus
 }

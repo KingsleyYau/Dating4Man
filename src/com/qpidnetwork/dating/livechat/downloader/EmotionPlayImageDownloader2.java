@@ -17,7 +17,7 @@ public class EmotionPlayImageDownloader2 implements LiveChatManagerEmotionListen
 	private OnEmotionPlayImageDownloadListener listener;
 	
 	public EmotionPlayImageDownloader2() {
-		mLiveChatManager = LiveChatManager.newInstance(null);
+		mLiveChatManager = LiveChatManager.getInstance();
 	}
 	
 	public void downloadEmotionPlayImage(LCMessageItem bean, OnEmotionPlayImageDownloadListener listener){

@@ -22,7 +22,7 @@ public class VirtualGiftPerfence {
 	 */
 	private static String GetGiftListKey(Context context)
 	{
-		String key = "GiftList_" + WebSiteManager.newInstance(context).GetWebSite().getSiteId();
+		String key = "GiftList_" + WebSiteManager.getInstance().GetWebSite().getSiteId();
 		return key;
 	}
 	
@@ -91,7 +91,7 @@ public class VirtualGiftPerfence {
 	 */
 	private static String GetGiftVersionKey(Context context)
 	{
-		String key = "GiftVersion_" + WebSiteManager.newInstance(context).GetWebSite().getSiteId();
+		String key = "GiftVersion_" + WebSiteManager.getInstance().GetWebSite().getSiteId();
 		return key;
 	}
 	

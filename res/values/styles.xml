@@ -124,6 +124,11 @@
         <item name="android:windowExitAnimation">@anim/anim_dropdown_list_dismiss</item>  
     </style>  
     
+    <style name="PopupListAnimation" parent="android:Animation" mce_bogus="1">      
+         <item name="android:windowEnterAnimation">@anim/anim_popup_list_show</item>  
+        <item name="android:windowExitAnimation">@anim/anim_popup_list_dismiss</item>  
+    </style>
+    
     
     <style name="search_tag_button">
         <item name="android:layout_width">wrap_content</item>
@@ -141,5 +146,30 @@
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:ellipsize">end</item>
     </style>
-    
+
+    <style name="themeDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item><!-- 边框 -->
+        <item name="android:windowIsFloating">true</item><!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsTranslucent">false</item><!-- 半透明 -->
+        <item name="android:windowNoTitle">true</item><!-- 无标题 -->
+        <item name="android:windowBackground">@android:color/transparent</item><!-- 背景透明 -->
+        <item name="android:backgroundDimEnabled">false</item><!-- 模糊 -->
+        <item name="android:backgroundDimAmount">0.6</item>
+    </style>
+
+    <!-- NumberProgressBar -->
+
+    <style name="NumberProgressBar_Default">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="progress_max">100</item>
+        <item name="progress_current">0</item>
+        <item name="progress_unreached_color">#CCCCCC</item>
+        <item name="progress_reached_color">#3498DB</item>
+        <item name="progress_text_size">10sp</item>
+        <item name="progress_text_color">#3498DB</item>
+        <item name="progress_reached_bar_height">1.5dp</item>
+        <item name="progress_unreached_bar_height">0.75dp</item>
+    </style>
+
 </resources>

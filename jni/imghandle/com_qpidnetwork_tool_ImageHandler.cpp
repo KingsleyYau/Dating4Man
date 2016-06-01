@@ -9,6 +9,7 @@
 #include <jni.h>
 #include <string>
 #include <common/KLog.h>
+#include <common/CheckMemoryLeak.h>
 #include <imghandle/PngHandler.h>
 
 using namespace std;

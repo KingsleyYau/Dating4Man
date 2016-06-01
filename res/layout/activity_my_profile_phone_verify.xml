@@ -4,187 +4,191 @@
     xmlns:button="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="${relativePackage}.${activityClass}" 
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context="${relativePackage}.${activityClass}" >
 
-<RelativeLayout android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:background="@color/tiny_grey_solid">
-    
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:layout_marginTop="@dimen/actionbar_height" >
+        android:background="@color/tiny_grey_solid" >
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/mobileView"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            card_view:cardBackgroundColor="#FFFFFF"
-            card_view:cardCornerRadius="2dp"
-            card_view:cardElevation="2dp"
-            card_view:cardPreventCornerOverlap="false"
-            card_view:cardUseCompatPadding="true"
-            android:layout_marginBottom="16dp" >
+            android:layout_height="match_parent"
+            android:scrollbars="none" 
+            android:layout_marginTop="@dimen/actionbar_height">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="24dp"
-                android:orientation="vertical" >
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp" >
 
-                <FrameLayout
-                    android:layout_width="wrap_content"
+                <android.support.v7.widget.CardView
+                    android:id="@+id/mobileView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="16dp" >
+                    android:layout_marginBottom="16dp"
+                    android:orientation="horizontal"
+                    card_view:cardBackgroundColor="#FFFFFF"
+                    card_view:cardCornerRadius="2dp"
+                    card_view:cardElevation="2dp"
+                    card_view:cardPreventCornerOverlap="false"
+                    card_view:cardUseCompatPadding="true" >
 
-                    <ImageView
-                        android:id="@+id/imageViewMobile"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:onClick="onClickAddMobile"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/ic_add_grey600_48dp"
-                        android:background="@drawable/touch_feedback_holo_light_round_rectangle" />
+                        android:orientation="vertical"
+                        android:padding="24dp" >
 
-                    <ImageView android:id="@+id/mobileDoneMark"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:layout_gravity="center"
-                        android:background="@drawable/green_circle"
-                        android:src="@drawable/ic_done_white_24dp" />
-                </FrameLayout>
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="16dp" >
 
-                <TextView
-                    android:id="@+id/textViewAddMobile"
-                    android:layout_width="wrap_content"
+                            <ImageView
+                                android:id="@+id/imageViewMobile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:background="@drawable/touch_feedback_holo_light_round_rectangle"
+                                android:onClick="onClickAddMobile"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/ic_add_grey600_48dp" />
+
+                            <ImageView
+                                android:id="@+id/mobileDoneMark"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/green_circle"
+                                android:src="@drawable/ic_done_white_24dp" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:id="@+id/textViewAddMobile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="@string/Add_Mobile"
+                            android:textColor="@color/text_color_grey"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/textViewMobile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="@string/Mobile"
+                            android:textColor="@color/text_color_dark"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <com.qpidnetwork.view.ButtonRaised
+                            android:id="@+id/layoutChangeMobile"
+                            android:layout_width="160dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="16dp"
+                            android:clickable="true"
+                            android:onClick="onClickChangeMobile"
+                            button:background="@color/white"
+                            button:elevation="1dp"
+                            button:icon="@drawable/ic_create_grey600_24dp"
+                            button:title="@string/Change"
+                            button:title_color="@color/text_color_grey"
+                            button:touch_feedback="@drawable/touch_feedback_round_border_white" />
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/landlineView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/Add_Mobile"
-                    android:textColor="@color/text_color_grey"
-                    android:textSize="18sp" />
+                    android:orientation="horizontal"
+                    card_view:cardBackgroundColor="#FFFFFF"
+                    card_view:cardCornerRadius="2dp"
+                    card_view:cardElevation="2dp"
+                    card_view:cardPreventCornerOverlap="false"
+                    card_view:cardUseCompatPadding="true" >
 
-                <TextView
-                    android:id="@+id/textViewMobile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/Mobile"
-                    android:textColor="@color/text_color_dark"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="24dp" >
 
-                <com.qpidnetwork.view.ButtonRaised
-                    android:id="@+id/layoutChangeMobile"
-                    android:layout_width="160dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
-                    android:clickable="true"
-                    android:onClick="onClickChangeMobile"
-                    button:background="@color/white"
-                    button:elevation="1dp"
-                    button:icon="@drawable/ic_create_grey600_24dp"
-                    button:title="@string/Change"
-                    button:title_color="@color/text_color_grey"
-                    button:touch_feedback="@drawable/touch_feedback_round_border_white" />
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="16dp" >
+
+                            <ImageView
+                                android:id="@+id/imageViewLandline"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:background="@drawable/touch_feedback_holo_light_round_rectangle"
+                                android:onClick="onClickAddLandline"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/ic_add_grey600_48dp" />
+
+                            <ImageView
+                                android:id="@+id/landDoneMark"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/green_circle"
+                                android:src="@drawable/ic_done_white_24dp" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:id="@+id/textViewAddLandline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="@string/Add_Landline"
+                            android:textColor="@color/text_color_grey"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/textViewLandline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="@string/Landline"
+                            android:textColor="@color/text_color_dark"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <com.qpidnetwork.view.ButtonRaised
+                            android:id="@+id/layoutChangeLandline"
+                            android:layout_width="160dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="16dp"
+                            android:clickable="true"
+                            android:onClick="onClickChangeLandline"
+                            button:background="@color/white"
+                            button:elevation="1dp"
+                            button:icon="@drawable/ic_create_grey600_24dp"
+                            button:title="@string/Change"
+                            button:title_color="@color/text_color_grey"
+                            button:touch_feedback="@drawable/touch_feedback_round_border_white" />
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </ScrollView>
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/landlineView"
+        <com.qpidnetwork.view.MaterialAppBar
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            card_view:cardBackgroundColor="#FFFFFF"
-            card_view:cardCornerRadius="2dp"
-            card_view:cardElevation="2dp"
-            card_view:cardPreventCornerOverlap="false"
-            card_view:cardUseCompatPadding="true" 
-            android:layout_below="@id/mobileView">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" 
-                android:padding="24dp">
-
-                
-				<FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="16dp" >
-
-                    <ImageView
-                        android:id="@+id/imageViewLandline"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:onClick="onClickAddLandline"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/ic_add_grey600_48dp"
-                        android:background="@drawable/touch_feedback_holo_light_round_rectangle" />
-
-                    <ImageView android:id="@+id/landDoneMark"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:layout_gravity="center"
-                        android:background="@drawable/green_circle"
-                        android:src="@drawable/ic_done_white_24dp" />
-                </FrameLayout>
-
-                <TextView
-                    android:id="@+id/textViewAddLandline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/Add_Landline"
-                    android:textColor="@color/text_color_grey"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/textViewLandline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/Landline"
-                    android:textColor="@color/text_color_dark"
-                    android:textSize="18sp"
-                    android:textStyle="bold"/>
-
-
-                <com.qpidnetwork.view.ButtonRaised
-                    android:id="@+id/layoutChangeLandline"
-                    android:layout_width="160dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
-                    android:clickable="true"
-                    android:onClick="onClickChangeLandline"
-                    button:background="@color/white"
-                    button:elevation="1dp"
-                    button:icon="@drawable/ic_create_grey600_24dp"
-                    button:title="@string/Change"
-                    button:title_color="@color/text_color_grey"
-                    button:touch_feedback="@drawable/touch_feedback_round_border_white" />
-                
-                
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+            android:layout_height="@dimen/actionbar_height" />
     </RelativeLayout>
-    
-    <com.qpidnetwork.view.MaterialAppBar 
-        android:layout_height="@dimen/actionbar_height"
-        android:layout_width="match_parent"
-        android:id="@+id/appbar"/>
 
-</RelativeLayout>
 </RelativeLayout>

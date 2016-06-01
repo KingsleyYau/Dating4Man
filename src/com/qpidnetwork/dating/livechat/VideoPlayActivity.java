@@ -13,7 +13,6 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.media.MediaPlayer.OnVideoSizeChangedListener;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.Display;
 import android.view.SurfaceHolder;
@@ -25,8 +24,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.tool.ImageViewLoader;
 

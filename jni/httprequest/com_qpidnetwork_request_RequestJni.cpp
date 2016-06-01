@@ -134,6 +134,42 @@ JNIEXPORT jstring JNICALL Java_com_qpidnetwork_request_RequestJni_GetCookies
 
 /*
  * Class:     com_qpidnetwork_request_RequestJni
+ * Method:    GetCookiesInfo
+ * Signature: ()[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_qpidnetwork_request_RequestJni_GetCookiesInfo
+  (JNIEnv *env, jclass cls)
+{
+	jobjectArray jStringArray = NULL;
+
+	list<string> cookies = HttpClient::GetCookiesInfo();
+
+	jclass jStringCls = env->FindClass("java/lang/String");
+	jStringArray = env->NewObjectArray(cookies.size(), jStringCls, NULL);
+
+	FileLog("httprequest", "GetCookiesInfo() JNI cookies.size:%d, jStringArray:%p", cookies.size(), jStringArray);
+
+	if (NULL != jStringArray)
+	{
+		int i = 0;
+		for (list<string>::const_iterator iter = cookies.begin();
+			 iter != cookies.end();
+			 iter++, i++)
+		{
+			jstring item = env->NewStringUTF((*iter).c_str());
+
+			FileLog("httprequest", "GetCookiesInfo() JNI i:%d, cookie:%s, item:%p", i, (*iter).c_str(), item);
+			env->SetObjectArrayElement(jStringArray, i, item);
+
+			env->DeleteLocalRef(item);
+		}
+	}
+
+	return jStringArray;
+}
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJni
  * Method:    StopRequest
  * Signature: (J)V
  */

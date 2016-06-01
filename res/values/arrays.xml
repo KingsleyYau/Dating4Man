@@ -14,6 +14,7 @@
         <item>@drawable/e14</item>
         <item>@drawable/e15</item>
         <item>@drawable/e16</item>
+        <!--  
         <item>@drawable/e7</item>
         <item>@drawable/e8</item>
         <item>@drawable/e17</item>
@@ -22,6 +23,7 @@
         <item>@drawable/e11</item>
         <item>@drawable/e12</item>
         <item>@drawable/e9</item>
+        -->
     </array>
     <array name="expressions_value">
         <item>0</item>
@@ -36,6 +38,7 @@
         <item>14</item>
         <item>15</item>
         <item>16</item>
+        <!-- 
         <item>7</item>
         <item>8</item>
         <item>17</item>
@@ -44,6 +47,7 @@
         <item>11</item>
         <item>12</item>
         <item>9</item>
+        -->
     </array>
     
     <array name="contact_ticket_form">

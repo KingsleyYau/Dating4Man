@@ -290,6 +290,17 @@ public class LCUserItem implements Serializable{
 	}
 	
 	/**
+	 * 添加到等发送队列
+	 */
+	public void addToSendMsgList(LCMessageItem message)
+	{
+		synchronized (sendMsgList)
+		{
+			sendMsgList.add(message);
+		}
+	}
+	
+	/**
 	 * 获取比较器
 	 * @return
 	 */

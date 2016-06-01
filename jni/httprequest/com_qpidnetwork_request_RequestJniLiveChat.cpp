@@ -6,42 +6,39 @@
  */
 #include "com_qpidnetwork_request_RequestJniLiveChat.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestLiveChatController.h"
+#include <manrequesthandler/RequestLiveChatController.h>
 
-void onCheckCoupon(long requestId, bool success, Coupon item, string userId, string errnum, string errmsg);
-void onUseCoupon(long requestId, bool success, string errnum, string errmsg, string userId);
-void onQueryChatVirtualGift(long requestId, bool success, list<Gift> giftList, int totalCount, string path, string version,string errnum, string errmsg);
-void onQueryChatRecord(long requestId, bool success, int dbTime, list<Record> recordList, string errnum, string errmsg, string inviteId);
-void onQueryChatRecordMutiple(long requestId, bool success, int dbTime, list<RecordMutiple> recordMutiList, string errnum, string errmsg);
-void onSendPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const LCSendPhotoItem& item);
-void onPhotoFee(long requestId, bool success, const string& errnum, const string& errmsg);
-void onGetPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath);
-void onUploadVoice(long requestId, bool success, const string& errnum, const string& errmsg, const string& voiceId);
-void onPlayVoice(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath);
-void onSendGift(long requestId, bool success, const string& errnum, const string& errmsg);
-void onQueryRecentVideoList(long requestId, bool success, list<LCVideoItem> itemList, string errnum, string errmsg);
-void onGetVideoPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath);
-void onGetVideo(long requestId, bool success, const string& errnum, const string& errmsg, const string& url);
-RequestLiveChatControllerCallback gRequestLiveChatControllerCallback {
-	onCheckCoupon,
-	onUseCoupon,
-	onQueryChatVirtualGift,
-	onQueryChatRecord,
-	onQueryChatRecordMutiple,
-	onSendPhoto,
-	onPhotoFee,
-	onGetPhoto,
-	onUploadVoice,
-	onPlayVoice,
-	onSendGift,
-	onQueryRecentVideoList,
-	onGetVideoPhoto,
-	onGetVideo,
+class RequestLiveChatControllerCallback : public IRequestLiveChatControllerCallback
+{
+public:
+	RequestLiveChatControllerCallback() {};
+	virtual ~RequestLiveChatControllerCallback() {};
+public:
+	virtual void OnCheckCoupon(long requestId, bool success, Coupon item, string userId, string errnum, string errmsg);
+	virtual void OnUseCoupon(long requestId, bool success, string errnum, string errmsg, string userId);
+	virtual void OnQueryChatVirtualGift(long requestId, bool success, list<Gift> giftList, int totalCount, string path, string version,string errnum, string errmsg);
+	virtual void OnQueryChatRecord(long requestId, bool success, int dbTime, list<Record> recordList, string errnum, string errmsg, string inviteId);
+	virtual void OnQueryChatRecordMutiple(long requestId, bool success, int dbTime, list<RecordMutiple> recordMutiList, string errnum, string errmsg);
+	virtual void OnSendPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const LCSendPhotoItem& item);
+	virtual void OnPhotoFee(long requestId, bool success, const string& errnum, const string& errmsg);
+	virtual void OnGetPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath);
+	virtual void OnUploadVoice(long requestId, bool success, const string& errnum, const string& errmsg, const string& voiceId);
+	virtual void OnPlayVoice(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath);
+	virtual void OnSendGift(long requestId, bool success, const string& errnum, const string& errmsg);
+	virtual void OnQueryRecentVideoList(long requestId, bool success, list<LCVideoItem> itemList, string errnum, string errmsg);
+	virtual void OnGetVideoPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath);
+	virtual void OnGetVideo(long requestId, bool success, const string& errnum, const string& errmsg, const string& url);
+	virtual void OnGetMagicIconConfig(long requestId, bool success, const string& errnum, const string& errmsg,const MagicIconConfig& config);
+	virtual void OnChatRecharge(long requestId, bool success, const string& errnum, const string& errmsg, double credits);
+	virtual void OnGetThemeConfig(long requestId, bool success, const string& errnum, const string& errmsg, const ThemeConfig& config);
+	virtual void OnGetThemeDetail(long requestId, bool success, const string& errnum, const string& errmsg, const ThemeItemList& themeList);
+	virtual void OnCheckFunctions(long requestId, bool success, const string& errnum, const string& errmsg, list<string>& flagList);
 };
-RequestLiveChatController gRequestLiveChatController(&gHttpRequestManager, gRequestLiveChatControllerCallback);
+RequestLiveChatControllerCallback gRequestLiveChatControllerCallback;
+RequestLiveChatController gRequestLiveChatController(&gHttpRequestManager, &gRequestLiveChatControllerCallback);
 
 /******************************************************************************/
-void onCheckCoupon(long requestId, bool success, Coupon item, string userId, string errnum, string errmsg) {
+void RequestLiveChatControllerCallback::OnCheckCoupon(long requestId, bool success, Coupon item, string userId, string errnum, string errmsg) {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
 	GetEnv(&env, &isAttachThread);
@@ -63,12 +60,13 @@ void onCheckCoupon(long requestId, bool success, Coupon item, string userId, str
 			FileLog("httprequest", "LiveChat.Native::onCheckCoupon( GetMethodID <init> : %p )", init);
 
 			jstring juserId = env->NewStringUTF(userId.c_str());
+			jint status = item.status + 1;
 			if( init != NULL ) {
 				jItem = env->NewObject(cls, init,
 						juserId,
-						item.status
+						status
 						);
-				FileLog("httprequest", "LiveChat.Native::onCheckCoupon( NewObject: %p , item.status:%d )", jItem, item.status);
+				FileLog("httprequest", "LiveChat.Native::onCheckCoupon( NewObject: %p , item.status:%d )", jItem, status);
 			}
 			env->DeleteLocalRef(juserId);
 		}
@@ -131,7 +129,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_CheckCou
 }
 
 /******************************************************************************/
-void onUseCoupon(long requestId, bool success, string errnum, string errmsg, string userId) {
+void RequestLiveChatControllerCallback::OnUseCoupon(long requestId, bool success, string errnum, string errmsg, string userId) {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
 	GetEnv(&env, &isAttachThread);
@@ -187,7 +185,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_UseCoupo
 }
 
 /******************************************************************************/
-void onQueryChatVirtualGift(long requestId, bool success, list<Gift> giftList, int totalCount,
+void RequestLiveChatControllerCallback::OnQueryChatVirtualGift(long requestId, bool success, list<Gift> giftList, int totalCount,
 		string path, string version, string errnum, string errmsg)
 {
 	JNIEnv* env = NULL;
@@ -331,6 +329,7 @@ jobjectArray GetArrayWithListRecord(JNIEnv* env, const list<Record>& recordList)
 						"Ljava/lang/String;"	// videoSendId
 						"Ljava/lang/String;"	// videoDesc
 						"Z"						// videoCharge
+						"Ljava/lang/String;"	// magicIconId
 						")V");
 
 				jstring textMsg = env->NewStringUTF(itr->textMsg.c_str());
@@ -345,6 +344,7 @@ jobjectArray GetArrayWithListRecord(JNIEnv* env, const list<Record>& recordList)
 				jstring videoId = env->NewStringUTF(itr->videoId.c_str());
 				jstring videoSendId = env->NewStringUTF(itr->videoSendId.c_str());
 				jstring videoDesc = env->NewStringUTF(itr->videoDesc.c_str());
+				jstring magicIconId = env->NewStringUTF(itr->magicIconId.c_str());
 
 				jobject item = env->NewObject(cls, init,
 						itr->toflag,
@@ -364,8 +364,8 @@ jobjectArray GetArrayWithListRecord(JNIEnv* env, const list<Record>& recordList)
 						videoId,
 						videoSendId,
 						videoDesc,
-						itr->videoCharge
-						);
+						itr->videoCharge,
+						magicIconId);
 
 				env->SetObjectArrayElement(jItemArray, i, item);
 
@@ -381,6 +381,7 @@ jobjectArray GetArrayWithListRecord(JNIEnv* env, const list<Record>& recordList)
 				env->DeleteLocalRef(videoId);
 				env->DeleteLocalRef(videoSendId);
 				env->DeleteLocalRef(videoDesc);
+				env->DeleteLocalRef(magicIconId);
 
 				env->DeleteLocalRef(item);
 			}
@@ -391,7 +392,7 @@ jobjectArray GetArrayWithListRecord(JNIEnv* env, const list<Record>& recordList)
 	return jItemArray;
 }
 
-void onQueryChatRecord(long requestId, bool success, int dbTime, list<Record> recordList, string errnum, string errmsg, string inviteId)
+void RequestLiveChatControllerCallback::OnQueryChatRecord(long requestId, bool success, int dbTime, list<Record> recordList, string errnum, string errmsg, string inviteId)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -464,7 +465,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_QueryCha
 }
 
 /******************************************************************************/
-void onQueryChatRecordMutiple(long requestId, bool success, int dbTime, list<RecordMutiple> recordMutiList, string errnum, string errmsg)
+void RequestLiveChatControllerCallback::OnQueryChatRecordMutiple(long requestId, bool success, int dbTime, list<RecordMutiple> recordMutiList, string errnum, string errmsg)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -631,7 +632,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_SendPhot
 	return requestId;
 }
 
-void onSendPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const LCSendPhotoItem& item)
+void RequestLiveChatControllerCallback::OnSendPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const LCSendPhotoItem& item)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -649,10 +650,14 @@ void onSendPhoto(long requestId, bool success, const string& errnum, const strin
 						"Ljava/lang/String;"	// sendId
 						")V");
 
+			jstring jphotoId = env->NewStringUTF(item.photoId.c_str());
+			jstring jsendId = env->NewStringUTF(item.sendId.c_str());
 			jItem = env->NewObject(jItemCls, init,
-						env->NewStringUTF(item.photoId.c_str()),
-						env->NewStringUTF(item.sendId.c_str())
+						jphotoId,
+						jsendId
 						);
+			env->DeleteLocalRef(jphotoId);
+			env->DeleteLocalRef(jsendId);
 		}
 	}
 
@@ -746,7 +751,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_PhotoFee
 	return requestId;
 }
 
-void onPhotoFee(long requestId, bool success, const string& errnum, const string& errmsg)
+void RequestLiveChatControllerCallback::OnPhotoFee(long requestId, bool success, const string& errnum, const string& errmsg)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -842,7 +847,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetPhoto
 	return requestId;
 }
 
-void onGetPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath)
+void RequestLiveChatControllerCallback::OnGetPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -970,7 +975,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_UploadVo
 	return requestId;
 }
 
-void onUploadVoice(long requestId, bool success, const string& errnum, const string& errmsg, const string& voiceId)
+void RequestLiveChatControllerCallback::OnUploadVoice(long requestId, bool success, const string& errnum, const string& errmsg, const string& voiceId)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -1045,7 +1050,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_PlayVoic
 	return requestId;
 }
 
-void onPlayVoice(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath)
+void RequestLiveChatControllerCallback::OnPlayVoice(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -1087,7 +1092,7 @@ void onPlayVoice(long requestId, bool success, const string& errnum, const strin
 }
 
 /******************************************************************************/
-void onSendGift(long requestId, bool success, const string& errnum, const string& errmsg)
+void RequestLiveChatControllerCallback::OnSendGift(long requestId, bool success, const string& errnum, const string& errmsg)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -1161,7 +1166,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_SendGift
 }
 
 /**************************** QueryRecentVideo **************************/
-void onQueryRecentVideoList(long requestId, bool success, list<LCVideoItem> itemList, string errnum, string errmsg)
+void RequestLiveChatControllerCallback::OnQueryRecentVideoList(long requestId, bool success, list<LCVideoItem> itemList, string errnum, string errmsg)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -1291,7 +1296,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetVideo
 	return requestId;
 }
 
-void onGetVideoPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath)
+void RequestLiveChatControllerCallback::OnGetVideoPhoto(long requestId, bool success, const string& errnum, const string& errmsg, const string& filePath)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -1347,7 +1352,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetVideo
 			JString2String(env, womanId),
 			JString2String(env, videoid),
 			JString2String(env, inviteid),
-			toflag,
+			(GETVIDEO_CLIENT_TYPE)toflag,
 			JString2String(env, sendid)
 			);
 
@@ -1356,7 +1361,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetVideo
 
 	return requestId;
 }
-void onGetVideo(long requestId, bool success, const string& errnum, const string& errmsg, const string& url)
+void RequestLiveChatControllerCallback::OnGetVideo(long requestId, bool success, const string& errnum, const string& errmsg, const string& url)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -1394,5 +1399,594 @@ void onGetVideo(long requestId, bool success, const string& errnum, const string
 		env->DeleteGlobalRef(jCallbackObj);
 	}
 
+	ReleaseEnv(isAttachThread);
+}
+
+/**************************** GetMagicIconConfig **************************/
+/*
+ * Class:     com_qpidnetwork_request_RequestJniLiveChat
+ * Method:    GetMagicIconConfig
+ * Signature: (Lcom/qpidnetwork/request/OnGetMagicIconConfigCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetMagicIconConfig
+  (JNIEnv *env, jclass cls, jobject callback){
+
+	jlong requestId = -1;
+
+	requestId = gRequestLiveChatController.GetMagicIconConfig();
+
+	jobject obj = env->NewGlobalRef(callback);
+	gCallbackMap.Insert(requestId, obj);
+
+	return requestId;
+}
+
+void RequestLiveChatControllerCallback::OnGetMagicIconConfig(long requestId, bool success, const string& errnum, const string& errmsg,const MagicIconConfig& config){
+	JNIEnv* env = NULL;
+	bool isAttachThread = false;
+	GetEnv(&env, &isAttachThread);
+
+	FileLog("httprequest", "LiveChat.Native::OnGetMagicIconConfig( success : %s, env:%p, isAttachThread:%d )", success?"true":"false", env, isAttachThread);
+	/* create java item */
+	jobject jMagicConfigItem = NULL;
+	if (success) {
+		/*creat magic icon array */
+		jclass jMagicIconItemCls = GetJClass(env, LIVECHAT_MAGIC_ICON_TIME_CLASS);
+		jmethodID magicIconInit = env->GetMethodID(jMagicIconItemCls, "<init>", "("
+							"Ljava/lang/String;"
+							"Ljava/lang/String;"
+							"DI"
+							"Ljava/lang/String;"
+							"I"
+							")V");
+		jobjectArray jMagicIconArray = env->NewObjectArray(config.magicIconList.size(),jMagicIconItemCls, NULL);
+		int iMagicIconIndex;
+		MagicIconConfig::MagicIconList::const_iterator magicIconIter;
+		for(iMagicIconIndex = 0, magicIconIter = config.magicIconList.begin();
+				magicIconIter != config.magicIconList.end();
+				iMagicIconIndex++, magicIconIter++){
+			jstring jIconId = env->NewStringUTF(magicIconIter->iconId.c_str());
+			jstring jIconTitle = env->NewStringUTF(magicIconIter->iconTitle.c_str());
+			jstring jTypeId = env->NewStringUTF(magicIconIter->typeId.c_str());
+
+			jobject jMagicItem = env->NewObject(jMagicIconItemCls, magicIconInit,
+							jIconId,
+							jIconTitle,
+							magicIconIter->price,
+							magicIconIter->hotflag,
+							jTypeId,
+							magicIconIter->updatetime);
+			env->SetObjectArrayElement(jMagicIconArray, iMagicIconIndex, jMagicItem);
+			env->DeleteLocalRef(jMagicItem);
+
+			env->DeleteLocalRef(jIconId);
+			env->DeleteLocalRef(jIconTitle);
+			env->DeleteLocalRef(jTypeId);
+		}
+		env->DeleteLocalRef(jMagicIconItemCls);
+		FileLog("httprequest", "LiveChat.Native::OnGetMagicIconConfig(), jMagicIconArray:%p", jMagicIconArray);
+
+		/*creat magic type array */
+		jclass jMagicTypeItemCls = GetJClass(env, LIVECHAT_MAGIC_TYPE_TIME_CLASS);
+		jmethodID magicTypeInit = env->GetMethodID(jMagicTypeItemCls,"<init>", "("
+												"Ljava/lang/String;"
+												"Ljava/lang/String;"
+												")V");
+		jobjectArray jMagicTypeArray = env->NewObjectArray(config.typeList.size(), jMagicTypeItemCls, NULL);
+		int iMagicTypeIndex;
+		MagicIconConfig::MagicTypeList::const_iterator jMagicTypeIter;
+		for(iMagicTypeIndex = 0, jMagicTypeIter = config.typeList.begin();
+				jMagicTypeIter != config.typeList.end();
+				iMagicTypeIndex++, jMagicTypeIter++){
+			jstring jMagicTypeId = env->NewStringUTF(jMagicTypeIter->typeId.c_str());
+			jstring jMagicTypeTitle = env->NewStringUTF(jMagicTypeIter->typeTitle.c_str());
+			jobject jMagicTypeItem = env->NewObject(jMagicTypeItemCls, magicTypeInit,
+										jMagicTypeId,
+										jMagicTypeTitle);
+			env->SetObjectArrayElement(jMagicTypeArray, iMagicTypeIndex, jMagicTypeItem);
+			env->DeleteLocalRef(jMagicTypeItem);
+			env->DeleteLocalRef(jMagicTypeId);
+			env->DeleteLocalRef(jMagicTypeTitle);
+		}
+		env->DeleteLocalRef(jMagicTypeItemCls);
+		FileLog("httprequest", "LiveChat.Native::OnGetMagicIconConfig(), jMagicIconArray:%p, jMagicTypeArray: %p", jMagicIconArray, jMagicTypeArray);
+
+		/*create magic config item*/
+		jclass jMagicConfigItemCls = GetJClass(env, LIVECHAT_MAGIC_CONFIG_ITEM_CLASS);
+		jmethodID magicConfigInit = env->GetMethodID(jMagicConfigItemCls, "<init>", "("
+				"Ljava/lang/String;"
+				"I"
+				"[L"
+				LIVECHAT_MAGIC_ICON_TIME_CLASS
+				";"
+				"[L"
+				LIVECHAT_MAGIC_TYPE_TIME_CLASS
+				";"
+				")V");
+		jstring jPath = env->NewStringUTF(config.path.c_str());
+		jMagicConfigItem = env->NewObject(jMagicConfigItemCls, magicConfigInit,
+				jPath,
+				config.maxupdatetime,
+				jMagicIconArray,
+				jMagicTypeArray);
+		env->DeleteLocalRef(jPath);
+		env->DeleteLocalRef(jMagicConfigItemCls);
+		env->DeleteLocalRef(jMagicIconArray);
+		env->DeleteLocalRef(jMagicTypeArray);
+	}
+
+	/* real callback java */
+	jobject jCallbackObj = gCallbackMap.Erase(requestId);
+	jclass jCallbackCls = env->GetObjectClass(jCallbackObj);
+
+	jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnGetMagicIconConfig", "("
+			"Z"
+			"Ljava/lang/String;"
+			"Ljava/lang/String;"
+			"L"
+			LIVECHAT_MAGIC_CONFIG_ITEM_CLASS
+			";"
+			")V");
+	FileLog("httprequest", "LiveChat.Native::OnGetMagicIconConfig(), errnum:%s, errmsg:%s, jMagicConfigItem:%p"
+				, errnum.c_str(), errmsg.c_str(), jMagicConfigItem);
+	if(NULL != jCallbackObj && NULL != jCallback){
+		jstring jerrNum = env->NewStringUTF(errnum.c_str());
+		jstring jerrMessage = env->NewStringUTF(errmsg.c_str());
+		env->CallVoidMethod(jCallbackObj, jCallback, success, jerrNum, jerrMessage, jMagicConfigItem);
+		env->DeleteLocalRef(jerrNum);
+		env->DeleteLocalRef(jerrMessage);
+	}
+	FileLog("httprequest", "LiveChat.Native::OnGetMagicIconConfig()finish");
+
+	if(NULL != jCallbackObj){
+		env->DeleteGlobalRef(jCallbackObj);
+	}
+
+	if(NULL != jCallbackCls){
+		env->DeleteLocalRef(jCallbackCls);
+	}
+
+	if(NULL != jMagicConfigItem){
+		env->DeleteLocalRef(jMagicConfigItem);
+	}
+
+	ReleaseEnv(isAttachThread);
+}
+
+/**************************** ChatRecharge **************************/
+/*
+ * Class:     com_qpidnetwork_request_RequestJniLiveChat
+ * Method:    ChatRecharge
+ * Signature: (Ljava/lang/String;Lcom/qpidnetwork/request/OnLCChatRechargeCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_ChatRecharge
+  (JNIEnv *env, jclass cls, jstring womanId, jstring user_sid, jstring user_id, jobject callback)
+{
+	jlong requestId = -1;
+
+	requestId = gRequestLiveChatController.ChatRecharge(
+			JString2String(env, womanId),
+			JString2String(env, user_sid),
+			JString2String(env, user_id)
+			);
+
+	jobject obj = env->NewGlobalRef(callback);
+	gCallbackMap.Insert(requestId, obj);
+
+	return requestId;
+}
+
+void RequestLiveChatControllerCallback::OnChatRecharge(long requestId, bool success, const string& errnum, const string& errmsg, double credits)
+{
+	JNIEnv* env = NULL;
+	bool isAttachThread = false;
+	GetEnv(&env, &isAttachThread);
+
+	FileLog("httprequest", "LiveChat.Native::OnChatRecharge( success : %s, env:%p, isAttachThread:%d )", success?"true":"false", env, isAttachThread);
+
+	/* real callback java */
+	jobject jCallbackObj = gCallbackMap.Erase(requestId);
+	jclass jCallbackCls = env->GetObjectClass(jCallbackObj);
+
+	string signure = "(JZLjava/lang/String;Ljava/lang/String;D)V";
+	jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnLCChatRecharge", signure.c_str());
+
+	FileLog("httprequest", "LiveChat.Native::OnChatRecharge(), errnum:%s, errmsg:%s, credits:%d"
+			, errnum.c_str(), errmsg.c_str(), credits);
+	if( jCallbackObj != NULL && jCallback != NULL ) {
+		jstring jerrno = env->NewStringUTF(errnum.c_str());
+		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+		jlong jlrequestId = requestId;
+		jdouble jcredits = credits;
+
+		FileLog("httprequest", "LiveChat.Native::OnChatRecharge() jCallbackObj:%p, jCallback:%p, requestId:%ld, jerrno:%p, jerrmsg:%p, credits:%d"
+				, jCallbackObj, jCallback, requestId, jerrno, jerrmsg, credits);
+		env->CallVoidMethod(jCallbackObj, jCallback, jlrequestId, success, jerrno, jerrmsg, jcredits);
+
+		env->DeleteLocalRef(jerrno);
+		env->DeleteLocalRef(jerrmsg);
+	}
+
+	// delete callback object & class
+	if (jCallbackCls != NULL) {
+		env->DeleteLocalRef(jCallbackCls);
+	}
+	if (jCallbackObj != NULL) {
+		env->DeleteGlobalRef(jCallbackObj);
+	}
+
+	ReleaseEnv(isAttachThread);
+}
+
+/**************************** GetThemeConfig **************************/
+/*
+ * Class:     com_qpidnetwork_request_RequestJniLiveChat
+ * Method:    GetThemeConfig
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnGetThemeConfigCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetThemeConfig
+  (JNIEnv *env, jclass cls, jstring user_sid, jstring user_id, jobject callback){
+	jlong requestId = -1;
+
+	requestId = gRequestLiveChatController.GetThemeConfig(
+			JString2String(env, user_sid),
+			JString2String(env, user_id)
+			);
+
+	jobject obj = env->NewGlobalRef(callback);
+	gCallbackMap.Insert(requestId, obj);
+
+	return requestId;
+}
+
+void RequestLiveChatControllerCallback::OnGetThemeConfig(long requestId, bool success, const string& errnum, const string& errmsg, const ThemeConfig& config){
+	JNIEnv* env = NULL;
+	bool isAttachThread = false;
+	GetEnv(&env, &isAttachThread);
+
+	FileLog("httprequest", "LiveChat.Native::OnGetThemeConfig( success : %s, env:%p, isAttachThread:%d )", success?"true":"false", env, isAttachThread);
+	/*create java item*/
+	jobject jThemeConfig = NULL;
+	if(success){
+		/*create type list*/
+		jclass jthemeTypeCls = GetJClass(env, LIVECHAT_THEME_TYPE_CLASS);
+		jmethodID jthemeTypeInit = env->GetMethodID(jthemeTypeCls, "<init>", "("
+				"Ljava/lang/String;"
+				"Ljava/lang/String;"
+				")V");
+		jobjectArray jThemeTypeArray = env->NewObjectArray(config.themeTypeList.size(), jthemeTypeCls, NULL);
+		ThemeConfig::ThemeTypeList::const_iterator themeTypeIter;
+		int iTypeIndex;
+		for(iTypeIndex = 0, themeTypeIter = config.themeTypeList.begin();
+				themeTypeIter != config.themeTypeList.end();
+				iTypeIndex++,themeTypeIter++){
+			jstring jtypeId = env->NewStringUTF(themeTypeIter->typeId.c_str());
+			jstring jtypeName = env->NewStringUTF(themeTypeIter->typeName.c_str());
+
+			jobject jthemeTypeItem = env->NewObject(jthemeTypeCls, jthemeTypeInit, jtypeId, jtypeName);
+			env->SetObjectArrayElement(jThemeTypeArray, iTypeIndex , jthemeTypeItem);
+			env->DeleteLocalRef(jthemeTypeItem);
+
+			env->DeleteLocalRef(jtypeId);
+			env->DeleteLocalRef(jtypeName);
+		}
+		env->DeleteLocalRef(jthemeTypeCls);
+		FileLog("httprequest", "LiveChat.Native::OnGetThemeConfig(), jThemeTypeArray:%p", jThemeTypeArray);
+
+		/*create tag list*/
+		jclass jthemeTagCls = GetJClass(env, LIVECHAT_THEME_TAG_CLASS);
+		jmethodID jthemeTagInit = env->GetMethodID(jthemeTagCls, "<init>", "("
+				"Ljava/lang/String;"
+				"Ljava/lang/String;"
+				"Ljava/lang/String;"
+				")V");
+		jobjectArray jthemeTagArray = env->NewObjectArray(config.themeTagList.size(), jthemeTagCls, NULL);
+		ThemeConfig::ThemeTagList::const_iterator themeTagIter;
+		int iTagIndex;
+		for(iTagIndex = 0, themeTagIter = config.themeTagList.begin();
+				themeTagIter != config.themeTagList.end();
+				iTagIndex++, themeTagIter++){
+			jstring jtagId = env->NewStringUTF(themeTagIter->tagId.c_str());
+			jstring jtypeId = env->NewStringUTF(themeTagIter->typeId.c_str());
+			jstring jtagName = env->NewStringUTF(themeTagIter->tagName.c_str());
+
+			jobject jtagItem = env->NewObject(jthemeTagCls, jthemeTagInit, jtagId, jtypeId, jtagName);
+			env->SetObjectArrayElement(jthemeTagArray, iTagIndex, jtagItem);
+			env->DeleteLocalRef(jtagItem);
+
+			env->DeleteLocalRef(jtagId);
+			env->DeleteLocalRef(jtypeId);
+			env->DeleteLocalRef(jtagName);
+		}
+		env->DeleteLocalRef(jthemeTagCls);
+		FileLog("httprequest", "LiveChat.Native::OnGetThemeConfig(), jthemeTagArray:%p", jthemeTagArray);
+
+		/*create theme item list*/
+		jclass jthemeItemCls = GetJClass(env, LIVECHAT_THEME_ITEM_CLASS);
+		jmethodID jthemeItemInit = env->GetMethodID(jthemeItemCls, "<init>", "("
+				"Ljava/lang/String;"
+				"DZZ"
+				"Ljava/lang/String;"
+				"Ljava/lang/String;"
+				"Ljava/lang/String;"
+				"II"
+				"Ljava/lang/String;"
+				")V");
+		jobjectArray jthemeItemArray = env->NewObjectArray(config.themeItemList.size(), jthemeItemCls, NULL);
+		ThemeItemList::const_iterator themeItemIter;
+		int iItemIndex;
+		for(iItemIndex = 0, themeItemIter=config.themeItemList.begin();
+				themeItemIter != config.themeItemList.end();
+				iItemIndex++, themeItemIter++){
+			jstring jthemeId = env->NewStringUTF(themeItemIter->themeId.c_str());
+			jstring jtypeId = env->NewStringUTF(themeItemIter->typeId.c_str());
+			jstring jTagId = env->NewStringUTF(themeItemIter->tagId.c_str());
+			jstring jTitle = env->NewStringUTF(themeItemIter->title.c_str());
+			jstring jDescript = env->NewStringUTF(themeItemIter->descript.c_str());
+
+			jobject jthemeItem = env->NewObject(jthemeItemCls, jthemeItemInit, jthemeId, themeItemIter->price, themeItemIter->isNew, themeItemIter->isSale,
+					jtypeId, jTagId, jTitle, themeItemIter->validsecond, themeItemIter->isBase, jDescript);
+			env->SetObjectArrayElement(jthemeItemArray, iItemIndex, jthemeItem);
+			env->DeleteLocalRef(jthemeItem);
+
+			env->DeleteLocalRef(jthemeId);
+			env->DeleteLocalRef(jtypeId);
+			env->DeleteLocalRef(jTagId);
+			env->DeleteLocalRef(jTitle);
+			env->DeleteLocalRef(jDescript);
+		}
+		env->DeleteLocalRef(jthemeItemCls);
+		FileLog("httprequest", "LiveChat.Native::OnGetThemeConfig(), jthemeItemArray:%p", jthemeItemArray);
+
+		/*create theme config item*/
+		jclass jthemeConfig = GetJClass(env, LIVECHAT_THEME_CONFIG_CLASS);
+		jmethodID jthemeConfigInit = env->GetMethodID(jthemeConfig, "<init>", "("
+				"Ljava/lang/String;"
+				"Ljava/lang/String;"
+				"[L"
+				LIVECHAT_THEME_TYPE_CLASS
+				";"
+				"[L"
+				LIVECHAT_THEME_TAG_CLASS
+				";"
+				"[L"
+				LIVECHAT_THEME_ITEM_CLASS
+				";"
+				")V");
+
+		jstring jthemeVersion = env->NewStringUTF(config.themeVersion.c_str());
+		jstring jthemePath = env->NewStringUTF(config.themePath.c_str());
+		jThemeConfig = env->NewObject(jthemeConfig, jthemeConfigInit, jthemeVersion, jthemePath, jThemeTypeArray,
+				jthemeTagArray, jthemeItemArray);
+		env->DeleteLocalRef(jthemeVersion);
+		env->DeleteLocalRef(jthemePath);
+		env->DeleteLocalRef(jThemeTypeArray);
+		env->DeleteLocalRef(jthemeTagArray);
+		env->DeleteLocalRef(jthemeItemArray);
+	}
+
+	/*call back java*/
+	jobject jcallbackObj = gCallbackMap.Erase(requestId);
+	jclass jcallbackCls = env->GetObjectClass(jcallbackObj);
+
+	jmethodID jcallback = env->GetMethodID(jcallbackCls, "OnGetThemeConfig", "(Z"
+			"Ljava/lang/String;"
+			"Ljava/lang/String;"
+			"L"
+			LIVECHAT_THEME_CONFIG_CLASS
+			";"
+			")V");
+	if(NULL != jcallback && NULL != jcallbackObj){
+		jstring jerrNum = env->NewStringUTF(errnum.c_str());
+		jstring jerrMessage = env->NewStringUTF(errmsg.c_str());
+		env->CallVoidMethod(jcallbackObj, jcallback, success, jerrNum, jerrMessage, jThemeConfig);
+		env->DeleteLocalRef(jerrNum);
+		env->DeleteLocalRef(jerrMessage);
+	}
+
+	FileLog("httprequest", "LiveChat.Native::OnGetThemeConfig()finish");
+
+	if(NULL != jcallbackObj){
+		env->DeleteGlobalRef(jcallbackObj);
+	}
+
+	if(NULL != jcallbackCls){
+		env->DeleteLocalRef(jcallbackCls);
+	}
+
+	if(NULL != jThemeConfig){
+		env->DeleteLocalRef(jThemeConfig);
+	}
+
+	ReleaseEnv(isAttachThread);
+}
+
+/**************************** GetThemeDetail **************************/
+/*
+ * Class:     com_qpidnetwork_request_RequestJniLiveChat
+ * Method:    GetThemeDetail
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnGetThemeDetailCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_GetThemeDetail
+  (JNIEnv *env, jclass cls, jstring themeIds, jstring user_sid, jstring user_id, jobject callback){
+	jlong requestId = -1;
+
+	requestId = gRequestLiveChatController.GetThemeDetail(
+			JString2String(env, themeIds),
+			JString2String(env, user_sid),
+			JString2String(env, user_id)
+			);
+
+	jobject obj = env->NewGlobalRef(callback);
+	gCallbackMap.Insert(requestId, obj);
+
+	return requestId;
+}
+
+void RequestLiveChatControllerCallback::OnGetThemeDetail(long requestId, bool success, const string& errnum, const string& errmsg, const ThemeItemList& themeList){
+	JNIEnv* env = NULL;
+	bool isAttachThread = false;
+	GetEnv(&env, &isAttachThread);
+
+	FileLog("httprequest", "LiveChat.Native::OnGetThemeDetail( success : %s, env:%p, isAttachThread:%d )", success?"true":"false", env, isAttachThread);
+
+	/*create theme list*/
+	jclass jthemeItemCls = GetJClass(env, LIVECHAT_THEME_ITEM_CLASS);
+	jmethodID jthemeItemInit = env->GetMethodID(jthemeItemCls, "<init>", "("
+					"Ljava/lang/String;"
+					"DZZ"
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"II"
+					"Ljava/lang/String;"
+					")V");
+	jobjectArray jthemeItemArray = env->NewObjectArray(themeList.size(), jthemeItemCls, NULL);
+	ThemeItemList::const_iterator themeItemIter;
+	int iItemIndex;
+	for(iItemIndex = 0, themeItemIter = themeList.begin();
+			themeItemIter != themeList.end();
+			iItemIndex++, themeItemIter++){
+		jstring jthemeId = env->NewStringUTF(themeItemIter->themeId.c_str());
+		jstring jtypeId = env->NewStringUTF(themeItemIter->typeId.c_str());
+		jstring jTagId = env->NewStringUTF(themeItemIter->tagId.c_str());
+		jstring jTitle = env->NewStringUTF(themeItemIter->title.c_str());
+		jstring jDescript = env->NewStringUTF(themeItemIter->descript.c_str());
+
+		jobject jthemeItem = env->NewObject(jthemeItemCls, jthemeItemInit, jthemeId, themeItemIter->price, themeItemIter->isNew, themeItemIter->isSale,
+				jtypeId, jTagId, jTitle, themeItemIter->validsecond, themeItemIter->isBase, jDescript);
+		env->SetObjectArrayElement(jthemeItemArray, iItemIndex, jthemeItem);
+		env->DeleteLocalRef(jthemeItem);
+
+		env->DeleteLocalRef(jthemeId);
+		env->DeleteLocalRef(jtypeId);
+		env->DeleteLocalRef(jTagId);
+		env->DeleteLocalRef(jTitle);
+		env->DeleteLocalRef(jDescript);
+	}
+	env->DeleteLocalRef(jthemeItemCls);
+	FileLog("httprequest", "LiveChat.Native::OnGetThemeDetail(), jthemeItemArray:%p", jthemeItemArray);
+
+	/*call back java*/
+	jobject jcallbackObj = gCallbackMap.Erase(requestId);
+	jclass jcallbackCls = env->GetObjectClass(jcallbackObj);
+
+	jmethodID jcallback = env->GetMethodID(jcallbackCls, "OnGetThemeDetail", "(Z"
+			"Ljava/lang/String;"
+			"Ljava/lang/String;"
+			"[L"
+			LIVECHAT_THEME_ITEM_CLASS
+			";"
+			")V");
+	if(NULL != jcallback && NULL != jcallbackObj){
+		jstring jerrNum = env->NewStringUTF(errnum.c_str());
+		jstring jerrMessage = env->NewStringUTF(errmsg.c_str());
+		env->CallVoidMethod(jcallbackObj, jcallback, success, jerrNum, jerrMessage, jthemeItemArray);
+		env->DeleteLocalRef(jerrNum);
+		env->DeleteLocalRef(jerrMessage);
+	}
+
+	FileLog("httprequest", "LiveChat.Native::OnGetThemeDetail()finish");
+
+	if(NULL != jcallbackObj){
+		env->DeleteGlobalRef(jcallbackObj);
+	}
+
+	if(NULL != jcallbackCls){
+		env->DeleteLocalRef(jcallbackCls);
+	}
+
+	if(NULL != jthemeItemArray){
+		env->DeleteLocalRef(jthemeItemArray);
+	}
+
+	ReleaseEnv(isAttachThread);
+}
+
+/**************************** CheckFunctions **************************/
+/*
+ * Class:     com_qpidnetwork_request_RequestJniLiveChat
+ * Method:    CheckFunctions
+ * Signature: ([IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnCheckFunctionsCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_CheckFunctions
+  (JNIEnv *env, jclass cls, jintArray functionArray, jint deviceType, jstring versionCode, jstring user_sid, jstring user_id, jobject callback){
+	jlong requestId = -1;
+
+	string functionIds = "";
+	jsize len = env->GetArrayLength(functionArray);
+	jint *functions = env->GetIntArrayElements(functionArray, false);
+	for(int i = 0; i < len; i++) {
+		char buffer[32] = {0};
+		if(i < len-1){
+			if(functions[i]>=0 && functions[i]<_countof(FunctionsArray)){
+				snprintf(buffer, sizeof(buffer), "%d", FunctionsArray[functions[i]]);
+				functionIds += buffer;
+				functionIds += ",";
+			}
+		}else if(i == len-1){
+			if(functions[i]>=0 && functions[i]<_countof(FunctionsArray)){
+				snprintf(buffer, sizeof(buffer), "%d", FunctionsArray[functions[i]]);
+				functionIds += buffer;
+			}
+		}
+	}
+
+	requestId = gRequestLiveChatController.CheckFunctions(
+			functionIds,
+			deviceType,
+			JString2String(env, versionCode),
+			JString2String(env, user_sid),
+			JString2String(env, user_id)
+			);
+
+	jobject obj = env->NewGlobalRef(callback);
+	gCallbackMap.Insert(requestId, obj);
+
+	return requestId;
+}
+
+void RequestLiveChatControllerCallback::OnCheckFunctions(long requestId, bool success, const string& errnum, const string& errmsg, list<string>& flagList){
+	JNIEnv* env = NULL;
+	bool isAttachThread = false;
+	GetEnv(&env, &isAttachThread);
+
+	jintArray flagsArray = env->NewIntArray(flagList.size());
+	list<string>::iterator flagIter;
+	int iFlagIndex;
+	jint tmp[flagList.size()];
+	for(iFlagIndex = 0, flagIter = flagList.begin();
+			flagIter != flagList.end();
+			iFlagIndex++, flagIter++){
+		tmp[iFlagIndex] = atoi((*flagIter).c_str());
+	}
+	env->SetIntArrayRegion(flagsArray, 0, flagList.size(), tmp);
+
+	/* real callback java */
+	jobject jCallbackObj = gCallbackMap.Erase(requestId);
+	jclass jCallbackCls = env->GetObjectClass(jCallbackObj);
+
+	string signure = "(ZLjava/lang/String;Ljava/lang/String;[I)V";
+	jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnCheckFunctions", signure.c_str());
+
+	FileLog("httprequest", "LiveChat.Native::OnCheckFunctions(), errnum:%s, errmsg:%s, flagList size:%d"
+				, errnum.c_str(), errmsg.c_str(), flagList.size());
+
+	if(NULL != jCallbackObj && NULL != jCallback){
+		jstring jerrno = env->NewStringUTF(errnum.c_str());
+		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+		FileLog("httprequest", "LiveChat.Native::OnCheckFunctions() jCallbackObj:%p, jCallback:%p, requestId:%ld, jerrno:%p, jerrmsg:%p, flagList size:%d"
+						, jCallbackObj, jCallback, requestId, jerrno, jerrmsg, flagList.size());
+		env->CallVoidMethod(jCallbackObj, jCallback, success, jerrno, jerrmsg, flagsArray);
+		env->DeleteLocalRef(jerrno);
+		env->DeleteLocalRef(jerrmsg);
+	}
+	env->DeleteLocalRef(flagsArray);
+	if(NULL != jCallbackObj){
+		env->DeleteGlobalRef(jCallbackObj);
+	}
+	if(NULL != jCallbackCls){
+		env->DeleteLocalRef(jCallbackCls);
+	}
 	ReleaseEnv(isAttachThread);
 }

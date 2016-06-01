@@ -84,7 +84,7 @@ public class EMFDetailActivity extends BaseFragmentActivity implements
 	 */
 	private static final int RESULT_ATTACHMENT = 1;
 
-	private static final String EMF_BASE_BEAN = "emfBean";
+	public static final String EMF_BASE_BEAN = "emfBean";
 	private static final int GET_EMF_DETAIL_SUCCESS = 0;
 	private static final int GET_EMF_DETAIL_FAILED = 1;
 	private static final int DELETE_EMF_SUCCESS = 2;

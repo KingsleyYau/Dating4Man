@@ -8,11 +8,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.telephony.TelephonyManager;
 
-import com.facebook.AppEventsLogger;
 import com.qpidnetwork.dating.analysis.AdAnakysisManager;
 import com.qpidnetwork.dating.analysis.AnalysisItem;
 import com.qpidnetwork.dating.authorization.RegisterPasswordActivity.RegisterParam;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsManager;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
 import com.qpidnetwork.request.OnRegisterCallback;
@@ -86,6 +86,11 @@ public class RegisterTask implements OnConfigManagerCallback,
 				}
 					break;
 				case REGISTER_CALLBACK:
+					if( response.isSuccess ) {
+						// 注册跟踪
+						AnalyticsManager.newInstance().RegisterSuccess(AnalyticsManager.RegisterType.MyCompany);
+					}
+					
 					if (response.isSuccess && (mRegisterCallback != null)) {
 						mRegisterCallback.OnRegister(true, response.errno,
 								response.errmsg, (RegisterItem) response.body);

@@ -2,6 +2,7 @@ package com.qpidnetwork.dating.contactus;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -131,7 +132,7 @@ public class AttachmentPhotoPreview extends BaseFragmentActivity implements Imag
 	}
 
 	@Override
-	public void OnDisplayNewImageFinish() {
+	public void OnDisplayNewImageFinish(Bitmap bmp) {
 		Message msg = Message.obtain();
 		msg.what = DOWNLOAD_PHOTO_SUCCESS;
 		sendUiMessage(msg);		

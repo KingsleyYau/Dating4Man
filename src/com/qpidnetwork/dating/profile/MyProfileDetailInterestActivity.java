@@ -15,8 +15,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.widget.wrap.WrapBaseAdapter;
 import com.qpidnetwork.framework.widget.wrap.WrapListView;
 import com.qpidnetwork.view.MaterialAppBar;

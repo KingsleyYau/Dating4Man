@@ -17,6 +17,7 @@ import com.qpidnetwork.dating.lady.LadyDetailActivity;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.request.RequestJniEMF.ReplyFlagType;
 import com.qpidnetwork.request.item.EMFAdmirerListItem;
+import com.qpidnetwork.request.item.EMFAdmirerListItem.TemplateType;
 import com.qpidnetwork.tool.ImageViewLoader;
 
 public class AdmirerListAdapter extends EMFBaseAdapter<EMFAdmirerListItem>{
@@ -48,7 +49,11 @@ public class AdmirerListAdapter extends EMFBaseAdapter<EMFAdmirerListItem>{
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				mContext.startActivityForResult(EMFDetailActivity.getIntent(mContext, new EMFBean(item)), EMFDetailActivity.REQUEST_CODE);
+				if(item.mTemplateType == TemplateType.VirtualGift){
+					mContext.startActivityForResult(AdmireVirtualGiftDetailActivity.getIntent(mContext, new EMFBean(item)), EMFDetailActivity.REQUEST_CODE);
+				}else{
+					mContext.startActivityForResult(EMFDetailActivity.getIntent(mContext, new EMFBean(item)), EMFDetailActivity.REQUEST_CODE);
+				}
 			}
 		});
 		
@@ -98,7 +103,13 @@ public class AdmirerListAdapter extends EMFBaseAdapter<EMFAdmirerListItem>{
 		}else{
 			holder.ivAttach.setVisibility(View.GONE);
 		}
-		holder.ivGift.setVisibility(View.GONE);
+		
+		/*是否包含虚拟礼物*/
+		if(item.mTemplateType == TemplateType.VirtualGift){
+			holder.ivGift.setVisibility(View.VISIBLE);
+		} else {
+			holder.ivGift.setVisibility(View.GONE);
+		}
 		
 		holder.ivPhoto.setOnClickListener(new OnClickListener() {
 			

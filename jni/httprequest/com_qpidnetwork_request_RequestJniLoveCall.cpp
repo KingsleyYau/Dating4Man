@@ -7,7 +7,7 @@
  */
 #include "com_qpidnetwork_request_RequestJniLoveCall.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestLoveCallController.h"
+#include <manrequesthandler/RequestLoveCallController.h>
 
 void onQueryLoveCallList(long requestId, bool success, list<LoveCall> itemList, int totalCount, string errnum, string errmsg);
 void onConfirmLoveCall(long requestId, bool success, string errnum, string errmsg);

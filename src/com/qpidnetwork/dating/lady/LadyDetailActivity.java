@@ -1,7 +1,5 @@
 package com.qpidnetwork.dating.lady;
 
-import java.util.ArrayList;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
@@ -19,6 +16,8 @@ import android.webkit.HttpAuthHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow.OnDismissListener;
 import android.widget.Toast;
 
 import com.qpidnetwork.dating.QpidApplication;
@@ -28,11 +27,8 @@ import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginManager.LoginStatus;
 import com.qpidnetwork.dating.authorization.LoginParam;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
-import com.qpidnetwork.dating.bean.EMFAttachmentBean;
-import com.qpidnetwork.dating.bean.EMFAttachmentBean.AttachType;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.contacts.ContactManager;
-import com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity;
 import com.qpidnetwork.dating.emf.MailEditActivity;
 import com.qpidnetwork.dating.lady.LadyDetailManager.OnLadyDetailManagerQueryLadyDetailCallback;
 import com.qpidnetwork.dating.livechat.ChatActivity;
@@ -48,6 +44,8 @@ import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.LadyCall;
 import com.qpidnetwork.request.item.LadyDetail;
 import com.qpidnetwork.request.item.LadyDetail.ShowLoveCall;
+import com.qpidnetwork.view.ButtonFloat;
+import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.GetMoreCreditDialog;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogAlert;
@@ -61,6 +59,9 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 	 */
 	public static final String WOMANID = "womanId";
 	public static final String SHOW_BUTTONS = "SHOW_BUTTONS";
+	
+	//解决Loadurl空指针异常
+	private boolean isWebViewDestroy = false;
 	
 	/**
 	 * 所有打开ladydetail页面统一入口
@@ -118,16 +119,24 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 	 * 界面控件
 	 */
 	private MaterialAppBar appbar;
+	private LinearLayout llBody;
 	private WebView mWebView;
 	private WebViewClient mWebViewClient;
 	public LadyDetail item;
 	private MaterialDropDownMenu overflowMenu;
+	private ButtonFloat floatButton;
+	private ProfileActionPopupWindow profileActionWindow;
 	
 	/**
 	 * 女士Id
 	 */
 	public String mWomanId = "";
 	public boolean mShowButtons = true;
+	
+	//error page
+	private View errorPage;
+	private ButtonRaised btnErrorRetry;
+	private boolean isLoadError = false;
 	
 	/**
 	 * Javascript调用java方法交互类
@@ -141,7 +150,7 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 //            mContext = context; 
 //        }
 //    }  
-        
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -171,6 +180,56 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 		if (this.getIntent().getExtras().containsKey(SHOW_BUTTONS)){
 			mShowButtons = this.getIntent().getExtras().getBoolean(SHOW_BUTTONS);
 		}
+		
+		// profile action
+		profileActionWindow = new ProfileActionPopupWindow(this);
+		floatButton = (ButtonFloat) findViewById(R.id.floatButton);
+		floatButton.setVisibility(View.VISIBLE);
+		floatButton.setOnClickListener(this);
+		
+		profileActionWindow.setOnDismissListener(new OnDismissListener(){
+
+			@Override
+			public void onDismiss() {
+				// TODO Auto-generated method stub
+				floatButton.setIcon(R.drawable.ic_add_white_24dp);
+			}
+			
+		});
+		
+		
+		profileActionWindow.setOnItemClickListener(new ProfileActionPopupWindow.OnItemClickListener() {
+			
+			@Override
+			public void onMailClick(ButtonFloat button) {
+				// 点击emf
+				if(  CheckLogin() ) {
+					MailEditActivity.launchMailEditActivity(mContext, mWomanId, ReplyType.DEFAULT, "");
+				}
+			}
+			
+			@Override
+			public void onFavoriteClick(ButtonFloat button) {
+				if(item != null){
+					if ( item.isfavorite ) {
+						RemoveFavour();
+					} else {
+						//finish add should execute showToastDone("Done!") to cancel this toast.
+						AddFavour();
+					}
+				}
+			}
+			
+			@Override
+			public void onChatClick(ButtonFloat button) {
+				// 点击在线
+				if( item != null ) {
+					ChatActivity.launchChatActivity(mContext, item.womanid, item.firstname, item.photoMinURL);
+				}else{
+					ChatActivity.launchChatActivity(mContext, mWomanId, "", "");
+				}
+			}
+		});
 		
 		// 导航栏
 		appbar = (MaterialAppBar)findViewById(R.id.appbar);
@@ -233,6 +292,7 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			appbar.getButtonById(R.id.common_button_call).setVisibility(View.GONE);
 			appbar.getButtonById(R.id.common_button_emf).setVisibility(View.GONE);
 			appbar.getButtonById(R.id.common_button_online).setVisibility(View.GONE);
+			floatButton.setVisibility(View.GONE);
 		}
 		
 		
@@ -272,8 +332,18 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			}
 		});
 		
+		//error page
+		errorPage = (View)findViewById(R.id.errorPage);
+		btnErrorRetry = (ButtonRaised)findViewById(R.id.btnErrorRetry);
+		btnErrorRetry.setButtonTitle(getString(R.string.common_btn_tapRetry));
+		btnErrorRetry.setOnClickListener(this);
+		btnErrorRetry.requestFocus();
+		
 		// 浏览器控件
+//		llBody = (LinearLayout)findViewById(R.id.llBody);
 		mWebView = (WebView) findViewById(R.id.webView);
+//		mWebView = new WebView(getApplicationContext());
+//		llBody.addView(mWebView,LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 		mWebView.getSettings().setJavaScriptEnabled(true);
 //		mWebView.addJavascriptInterface(new JavascriptInterface(this), "labelListner");
 		
@@ -293,6 +363,9 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			public void onPageFinished(WebView view, String url) {
 				// TODO Auto-generated method stub
 				super.onPageFinished(view, url);
+				if((!isLoadError)){
+					errorPage.setVisibility(View.GONE);
+				}
 				Message msg = Message.obtain();
 				RequestBaseResponse obj = new RequestBaseResponse(true, "", "", null);
 				msg.what = RequestFlag.REQUEST_WEBVIEW_FINISH.ordinal();
@@ -322,12 +395,59 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			        handler.cancel();
 				}
 		    }
+			
+			@Override
+			public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+				//普通页面错误
+				isLoadError = true;
+				errorPage.setVisibility(View.VISIBLE);
+			};
 		};
 		
 		mWebView.setWebViewClient(mWebViewClient);
 
 	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+//		isWebViewDestroy = true;
+//		mWebView.removeAllViews();
+//		mWebView.destroy();
+	}
 
+	@Override
+	public void onClick(View v){
+		super.onClick(v);
+		if (v == floatButton){
+			if (profileActionWindow.isShowing()){
+				profileActionWindow.dismiss();
+			}else{
+				if(item != null){
+					profileActionWindow.setIsOnline(item.isonline);
+					profileActionWindow.setFavorite(item.isfavorite, true);
+				}else{
+					profileActionWindow.setIsOnline(false);
+					profileActionWindow.setFavorite(false, false);
+				}
+				profileActionWindow.show(floatButton);
+				floatButton.setIcon(R.drawable.ic_close_white_18dp);
+			}
+		}
+		
+		switch (v.getId()) {
+		case R.id.btnErrorRetry:{
+//			errorPage.setVisibility(View.GONE);
+			isLoadError = false;
+			mWebView.reload();
+		}break;
+
+		default:
+			break;
+		}
+	}
+	
 	@Override
 	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
@@ -374,20 +494,9 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			// 判断是否登录
 			if( CheckLogin() ) {
 				// 获取图片成功
-				ArrayList<EMFAttachmentBean> attachList = new ArrayList<EMFAttachmentBean>();
 				LadyDetail photoLadyDetail = (LadyDetail)obj.body;
-				if( photoLadyDetail != null && photoLadyDetail.photoList != null ) {
-					for(String photo : photoLadyDetail.photoList) {
-						EMFAttachmentBean normalItem = new EMFAttachmentBean();
-						normalItem.type = AttachType.NORAML_PICTURE;
-						normalItem.photoUrl = photo;
-						attachList.add(normalItem);
-					}
-				}
-				
 				// 打开预览图片
-				Intent intent = EMFAttachmentPreviewActivity.getIntent(mContext, attachList, 0);
-				startActivity(intent);
+				NormalPhotoPreviewActivity.launchNoramlPhotoActivity(mContext, photoLadyDetail);
 			}
 		}break;
 		case REQUEST_VIDEO_SUCCESS:{
@@ -515,7 +624,7 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 		});
 		
 		// 域名
-		String domain = WebSiteManager.newInstance(this).GetWebSite().getAppSiteHost();
+		String domain = WebSiteManager.getInstance().GetWebSite().getAppSiteHost();
 //		// Cookie 认证
 //		CookieManager cookieManager = CookieManager.getInstance();
 //		cookieManager.setAcceptCookie(true);
@@ -545,6 +654,7 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 		if( url.contains("qpidnetwork://app/womanphoto") ){
 			// 点击图片
 			showProgressDialog("Loading...");
+			LadyDetailManager.getInstance().RemoveLadyDetailCache(womanId);
 			LadyDetailManager.getInstance().QueryLadyDetail(womanId, new OnLadyDetailManagerQueryLadyDetailCallback() {
 				
 				@Override
@@ -668,8 +778,9 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 
 		String url = "javascript:js_update_favorite(";
 		url += "'" +  isFavour + "')";
-		
-		mWebView.loadUrl(url);
+		if(!isWebViewDestroy){
+			mWebView.loadUrl(url);
+		}
 	}
 	
 	/**

@@ -260,6 +260,8 @@ public class HomeContactViewController implements OnClickListener,
 	public void listenToLoginActivity() {
 		/* 站点切换，登陆成功，刷新底部邀请处理 */
 		if (mLiveChatManager != null && footer != null) {
+			/*刷新联系人列表*/
+			reloadDataIfNull();
 			/* 防止未初始化完成 */
 			updateInviteView();
 		}
@@ -346,7 +348,7 @@ public class HomeContactViewController implements OnClickListener,
 		tvInviteMsg = (TextView) mView.findViewById(R.id.tvInviteMsg);
 		tvInviteNum = (TextView) mView.findViewById(R.id.tvInviteNum);
 
-		mLiveChatManager = LiveChatManager.newInstance(mActivity);
+		mLiveChatManager = LiveChatManager.getInstance();
 		updateInviteView();
 
 		footer.setOnClickListener(this);

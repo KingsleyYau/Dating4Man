@@ -55,6 +55,7 @@ public class ButtonRaised extends CardView{
 			background = a.getColor(R.styleable.RaisedButton_background, 0);
 			touch_feedback = a.getResourceId(R.styleable.RaisedButton_touch_feedback, 0);
 			elevation  = (int)a.getDimension(R.styleable.RaisedButton_elevation, elevation);
+			radius = (int)a.getDimension(R.styleable.RaisedButton_radius, radius);
 			a.recycle();
 		}
 		

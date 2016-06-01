@@ -1,5 +1,7 @@
 package com.qpidnetwork.request;
 
+import java.util.List;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -59,6 +61,7 @@ import com.qpidnetwork.request.item.LadySignItem;
 import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.request.item.LoveCall;
+import com.qpidnetwork.request.item.MonthLyFeeTipItem;
 import com.qpidnetwork.request.item.OtherEmotionConfigItem;
 import com.qpidnetwork.request.item.OtherGetCountItem;
 import com.qpidnetwork.request.item.OtherIntegralCheckItem;
@@ -66,6 +69,8 @@ import com.qpidnetwork.request.item.ProfileItem;
 import com.qpidnetwork.request.item.QuickMatchLady;
 import com.qpidnetwork.request.item.Record;
 import com.qpidnetwork.request.item.RecordMutiple;
+import com.qpidnetwork.request.item.ThemeConfig;
+import com.qpidnetwork.request.item.ThemeItem;
 import com.qpidnetwork.request.item.TicketDetailItem;
 import com.qpidnetwork.request.item.TicketListItem;
 import com.qpidnetwork.request.item.VSPlayVideoItem;
@@ -2219,11 +2224,65 @@ public class RequestOperator {
 	}
 
 	/**
-	 * 6.14.获取微视频文件URL（http post）（New）
+	 * 6.16.开聊自动买点（http post）
 	 * 
 	 * @param womanId
 	 *            女士ID
 	 * @param callback
+	 * @return 请求唯一标识
+	 */
+	public long ChatRecharge(final String womanId, final String user_sid, final String user_id,
+			final OnLCChatRechargeCallback callback) {
+		// 登录状态改变重新调用接口
+		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
+
+			@Override
+			public void OnLogout(boolean bActive) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void OnLogin(boolean isSuccess, String errno, String errmsg,
+					LoginItem item, LoginErrorItem errItem) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				HandleRequestCallback(isSuccess, errno, errmsg, this);
+				if (isSuccess) {
+					// 登录成功
+					// 再次调用jni接口
+					RequestJniLiveChat.ChatRecharge(womanId, user_sid, user_id, callback);
+				} else {
+					// 登录不成功, 回调失败
+					callback.OnLCChatRecharge(-1, isSuccess, errno, errmsg, 0);
+				}
+			}
+		};
+
+		// 调用jni接口
+		return RequestJniLiveChat.ChatRecharge(womanId, user_sid, user_id, new OnLCChatRechargeCallback() {
+					@Override
+					public void OnLCChatRecharge(long requestId, boolean isSuccess,
+							String errno, String errmsg, double credits) {
+						// 公共处理
+						boolean bFlag = HandleRequestCallback(isSuccess, errno,
+								errmsg, callbackLogin);
+						if (bFlag) {
+							// 已经匹配处理, 等待回调
+						} else {
+							// 没有匹配处理, 直接回调
+							callback.OnLCChatRecharge(requestId, isSuccess, errno,
+									errmsg, credits);
+						}
+					}
+				});
+	}
+	
+	/**
+	 * 6.14.获取微视频文件URL（http post）
+	 * 
+	 * @param womanId	女士ID
+	 * @param callback	
 	 * @return 请求唯一标识
 	 */
 	public long GetVideo(final String user_sid, final String user_id,
@@ -2277,6 +2336,112 @@ public class RequestOperator {
 					}
 				});
 	}
+	
+	/**
+	 * 6.17.获取主题列表配置（http post）
+	 * 
+	 * @param callback	
+	 * @return 请求唯一标识
+	 */
+	public long GetThemeConfig(final String user_sid, final String user_id, final OnGetThemeConfigCallback callback) {
+		// 登录状态改变重新调用接口
+		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
+
+			@Override
+			public void OnLogout(boolean bActive) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void OnLogin(boolean isSuccess, String errno, String errmsg,
+					LoginItem item, LoginErrorItem errItem) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				HandleRequestCallback(isSuccess, errno, errmsg, this);
+				if (isSuccess) {
+					// 登录成功
+					// 再次调用jni接口
+					RequestJniLiveChat.GetThemeConfig(user_sid, user_id, callback);
+				} else {
+					// 登录不成功, 回调失败
+					callback.OnGetThemeConfig(isSuccess, errno, errmsg, null);
+				}
+			}
+		};
+
+		// 调用jni接口
+		return RequestJniLiveChat.GetThemeConfig(user_sid, user_id, new OnGetThemeConfigCallback() {
+			
+			@Override
+			public void OnGetThemeConfig(boolean isSuccess, String errno,
+					String errmsg, ThemeConfig config) {
+				
+				// 公共处理
+				boolean bFlag = HandleRequestCallback(isSuccess, errno,
+						errmsg, callbackLogin);
+				if (bFlag) {
+					// 已经匹配处理, 等待回调
+				} else {
+					// 没有匹配处理, 直接回调
+					callback.OnGetThemeConfig(isSuccess, errno, errmsg, config);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 6.18.获取指定主题列表（http post）
+	 * 
+	 * @param callback	
+	 * @return 请求唯一标识
+	 */
+	public long GetThemeDetail(final List<String> themeIds, final String user_sid, final String user_id, final OnGetThemeDetailCallback callback) {
+		// 登录状态改变重新调用接口
+		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
+
+			@Override
+			public void OnLogout(boolean bActive) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void OnLogin(boolean isSuccess, String errno, String errmsg,
+					LoginItem item, LoginErrorItem errItem) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				HandleRequestCallback(isSuccess, errno, errmsg, this);
+				if (isSuccess) {
+					// 登录成功
+					// 再次调用jni接口
+					RequestJniLiveChat.GetThemeDetail(themeIds, user_sid, user_id, callback);
+				} else {
+					// 登录不成功, 回调失败
+					callback.OnGetThemeDetail(isSuccess, errno, errmsg, null);
+				}
+			}
+		};
+
+		// 调用jni接口
+		return RequestJniLiveChat.GetThemeDetail(themeIds, user_sid, user_id, new OnGetThemeDetailCallback() {
+			
+			@Override
+			public void OnGetThemeDetail(boolean isSuccess, String errno,
+					String errmsg, ThemeItem[] themeList) {
+				// 公共处理
+				boolean bFlag = HandleRequestCallback(isSuccess, errno,
+						errmsg, callbackLogin);
+				if (bFlag) {
+					// 已经匹配处理, 等待回调
+				} else {
+					// 没有匹配处理, 直接回调
+					callback.OnGetThemeDetail(isSuccess, errno, errmsg, themeList);
+				}
+			}
+		});
+	}
+	
 
 	/**************************************************************************************
 	 * LiveChat模块end
@@ -3869,7 +4034,7 @@ public class RequestOperator {
 					RequestJniVideoShow.PlayVideo(womanId, videoId, callback);
 				} else {
 					// 登录不成功, 回调失败
-					callback.OnVSPlayVideo(isSuccess, errno, errmsg, null);
+					callback.OnVSPlayVideo(isSuccess, errno, errmsg, 0, null);
 				}
 			}
 		};
@@ -3880,7 +4045,7 @@ public class RequestOperator {
 
 					@Override
 					public void OnVSPlayVideo(boolean isSuccess, String errno,
-							String errmsg, VSPlayVideoItem item) {
+							String errmsg, int memberType, VSPlayVideoItem item) {
 						// TODO Auto-generated method stub
 						// 公共处理
 						boolean bFlag = HandleRequestCallback(isSuccess, errno,
@@ -3889,7 +4054,7 @@ public class RequestOperator {
 							// 已经匹配处理, 等待回调
 						} else {
 							// 没有匹配处理, 直接回调
-							callback.OnVSPlayVideo(isSuccess, errno, errmsg,
+							callback.OnVSPlayVideo(isSuccess, errno, errmsg, memberType,
 									item);
 						}
 					}
@@ -4421,6 +4586,118 @@ public class RequestOperator {
 
 	/**************************************************************************************
 	 * contact us模块
+	 **************************************************************************************/
+	
+	/**************************************************************************************
+	 * 月费模块
+	 **************************************************************************************/
+	
+	/**
+	 * 获取月费会员类型
+	 * 
+	 * @param callback
+	 * @return
+	 */
+	public long QueryMemberType(final OnQueryMemberTypeCallback callback) {
+		// 登录状态改变重新调用接口
+		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
+
+			@Override
+			public void OnLogout(boolean bActive) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void OnLogin(boolean isSuccess, String errno, String errmsg,
+					LoginItem item, LoginErrorItem errItem) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				HandleRequestCallback(isSuccess, errno, errmsg, this);
+				if (isSuccess) {
+					// 登录成功, 再次调用jni接口
+					RequestJniMonthlyFee.QueryMemberType(callback);
+				} else {
+					// 登录不成功, 回调失败
+					callback.OnQueryMemberType(isSuccess, errno, errmsg, 0);
+				}
+			}
+		};
+
+		// 调用jni接口
+		return RequestJniMonthlyFee.QueryMemberType(new OnQueryMemberTypeCallback() {
+
+					@Override
+					public void OnQueryMemberType(boolean isSuccess, String errno, String errmsg, int memberType) {
+						// 公共处理
+						boolean bFlag = HandleRequestCallback(isSuccess, errno,
+								errmsg, callbackLogin);
+						if (bFlag) {
+							// 已经匹配处理, 等待回调
+						} else {
+							// 没有匹配处理, 直接回调
+							callback.OnQueryMemberType(isSuccess, errno, errmsg, memberType);
+						}
+					}
+
+				});
+	}
+	
+	/**
+	 * 创建问题反馈
+	 * 
+	 * @param ticketId
+	 * @param callback
+	 * @return
+	 */
+	public long GetMonthlyFeeTips(final OnGetMonthlyFeeTipsCallback callback) {
+		// 登录状态改变重新调用接口
+		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
+
+			@Override
+			public void OnLogout(boolean bActive) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void OnLogin(boolean isSuccess, String errno, String errmsg,
+					LoginItem item, LoginErrorItem errItem) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				HandleRequestCallback(isSuccess, errno, errmsg, this);
+				if (isSuccess) {
+					// 登录成功, 再次调用jni接口
+					RequestJniMonthlyFee.GetMonthlyFeeTips(callback);
+				} else {
+					// 登录不成功, 回调失败
+					callback.OnGetMonthlyFeeTips(isSuccess, errno, errmsg, null);
+				}
+			}
+		};
+
+		// 调用jni接口
+		return RequestJniMonthlyFee.GetMonthlyFeeTips(new OnGetMonthlyFeeTipsCallback() {
+
+					@Override
+					public void OnGetMonthlyFeeTips(boolean isSuccess, 
+							String errno, String errmsg, MonthLyFeeTipItem[] tipList) {
+						// 公共处理
+						boolean bFlag = HandleRequestCallback(isSuccess, errno,
+								errmsg, callbackLogin);
+						if (bFlag) {
+							// 已经匹配处理, 等待回调
+						} else {
+							// 没有匹配处理, 直接回调
+							callback.OnGetMonthlyFeeTips(isSuccess, errno, errmsg, tipList);
+						}
+					}
+
+				});
+	}
+	
+	/**************************************************************************************
+	 * 月费模块
 	 **************************************************************************************/
 
 	/**************************************************************************************

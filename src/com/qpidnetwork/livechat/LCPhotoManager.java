@@ -277,10 +277,15 @@ public class LCPhotoManager {
 	 */
 	public void combineMessageItem(ArrayList<LCMessageItem> msgList)
 	{
-		if (null != msgList && msgList.size() > 0) 
+		if (null == msgList) {
+			return;
+		}
+		
+		synchronized (msgList) 
 		{
-			synchronized (msgList) 
+			if (!msgList.isEmpty()) 
 			{
+			
 				// 女士发送图片列表
 				ArrayList<LCMessageItem> womanPhotoList = new ArrayList<LCMessageItem>();
 				// 男士发送图片列表

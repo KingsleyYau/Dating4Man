@@ -33,7 +33,7 @@ import com.qpidnetwork.request.RequestJniOther;
 public class AdAnakysisManager implements OnRequestCallback 
 {
 
-	private String UTM_REFERENCE_FILE = "utm_reference.txt";// 广告推广存放数据缓存文件名
+	private String UTM_REFERENCE_FILE = "utm_reference";// 广告推广存放数据缓存文件名
 
 	private static AdAnakysisManager mAdAnakysisManager;
 
@@ -191,8 +191,8 @@ public class AdAnakysisManager implements OnRequestCallback
 	}
 
 	private String getUtmReferencePath() {
-		String path = WebSiteManager.CACHE_PATH_PRE + UTM_REFERENCE_FILE;
-		File file = new File(WebSiteManager.CACHE_PATH_PRE);
+		String path = WebSiteManager.getInstance().GetCachePath() + UTM_REFERENCE_FILE;
+		File file = new File(WebSiteManager.getInstance().GetCachePath());
 		if (!file.exists()) {
 			file.mkdirs();
 		}

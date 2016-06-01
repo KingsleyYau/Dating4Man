@@ -7,7 +7,7 @@
  */
 #include "com_qpidnetwork_request_RequestJniOther.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestOtherController.h"
+#include <manrequesthandler/RequestOtherController.h>
 
 #include <common/KZip.h>
 #include <common/command.h>
@@ -16,27 +16,25 @@
 
 #define OS_TYPE "Android"
 
-void OnEmotionConfig(long requestId, bool success, const string& errnum, const string& errmsg, const OtherEmotionConfigItem& item);
-void OnGetCount(long requestId, bool success, const string& errnum, const string& errmsg, const OtherGetCountItem& item);
-void OnPhoneInfo(long requestId, bool success, const string& errnum, const string& errmsg);
-void OnIntegralCheck(long requestId, bool success, const string& errnum, const string& errmsg, const OtherIntegralCheckItem& item);
-void OnVersionCheck(long requestId, bool success, const string& errnum, const string& errmsg, const OtherVersionCheckItem& item);
-void OnSynConfig(long requestId, bool success, const string& errnum, const string& errmsg, const OtherSynConfigItem& item);
-void OnOnlineCount(long requestId, bool success, const string& errnum, const string& errmsg, const OtherOnlineCountList& countList);
-void OnUploadCrashLog(long requestId, bool success, const string& errnum, const string& errmsg);
-void OnInstallLogs(long requestId, bool success, const string& errnum, const string& errmsg);
-static RequestOtherControllerCallback gRequestControllerCallback {
-	OnEmotionConfig,
-	OnGetCount,
-	OnPhoneInfo,
-	OnIntegralCheck,
-	OnVersionCheck,
-	OnSynConfig,
-	OnOnlineCount,
-	OnUploadCrashLog,
-	OnInstallLogs
+class RequestOtherControllerCallback : public IRequestOtherControllerCallback
+{
+public:
+	RequestOtherControllerCallback() {};
+	virtual ~RequestOtherControllerCallback() {};
+public:
+	virtual void OnEmotionConfig(long requestId, bool success, const string& errnum, const string& errmsg, const OtherEmotionConfigItem& item);
+	virtual void OnGetCount(long requestId, bool success, const string& errnum, const string& errmsg, const OtherGetCountItem& item);
+	virtual void OnPhoneInfo(long requestId, bool success, const string& errnum, const string& errmsg);
+	virtual void OnIntegralCheck(long requestId, bool success, const string& errnum, const string& errmsg, const OtherIntegralCheckItem& item);
+	virtual void OnVersionCheck(long requestId, bool success, const string& errnum, const string& errmsg, const OtherVersionCheckItem& item);
+	virtual void OnSynConfig(long requestId, bool success, const string& errnum, const string& errmsg, const OtherSynConfigItem& item);
+	virtual void OnOnlineCount(long requestId, bool success, const string& errnum, const string& errmsg, const OtherOnlineCountList& countList);
+	virtual void OnUploadCrashLog(long requestId, bool success, const string& errnum, const string& errmsg);
+	virtual void OnInstallLogs(long requestId, bool success, const string& errnum, const string& errmsg);
 };
-static RequestOtherController gRequestController(&gHttpRequestManager, gRequestControllerCallback);
+
+static RequestOtherControllerCallback gRequestControllerCallback;
+static RequestOtherController gRequestController(&gHttpRequestManager, &gRequestControllerCallback);
 
 // ------------------------------ EmotionConfig ---------------------------------
 /*
@@ -65,7 +63,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_EmotionConf
 	return requestId;
 }
 
-void OnEmotionConfig(long requestId, bool success, const string& errnum, const string& errmsg, const OtherEmotionConfigItem& item)
+void RequestOtherControllerCallback::OnEmotionConfig(long requestId, bool success, const string& errnum, const string& errmsg, const OtherEmotionConfigItem& item)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -122,14 +120,19 @@ void OnEmotionConfig(long requestId, bool success, const string& errnum, const s
 						typeItemIter != item.typeList.end();
 						typeItemIter++, iTypeIndex++)
 				{
+					jstring jtypeId = env->NewStringUTF(typeItemIter->typeId.c_str());
+					jstring jtypeName = env->NewStringUTF(typeItemIter->typeName.c_str());
 					jobject jTypeItem = env->NewObject(jTypeItemCls, typeInit,
 							typeItemIter->toflag,
-							env->NewStringUTF(typeItemIter->typeId.c_str()),
-							env->NewStringUTF(typeItemIter->typeName.c_str())
+							jtypeId,
+							jtypeName
 							);
 
 					env->SetObjectArrayElement(jTypeArray, iTypeIndex, jTypeItem);
 					env->DeleteLocalRef(jTypeItem);
+
+					env->DeleteLocalRef(jtypeId);
+					env->DeleteLocalRef(jtypeName);
 				}
 				// release
 				env->DeleteLocalRef(jTypeItemCls);
@@ -155,15 +158,22 @@ void OnEmotionConfig(long requestId, bool success, const string& errnum, const s
 						tagItemIter != item.tagList.end();
 						tagItemIter++, iTagIndex++)
 				{
+					jstring jtypeId = env->NewStringUTF(tagItemIter->typeId.c_str());
+					jstring jtagId = env->NewStringUTF(tagItemIter->tagId.c_str());
+					jstring jtagName = env->NewStringUTF(tagItemIter->tagName.c_str());
 					jobject jTagItem = env->NewObject(jTagItemCls, tagInit,
 							tagItemIter->toflag,
-							env->NewStringUTF(tagItemIter->typeId.c_str()),
-							env->NewStringUTF(tagItemIter->tagId.c_str()),
-							env->NewStringUTF(tagItemIter->tagName.c_str())
+							jtypeId,
+							jtagId,
+							jtagName
 							);
 
 					env->SetObjectArrayElement(jTagArray, iTagIndex, jTagItem);
 					env->DeleteLocalRef(jTagItem);
+
+					env->DeleteLocalRef(jtypeId);
+					env->DeleteLocalRef(jtagId);
+					env->DeleteLocalRef(jtagName);
 				}
 				// release
 				env->DeleteLocalRef(jTagItemCls);
@@ -193,19 +203,28 @@ void OnEmotionConfig(long requestId, bool success, const string& errnum, const s
 						emotionItemIter != item.manEmotionList.end();
 						emotionItemIter++, iEmotionIndex++)
 				{
+					jstring jfirstname = env->NewStringUTF(emotionItemIter->fileName.c_str());
+					jstring jtypeId = env->NewStringUTF(emotionItemIter->typeId.c_str());
+					jstring jtagId = env->NewStringUTF(emotionItemIter->tagId.c_str());
+					jstring jtitle = env->NewStringUTF(emotionItemIter->title.c_str());
 					jobject jEmotionItem = env->NewObject(jEmotionItemCls, emotionInit,
-							env->NewStringUTF(emotionItemIter->fileName.c_str()),
+							jfirstname,
 							emotionItemIter->price,
 							emotionItemIter->isNew,
 							emotionItemIter->isSale,
 							emotionItemIter->sortId,
-							env->NewStringUTF(emotionItemIter->typeId.c_str()),
-							env->NewStringUTF(emotionItemIter->tagId.c_str()),
-							env->NewStringUTF(emotionItemIter->title.c_str())
+							jtypeId,
+							jtagId,
+							jtitle
 							);
 
 					env->SetObjectArrayElement(jManEmotionArray, iEmotionIndex, jEmotionItem);
 					env->DeleteLocalRef(jEmotionItem);
+
+					env->DeleteLocalRef(jfirstname);
+					env->DeleteLocalRef(jtypeId);
+					env->DeleteLocalRef(jtagId);
+					env->DeleteLocalRef(jtitle);
 				}
 
 				// create lady emotion list
@@ -214,33 +233,45 @@ void OnEmotionConfig(long requestId, bool success, const string& errnum, const s
 						emotionItemIter != item.ladyEmotionList.end();
 						emotionItemIter++, iEmotionIndex++)
 				{
+					jstring jfirstname = env->NewStringUTF(emotionItemIter->fileName.c_str());
+					jstring jtypeId =env->NewStringUTF(emotionItemIter->typeId.c_str());
+					jstring jtagId = env->NewStringUTF(emotionItemIter->tagId.c_str());
+					jstring jtitle = env->NewStringUTF(emotionItemIter->title.c_str());
 					jobject jEmotionItem = env->NewObject(jEmotionItemCls, emotionInit,
-							env->NewStringUTF(emotionItemIter->fileName.c_str()),
+							jfirstname,
 							emotionItemIter->price,
 							emotionItemIter->isNew,
 							emotionItemIter->isSale,
 							emotionItemIter->sortId,
-							env->NewStringUTF(emotionItemIter->typeId.c_str()),
-							env->NewStringUTF(emotionItemIter->tagId.c_str()),
-							env->NewStringUTF(emotionItemIter->title.c_str())
+							jtypeId,
+							jtagId,
+							jtitle
 							);
 
 					env->SetObjectArrayElement(jLadyEmotionArray, iEmotionIndex, jEmotionItem);
 					env->DeleteLocalRef(jEmotionItem);
+
+					env->DeleteLocalRef(jfirstname);
+					env->DeleteLocalRef(jtypeId);
+					env->DeleteLocalRef(jtagId);
+					env->DeleteLocalRef(jtitle);
 				}
 
 				// release
 				env->DeleteLocalRef(jEmotionItemCls);
 
+				jstring jpath = env->NewStringUTF(item.path.c_str());
 				jItem = env->NewObject(jItemCls, itemInit,
 						item.version,
-						env->NewStringUTF(item.path.c_str()),
+						jpath,
 						jTypeArray,
 						jTagArray,
 						jManEmotionArray,
 						jLadyEmotionArray
 						);
+				env->DeleteLocalRef(jpath);
 
+				env->DeleteLocalRef(jManEmotionArray);
 				env->DeleteLocalRef(jLadyEmotionArray);
 				env->DeleteLocalRef(jTagArray);
 				env->DeleteLocalRef(jTypeArray);
@@ -313,7 +344,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_GetCount
 	return requestId;
 }
 
-void OnGetCount(long requestId, bool success, const string& errnum, const string& errmsg, const OtherGetCountItem& item)
+void RequestOtherControllerCallback::OnGetCount(long requestId, bool success, const string& errnum, const string& errmsg, const OtherGetCountItem& item)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -504,7 +535,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_PhoneInfo
 	return requestId;
 }
 
-void OnPhoneInfo(long requestId, bool success, const string& errnum, const string& errmsg)
+void RequestOtherControllerCallback::OnPhoneInfo(long requestId, bool success, const string& errnum, const string& errmsg)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -580,7 +611,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_IntegralChe
 	return requestId;
 }
 
-void OnIntegralCheck(long requestId, bool success, const string& errnum, const string& errmsg, const OtherIntegralCheckItem& item)
+void RequestOtherControllerCallback::OnIntegralCheck(long requestId, bool success, const string& errnum, const string& errmsg, const OtherIntegralCheckItem& item)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -676,7 +707,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_VersionChec
 	return requestId;
 }
 
-void OnVersionCheck(long requestId, bool success, const string& errnum, const string& errmsg, const OtherVersionCheckItem& item)
+void RequestOtherControllerCallback::OnVersionCheck(long requestId, bool success, const string& errnum, const string& errmsg, const OtherVersionCheckItem& item)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -881,6 +912,7 @@ void CreateSynConfigPublicJItem(JNIEnv* env, const OtherSynConfigItem::PublicIte
 					"Ljava/lang/String;"	// apkVerName
 					"Z"						// apkForceUpdate
 					"Z"						// facebook_enable
+					"Z"						// chatscene_enable
 					"Ljava/lang/String;"	// apkFileVerify
 					"Ljava/lang/String;"	// url
 					"Ljava/lang/String;"	// storeUrl
@@ -905,6 +937,7 @@ void CreateSynConfigPublicJItem(JNIEnv* env, const OtherSynConfigItem::PublicIte
 						apkVerName,
 						item.apkForceUpdate,
 						item.facebook_enable,
+						item.chatscene_enable,
 						apkFileVerify,
 						apkVerURL,
 						apkStoreURL,
@@ -926,7 +959,7 @@ void CreateSynConfigPublicJItem(JNIEnv* env, const OtherSynConfigItem::PublicIte
 	}
 }
 
-void OnSynConfig(long requestId, bool success, const string& errnum, const string& errmsg, const OtherSynConfigItem& item)
+void RequestOtherControllerCallback::OnSynConfig(long requestId, bool success, const string& errnum, const string& errmsg, const OtherSynConfigItem& item)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -1069,7 +1102,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_OnlineCount
 	return requestId;
 }
 
-void OnOnlineCount(long requestId, bool success, const string& errnum, const string& errmsg, const OtherOnlineCountList& countList)
+void RequestOtherControllerCallback::OnOnlineCount(long requestId, bool success, const string& errnum, const string& errmsg, const OtherOnlineCountList& countList)
 {
 	JNIEnv* env = NULL;
 	bool isAttachThread = false;
@@ -1150,7 +1183,7 @@ void OnOnlineCount(long requestId, bool success, const string& errnum, const str
 
 // ------------------------------ UploadCrashLog ---------------------------------
 
-void OnUploadCrashLog(long requestId, bool success, const string& errnum, const string& errmsg) {
+void RequestOtherControllerCallback::OnUploadCrashLog(long requestId, bool success, const string& errnum, const string& errmsg) {
 	FileLog("httprequest", "Other.Native::OnUploadCrashLog( success : %s )", success?"true":"false");
 
 	/* turn object to java object here */
@@ -1240,7 +1273,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_UploadCrash
 }
 
 // ------------------------------ InstallLogs ---------------------------------
-void OnInstallLogs(long requestId, bool success, const string& errnum, const string& errmsg) {
+void RequestOtherControllerCallback::OnInstallLogs(long requestId, bool success, const string& errnum, const string& errmsg) {
 	FileLog("httprequest", "Other.Native::OnInstallLogs( success : %s )", success?"true":"false");
 
 	/* turn object to java object here */

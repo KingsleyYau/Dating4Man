@@ -159,7 +159,7 @@ public class AppEventsLogger {
     private static final String SOURCE_APPLICATION_HAS_BEEN_SET_BY_THIS_INTENT = "_fbSourceApplicationHasBeenSet";
 
     // Instance member variables
-    private final Context context;
+    private final String contextName;
     private final AccessTokenAppIdPair accessTokenAppId;
 
     private static Map<AccessTokenAppIdPair, SessionEventsState> stateMap =
@@ -618,8 +618,7 @@ public class AppEventsLogger {
      */
     private AppEventsLogger(Context context, String applicationId, Session session) {
         Validate.notNull(context, "context");
-        this.context = context;
-
+        this.contextName = Utility.getActivityName(context);
         if (session == null) {
             session = Session.getActiveSession();
         }
@@ -695,8 +694,8 @@ public class AppEventsLogger {
     }
 
     private void logEvent(String eventName, Double valueToSum, Bundle parameters, boolean isImplicitlyLogged) {
-        AppEvent event = new AppEvent(this.context, eventName, valueToSum, parameters, isImplicitlyLogged);
-        logEvent(context, event, accessTokenAppId);
+        AppEvent event = new AppEvent(this.contextName, eventName, valueToSum, parameters, isImplicitlyLogged);
+        logEvent(applicationContext, event, accessTokenAppId);
     }
 
     private static void logEvent(final Context context,
@@ -1221,7 +1220,7 @@ public class AppEventsLogger {
         private String name;
 
         public AppEvent(
-                Context context,
+                String contextName,
                 String eventName,
                 Double valueToSum,
                 Bundle parameters,
@@ -1236,7 +1235,7 @@ public class AppEventsLogger {
 
                 jsonObject.put("_eventName", eventName);
                 jsonObject.put("_logTime", System.currentTimeMillis() / 1000);
-                jsonObject.put("_ui", Utility.getActivityName(context));
+                jsonObject.put("_ui", contextName);
 
                 if (valueToSum != null) {
                     jsonObject.put("_valueToSum", valueToSum.doubleValue());

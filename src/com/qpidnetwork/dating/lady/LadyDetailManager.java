@@ -5,11 +5,13 @@ import java.util.Map;
 
 import android.content.Context;
 
+import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.livechat.LCUserItem;
 import com.qpidnetwork.livechat.LiveChatManagerOtherListener;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
+import com.qpidnetwork.livechat.jni.LiveChatTalkUserListItem;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.request.OnQueryLadyDetailCallback;
 import com.qpidnetwork.request.OnQueryLadyListCallback;
@@ -21,6 +23,8 @@ import com.qpidnetwork.request.RequestJniLady.SearchType;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.Lady;
 import com.qpidnetwork.request.item.LadyDetail;
+import com.qpidnetwork.request.item.LoginErrorItem;
+import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.tool.FileDownloader;
 
 /**
@@ -28,7 +32,7 @@ import com.qpidnetwork.tool.FileDownloader;
  * @author Max.Chiu
  *
  */
-public class LadyDetailManager implements LiveChatManagerOtherListener {
+public class LadyDetailManager implements LiveChatManagerOtherListener, OnLoginManagerCallback{
 	/**
 	 *	回调函数 
 	 */
@@ -68,42 +72,41 @@ public class LadyDetailManager implements LiveChatManagerOtherListener {
 	private Map<String, LadyDetail> mLadyDetailMap = new HashMap<String, LadyDetail>();
 	
 	/**
-	 * 当前请求Id
-	 */
-//	private long mRequestId = -1;
-	
-	/**
 	 * 获取女士详情
 	 */
 	public void QueryLadyDetail(String womanId, final OnLadyDetailManagerQueryLadyDetailCallback callback) {
 		// 本地查找
 		String womanIdUpCase = womanId.toUpperCase();
+		
+		LadyDetail item = null;
 		synchronized (mLadyDetailMap) {
-			if( mLadyDetailMap.containsKey(womanIdUpCase) ) {
-				LadyDetail item = mLadyDetailMap.get(womanIdUpCase);
-				callback.OnQueryLadyDetailCallback(true, "", "", item);
-			} else {
-				// 调用接口
-//				mRequestId = RequestOperator.getInstance().QueryLadyDetail(womanIdUpCase, new OnQueryLadyDetailCallback() {
-				RequestOperator.getInstance().QueryLadyDetail(womanIdUpCase, new OnQueryLadyDetailCallback() {
-					
-					@Override
-					public void OnQueryLadyDetail(boolean isSuccess, String errno,
-							String errmsg, LadyDetail item) {
-						// TODO Auto-generated method stub
-						if( isSuccess ) {
+			item = mLadyDetailMap.get(womanIdUpCase);
+		}
+		
+		if (null != item) {
+			// 本地存在
+			callback.OnQueryLadyDetailCallback(true, "", "", item);
+		}
+		else {
+			// 调用接口
+			RequestOperator.getInstance().QueryLadyDetail(womanIdUpCase, new OnQueryLadyDetailCallback() {
+				
+				@Override
+				public void OnQueryLadyDetail(boolean isSuccess, String errno,
+						String errmsg, LadyDetail item) {
+					// TODO Auto-generated method stub
+					if( isSuccess ) {
+						synchronized (mLadyDetailMap) {
 							mLadyDetailMap.put(item.womanid, item);
-							
-							// 下载头像
-							String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(item.photoURL);
-							new FileDownloader(mContext).StartDownload(item.photoURL, localPath, null);
 						}
-						
-//						mRequestId = -1;
-						callback.OnQueryLadyDetailCallback(isSuccess, errno, errmsg, item);
+						// 下载头像
+						String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(item.photoURL);
+						new FileDownloader(mContext).StartDownload(item.photoURL, localPath, null);
 					}
-				});
-			}
+					
+					callback.OnQueryLadyDetailCallback(isSuccess, errno, errmsg, item);
+				}
+			});
 		}
 
 	}
@@ -244,6 +247,13 @@ public class LadyDetailManager implements LiveChatManagerOtherListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void OnGetUsersInfo(LiveChatErrType errType, String errmsg, 
+			LiveChatTalkUserListItem[] itemList) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public void OnGetUserStatus(LiveChatErrType errType, String errmsg,
@@ -287,6 +297,53 @@ public class LadyDetailManager implements LiveChatManagerOtherListener {
 				default:
 					break;
 				}
+			}
+		}
+	}
+
+	/*登录及注销回调，都需要清空原本保存的女士资料详情*/
+	@Override
+	public void OnLogin(boolean isSuccess, String errno, String errmsg,
+			LoginItem item, LoginErrorItem errItem) {
+		if(mLadyDetailMap != null){
+			synchronized (mLadyDetailMap){
+				mLadyDetailMap.clear();
+			}
+		}
+	}
+
+	@Override
+	public void OnLogout(boolean bActive) {
+		if(mLadyDetailMap != null){
+			synchronized (mLadyDetailMap){
+				mLadyDetailMap.clear();
+			}
+		}
+	}
+	
+	/**
+	 * 根据女士Id获取女士详情
+	 * @param womanId
+	 * @return
+	 */
+	public LadyDetail getLadyDetailById(String womanId){
+		LadyDetail ladyDetail = null;
+		synchronized (mLadyDetailMap) {
+			if(mLadyDetailMap.containsKey(womanId)){
+				ladyDetail = mLadyDetailMap.get(womanId);
+			}
+		}
+		return ladyDetail;
+	}
+	
+	/**
+	 * 当女士详情需要刷新时，删除本地缓存，重新刷新
+	 * @param womanId
+	 */
+	public void RemoveLadyDetailCache(String womanId){
+		synchronized (mLadyDetailMap) {
+			if(mLadyDetailMap.containsKey(womanId)){
+				mLadyDetailMap.remove(womanId);
 			}
 		}
 	}

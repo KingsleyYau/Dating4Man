@@ -9,10 +9,10 @@ import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.request.RequestErrorCode;
 import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;

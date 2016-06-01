@@ -7,10 +7,9 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
-import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.LoginManager;
+import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.LoginParam;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.request.OnQueryChatVirtualGiftCallback;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.Gift;
@@ -79,7 +78,7 @@ public class VirtualGiftManager implements OnLoginManagerCallback {
 		String md5 = Arithmetic.MD5(vgId.getBytes(), vgId.getBytes().length);
 		String url = String.format(
 				"%s/%s/%s/%s_big.jpg", 
-				WebSiteManager.newInstance(mContext).GetWebSite().getWebSiteHost(), 
+				WebSiteManager.getInstance().GetWebSite().getWebSiteHost(), 
 				VIRUAL_GIFT_PRE, 
 				vgId, 
 				md5
@@ -96,7 +95,7 @@ public class VirtualGiftManager implements OnLoginManagerCallback {
 		String md5 = Arithmetic.MD5(vgId.getBytes(), vgId.getBytes().length);
 		String url = String.format(
 				"%s/%s/%s/%s_video.3gp", 
-				WebSiteManager.newInstance(mContext).GetWebSite().getWebSiteHost(), 
+				WebSiteManager.getInstance().GetWebSite().getWebSiteHost(), 
 				VIRUAL_GIFT_PRE, 
 				vgId, 
 				md5

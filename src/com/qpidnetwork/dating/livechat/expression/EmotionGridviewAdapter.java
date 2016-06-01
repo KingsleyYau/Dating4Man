@@ -29,7 +29,6 @@ import com.qpidnetwork.dating.livechat.ChatActivity;
 import com.qpidnetwork.dating.livechat.downloader.EmotionImageDownloader;
 import com.qpidnetwork.dating.livechat.expression.NormalEmotionFragment.OnItemClickCallback;
 import com.qpidnetwork.framework.util.Log;
-import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.request.item.OtherEmotionConfigEmotionItem;
 
 @SuppressLint("InflateParams")
@@ -50,7 +49,6 @@ public class EmotionGridviewAdapter extends BaseAdapter{
 	public EmotionGridviewAdapter(Context context, List<OtherEmotionConfigEmotionItem> emotionList, GridView gridView, OnItemClickCallback callback){
 		mContext = context;
 		mEmotionList = emotionList;
-		LiveChatManager.newInstance(null);
 		this.gridView = gridView;
 		this.gridView.setClickable(true);
 		this.gridView.setLongClickable(true);

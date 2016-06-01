@@ -15,10 +15,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.EMFAttachmentBean;
 import com.qpidnetwork.dating.bean.EMFAttachmentBean.AttachType;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.base.UpdateableAdapter;
 import com.qpidnetwork.manager.VirtualGiftManager;
 import com.qpidnetwork.manager.VirtualGiftManager.OnOnGetVirtualGiftCallback;

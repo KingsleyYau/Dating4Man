@@ -11,11 +11,11 @@
 
 #include <jni.h>
 
-#include "HttpRequestManager.h"
-#include "HttpRequestHostManager.h"
+#include <manrequesthandler/HttpRequestManager.h>
+#include <manrequesthandler/HttpRequestHostManager.h>
 #include "CallbackItemAndroidDef.h"
 
-#include "../common/KSafeMap.h"
+#include <common/KSafeMap.h>
 
 #include <string>
 #include <list>

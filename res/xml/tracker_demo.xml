@@ -3,8 +3,12 @@
 tools:ignore="TypographyDashes">
   	<integer name="ga_sessionTimeout">1800</integer>
 
-    <bool name="ga_autoActivityTracking">true</bool>
+  	<!-- 
+    <bool name="ga_autoActivityTracking">false</bool>
+     -->
     <bool name="ga_reportUncaughtExceptions">true</bool>
+    
+    <int name="ga_dispatchPeriod">5</int>
 
     <!-- The screen names that will appear in reports -->
     <!--

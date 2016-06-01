@@ -1,6 +1,7 @@
 package com.qpidnetwork.livechat.jni;
 
 
+
 /**
  * LiveChat回调接口类
  * @author Samson Fan
@@ -17,12 +18,35 @@ public abstract class LiveChatClientListener {
 		// 服务器返回错误
 		UnbindInterpreter,		// 女士的翻译未将其绑定
 		SideOffile,				// 对方不在线（聊天）
+		DuplicateChat,			// 聊天状态已经建立
 		NoMoney,				// 帐号余额不足
 		InvalidUser,			// 用户不存在（登录）
+		TargetNotExist,			// 目标用户不存在
 		InvalidPassword,		// 密码错误（登录）
+		NoTransOrAgentFound,	// 没有找到翻译或机构
+		NoPermission,			// 没有权限
+		TransInfoChange,		// 翻译信息改变
+		ChatTargetReject,		// 对方拒绝
+		MaxBinding,				// 超过最大连接数
+		CommandReject,			// 请求被拒绝
 		BlockUser,				// 对方为黑名单用户（聊天）
+		IdentifyCode,			// 需要验证码
+		SocketNotExist,			// socket不存在
 		EmotionError,			// 高级表情异常（聊天）
+		FrequencyEmotion,		// 高级表情发送过快（聊天）
+		WarnTimes,				// 严重警告
+		PhotoError,				// 图片异常（聊天）
+		WomanChatLimit,			// 女士聊天上限
+		FrequencyVoice,			// 语音发送过快（聊天）
+		MicVideo,				// 不允许发送视频
 		VoiceError,				// 语音异常（聊天）
+		NoSession,				// session错误
+		FrequencyMagicIcon,		// 小高表发送过快
+		MagicIconError,			// 小高表异常
+		WomanActiveChatLimit,	// 女士发送邀请过快
+		SubjectException,		//主题异常
+		SubjectExistException,  //主题存在异常
+		SubjectNotExistException,//主题不存在异常
 		
 		// 客户端定义的错误
 		ProtocolError,			// 协议解析失败（服务器返回的格式不正确）
@@ -31,8 +55,7 @@ public abstract class LiveChatClientListener {
 		LoginFail,				// 登录失败
 		ServerBreak,			// 服务器踢下线
 		CanNotSetOffline,		// 不能把在线状态设为"离线"，"离线"请使用Logout()
-		
-		
+		NotSupportedFunction,   // 对方不支持该功能
 	};
 	
 	/**
@@ -162,6 +185,19 @@ public abstract class LiveChatClientListener {
 	public void OnSendVoice(int errType, String errmsg, String userId, String voiceId, int ticket) {
 		OnSendVoice(LiveChatErrType.values()[errType], errmsg, userId, voiceId, ticket);
 	}
+	
+	/**
+	 * 发送小高级表情消息回调
+	 * @param errType	处理结果类型
+	 * @param errmsg	处理结果描述
+	 * @param userId	用户ID
+	 * @param magicIconId 小高级表情ID
+	 * @param ticket	票根
+	 */
+	public abstract void OnSendMagicIcon(LiveChatErrType errType, String errmsg, String userId, String magicIconId, int ticket);
+	public void OnSendMagicIcon(int errType, String errmsg, String userId, String magicIconId, int ticket) {
+		OnSendMagicIcon(LiveChatErrType.values()[errType], errmsg, userId, magicIconId, ticket);
+	}
 
 	/**
 	 * 试聊事件定义
@@ -237,9 +273,20 @@ public abstract class LiveChatClientListener {
 	 * @param errmsg	处理结果描述
 	 * @param item		用户信息item
 	 */
-	public abstract void OnGetUserInfo(LiveChatErrType errType, String errmsg, LiveChatTalkUserListItem item);
-	public void OnGetUserInfo(int errType, String errmsg, LiveChatTalkUserListItem item) {
-		OnGetUserInfo(LiveChatErrType.values()[errType], errmsg, item);
+	public abstract void OnGetUserInfo(LiveChatErrType errType, String errmsg, String userId, LiveChatTalkUserListItem item);
+	public void OnGetUserInfo(int errType, String errmsg, String userId, LiveChatTalkUserListItem item) {
+		OnGetUserInfo(LiveChatErrType.values()[errType], errmsg, userId, item);
+	}
+	
+	/**
+	 * 批量获取用户信息
+	 * @param errType	处理结果类型
+	 * @param errmsg	处理结果描述
+	 * @param item		用户信息item
+	 */
+	public abstract void OnGetUsersInfo(LiveChatErrType errType, String errmsg, LiveChatTalkUserListItem[] userInfoList);
+	public void OnGetUsersInfo(int errType, String errmsg, LiveChatTalkUserListItem[] userInfoList) {
+		OnGetUsersInfo(LiveChatErrType.values()[errType], errmsg, userInfoList);
 	}
 	
 	/**
@@ -273,6 +320,83 @@ public abstract class LiveChatClientListener {
 	public abstract void OnGetBlockUsers(LiveChatErrType errType, String errmsg, String[] usersId);
 	public void OnGetBlockUsers(int errType, String errmsg, String[] usersId) {
 		OnGetBlockUsers(LiveChatErrType.values()[errType], errmsg, usersId);
+	}
+	
+	/**
+	 * 获取女士择偶条件回调
+	 * @param condition	女士择偶条件
+	 */
+	public abstract void OnGetLadyCondition(LiveChatErrType errType, String errmsg, String womanId, LiveChatLadyCondition condition);
+	public void OnGetLadyCondition(int errType, String errmsg, String womanId, LiveChatLadyCondition condition) {
+		OnGetLadyCondition(LiveChatErrType.values()[errType], errmsg, womanId, condition);
+	}
+	
+	/**
+	 * 获取女士自定义邀请模板
+	 * @param womanId	女士ID
+	 * @param contents	自定义邀请模板内容
+	 * @param flags		自定义邀请模板是否可用
+	 */
+	public abstract void OnGetLadyCustomTemplate(LiveChatErrType errType, String errmsg, String womanId, String[] contents, boolean[] flags);
+	public void OnGetLadyCustomTemplate(int errType, String errmsg, String womanId, String[] contents, boolean[] flags) {
+		OnGetLadyCustomTemplate(LiveChatErrType.values()[errType], errmsg, womanId, contents, flags);
+	}
+	
+	/**
+	 * 获取指定男/女士的已购主题包
+	 * @param errType
+	 * @param errmsg
+	 * @param userId
+	 * @param paidThemeList
+	 */
+	public abstract void OnGetPaidTheme(LiveChatErrType errType, String errmsg, String userId, LCPaidThemeInfo[] paidThemeList);
+	public void OnGetPaidTheme(int errType, String errmsg, String userId,  LCPaidThemeInfo[] paidThemeList) {
+		OnGetPaidTheme(LiveChatErrType.values()[errType], errmsg, userId, paidThemeList);
+	}
+	
+	/**
+	 * 获取所有已购主题包
+	 * @param errType
+	 * @param errmsg
+	 * @param userId
+	 * @param paidThemeList
+	 */
+	public abstract void OnGetAllPaidTheme(LiveChatErrType errType, String errmsg, LCPaidThemeInfo[] paidThemeList);
+	public void OnGetAllPaidTheme(int errType, String errmsg, LCPaidThemeInfo[] paidThemeList) {
+		OnGetAllPaidTheme(LiveChatErrType.values()[errType], errmsg, paidThemeList);
+	}
+	
+	/**
+	 * 男士购买主题包
+	 * @param errType
+	 * @param errmsg
+	 * @param paidThemeInfo
+	 */
+	public abstract void OnManFeeTheme(LiveChatErrType errType, String womanId, String themeId, String errmsg, LCPaidThemeInfo paidThemeInfo);
+	public void OnManFeeTheme(int errType, String womanId, String themeId, String errmsg, LCPaidThemeInfo paidThemeInfo) {
+		OnManFeeTheme(LiveChatErrType.values()[errType], womanId, themeId, errmsg, paidThemeInfo);
+	}
+	
+	/**
+	 * 男士应用主题包
+	 * @param errType
+	 * @param errmsg
+	 * @param paidThemeInfo
+	 */
+	public abstract void OnManApplyTheme(LiveChatErrType errType, String womanId, String themeId, String errmsg, LCPaidThemeInfo paidThemeInfo);
+	public void OnManApplyTheme(int errType, String womanId, String themeId, String errmsg, LCPaidThemeInfo paidThemeInfo) {
+		OnManApplyTheme(LiveChatErrType.values()[errType], womanId, themeId, errmsg, paidThemeInfo);
+	}
+	
+	/**
+	 * 播放主题包动画
+	 * @param errType
+	 * @param errmsg
+	 * @param paidThemeInfo
+	 */
+	public abstract void OnPlayThemeMotion(LiveChatErrType errType, String errmsg, String womanId, String themeId);
+	public void OnPlayThemeMotion(int errType, String errmsg, String womanId, String themeId) {
+		OnPlayThemeMotion(LiveChatErrType.values()[errType], errmsg, womanId, themeId);
 	}
 	
 	/**
@@ -331,6 +455,22 @@ public abstract class LiveChatClientListener {
 	public abstract void OnRecvVoice(String toId, String fromId, String fromName, String inviteId, boolean charget, TalkMsgType msgType, String voiceId, String fileType, int timeLen);
 	public void OnRecvVoice(String toId, String fromId, String fromName, String inviteId, boolean charget, int msgType, String voiceId, String fileType, int timeLen) {
 		OnRecvVoice(toId, fromId, fromName, inviteId, charget, TalkMsgType.values()[msgType], voiceId, fileType, timeLen);
+	}
+	
+	/**
+	 * 接收小高级表情消息回调
+	 * @param toId		接收者ID
+	 * @param fromId	发送者ID
+	 * @param fromName	发送者用户名
+	 * @param inviteId	邀请ID
+	 * @param charget	是否已付费
+	 * @param ticket	票根
+	 * @param msgType	聊天消息类型
+	 * @param magicIconId 小高级表情ID
+	 */
+	public abstract void OnRecvMagicIcon(String toId, String fromId, String fromName, String inviteId, boolean charget, int ticket, TalkMsgType msgType, String magicIconId);
+	public void OnRecvMagicIcon(String toId, String fromId, String fromName, String inviteId, boolean charget, int ticket, int msgType, String magicIconId) {
+		OnRecvMagicIcon(toId, fromId, fromName, inviteId, charget, ticket, TalkMsgType.values()[msgType], magicIconId);
 	}
 	
 	/**
@@ -476,4 +616,49 @@ public abstract class LiveChatClientListener {
 	public void OnRecvKickOffline(int kickType) {
 		OnRecvKickOffline(KickOfflineType.values()[kickType]);
 	}
+	
+	/**
+	 * 接收自动邀请消息回调
+	 * @param womanId	女士ID
+	 * @param manId		男士ID
+	 * @param key		验证码
+	 */
+	public abstract void OnRecvAutoInviteMsg(String womanId, String manId, String key);
+	
+	/**
+	 * 自动充值状态
+	 */
+	public enum AutoChargeType {
+		Start,	// 开始自动充值
+		End,	// 完成自动充值
+	}
+	/**
+	 * 接收自动充值状态回调 
+	 * @param manId		男士ID
+	 * @param money		当前余额
+	 * @param type		自动充值状态
+	 * @param result	自动充值结果
+	 * @param code		自动充值结果状态码
+	 * @param msg		自动充值结果状态码描述
+	 */
+	public abstract void OnRecvAutoChargeResult(String manId, double money, AutoChargeType type, boolean result, String code, String msg);
+	public void OnRecvAutoChargeResult(String manId, double money, int type, boolean result, String code, String msg) {
+		OnRecvAutoChargeResult(manId, money, AutoChargeType.values()[type], result, code, msg);
+	}
+	
+	/**
+	 * 播放主题包动画通知
+	 * @param themeId
+	 * @param manId
+	 * @param womanId
+	 */
+	public abstract void OnRecvThemeMotion(String themeId, String manId, String womanId);
+	
+	/**
+	 * 女士推荐男士购买主题包通知
+	 * @param themeId
+	 * @param manId
+	 * @param womanId
+	 */
+	public abstract void OnRecvThemeRecommend(String themeId, String manId, String womanId);
 }

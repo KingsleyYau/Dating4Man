@@ -37,6 +37,14 @@
 #define LIVECHAT_RECORD_MUTIPLE_ITEM_CLASS		"com/qpidnetwork/request/item/RecordMutiple"
 #define LIVECHAT_SENDPHOTO_TIME_CLASS			"com/qpidnetwork/request/item/LCSendPhotoItem"
 #define LIVECHAT_LCVIDEO_TIME_CLASS				"com/qpidnetwork/request/item/LCVideoItem"
+#define LIVECHAT_MAGIC_CONFIG_ITEM_CLASS		"com/qpidnetwork/request/item/MagicIconConfig"
+#define LIVECHAT_MAGIC_ICON_TIME_CLASS			"com/qpidnetwork/request/item/MagicIconItem"
+#define LIVECHAT_MAGIC_TYPE_TIME_CLASS			"com/qpidnetwork/request/item/MagicIconType"
+#define LIVECHAT_THEME_CONFIG_CLASS				"com/qpidnetwork/request/item/ThemeConfig"
+#define LIVECHAT_THEME_TYPE_CLASS				"com/qpidnetwork/request/item/ThemeTypeItem"
+#define LIVECHAT_THEME_TAG_CLASS				"com/qpidnetwork/request/item/ThemeTagItem"
+#define LIVECHAT_THEME_ITEM_CLASS				"com/qpidnetwork/request/item/ThemeItem"
+
 
 /* 6.EMF模块 */
 #define EMF_PRIVATEPHOTO_ITEM_CLASS		"com/qpidnetwork/request/item/EMFPrivatePhotoItem"
@@ -87,5 +95,8 @@
 #define TICKET_TICKETLISTITEM_CLASS			"com/qpidnetwork/request/item/TicketListItem"
 #define TICKET_TICKETDETAILITEM_CLASS		"com/qpidnetwork/request/item/TicketDetailItem"
 #define TICKET_TICKETCONTENTITEM_CLASS		"com/qpidnetwork/request/item/TicketContentItem"
+
+/*13. 月费模块*/
+#define MONTHLY_FEE_TIP_CLASS			"com/qpidnetwork/request/item/MonthLyFeeTipItem"
 
 #endif /* CALLBACKITEMANDROIDDEF_H_ */

@@ -2,9 +2,10 @@ package com.qpidnetwork.dating.emf;
 
 import java.io.File;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.bean.ShortVideoBean;
 import com.qpidnetwork.dating.emf.EMFVideoManager.OnEmfVideoDownloadCallback;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsFragmentActivity;
 import com.qpidnetwork.dating.livechat.VideoPlayActivity;
 import com.qpidnetwork.request.OnRequestFileCallback;
 import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
@@ -28,6 +30,7 @@ import com.qpidnetwork.view.MaterialProgressBar;
 import com.qpidnetwork.view.TouchImageView;
 import com.qpidnetwork.view.ViewTools;
 
+@SuppressLint("InflateParams")
 public class EMFAttachmentShortVideoFragment extends IndexFragment implements OnClickListener{
 
 	public static final String SHORT_VIDEO_ITEM = "shortVideoItem";
@@ -36,7 +39,6 @@ public class EMFAttachmentShortVideoFragment extends IndexFragment implements On
 	private static final int SHORT_VIDEO_FEE_CALLBACK = 1;
 	private static final int GET_VIDEO_THUMBPHOTO_CALLBACK = 2; 
 
-	private Handler mHandler = null;
 	private ShortVideoBean shortVideo;
 
 	private TouchImageView imageView;
@@ -106,62 +108,58 @@ public class EMFAttachmentShortVideoFragment extends IndexFragment implements On
 	public void onPageSelected(int arg0) {
 
 	}
-
+	
 	@Override
-	public void InitHandler() {
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				super.handleMessage(msg);
-				RequestBaseResponse response = (RequestBaseResponse) msg.obj;
-				switch (msg.what) {
-				case GET_VIDEO_CALLBACK: {
-					if (!response.isSuccess) {
-						String tips = "";
-						if(TextUtils.isEmpty(response.errmsg)){
-							tips = mContext.getString(R.string.emf_short_video_download_fail);
-						}else{
-							tips = response.errmsg;
-						}
-						Toast.makeText(mContext, tips,
-								Toast.LENGTH_LONG).show();
-					}
-					updateUI();
-					if(response.isSuccess && isFragmentVisible){
-						// 下载成功，且在当前页面直接跳转播放页面
-						String videoPath = mEMFVideoManager.getVideoPath(shortVideo.womanid,
-								shortVideo.sendId, shortVideo.videoId, shortVideo.messageid);
-						String videoThumbPhotoPath = mEMFVideoManager.getVideoThumbPhotoPath(
-								shortVideo.womanid, shortVideo.sendId, shortVideo.videoId,
-								shortVideo.messageid, VideoPhotoType.Big);
-						VideoPlayActivity.launchVideoPlayActivity(mContext,
-								videoThumbPhotoPath, videoPath, true);
-					}
+	protected void handleUiMessage(Message msg) {
+		super.handleUiMessage(msg);
+		RequestBaseResponse response = (RequestBaseResponse) msg.obj;
+		switch (msg.what) {
+		case GET_VIDEO_CALLBACK: {
+			if (!response.isSuccess) {
+				String tips = "";
+				if(TextUtils.isEmpty(response.errmsg)){
+					tips = mContext.getString(R.string.emf_short_video_download_fail);
+				}else{
+					tips = response.errmsg;
 				}
-					break;
-				case GET_VIDEO_THUMBPHOTO_CALLBACK: {
-					if(response.isSuccess){
-						initVideoThumbPhoto(false);
-					}
-				}
-					break;
-				case SHORT_VIDEO_FEE_CALLBACK: {
-					if(response.isSuccess){
-						shortVideo.videoFee = true;
-						((EMFAttachmentPreviewActivity)mContext).updateVideoFeeStatus(shortVideo);
-					}
-				}
-					break;
-				default:
-					break;
-				}
+				Toast.makeText(mContext, tips,
+						Toast.LENGTH_LONG).show();
 			}
-		};
+			updateUI();
+			if(response.isSuccess && isFragmentVisible){
+				// 下载成功，且在当前页面直接跳转播放页面
+				String videoPath = mEMFVideoManager.getVideoPath(shortVideo.womanid,
+						shortVideo.sendId, shortVideo.videoId, shortVideo.messageid);
+				String videoThumbPhotoPath = mEMFVideoManager.getVideoThumbPhotoPath(
+						shortVideo.womanid, shortVideo.sendId, shortVideo.videoId,
+						shortVideo.messageid, VideoPhotoType.Big);
+				VideoPlayActivity.launchVideoPlayActivity(mContext,
+						videoThumbPhotoPath, videoPath, true);
+			}
+		}
+			break;
+		case GET_VIDEO_THUMBPHOTO_CALLBACK: {
+			if(response.isSuccess){
+				initVideoThumbPhoto(false);
+			}
+		}
+			break;
+		case SHORT_VIDEO_FEE_CALLBACK: {
+			if(response.isSuccess){
+				shortVideo.videoFee = true;
+				((EMFAttachmentPreviewActivity)mContext).updateVideoFeeStatus(shortVideo);
+			}
+		}
+			break;
+		default:
+			break;
+		}
 	}
 	
 	/**
 	 * 初始化视频ThumbPhoto缩略图
 	 */
+	@SuppressWarnings("deprecation")
 	private void initVideoThumbPhoto(boolean isDownload){
 		// 视频缩略图相关
 		String loaclPath = mEMFVideoManager.getVideoThumbPhotoPath(
@@ -191,7 +189,7 @@ public class EMFAttachmentShortVideoFragment extends IndexFragment implements On
 						RequestBaseResponse response = new RequestBaseResponse(isSuccess, errno, errmsg, filePath);
 						msg.what = GET_VIDEO_THUMBPHOTO_CALLBACK;
 						msg.obj = response;
-						mHandler.sendMessage(msg);
+						sendUiMessage(msg);
 					}
 				});
 			}
@@ -284,7 +282,7 @@ public class EMFAttachmentShortVideoFragment extends IndexFragment implements On
 									isSuccess, errno, errmsg, videoUrl);
 							msg.what = GET_VIDEO_CALLBACK;
 							msg.obj = response;
-							mHandler.sendMessage(msg);
+							sendUiMessage(msg);
 						}
 						
 						@Override
@@ -295,7 +293,7 @@ public class EMFAttachmentShortVideoFragment extends IndexFragment implements On
 									true, "", "", "");
 							msg.what = SHORT_VIDEO_FEE_CALLBACK;
 							msg.obj = response;
-							mHandler.sendMessage(msg);
+							sendUiMessage(msg);
 						}
 					});
 		}
@@ -320,5 +318,30 @@ public class EMFAttachmentShortVideoFragment extends IndexFragment implements On
 		// TODO Auto-generated method stub
 		super.setUserVisibleHint(isVisibleToUser);
 		isFragmentVisible = isVisibleToUser;
+	}
+	
+	@Override
+	public void onFragmentSelected(int page) 
+	{
+		// 判断是否本页
+		if (getIndex() == page)
+		{
+			// 统计
+			AnalyticsFragmentActivity activity = getAnalyticsFragmentActivity();
+			if (null != activity) {
+				activity.onAnalyticsPageSelected(this, page);
+			}
+		}
+	}
+	
+	private AnalyticsFragmentActivity getAnalyticsFragmentActivity()
+	{
+		AnalyticsFragmentActivity analyticsActivity = null;
+		FragmentActivity activity = getActivity();
+		if (activity instanceof AnalyticsFragmentActivity)
+		{
+			analyticsActivity = (AnalyticsFragmentActivity)getActivity();
+		}
+		return analyticsActivity;
 	}
 }

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingLeft="2dp"
+    android:paddingRight="2dp"
+    android:paddingTop="2dp" >
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cvLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        card_view:cardBackgroundColor="@color/white"
+        card_view:cardCornerRadius="2dp"
+        card_view:cardElevation="1dp"
+        card_view:cardPreventCornerOverlap="false"
+        card_view:cardUseCompatPadding="true" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/touch_feedback_holo_light" >
+
+            <ImageView
+                android:id="@+id/ivImg"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:scaleType="centerCrop"/>
+
+            <TextView
+                android:id="@+id/btnMost"
+                android:layout_width="50dp"
+                android:layout_height="26dp"
+                android:layout_alignLeft="@+id/ivImg"
+                android:layout_marginTop="15dp"
+                android:background="@color/red_light"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold|italic"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/tvDes"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_below="@+id/ivImg"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:textColor="@color/blue_color"
+                android:textSize="14sp" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

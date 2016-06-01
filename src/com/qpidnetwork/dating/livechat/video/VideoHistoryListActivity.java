@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager;
-import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.livechat.VideoPlayActivity;
 import com.qpidnetwork.framework.base.BaseActionBarFragmentActivity;
@@ -105,7 +104,7 @@ public class VideoHistoryListActivity extends BaseActionBarFragmentActivity
 		if (StringUtil.isEmpty(targetId)) {
 			finish();
 		} else {
-			mLiveChatManager = LiveChatManager.newInstance(this);
+			mLiveChatManager = LiveChatManager.getInstance();
 			mLiveChatManager.RegisterVideoListener(this);
 			mVideoHistoryAdapter = new VideoHistoryAdapter(this, targetId);
 			gdVideo.setAdapter(mVideoHistoryAdapter);

@@ -459,7 +459,8 @@ public class QuickMatchMatchesFragment extends Fragment implements OnClickListen
 		        if( Build.VERSION.SDK_INT >= 16 ) {
 		        	imageViewLady.setImageAlpha(255);
 		        } else {
-		        	imageViewLady.setAlpha(255);
+//		        	imageViewLady.setAlpha(255);
+		        	setAlphaForView(imageViewLady, 0f, 1.0f);
 		        }
 		        
 				// 隐藏当前女士静态界面
@@ -478,7 +479,8 @@ public class QuickMatchMatchesFragment extends Fragment implements OnClickListen
 		        if( Build.VERSION.SDK_INT >= 16 ) {
 		        	imageViewLady.setImageAlpha(0);
 		        } else {
-		        	imageViewLady.setAlpha(0);
+//		        	imageViewLady.setAlpha(0);
+		        	setAlphaForView(imageViewLady, 1.0f, 0f);
 		        }
 				// 隐藏女士拖动界面
 //				imageViewLady.setVisibility(View.INVISIBLE);
@@ -547,6 +549,14 @@ public class QuickMatchMatchesFragment extends Fragment implements OnClickListen
 				if( mQuickMatchLadyList == null || mIndex >= mQuickMatchLadyList.size() ) {
 					// 没有女士了
 					imageViewLady.setVisibility(View.INVISIBLE);
+				}else{
+					// 半透隐藏女士拖动界面 
+			        if( Build.VERSION.SDK_INT >= 16 ) {
+			        	imageViewLady.setImageAlpha(0);
+			        } else {
+//			        	imageViewLady.setAlpha(0);
+			        	setAlphaForView(imageViewLady, 1.0f, 0f);
+			        }
 				}
 			}
 		});
@@ -604,5 +614,17 @@ public class QuickMatchMatchesFragment extends Fragment implements OnClickListen
 		mAnimation.cancel();
 		//mAnimation2.cancel();
 		
+	}
+	
+	/**
+	 * 2.3一下兼容实现setAlpha功能
+	 * @param v
+	 * @param alpha
+	 */
+	private void setAlphaForView(View v, float fromAlpha, float toAlpha) {
+		AlphaAnimation animation = new AlphaAnimation(fromAlpha, toAlpha);
+		animation.setDuration(0);
+		animation.setFillAfter(true);
+		v.startAnimation(animation);
 	}
 }

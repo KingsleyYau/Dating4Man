@@ -144,6 +144,7 @@ public class MyProfilePerfence {
 	 * @return				匹配女士item
 	 */
 	public static LadyMatch GetLadyMatch(Context context) {
+//		LadyMatch item = new LadyMatch();
 		LadyMatch item = null;
 		
         try {  
@@ -156,6 +157,10 @@ public class MyProfilePerfence {
         } catch (Exception e) {  
             e.printStackTrace();  
         }  
+        
+        if( item == null ) {
+        	item = new LadyMatch();
+        }
         
 		return item;
 	}

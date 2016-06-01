@@ -7,7 +7,7 @@
  */
 #include "com_qpidnetwork_request_RequestJniAuthorization.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
-#include "RequestAuthorizationController.h"
+#include <manrequesthandler/RequestAuthorizationController.h>
 
 #include <crashhandler/CrashHandler.h>
 
@@ -83,6 +83,7 @@ void onLoginWithFacebook(long requestId, bool success, LoginFacebookItem item, s
 					"Z"
 					"Z"
 					"Z"
+					"I"
 					")V"
 					);
 
@@ -125,7 +126,9 @@ void onLoginWithFacebook(long requestId, bool success, LoginFacebookItem item, s
 						item.ladyprofile,
 						item.livechat,
 						item.admirer,
-						item.bpemf
+						item.bpemf,
+
+						item.rechargeCredit
 						);
 
 				env->DeleteLocalRef(manid);
@@ -557,6 +560,7 @@ void onLogin(long requestId, bool success, LoginItem item, string errnum, string
 					"Z"
 					"Z"
 					"Z"
+					"I"
 					")V"
 					);
 
@@ -598,7 +602,9 @@ void onLogin(long requestId, bool success, LoginItem item, string errnum, string
 						item.ladyprofile,
 						item.livechat,
 						item.admirer,
-						item.bpemf
+						item.bpemf,
+
+						item.rechargeCredit
 						);
 
 				env->DeleteLocalRef(manid);

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,11 +18,12 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.Toast;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.RegisterPasswordActivity.RegisterParam;
 import com.qpidnetwork.dating.profile.MyProfileSelectCountryActivity;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.CompatUtil;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.manager.ConfigManager;
@@ -86,7 +89,7 @@ public class RegisterByEmailActivity extends BaseFragmentActivity
 		// 初始化界面
 		InitView();
 		
-		siteManager = WebSiteManager.newInstance(mContext);
+		siteManager = WebSiteManager.getInstance();
 		if (siteManager != null) appbar.setAppbarBackgroundColor((mContext.getResources().getColor(siteManager.GetWebSite().getSiteColor())));
 		
 		//初始化根据Ip初始化设置
@@ -189,13 +192,30 @@ public class RegisterByEmailActivity extends BaseFragmentActivity
 		mRegisterParam.firstname = editTextFirstName.getText().toString();
 		mRegisterParam.lastname = editTextLastName.getText().toString();
 		
-		if (editTextFirstName.getText().length() < 3){
+		if (editTextFirstName.getText().length() < 1){
 			editTextFirstName.setError(Color.RED, true);
 			return;
 		}
 		
-		if (editTextLastName.getText().length() < 3){
+		if (editTextLastName.getText().length() < 1){
 			editTextLastName.setError(Color.RED, true);
+			return;
+		}
+		
+		String name_compiler = "^[A-Za-z0-9]+$";
+		Pattern _pattern = Pattern.compile(name_compiler);
+		Matcher _matcher = _pattern.matcher(editTextFirstName.getText());
+		
+		if (!_matcher.matches()){
+			editTextFirstName.setError(Color.RED, true);
+			Toast.makeText(this, getString(R.string.register_firstname_format_error), Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
+		_matcher = _pattern.matcher(editTextLastName.getText());
+		if(!_matcher.matches()){
+			editTextLastName.setError(Color.RED, true);
+			Toast.makeText(this, getString(R.string.register_lastname_format_error), Toast.LENGTH_SHORT).show();
 			return;
 		}
 
@@ -233,13 +253,15 @@ public class RegisterByEmailActivity extends BaseFragmentActivity
 		imageViewHeader = (ImageView) findViewById(R.id.imageViewHeader);
 //		buttonCoutinue = (ButtonRaised)findViewById(R.id.buttonCoutinue);
 		
+		String maleText = getString(R.string.man_looking_for_woman);
 		checkButtonMale = (CheckButton) findViewById(R.id.buttonMale);
-		checkButtonMale.SetText("Man looking for woman");
+		checkButtonMale.SetText(maleText);
 		checkButtonMale.SetOnCheckChangeListener(this);
 		checkButtonMale.SetChecked(true);
 		
+		String femaleText = getString(R.string.woman_looking_for_man);
 		checkButtonFemale = (CheckButton) findViewById(R.id.buttonFemale);
-		checkButtonFemale.SetText("Woman looking for man");
+		checkButtonFemale.SetText(femaleText);
 		checkButtonFemale.SetOnCheckChangeListener(this);
 		checkButtonFemale.SetChecked(false);
 		
@@ -392,8 +414,15 @@ public class RegisterByEmailActivity extends BaseFragmentActivity
 	@Override
 	public void OnSecondButtonClick(View v) {
 		// TODO Auto-generated method stub
-		Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
-		startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		try{
+			Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
+			startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		}catch(Exception e){
+			Intent intent = new Intent();
+			intent.setType("image/*");
+			intent.setAction(Intent.ACTION_GET_CONTENT);
+			startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		}
 	}
 
 	@Override

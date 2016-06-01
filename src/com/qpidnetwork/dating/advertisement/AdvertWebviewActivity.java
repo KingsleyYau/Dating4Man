@@ -20,6 +20,7 @@ import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.item.AdMainAdvert.OpenType;
+import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.MaterialAppBar;
 
 @SuppressWarnings("deprecation")
@@ -37,6 +38,12 @@ public class AdvertWebviewActivity extends BaseFragmentActivity
 	private String mTitle = "";
 	private OpenType mOpenType = OpenType.UNKNOW;
 	private MaterialAppBar appbar;
+	
+	//error page
+	private View errorPage;
+	private ButtonRaised btnErrorRetry;
+	
+	private boolean isLoadError = false;
 	
 	public static Intent getIntent(Context context, String url, OpenType openType){
 		Intent intent = new Intent(context, AdvertWebviewActivity.class);
@@ -86,7 +93,7 @@ public class AdvertWebviewActivity extends BaseFragmentActivity
 		mWebView = (WebView) findViewById(R.id.webView);
 
 		// 域名
-		String domain = WebSiteManager.newInstance(this).GetWebSite().getAppSiteHost();
+		String domain = WebSiteManager.getInstance().GetWebSite().getAppSiteHost();
 		// Cookie 认证
 		CookieSyncManager.createInstance(this);
 		CookieManager cookieManager = CookieManager.getInstance();
@@ -107,7 +114,10 @@ public class AdvertWebviewActivity extends BaseFragmentActivity
 			public void onPageFinished(WebView view, String url) {
 				// TODO Auto-generated method stub
 				super.onPageFinished(view, url);
-				hideProgressDialog();
+				if((!isLoadError)){
+					errorPage.setVisibility(View.GONE);
+				}
+				hideProgressDialogIgnoreCount();
 			}
 			
 		    @Override  
@@ -131,6 +141,14 @@ public class AdvertWebviewActivity extends BaseFragmentActivity
 			        handler.cancel();
 				}
 		    }
+			
+			@Override
+			public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+				//普通页面错误
+				isLoadError = true;
+				errorPage.setVisibility(View.VISIBLE);
+			};
+			
 		}); 
 		
 		appbar = (MaterialAppBar)findViewById(R.id.appbar);
@@ -139,6 +157,13 @@ public class AdvertWebviewActivity extends BaseFragmentActivity
 		appbar.addButtonToLeft(R.id.common_button_back, "", R.drawable.ic_close_grey600_24dp);
 		appbar.setTitle("Redirecting...", getResources().getColor(R.color.text_color_dark));
 		appbar.setOnButtonClickListener(this);
+		
+		//error page
+		errorPage = (View)findViewById(R.id.errorPage);
+		btnErrorRetry = (ButtonRaised)findViewById(R.id.btnErrorRetry);
+		btnErrorRetry.setButtonTitle(getString(R.string.common_btn_tapRetry));
+		btnErrorRetry.setOnClickListener(this);
+		btnErrorRetry.requestFocus();
 	}
 	
 	@Override
@@ -169,6 +194,27 @@ public class AdvertWebviewActivity extends BaseFragmentActivity
 				finish();
 			}
 		}break;
+		case R.id.btnErrorRetry:{
+//			errorPage.setVisibility(View.GONE);
+			isLoadError = false;
+			mWebView.reload();
+		}break;
+		}
+	}
+	
+	/**
+	 * 忽视计数器直接隐藏progressDialog
+	 */
+	public void hideProgressDialogIgnoreCount(){
+		try {
+			if( mProgressDialogCount > 0 ) {
+				mProgressDialogCount = 0;
+				if( progressDialog != null ) {
+					progressDialog.dismiss();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

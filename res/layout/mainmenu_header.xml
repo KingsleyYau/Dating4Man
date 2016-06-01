@@ -1,145 +1,163 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:circleimage = "http://schemas.android.com/apk/res/com.qpidnetwork.dating"
+    xmlns:circleimage="http://schemas.android.com/apk/res/com.qpidnetwork.dating"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-    
+    android:orientation="vertical" >
+
     <FrameLayout
-        android:id="@+id/llPhotoName" 
+        android:id="@+id/llPhotoName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="160dp">
-    
-        
-    <LinearLayout
-	    android:layout_height="match_parent"
-	    android:layout_width="match_parent"
-	    android:orientation="vertical"
-	    android:background="@drawable/default_profile_photo_bg"/>
-    
-    <LinearLayout
-        android:id="@+id/layoutPhotoName" 
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:orientation="vertical"
-	    android:gravity="left|center"
-	    android:background="@drawable/touch_feedback_grey"
-	    android:clickable="true"
-	    android:paddingTop="16dp"
-	    android:paddingRight="16dp"
-	    android:paddingLeft="16dp"
-	    android:paddingBottom="8dp">
-	    
-        <LinearLayout android:id="@+id/top_button_bar"
+        android:minHeight="160dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/default_profile_photo_bg"
+            android:orientation="vertical" />
+
+        <LinearLayout
+            android:id="@+id/layoutPhotoName"
             android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:gravity="right|top"
-            android:layout_weight="1">
-            
-            <ImageButton android:layout_width="36dp"
-                android:id="@+id/imageButtonHelp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_help_white_24dp"
-                android:background="@drawable/touch_feedback_holo_dark_round_rectangle"
-                android:layout_marginRight="8dp"/>
-            
-            <ImageButton
-                android:id="@+id/imageButtonSetting" 
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_settings_white_24dp"
-                android:background="@drawable/touch_feedback_holo_dark_round_rectangle"/>
-            
-        </LinearLayout>
-        
-        <LinearLayout android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:gravity="left|center"
-            android:layout_weight="0">
-            
-            <com.qpidnetwork.framework.widget.CircleImageView
-	        android:id="@+id/ivPhoto"
-	        android:layout_width="64dp"
-	        android:layout_height="64dp"
-	        circleimage:border_width="@dimen/menu_photo_border"
-	        circleimage:border_color="#FFFFFF"
-	        android:src="@drawable/default_photo_64dp"/>
-	
-	    <TextView
-	        style="@style/menu_username_textview"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:id="@+id/tvUsername"
-	        android:text="Login"
-	        android:minWidth="64dp"
-	        android:gravity="left"
-	        android:padding="16dp"/>
-       </LinearLayout>
-       
-                <LinearLayout
-                    android:id="@+id/layoutChangeWebsite" 
-                    android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_weight="0"
-            android:layout_marginTop="8dp"
-            android:padding="4dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/touch_feedback_grey"
             android:clickable="true"
-            android:background="@drawable/touch_feedback_holo_dark_round_rectangle">
-                    
-            <TextView 
-		        style="@style/menu_desc_textview"
-		        android:id="@+id/tvCurrentSite"
-		        android:text="CharmDate.com"
-		        android:textColor="#FFFFFF"
-		        android:layout_gravity="left|center"
-		        android:layout_width="match_parent"
-		        android:layout_weight="1"/>
-            
-            <ImageView android:layout_alignParentRight="true"
-                android:layout_height="24dp"
-                android:layout_width="24dp"
-                android:src="@drawable/ic_arrow_drop_down_white_24dp"/>
-            
-            
+            android:gravity="left|center"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp" >
 
-		    
+            <LinearLayout
+                android:id="@+id/top_button_bar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="right|top"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:id="@+id/imageButtonHelp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/touch_feedback_holo_dark_round_rectangle"
+                    android:src="@drawable/ic_help_white_24dp" />
+
+                <ImageButton
+                    android:id="@+id/imageButtonSetting"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/touch_feedback_holo_dark_round_rectangle"
+                    android:src="@drawable/ic_settings_white_24dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:gravity="left|center"
+                android:orientation="horizontal" >
+
+                <com.qpidnetwork.framework.widget.CircleImageView
+                    android:id="@+id/ivPhoto"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/default_photo_64dp"
+                    circleimage:border_color="#FFFFFF"
+                    circleimage:border_width="@dimen/menu_photo_border" />
+				<LinearLayout 
+				    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="16dp">
+	                <TextView
+	                    android:id="@+id/tvUsername"
+	                    style="@style/menu_username_textview"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:gravity="left"
+	                    android:minWidth="64dp"
+	                    android:text="Login" />
+	                <include 
+	                    android:id="@+id/monthlyNoPaid"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    layout="@layout/sector_monthly_nopaid"
+	                    android:layout_marginTop="4dp"
+	                    android:visibility="gone"/>
+	                <include 
+	                    android:id="@+id/monthlyPaid"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    layout="@layout/sector_monthly_paid"
+	                    android:layout_marginTop="4dp"
+	                    android:visibility="gone"/>
                 </LinearLayout>
-        
-	    
-	</LinearLayout>
-	
-	
-    </FrameLayout>
-    
-    <!-- credit balance -->
-	<RelativeLayout 
-	    android:layout_width="match_parent"
-	    android:layout_height="@dimen/menu_credit_height"
-	    android:gravity="center_vertical" 
-	    android:id="@+id/rlCredit"
-	    android:clickable="true"
-	    android:background="@drawable/touch_feedback_holo_light">
-    	<TextView 
-	        style="@style/menu_desc_textview"
-	        android:text="@string/menu_credit"
-	        android:layout_marginLeft="@dimen/menu_normal_marginleft"/>
-    	<TextView 
-	        style="@style/menu_tips_textview"
-	        android:paddingLeft="8dp"
-	        android:paddingRight="8dp"
-	        android:paddingTop="4dp"
-	        android:paddingBottom="4dp"
-	        android:background="@drawable/gray_stroke_rect"
-	        android:layout_alignParentRight="true"
-	        android:layout_marginRight="@dimen/menu_normal_marginright"
-	        android:id="@+id/tvCredit"
-	        android:text="0.00"/>
-	</RelativeLayout>
-	
-	
-	
+            </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="0"
+                android:background="@drawable/rectangle_rounded_angle_48ffffff_bg" >
+
+                <LinearLayout
+                    android:id="@+id/layoutChangeWebsite"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/touch_feedback_holo_dark_round_rectangle"
+                    android:clickable="true"
+                    android:padding="4dp" >
+
+                    <TextView
+                        android:id="@+id/tvCurrentSite"
+                        style="@style/menu_desc_textview"
+                        android:layout_width="match_parent"
+                        android:layout_gravity="left|center"
+                        android:layout_marginLeft="6dp"
+                        android:layout_weight="1"
+                        android:text="CharmDate.com"
+                        android:textColor="#FFFFFF" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/ic_arrow_drop_down_white_24dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- credit balance -->
+
+    <RelativeLayout
+        android:id="@+id/rlCredit"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_credit_height"
+        android:background="@drawable/touch_feedback_holo_light"
+        android:clickable="true"
+        android:gravity="center_vertical" >
+
+        <TextView
+            style="@style/menu_desc_textview"
+            android:layout_marginLeft="@dimen/menu_normal_marginleft"
+            android:text="@string/menu_credit" />
+
+        <TextView
+            android:id="@+id/tvCredit"
+            style="@style/menu_tips_textview"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/menu_normal_marginright"
+            android:background="@drawable/gray_stroke_rect"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp"
+            android:text="0.00" />
+    </RelativeLayout>
 
 </LinearLayout>

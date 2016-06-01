@@ -14,6 +14,7 @@ public class OtherSynConfigPublicItem {
 	 * @param apkVerName		客户端显示版本号
 	 * @param apkForceUpdate	是否强制更新
 	 * @param facebook_enable   是否开通facebook登录
+	 * @param chatscene_enable  是否开通聊天主题功能
 	 * @param apkFileVerify		安装包文件校验码
 	 * @param url				安装包下载URL
 	 * @param storeUrl			store url
@@ -28,6 +29,7 @@ public class OtherSynConfigPublicItem {
 			String apkVerName,
 			boolean apkForceUpdate,
 			boolean facebook_enable,
+			boolean chatscene_enable,
 			String apkFileVerify,
 			String url,
 			String storeUrl,
@@ -42,6 +44,7 @@ public class OtherSynConfigPublicItem {
 		this.apkVerName = apkVerName;
 		this.apkForceUpdate = apkForceUpdate;
 		this.facebook_enable = facebook_enable;
+		this.chatscene_enable = chatscene_enable;
 		this.apkFileVerify = apkFileVerify;
 		this.url = url;
 		this.storeUrl = storeUrl;
@@ -61,6 +64,7 @@ public class OtherSynConfigPublicItem {
 	public String apkVerName;
 	public boolean apkForceUpdate;
 	public boolean facebook_enable;
+	public boolean chatscene_enable;
 	public String apkFileVerify;
 	public String url;
 	public String storeUrl;

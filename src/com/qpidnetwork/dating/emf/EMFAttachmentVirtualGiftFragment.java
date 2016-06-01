@@ -13,7 +13,6 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -28,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.tool.FileDownloader;
 import com.qpidnetwork.tool.FileDownloader.FileDownloaderCallback;
@@ -84,7 +84,6 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment
 	 */
 	private String videoUrl = "";
 	private String videoLocalPath = "";
-	private Handler mHandler = null;
 	private FileDownloader mFileDownloader;
 	
 	/**
@@ -148,9 +147,7 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment
         progressBar.setVisibility(View.GONE);
         
         rootView = view;
-        
         UpdateView();
-        
         return view;
     }
     
@@ -159,6 +156,7 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment
     	// TODO Auto-generated method stub
     	super.onAttach(activity);
     	mFileDownloader = new FileDownloader(mContext);
+    	ReloadData();
     }
     
     /**
@@ -213,7 +211,11 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment
     	this.videoUrl = videoUrl;
     	this.videoLocalPath = videoLocalPath;
     	
-    	// 加载视频
+    	ReloadData();
+    }
+
+    public void ReloadData() {
+       	// 加载视频
 		File file = new File(videoLocalPath);
 		if( file.exists() && file.isFile() ) {
 			// 已经缓存过
@@ -237,7 +239,7 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment
 						Message msg = Message.obtain();
 						msg.what = DownLoadFlag.SUCCESS.ordinal();
 						msg.obj = videoLocalPath;
-						mHandler.sendMessage(msg);
+						sendUiMessage(msg);
 					}
 					
 					@Override
@@ -246,7 +248,7 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment
 						// 下载失败显示X
 						Message msg = Message.obtain();
 						msg.what = DownLoadFlag.FAIL.ordinal();
-						mHandler.sendMessage(msg);
+						sendUiMessage(msg);
 					}
 				});
 			}
@@ -255,7 +257,7 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment
 		// 刷新界面
     	UpdateView();
     }
-
+    
     /**
      * 停止播放
      */
@@ -400,42 +402,37 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment
 		getActivity().setResult(Activity.RESULT_OK, intent);
 		getActivity().finish();
 	}
-
+	
 	@Override
-	public void InitHandler() {
-		// TODO Auto-generated method stub
-        mHandler = new Handler() {
-			@Override
-            public void handleMessage(Message msg) {
-				DownLoadFlag flag = DownLoadFlag.values()[msg.what];
-				switch (flag) {
-				case SUCCESS: {
-					// 下载成功播放
-					if( progressBar != null ) {
-						progressBar.setVisibility(View.GONE);
-					} 
-					
-					if( mNeedPlay ) {
-						Play();
-					} else {
-						if( buttonPlay != null ) {
-							buttonPlay.setVisibility(View.VISIBLE);
-						}
-					}
-				}break;
-				case FAIL:{
-					if( progressBar != null ) {
-						progressBar.setVisibility(View.GONE);
-					} 
-					
-					if( buttonPlay != null ) {
-						buttonPlay.setVisibility(View.VISIBLE);
-					}
-				}break;
-				default:break;
+	protected void handleUiMessage(Message msg) {
+		super.handleUiMessage(msg);
+		DownLoadFlag flag = DownLoadFlag.values()[msg.what];
+		switch (flag) {
+		case SUCCESS: {
+			// 下载成功播放
+			if( progressBar != null ) {
+				progressBar.setVisibility(View.GONE);
+			} 
+			
+			if( mNeedPlay ) {
+				Play();
+			} else {
+				if( buttonPlay != null ) {
+					buttonPlay.setVisibility(View.VISIBLE);
 				}
 			}
-        };
+		}break;
+		case FAIL:{
+			if( progressBar != null ) {
+				progressBar.setVisibility(View.GONE);
+			} 
+			
+			if( buttonPlay != null ) {
+				buttonPlay.setVisibility(View.VISIBLE);
+			}
+		}break;
+		default:break;
+		}
 	}
 
 	@Override
@@ -563,7 +560,7 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment
 		Message msg = Message.obtain();
 		msg.what = DownLoadFlag.SUCCESS.ordinal();
 		msg.obj = videoLocalPath;
-		mHandler.sendMessage(msg);
+		sendUiMessage(msg);
 	}
 
 	@Override
@@ -572,12 +569,36 @@ public class EMFAttachmentVirtualGiftFragment extends IndexFragment
 		// 下载失败
 		Message msg = Message.obtain();
 		msg.what = DownLoadFlag.FAIL.ordinal();
-		mHandler.sendMessage(msg);
+		sendUiMessage(msg);
 	}
 
 	@Override
 	public void onUpdate(FileDownloader loader, int progress) {
 		// TODO Auto-generated method stub
 		// 下载中 
+	}
+	
+	@Override
+	public void onFragmentSelected(int page) 
+	{
+		// 判断是否本页
+		if (getIndex() == page)
+		{
+			// 统计
+			AnalyticsFragmentActivity activity = getAnalyticsFragmentActivity();
+			if (null != activity) {
+				activity.onAnalyticsPageSelected(this, page);
+			}
+		}
+	}
+	
+	private AnalyticsFragmentActivity getAnalyticsFragmentActivity()
+	{
+		AnalyticsFragmentActivity activity = null;
+		if (getActivity() instanceof AnalyticsFragmentActivity)
+		{
+			activity = (AnalyticsFragmentActivity)getActivity();
+		}
+		return activity;
 	}
 }

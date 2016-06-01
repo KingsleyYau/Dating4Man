@@ -1,21 +1,14 @@
 package com.qpidnetwork.dating.livechat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
-import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsFragmentActivity;
 import com.qpidnetwork.dating.livechat.downloader.LivechatPrivatePhotoDownloader;
 import com.qpidnetwork.dating.livechat.downloader.LivechatPrivatePhotoDownloader.OnDownloadCallback;
 import com.qpidnetwork.framework.base.BaseFragment;
 import com.qpidnetwork.framework.util.ImageUtil;
-import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.util.SystemUtil;
 import com.qpidnetwork.livechat.LCMessageItem;
@@ -112,7 +105,7 @@ public class PrivatePhotoPreviewFragment extends BaseFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
-		mLiveChatManager = LiveChatManager.newInstance(getActivity());
+		mLiveChatManager = LiveChatManager.getInstance();
 		Bundle bundle = getArguments();
 		if ((bundle != null) && (bundle.containsKey(LIVE_CHAT_MESSAGE_ITEM))) {
 			LCMessageItem tempItem = (LCMessageItem) bundle
@@ -184,8 +177,9 @@ public class PrivatePhotoPreviewFragment extends BaseFragment implements
 		
 		/** Set private photo price **/
 		if( textViewTips != null ) {
+			double credit = 1.5;
     		String format = getResources().getString(R.string.emf_private_photo_tips);
-    		textViewTips.setText(String.format(format, 1));
+    		textViewTips.setText(String.format(format, credit));
     	}
 		
 		if (mMsgItem.getPhotoItem().charge) {
@@ -484,5 +478,24 @@ public class PrivatePhotoPreviewFragment extends BaseFragment implements
 	public void OnRecvPhoto(LCMessageItem item) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public void onFragmentSelected(int page) {
+		// 统计
+		AnalyticsFragmentActivity activity = getAnalyticsFragmentActivity();
+		if (null != activity) {
+			activity.onAnalyticsPageSelected(this, page);
+		}
+	}
+	
+	private AnalyticsFragmentActivity getAnalyticsFragmentActivity()
+	{
+		AnalyticsFragmentActivity activity = null;
+		if (getActivity() instanceof AnalyticsFragmentActivity)
+		{
+			activity = (AnalyticsFragmentActivity)getActivity();
+		}
+		return activity;
 	}
 }

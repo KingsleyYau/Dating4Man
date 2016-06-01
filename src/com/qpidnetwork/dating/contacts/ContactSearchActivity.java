@@ -149,8 +149,11 @@ public class ContactSearchActivity extends BaseFragmentActivity implements OnEdi
 		if((key == null) ||(key.equals(""))){
 			return;
 		}
-		
-		adapter.replaceList(ContactManager.getInstance().getContactsByIdOrName(key));
+		onSearch(key);
+	}
+	
+	private void onSearch(String filter){
+		adapter.replaceList(ContactManager.getInstance().getContactsByIdOrName(filter));
 		lvContainer.setVisibility(View.VISIBLE);
 		llLabelContainer.setVisibility(View.GONE);
 	}
@@ -179,9 +182,7 @@ public class ContactSearchActivity extends BaseFragmentActivity implements OnEdi
 			lvContainer.setVisibility(View.GONE);
 			llLabelContainer.setVisibility(View.VISIBLE);
 		}else{
-			adapter.replaceList(ContactManager.getInstance().getContactsByIdOrName(s.toString()));
-			lvContainer.setVisibility(View.VISIBLE);
-			llLabelContainer.setVisibility(View.GONE);
+			onSearch(s.toString());
 		}
 	}
 

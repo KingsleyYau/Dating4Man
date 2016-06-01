@@ -33,7 +33,7 @@ public class LivechatVoiceDownloader implements LiveChatManagerVoiceListener{
 	
 	public LivechatVoiceDownloader(Context context) {
 		mContext = context;
-		mLiveChatManager = LiveChatManager.newInstance(null);
+		mLiveChatManager = LiveChatManager.getInstance();
 	}
 
 	public void downloadAndPlayVoice(MaterialProgressBar pbDownload,

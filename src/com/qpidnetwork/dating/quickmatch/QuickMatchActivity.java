@@ -5,14 +5,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.framework.base.BaseTabbarTitleFragmentActivity;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.view.TitleTabBar;
-import com.qpidnetwork.view.TitleTabBar.TitleTabBarListener;
 
 
 /**
@@ -20,7 +18,7 @@ import com.qpidnetwork.view.TitleTabBar.TitleTabBarListener;
  * 主界面
  * @author Max.Chiu
  */
-public class QuickMatchActivity extends BaseTabbarTitleFragmentActivity implements OnPageChangeListener, TitleTabBarListener {
+public class QuickMatchActivity extends BaseTabbarTitleFragmentActivity {
 
 	/**
 	 * 分页适配器
@@ -66,6 +64,10 @@ public class QuickMatchActivity extends BaseTabbarTitleFragmentActivity implemen
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// 统计设置为page activity
+		SetPageActivity(true);
+		
 		this.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(WebSiteManager.getInstance().GetWebSite().getSiteColor())));
 		
 		TitleTabBar tabBar = getTitleTabBar();
@@ -109,17 +111,18 @@ public class QuickMatchActivity extends BaseTabbarTitleFragmentActivity implemen
 	public void onPageSelected(int arg0) {
 		// TODO Auto-generated method stub
 		super.onPageSelected(arg0);
-		//mTitleTabBar.SelectTab(arg0); 
-		if( arg0 == 1 )
+		if( arg0 == 1 ) {
 			QuickMatchLikeFragment.newInstance().LoadData(false);
+		}
 	}
 
 	@Override
 	public void onTabSelected(int index) {
 		// TODO Auto-generated method stub
-		getViewPagerContainer().setCurrentItem(index, true);
-		if( index == 1 )
-			QuickMatchLikeFragment.newInstance().LoadData(false);
+		super.onTabSelected(index);
+		
+		// 统计切换页
+		onAnalyticsPageSelected(index);
 	}
 	
 	/**

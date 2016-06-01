@@ -1,9 +1,9 @@
 package com.qpidnetwork.dating.bean;
 
-import com.qpidnetwork.request.item.EMFShortVideoItem;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.qpidnetwork.request.item.EMFShortVideoItem;
 
 public class ShortVideoBean extends EMFShortVideoItem implements Parcelable{
 

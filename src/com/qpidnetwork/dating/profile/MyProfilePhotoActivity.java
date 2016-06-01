@@ -13,7 +13,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.view.View;
@@ -23,9 +22,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.CompatUtil;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.util.UnitConversion;
@@ -141,8 +140,15 @@ public class MyProfilePhotoActivity extends BaseFragmentActivity implements Mate
 	@Override
 	public void OnSecondButtonClick(View v) {
 		// TODO Auto-generated method stub
-		Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
-		startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		try{
+			Intent intent = CompatUtil.getSelectPhotoFromAlumIntent();
+			startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		}catch(Exception e){
+			Intent intent = new Intent();
+			intent.setType("image/*");
+			intent.setAction(Intent.ACTION_GET_CONTENT);
+			startActivityForResult(intent, RESULT_LOAD_IMAGE_ALBUMN);
+		}
 	}
 	
 	@Override

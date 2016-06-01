@@ -2,7 +2,9 @@ package com.qpidnetwork.dating.livechat.invite;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -15,27 +17,30 @@ import android.widget.TextView;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.contacts.ContactManager;
 import com.qpidnetwork.dating.contacts.OnNewInviteUpdateCallback;
-import com.qpidnetwork.dating.lady.LadyDetailManager;
-import com.qpidnetwork.dating.lady.LadyDetailManager.OnLadyDetailManagerQueryLadyDetailCallback;
 import com.qpidnetwork.framework.base.BaseActionBarFragmentActivity;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.framework.widget.CircleImageView;
 import com.qpidnetwork.livechat.LCMessageItem;
 import com.qpidnetwork.livechat.LCUserItem;
 import com.qpidnetwork.livechat.LiveChatManager;
+import com.qpidnetwork.livechat.LiveChatManagerOtherListener;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.KickOfflineType;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
+import com.qpidnetwork.livechat.jni.LiveChatClientListener.TalkEmfNoticeType;
+import com.qpidnetwork.livechat.jni.LiveChatTalkUserListItem;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.manager.WebSiteManager;
-import com.qpidnetwork.request.item.LadyDetail;
 import com.qpidnetwork.tool.ImageViewLoader;
 
-public class LivechatInviteListActivity extends BaseActionBarFragmentActivity implements OnNewInviteUpdateCallback{
+public class LivechatInviteListActivity extends BaseActionBarFragmentActivity implements OnNewInviteUpdateCallback,
+							LiveChatManagerOtherListener{
 	
 	private static final int TARGET_PHOTO_UPDATE = 0;
 	private static final int NEW_INVITE_UPDATE = 1;
 
 	private ListView lvContainer;
 	private List<InviteItem> mInviteList;
-	private HashMap<String, InviteItem> mCurrInviteMap;//存储所有当前出现过得邀请信息，方便找回
+	private HashMap<String, InviteItem> mCurrInviteMap;//存储所有当前邀请列表需要获取详情更新的对象列表
 	private LivechatInviteAdapter mAdapter;
 	
 	private LiveChatManager mLiveChatManager;
@@ -58,7 +63,8 @@ public class LivechatInviteListActivity extends BaseActionBarFragmentActivity im
 		/*title*/
 		getCustomActionBar().setTitle(getResources().getString(R.string.livechat_lady_invite_title), Color.WHITE);
 		
-		mLiveChatManager = LiveChatManager.newInstance(this);
+		mLiveChatManager = LiveChatManager.getInstance();
+		mLiveChatManager.RegisterOtherListener(this);
 		mContactManager = ContactManager.getInstance();
 		mContactManager.registerInviteUpdate(this);
 		
@@ -67,7 +73,7 @@ public class LivechatInviteListActivity extends BaseActionBarFragmentActivity im
 		mAdapter = new LivechatInviteAdapter(this, mInviteList);
 		lvContainer.setAdapter(mAdapter);
 		
-		siteManager = WebSiteManager.newInstance(this);
+		siteManager = WebSiteManager.getInstance();
 		if (siteManager != null) getCustomActionBar().setAppbarBackgroundColor((this.getResources().getColor(siteManager.GetWebSite().getSiteColor())));
 		
 		updateListData();
@@ -77,28 +83,50 @@ public class LivechatInviteListActivity extends BaseActionBarFragmentActivity im
 	 * 有新邀请更新数据
 	 */
 	private void updateListData(){
-		List<LCUserItem> inviteList = mLiveChatManager.GetInviteUsers();
+		List<LCUserItem> allInviteList = mLiveChatManager.GetInviteUsers();
+		//处理最多只显示最近99条
+		List<LCUserItem> inviteList = new ArrayList<LCUserItem>();
+		int inviteLength = allInviteList.size() >=100 ? 99:allInviteList.size();
+		for(int i=0; i<inviteLength; i++){
+			inviteList.add(allInviteList.get(i));
+		}
 		mInviteList.clear();
+		mCurrInviteMap.clear();
 		if(inviteList != null){
 			for(LCUserItem item : inviteList){
-				if(mCurrInviteMap.containsKey(item.userId)){
-					mInviteList.add(mCurrInviteMap.get(item.userId));
-				}else{
-					InviteItem inviteItem = new InviteItem();
-					inviteItem.userId = item.userId;
-					inviteItem.username = item.userName;
-					/*获取详细信息*/
-					QueryLadyDetail(item.userId);
-					mCurrInviteMap.put(item.userId, inviteItem);
-					mInviteList.add(inviteItem);
-				}
-				
+				LiveChatTalkUserListItem ladyInfo = mLiveChatManager.GetLadyInfoById(item.userId);
+				InviteItem inviteItem = new InviteItem();
+				inviteItem.userId = item.userId;
+				inviteItem.username = item.userName;
 				/*提示消息内容*/
 				LCMessageItem lastMsg = item.getTheOtherLastMessage();
-				if (lastMsg != null){
-					mCurrInviteMap.get(item.userId).msgDesc = mContactManager.generateMsgHint(lastMsg);
-				} 
+				inviteItem.msgDesc = mContactManager.generateMsgHint(lastMsg);
+				if(ladyInfo != null){
+					inviteItem.photoUrl = ladyInfo.imgUrl;
+				}else{
+					mCurrInviteMap.put(item.userId, inviteItem);
+				}
+				mInviteList.add(inviteItem); 
 			}
+			/*10个分组获取女士详情更新*/
+			List<String> userIdList = new ArrayList<String>();
+			Set<String> set = mCurrInviteMap.keySet();
+			int i = 0;
+			for(Iterator<String> iter = set.iterator(); iter.hasNext();)
+			{
+				String key = (String)iter.next();
+				userIdList.add(key);
+				i++;
+				if(i>=10){
+					mLiveChatManager.GetUsersInfo((String[])userIdList.toArray(new String[userIdList.size()]));
+					userIdList.clear();
+					i=0;
+				}
+			}
+			if(userIdList.size() > 0 ){
+				mLiveChatManager.GetUsersInfo((String[])userIdList.toArray(new String[userIdList.size()]));
+			}
+			
 		}
 		/*更新界面*/
 		mAdapter.notifyDataSetChanged();
@@ -110,10 +138,14 @@ public class LivechatInviteListActivity extends BaseActionBarFragmentActivity im
 		// TODO Auto-generated method stub
 		super.handleUiMessage(msg);
 		switch (msg.what) {
-		case TARGET_PHOTO_UPDATE:
-			LadyDetail item = (LadyDetail)msg.obj;
-			updateListView(item);
-			break;
+		case TARGET_PHOTO_UPDATE:{
+			LiveChatTalkUserListItem[] itemArray = (LiveChatTalkUserListItem[])msg.obj;
+			if(itemArray != null){
+				for(LiveChatTalkUserListItem item : itemArray){
+					updateListView(item);
+				}
+			}
+		}break;
 		case NEW_INVITE_UPDATE:
 			updateListData();
 			break;
@@ -126,15 +158,18 @@ public class LivechatInviteListActivity extends BaseActionBarFragmentActivity im
 	 * 获取女士详情返回
 	 * @param item
 	 */
-	private void updateListView(LadyDetail item){
+	private void updateListView(LiveChatTalkUserListItem item){
 		int mPosition = -1; //当前更新数据的位置
 		/*更新数据*/
 		if(mInviteList!=null){
 			for(int i=0; i<mInviteList.size(); i++){
 				InviteItem inviteItem = mInviteList.get(i);
-				if(inviteItem.userId.equals(item.womanid)){
-					inviteItem.username = item.firstname;
-					inviteItem.photoUrl = item.photoMinURL;
+				if(inviteItem.userId.equals(item.userId)){
+					//更新用户名称，防止自动邀请时用户名未更新
+					mLiveChatManager.GetUserWithId(inviteItem.userId).userName = item.userName;
+					
+					inviteItem.username = item.userName;
+					inviteItem.photoUrl = item.imgUrl;
 					mPosition = i;
 				}
 			}
@@ -143,39 +178,18 @@ public class LivechatInviteListActivity extends BaseActionBarFragmentActivity im
 		/*更新单个Item*/
 		 View childAt = lvContainer.getChildAt(mPosition - lvContainer.getFirstVisiblePosition());
          if(childAt != null){
-        	 if(!StringUtil.isEmpty(item.firstname)){
-        		 ((TextView) childAt.findViewById(R.id.tvName)).setText(item.firstname);
+        	 if(!StringUtil.isEmpty(item.userName)){
+        		 ((TextView) childAt.findViewById(R.id.tvName)).setText(item.userName);
         	 }
         	 /*头像处理*/
-     		if(!StringUtil.isEmpty(item.photoMinURL)){
-     			String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(item.photoMinURL);
+     		if(!StringUtil.isEmpty(item.imgUrl)){
+     			String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(item.imgUrl);
      			CircleImageView ivPhoto = (CircleImageView) childAt.findViewById(R.id.ivPhoto);
-     			new ImageViewLoader(this).DisplayImage(ivPhoto, item.photoMinURL, localPath, null);
+     			new ImageViewLoader(this).DisplayImage(ivPhoto, item.imgUrl, localPath, null);
      		}
          }
 	}
 
-	
-	/**
-	 * 由于邀请列表无女士头像及会员名称，需调用详情获取
-	 * @param womanid
-	 */
-	private void QueryLadyDetail(String womanid){
-		LadyDetailManager.getInstance().QueryLadyDetail(womanid, new OnLadyDetailManagerQueryLadyDetailCallback() {
-			
-			@Override
-			public void OnQueryLadyDetailCallback(boolean isSuccess, String errno,
-					String errmsg, LadyDetail item) {
-				// TODO Auto-generated method stub
-				if(isSuccess){
-					Message msg = Message.obtain();
-					msg.what = TARGET_PHOTO_UPDATE;
-					msg.obj = item;
-					sendUiMessage(msg);
-				}
-			}
-		});
-	}
 
 	@Override
 	public void onNewInviteUpdate() {
@@ -190,6 +204,89 @@ public class LivechatInviteListActivity extends BaseActionBarFragmentActivity im
 		if(mContactManager != null){
 			mContactManager.unregisterInviteUpdata(this);
 		}
+		mLiveChatManager.UnregisterOtherListener(this);
+	}
+
+	@Override
+	public void OnLogin(LiveChatErrType errType, String errmsg,
+			boolean isAutoLogin) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnLogout(LiveChatErrType errType, String errmsg,
+			boolean isAutoLogin) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnGetTalkList(LiveChatErrType errType, String errmsg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnGetHistoryMessage(boolean success, String errno,
+			String errmsg, LCUserItem userItem) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnGetUsersHistoryMessage(boolean success, String errno,
+			String errmsg, LCUserItem[] userItems) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnSetStatus(LiveChatErrType errType, String errmsg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnGetUserStatus(LiveChatErrType errType, String errmsg,
+			LCUserItem[] userList) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnGetUsersInfo(LiveChatErrType errType, String errmsg,
+			LiveChatTalkUserListItem[] itemList) {
+		if(errType == LiveChatErrType.Success){
+			Message msg = Message.obtain();
+			msg.what = TARGET_PHOTO_UPDATE;
+			msg.obj = itemList;
+			sendUiMessage(msg);
+		}		
+	}
+
+	@Override
+	public void OnUpdateStatus(LCUserItem userItem) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnChangeOnlineStatus(LCUserItem userItem) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnRecvKickOffline(KickOfflineType kickType) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void OnRecvEMFNotice(String fromId, TalkEmfNoticeType noticeType) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

@@ -1,17 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-            android:background="@color/tiny_grey_solid" >
-    
-    <GridView android:id="@+id/gridView"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/llContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:verticalSpacing="1dp"
-        android:horizontalSpacing="1dp"
-		android:listSelector="@null"
-        android:numColumns="6"
-        android:layout_marginTop="1dp"/>
+        android:orientation="vertical" >
+		<RelativeLayout 
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content">
+	        <com.qpidnetwork.view.HorizontalScrollTabbar
+	            android:id="@+id/titleBar"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:fillViewport="true"
+	            android:scrollbars="none" />
+	        <RadioGroup
+	            android:id="@+id/rdGroup"
+		        android:layout_width="wrap_content"
+		        android:layout_height="48dip"
+		        android:background="#F2F2F2"
+		        android:gravity="center_vertical"
+		        android:orientation="horizontal" 
+		        android:visibility="gone">
+		        <ImageView
+		            android:id="@+id/ivColorFilter"
+		            android:layout_width="wrap_content"
+		            android:layout_height="48dp"/>
+		    </RadioGroup>
+		</RelativeLayout>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
+    <com.qpidnetwork.view.MaterialProgressBar
+        android:id="@+id/progress"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        wheel:matProg_barColor="@color/blue_color"
+        wheel:matProg_progressIndeterminate="true" />
 
-</RelativeLayout>
+</FrameLayout>

@@ -137,6 +137,8 @@ public class LiveChatNotification {
     }
 	
 	public void Cancel() {
-		mNotification.cancelAll();
+		for(int i=0; i<10; i++){
+			mNotification.cancel(NOTIFICATION_BASE_ID + i);
+		}
 	}
 }

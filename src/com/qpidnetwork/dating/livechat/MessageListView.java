@@ -19,6 +19,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewParent;
@@ -29,11 +30,15 @@ import android.widget.TextView;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.RegisterActivity;
+import com.qpidnetwork.dating.bean.ContactBean;
+import com.qpidnetwork.dating.contacts.ContactManager;
 import com.qpidnetwork.dating.emf.MailEditActivity;
 import com.qpidnetwork.dating.livechat.downloader.EmotionPlayImageDownloader2;
 import com.qpidnetwork.dating.livechat.downloader.EmotionPlayImageDownloader2.OnEmotionPlayImageDownloadListener;
 import com.qpidnetwork.dating.livechat.downloader.LivechatVoiceDownloader;
+import com.qpidnetwork.dating.livechat.downloader.MagicIconImageDownloader;
 import com.qpidnetwork.dating.livechat.downloader.PrivatePhotoDownloader;
+import com.qpidnetwork.dating.livechat.theme.store.SceneDetailActivity;
 import com.qpidnetwork.dating.livechat.video.LivechatVideoItem;
 import com.qpidnetwork.dating.livechat.voice.VoicePlayerManager;
 import com.qpidnetwork.framework.util.ImageUtil;
@@ -44,13 +49,20 @@ import com.qpidnetwork.livechat.LCMessageItem;
 import com.qpidnetwork.livechat.LCMessageItem.MessageType;
 import com.qpidnetwork.livechat.LCMessageItem.SendType;
 import com.qpidnetwork.livechat.LCMessageItem.StatusType;
+import com.qpidnetwork.livechat.LCNotifyItem;
+import com.qpidnetwork.livechat.LCNotifyItem.NotifyType;
+import com.qpidnetwork.livechat.LCSystemLinkItem.SystemLinkOptType;
 import com.qpidnetwork.livechat.LCTextItem;
 import com.qpidnetwork.livechat.LCWarningLinkItem.LinkOptType;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.jni.LiveChatClient.UserStatusType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
+import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.manager.ThemeConfigManager;
 import com.qpidnetwork.request.RequestJniEMF.ReplyType;
 import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
+import com.qpidnetwork.request.item.ThemeItem;
+import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.view.EmotionPlayer;
 import com.qpidnetwork.view.GetMoreCreditDialog;
 import com.qpidnetwork.view.MaterialDialogAlert;
@@ -89,7 +101,7 @@ public class MessageListView extends ScrollLayout implements
 		mContext = context;
 		isDestroyed = false;
 		mLayoutInflater = LayoutInflater.from(context);
-		mLiveChatManager = LiveChatManager.newInstance(null);
+		mLiveChatManager = LiveChatManager.getInstance();
 		imageGetter = new ExpressionImageGetter(context, UnitConversion.dip2px(
 				context, 28), UnitConversion.dip2px(context, 28));
 		mVoicePlayerManager = VoicePlayerManager.getInstance(context);
@@ -149,6 +161,9 @@ public class MessageListView extends ScrollLayout implements
 			case Video:
 				row = getVideoViewIn(bean, position);
 				break;
+			case MagicIcon:
+				row = getMagicIconViewIn(bean, position);
+				break;
 			case Warning:
 				row = getWarningView(bean);
 				break;
@@ -176,6 +191,9 @@ public class MessageListView extends ScrollLayout implements
 			case Photo:
 				row = getPhotoViewOut(bean, position);
 				break;
+			case MagicIcon:
+				row = getMagicIconViewOut(bean, position);
+				break;
 			case Custom:
 				row = getCustomMessageView(bean);
 				break;
@@ -193,6 +211,9 @@ public class MessageListView extends ScrollLayout implements
 				break;
 			case System:
 				row = getSystemMessageView(bean);
+				break;
+			case Notify:
+				row = getNotifyMessageView(bean);
 				break;
 			default:
 				break;
@@ -221,7 +242,11 @@ public class MessageListView extends ScrollLayout implements
 				new EmotionPlayImageDownloader2().downloadEmotionPlayImage(
 						bean, this);
 			}
-		}
+		}else{
+			//消息不识别或者无效时导致消息和View对应不上
+			Log.e("MessageListView", "Message sendType: " + bean.sendType + " ~~~ sendType: " + bean.msgType);
+			beanList.remove(bean);
+		}	
 		return row;
 	}
 
@@ -265,12 +290,12 @@ public class MessageListView extends ScrollLayout implements
 			msgView.setFocusable(false);
 			msgView.setClickable(false);
 			msgView.setLongClickable(false);
-			if (!isAddHistory) {
-				/* 弹出充值dialog处理 */
-				final GetMoreCreditDialog dialog = new GetMoreCreditDialog(
-						mContext, R.style.ChoosePhotoDialog);
-				dialog.show();
-			}
+//			if (!isAddHistory) {
+//				/* 弹出充值dialog处理 */
+//				final GetMoreCreditDialog dialog = new GetMoreCreditDialog(
+//						mContext, R.style.ChoosePhotoDialog);
+//				dialog.show();
+//			}
 		} else {
 			msgView.setText(bean.getWarningItem().message);
 		}
@@ -284,10 +309,146 @@ public class MessageListView extends ScrollLayout implements
 	 * @param bean
 	 * @return
 	 */
-	private View getSystemMessageView(LCMessageItem bean) {
+	private View getSystemMessageView(final LCMessageItem bean) {
 		View row = mLayoutInflater.inflate(R.layout.item_normal_notify, null);
 		TextView notifyView = (TextView) row.findViewById(R.id.tvNotifyMsg);
-		notifyView.setText(bean.getSystemItem().message);
+		if ((bean.getSystemItem().linkItem != null)
+				&& (bean.getSystemItem().linkItem.linkOptType == SystemLinkOptType.Theme_reload
+				||bean.getSystemItem().linkItem.linkOptType == SystemLinkOptType.Theme_recharge)) {
+			String tips = bean.getSystemItem().message + " "
+					+ bean.getSystemItem().linkItem.linkMsg;
+			SpannableString sp = new SpannableString(tips);
+			ClickableSpan clickableSpan = new ClickableSpan() {
+
+				@Override
+				public void onClick(View widget) {
+					if (bean.getSystemItem().linkItem != null){
+						if(bean.getSystemItem().linkItem.linkOptType == SystemLinkOptType.Theme_reload){
+							((ChatActivity) mContext).loadTheme();
+						}else if(bean.getSystemItem().linkItem.linkOptType == SystemLinkOptType.Theme_recharge){
+							((ChatActivity) mContext).renewCurrentTheme();
+						}
+					}
+				}
+			};
+			sp.setSpan(new StyleSpan(Typeface.BOLD),
+					bean.getSystemItem().message.length() + 1, tips.length(),
+					Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			sp.setSpan(clickableSpan,
+					bean.getSystemItem().message.length() + 1, tips.length(),
+					Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			notifyView.setText(sp);
+			notifyView.setLinkTextColor(mContext.getResources().getColor(
+					R.color.blue_color));
+			notifyView.setMovementMethod(LinkMovementMethod.getInstance());
+			notifyView.setFocusable(false);
+			notifyView.setClickable(false);
+			notifyView.setLongClickable(false);
+		} else {
+			notifyView.setText(bean.getSystemItem().message);
+		}
+		return row;
+	}
+	
+	/**
+	 * 根据具体通知类型获取指定定制显示
+	 * @param bean
+	 * @return
+	 */
+	private View getNotifyMessageView(LCMessageItem bean){
+		LCNotifyItem notifyItem = bean.getNotifyItem();
+		View row = null;
+		if(notifyItem.notifyType == NotifyType.Theme_recommand){
+			if(notifyItem.data instanceof ThemeItem){
+				row = getThemeRecommandView((ThemeItem)notifyItem.data, bean.fromId);
+			}
+		}else if(notifyItem.notifyType == NotifyType.Theme_nomoney){
+			if(notifyItem.data instanceof ThemeItem){
+				row = getThemeNoMoneyView((ThemeItem)notifyItem.data, bean.fromId);
+			}
+		}
+		return row;
+	}
+	
+	/**
+	 * 定制女士推荐主题显示
+	 * @param item
+	 * @return
+	 */
+	private View getThemeRecommandView(final ThemeItem item, final String womanId){
+		View row = mLayoutInflater.inflate(R.layout.item_theme_recommand_notify, null);
+		ImageView ivPhoto = (ImageView) row.findViewById(R.id.ivPhoto);
+		TextView tvDesc = (TextView) row.findViewById(R.id.tvDesc);
+		TextView tvTitle = (TextView) row.findViewById(R.id.tvTitle);
+		
+		String themeDesc = "";
+		ContactBean contact = ContactManager.getInstance().getContactById(womanId);
+		if(contact != null){
+			themeDesc = String.format(mContext.getString(R.string.livechat_theme_recommand_notify), contact.firstname);
+		}else{
+			themeDesc = String.format(mContext.getString(R.string.livechat_theme_recommand_notify), womanId);
+		}
+		tvDesc.setText(themeDesc);
+		
+		tvTitle.setText(item.title);
+		
+		String loadUrl = ThemeConfigManager.newInstance().getThemeThumbUrl(item.themeId);
+		String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(loadUrl);
+		ImageViewLoader imageDownLoader = new ImageViewLoader(mContext);
+		imageDownLoader.DisplayImage(ivPhoto, loadUrl, localPath, null);
+		
+		row.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(mContext, SceneDetailActivity.class);
+				intent.putExtra("themeItem", item);
+				intent.putExtra("womanId", womanId);
+				mContext.startActivity(intent);				
+			}
+		});
+		return row;
+	}
+	
+	/**
+	 * 定制女士主题续费错误显示
+	 * @param themeInfo
+	 * @return
+	 */
+	private View getThemeNoMoneyView(final ThemeItem item, final String womanId){
+		View row = mLayoutInflater.inflate(R.layout.item_theme_nomoney_notify, null);
+		ImageView ivPhoto = (ImageView) row.findViewById(R.id.ivPhoto);
+		TextView tvDesc = (TextView) row.findViewById(R.id.tvDesc);
+		TextView tvCredit = (TextView) row.findViewById(R.id.tvCredit);
+		
+		String themeDesc = String.format(mContext.getString(R.string.livechat_theme_nomoney_notify), item.title);
+		tvDesc.setText(themeDesc);
+		
+		tvCredit.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				final GetMoreCreditDialog dialog = new GetMoreCreditDialog(
+						mContext, R.style.ChoosePhotoDialog);
+				dialog.show();
+			}
+		});
+		
+		String loadUrl = ThemeConfigManager.newInstance().getThemeThumbUrl(item.themeId);
+		String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(loadUrl);
+		ImageViewLoader imageDownLoader = new ImageViewLoader(mContext);
+		imageDownLoader.DisplayImage(ivPhoto, loadUrl, localPath, null);
+		
+		row.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(mContext, SceneDetailActivity.class);
+				intent.putExtra("themeItem", item);
+				intent.putExtra("womanId", womanId);
+				mContext.startActivity(intent);				
+			}
+		});
 		return row;
 	}
 
@@ -369,7 +530,13 @@ public class MessageListView extends ScrollLayout implements
 				btnError, bean);
 		return row;
 	}
-
+	
+	/**
+	 * 获取收到短视频View
+	 * @param bean
+	 * @param position
+	 * @return
+	 */
 	private View getVideoViewIn(LCMessageItem bean, int position) {
 		View row = mLayoutInflater.inflate(R.layout.item_in_video, null);
 		updateVideoItem(row, bean);
@@ -377,6 +544,26 @@ public class MessageListView extends ScrollLayout implements
 				.findViewById(R.id.videoItem);
 		videoItem.setTag(position);
 		videoItem.setOnClickListener(this);
+		return row;
+	}
+	
+	/**
+	 * 获取收到小高表View
+	 * 
+	 * @param bean
+	 * @return
+	 */
+	private View getMagicIconViewIn(LCMessageItem bean, int position) {
+		View row = mLayoutInflater.inflate(R.layout.item_in_magicicon, null);
+
+		MaterialProgressBar pbDownload = (MaterialProgressBar) row
+				.findViewById(R.id.pbDownload);
+		ImageView ivMagicIconPhoto = (ImageView) row
+				.findViewById(R.id.ivMagicIcon);
+		ImageButton btnError = (ImageButton) row.findViewById(R.id.btnError);
+		btnError.setTag(position);
+		new MagicIconImageDownloader(mContext).displayMagicIconPhoto(
+				ivMagicIconPhoto, pbDownload, bean, btnError);
 		return row;
 	}
 
@@ -391,7 +578,8 @@ public class MessageListView extends ScrollLayout implements
 				.findViewById(R.id.pbDownload);
 		TextView msgView = (TextView) row.findViewById(R.id.chat_message);
 		LCTextItem textItem = bean.getTextItem();
-		msgView.setText(imageGetter.getExpressMsgHTML(textItem.message));
+		String text = textItem.message;
+		msgView.setText(imageGetter.getExpressMsgHTML(text));
 		if (bean.getTextItem().illegal) {
 			/* 非法的，显示警告 */
 			row.findViewById(R.id.includeWaring).setVisibility(View.VISIBLE);
@@ -491,6 +679,32 @@ public class MessageListView extends ScrollLayout implements
 				bean);
 		return row;
 	}
+	
+	/**
+	 * 初始化发送MagicIcon view
+	 * 
+	 * @param bean
+	 * @return
+	 */
+	private View getMagicIconViewOut(LCMessageItem bean, int position) {
+		View row = mLayoutInflater.inflate(R.layout.item_out_magicicon, null);
+		MaterialProgressBar pbDownload = (MaterialProgressBar) row
+				.findViewById(R.id.pbDownload);
+		ImageView ivMagicIconPhoto = (ImageView) row
+				.findViewById(R.id.ivMagicIcon);
+		new MagicIconImageDownloader(mContext).displayMagicIconPhoto(
+				ivMagicIconPhoto, null, bean, null);
+		if (bean.statusType == StatusType.Processing) {
+			pbDownload.setVisibility(View.VISIBLE);
+		} else if (bean.statusType == StatusType.Fail) {
+			pbDownload.setVisibility(View.GONE);
+			row.findViewById(R.id.btnError).setTag(bean);
+			row.findViewById(R.id.btnError).setVisibility(View.VISIBLE);
+			row.findViewById(R.id.btnError).setOnClickListener(
+					normalErrorOnClickListener);
+		}
+		return row;
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -522,7 +736,7 @@ public class MessageListView extends ScrollLayout implements
 			}
 			if (mPrivatePhotoList.contains(currItem)) {
 				/* private photo item存在，打开预览 */
-				mContext.startActivity(LivechatPrivatePhotoPreview.getIntent(
+				mContext.startActivity(LivechatPrivatePhotoPreviewActivity.getIntent(
 						mContext,
 						new PrivatePhotoPriviewBean(mPrivatePhotoList
 								.indexOf(currItem), mPrivatePhotoList)));
@@ -675,23 +889,23 @@ public class MessageListView extends ScrollLayout implements
 							if (callback.errNo.equals("ERROR00003")) {
 								btnError.setOnClickListener(noMoneyOnClickListener);
 								return;
-							} else if (!StringUtil.isEmpty(callback.errMsg)) {
-								/* Jaywar 接口返回错误提示 */
-								btnError.setOnClickListener(new OnClickListener() {
+							} 
+						}else if (!StringUtil.isEmpty(callback.errMsg)) {
+							/* Jaywar 接口返回错误提示 */
+							btnError.setOnClickListener(new OnClickListener() {
 
-									@Override
-									public void onClick(View v) {
-										MaterialDialogAlert dialog = new MaterialDialogAlert(
-												mContext);
-										dialog.setMessage(callback.errMsg);
-										dialog.addButton(dialog.createButton(
-												mContext.getString(R.string.common_btn_ok),
-												null));
-										dialog.show();
-									}
-								});
-								return;
-							}
+								@Override
+								public void onClick(View v) {
+									MaterialDialogAlert dialog = new MaterialDialogAlert(
+											mContext);
+									dialog.setMessage(callback.errMsg);
+									dialog.addButton(dialog.createButton(
+											mContext.getString(R.string.common_btn_ok),
+											null));
+									dialog.show();
+								}
+							});
+							return;
 						}
 						btnError.setOnClickListener(normalErrorOnClickListener);
 					}
@@ -1026,6 +1240,10 @@ public class MessageListView extends ScrollLayout implements
 			newItem = mLiveChatManager.SendVoice(item.toId,
 					item.getVoiceItem().filePath, ".aac",
 					item.getVoiceItem().timeLength);
+			break;
+		case MagicIcon:
+			newItem = mLiveChatManager.SendMagicIcon(item.toId, 
+					item.getMagicIconItem().getMagicIconId());
 			break;
 		default:
 			break;

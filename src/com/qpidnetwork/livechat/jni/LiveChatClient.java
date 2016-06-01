@@ -44,6 +44,7 @@ public class LiveChatClient {
 		USTATUS_UNKNOW,				// 未知
 		USTATUS_OFFLINE_OR_HIDDEN,	// 离线或隐身
 		USTATUS_ONLINE,		// 在线
+		USTATUS_HIDDEN, //隐身
 	}
 	
 	/**
@@ -166,6 +167,15 @@ public class LiveChatClient {
 	static public native boolean SendVoice(String userId, String voiceId, int length, int ticket);
 	
 	/**
+	 * 发小高级表情
+	 * @param userId	对方用户ID
+	 * @param magicIconId	小高级表情ID
+	 * @param ticket	票根
+	 * @return
+	 */
+	static public native boolean SendMagicIcon(String userId, String magicIconId, int ticket);
+	
+	/**
 	 * 使用试聊券
 	 * @param userId	对方用户ID
 	 * @return
@@ -243,6 +253,13 @@ public class LiveChatClient {
 	static public native boolean GetUserInfo(String userId);
 	
 	/**
+	 * 批量获取用户信息
+	 * @param userIds	对方用户ID列表
+	 * @return
+	 */
+	static public native boolean GetUsersInfo(String[] userIds);
+	
+	/**
 	 * 获取黑名单列表
 	 * @return
 	 */
@@ -266,4 +283,78 @@ public class LiveChatClient {
 	 * @return
 	 */
 	static public native boolean GetBlockUsers();
+	
+	/**
+	 * 获取女士择偶条件
+	 * @param userId	女士ID
+	 * @return
+	 */
+	static public native boolean GetLadyCondition(String userId);
+	
+	/**
+	 * 获取女士自定义邀请模板
+	 * @param userId	女士ID
+	 * @return
+	 */
+	static public native boolean GetLadyCustomTemplate(String userId);
+	
+	/**
+	 * 上传弹出女士自动邀请消息
+	 * @param userId	女士ID
+	 * @param msg		消息内容
+	 * @param key		验证码
+	 * @return
+	 */
+	static public native boolean UploadPopLadyAutoInvite(String userId, String msg, String key);
+	
+	/**
+	 * 上传自动充值状态
+	 * @param isCharge	是否自动充值
+	 * @return
+	 */
+	static public native boolean UploadAutoChargeStatus(boolean isCharge);
+	
+	/**
+	 * 获取指定男/女士的已购主题包
+	 * @param userId
+	 * @return
+	 */
+	static public native boolean GetPaidTheme(String userId);
+	
+	/**
+	 * 获取所有已购主题包
+	 * @return
+	 */
+	static public native boolean GetAllPaidTheme();
+	
+	/**
+	 * 上传主题包列表版本号
+	 * @param themeVer
+	 * @return
+	 */
+	static public native boolean UploadThemeListVer(int themeVer);
+	
+	/**
+	 * 男士购买主题包
+	 * @param userId
+	 * @param themeId
+	 * @return
+	 */
+	static public native boolean ManFeeTheme(String userId, String themeId);
+	
+	/**
+	 * 男士应用主题包
+	 * @param userId
+	 * @param themeId
+	 * @return
+	 */
+	static public native boolean ManApplyTheme(String userId, String themeId);
+	
+	/**
+	 * 播放主题包动画
+	 * @param userId
+	 * @param themeId
+	 * @return
+	 */
+	static public native boolean PlayThemeMotion(String userId, String themeId);
 }

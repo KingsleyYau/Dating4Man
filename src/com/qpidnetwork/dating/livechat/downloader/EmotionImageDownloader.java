@@ -27,7 +27,7 @@ public class EmotionImageDownloader implements LiveChatManagerEmotionListener{
 	private String emotionId;
 	
 	public EmotionImageDownloader(){
-		mLiveChatManager = LiveChatManager.newInstance(null);
+		mLiveChatManager = LiveChatManager.getInstance();
 	}
 	
 	public void displayEmotionImage(ImageView emotionPane, ProgressBar pbDownload, String emotionId){

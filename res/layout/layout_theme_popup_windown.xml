@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:button="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_linear_transparent_white"
+    android:gravity="right|bottom"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:orientation="vertical"
+        android:paddingRight="10dp" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center|right"
+            android:orientation="horizontal"
+            android:paddingBottom="6dp"
+            android:paddingRight="14dp"
+            android:paddingTop="6dp" >
+
+            <com.qpidnetwork.view.ButtonFloat
+                android:layout_width="128dp"
+                android:layout_height="32dp"
+                android:layout_marginRight="12dp"
+                android:clickable="true"
+                button:background="@color/white"
+                button:cardUseCompatPadding="true"
+                button:elevation="1dp"
+                button:radius="2dp" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/livechat_theme_sceme_store"
+                    android:textColor="@color/text_color_grey"
+                    android:textSize="16sp" />
+            </com.qpidnetwork.view.ButtonFloat>
+
+            <com.qpidnetwork.view.ButtonFloat
+                android:id="@+id/shopCarButton"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:clickable="true"
+                button:background="@color/green"
+                button:cardUseCompatPadding="true"
+                button:elevation="2dp"
+                button:icon="@drawable/ic_add_shopping_cart_white_24dp"
+                button:radius="25dp"
+                button:touch_feedback="@drawable/touch_feedback_holo_dark" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llScenePlayBody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="6dp"
+            android:paddingRight="14dp"
+            android:paddingTop="6dp" >
+
+            <com.qpidnetwork.view.ButtonFloat
+                android:layout_width="156dp"
+                android:layout_height="32dp"
+                android:layout_marginRight="12dp"
+                android:clickable="true"
+                button:background="@color/white"
+                button:cardUseCompatPadding="true"
+                button:elevation="1dp"
+                button:radius="2dp" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/livechat_theme_play_scene"
+                    android:textColor="@color/text_color_grey"
+                    android:textSize="16sp" />
+            </com.qpidnetwork.view.ButtonFloat>
+
+            <com.qpidnetwork.view.ButtonFloat
+                android:id="@+id/playButton"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:clickable="true"
+                button:background="@color/green"
+                button:cardUseCompatPadding="true"
+                button:elevation="2dp"
+                button:icon="@drawable/ic_effect_white_24dp"
+                button:radius="25dp"
+                button:touch_feedback="@drawable/touch_feedback_holo_dark" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

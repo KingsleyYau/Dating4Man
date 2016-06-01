@@ -12,7 +12,11 @@ public class LadyMatch implements Serializable {
 	 */
 	private static final long serialVersionUID = -8450545611192612900L;
 	public LadyMatch() {
-		
+		age1 = 0;
+		age2 = 99;
+		marry = Marry.Unknow;
+		children = Children.Unknow;
+		education = Education.Unknow;
 	}
 
 	/**
