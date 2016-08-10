@@ -6,14 +6,21 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,52 +29,106 @@ import android.widget.TextView;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.admirer.ObservableScrollView.ScrollViewListener;
 import com.qpidnetwork.dating.admirer.VirtualGiftView.OnVirtualGiftPlayCallback;
+import com.qpidnetwork.dating.authorization.LoginManager;
+import com.qpidnetwork.dating.authorization.LoginManager.LoginStatus;
+import com.qpidnetwork.dating.authorization.LoginParam;
 import com.qpidnetwork.dating.bean.EMFAttachmentBean;
 import com.qpidnetwork.dating.bean.EMFAttachmentBean.AttachType;
 import com.qpidnetwork.dating.bean.EMFBean;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.credit.BuyCreditActivity;
+import com.qpidnetwork.dating.emf.EMFAttachmentAdapter;
 import com.qpidnetwork.dating.emf.EMFAttachmentPreviewActivity;
 import com.qpidnetwork.dating.emf.EMFAttachmentPrivatePhotoFragment.PrivatePhotoDirection;
 import com.qpidnetwork.dating.emf.EMFDetailActivity;
 import com.qpidnetwork.dating.emf.MailEditActivity;
 import com.qpidnetwork.dating.lady.LadyDetailActivity;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
-import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.framework.widget.CircleImageView;
 import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.manager.MonthlyFeeManager;
 import com.qpidnetwork.manager.VirtualGiftManager;
 import com.qpidnetwork.request.OnEMFAdmirerViewerCallback;
 import com.qpidnetwork.request.OnEMFDeleteMsgCallback;
+import com.qpidnetwork.request.OnEMFSendMsgCallback;
+import com.qpidnetwork.request.OnOtherIntegralCheckCallback;
 import com.qpidnetwork.request.RequestErrorCode;
 import com.qpidnetwork.request.RequestJniEMF.MailType;
 import com.qpidnetwork.request.RequestJniEMF.ReplyType;
+import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.EMFAdmirerViewerItem;
+import com.qpidnetwork.request.item.EMFSendMsgErrorItem;
+import com.qpidnetwork.request.item.EMFSendMsgItem;
+import com.qpidnetwork.request.item.LadyDetail;
+import com.qpidnetwork.request.item.MonthLyFeeTipItem;
+import com.qpidnetwork.request.item.OtherIntegralCheckItem;
 import com.qpidnetwork.tool.FileDownloader;
 import com.qpidnetwork.tool.FileDownloader.FileDownloaderCallback;
 import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.tool.ImageViewLoader.ImageViewLoaderCallback;
 import com.qpidnetwork.view.ButtonRaised;
-import com.qpidnetwork.view.FitTopImageView;
+import com.qpidnetwork.view.FlatToast;
+import com.qpidnetwork.view.GetMoreCreditDialog;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialDropDownMenu;
 import com.qpidnetwork.view.MaterialProgressBar;
+import com.qpidnetwork.view.MonthlyFeeDialog;
 
-public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implements 
-				MaterialDropDownMenu.OnClickCallback, ImageViewLoaderCallback, 
-				FileDownloaderCallback, OnVirtualGiftPlayCallback, ScrollViewListener{
-	
+public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity
+		implements MaterialDropDownMenu.OnClickCallback,
+		ImageViewLoaderCallback, FileDownloaderCallback,
+		OnVirtualGiftPlayCallback, ScrollViewListener,
+		OnOtherIntegralCheckCallback, OnEMFSendMsgCallback {
+
 	private static final int GET_EMF_DETAIL_CALLBACK = 1;
 	private static final int DELETE_EMF_CALLBACK = 2;
 	private static final int DOWNLOAD_GIFT_THUMB_CALLBACK = 3;
 	private static final int DOWNLOAD_GIFT_3GP_CALLBACK = 4;
-	
-	//title
+	private static final int REQUEST_GET_BOUNDS = 5;
+	private static final int REQUEST_SEND_EMF = 6;
+
+	/**
+	 * 界面消息
+	 */
+	@SuppressWarnings("unused")
+	private class MessageCallbackItem {
+		/**
+		 * 
+		 * @param errno
+		 *            接口错误码
+		 * @param errmsg
+		 *            错误提示
+		 * @param womanId
+		 *            女士Id
+		 * @param item
+		 *            emf返回
+		 * @param errItem
+		 *            emf错误返回
+		 * @param otItem
+		 *            积分返回
+		 * @param ladyDetail
+		 *            女士详情
+		 */
+		public MessageCallbackItem(String errno, String errmsg) {
+			this.errno = errno;
+			this.errmsg = errmsg;
+		}
+
+		public String errno;
+		public String errmsg;
+		public String womanId;
+		public EMFSendMsgItem sendItem;
+		public EMFSendMsgErrorItem errItem;
+		public OtherIntegralCheckItem otItem;
+		public LadyDetail ladyDetail;
+	}
+
+	// title
 	private MaterialAppBar appbar;
-	
-	//EMF 主要内容
+
+	// EMF 主要内容
 	private ObservableScrollView scrollView;
 	private VirtualGiftView vgPlayer;
 	private ImageView vgBg;
@@ -75,20 +136,32 @@ public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implem
 	private TextView tvRetry;
 	private ImageButton buttonPlay;
 	private TextView tvEMFdetail;
-	private LinearLayout llAttachment;
+	private LinearLayout llAttachments;
+	private GridView gvAttachment;// 附件列表
 	private ButtonRaised btnReply;
-	
-	//error page
+
+	// ------Quick Replay-------
+	private ImageView ivQuickReply;
+	private EditText etReply;
+	private ButtonRaised btnSend;
+	private TextView tvBonusPoint;
+	private TextView tvLearnMore;
+
+	// error page
 	private View includeError;
 	private TextView tvErrorMessage;
 	private ButtonRaised btnErrorOperate;
-	
-	//虚拟礼物处理下载相关
-	private ImageViewLoader loader; //虚拟礼物图片下载器
-	private FileDownloader mFileDownloader;//3GP视频下载器
-	
-	//data
+
+	// 虚拟礼物处理下载相关
+	private ImageViewLoader loader; // 虚拟礼物图片下载器
+	private FileDownloader mFileDownloader;// 3GP视频下载器
+
+	// data
 	private EMFBean emfBean;
+
+	private boolean useIntegral = false;// 是否使用积分
+	private MaterialDialogAlert mErrorDialog;
+
 	/* 存放附件列表 */
 	private ArrayList<EMFAttachmentBean> mAttachList;
 	
@@ -113,6 +186,20 @@ public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implem
 	public void InitView() {
 		setContentView(R.layout.activity_admire_detail_virtualgift);
 		
+		// 初始化dialog
+		mErrorDialog = new MaterialDialogAlert(this);
+		mErrorDialog.setMessage(getString(R.string.emf_send_fail));
+		mErrorDialog.addButton(mErrorDialog.createButton(
+				getString(R.string.common_btn_cancel), null));
+		mErrorDialog.addButton(mErrorDialog.createButton(
+				getString(R.string.common_btn_ok), new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						sendAdmireTextMessage();
+					}
+				}));
+
 		appbar = (MaterialAppBar) findViewById(R.id.appbar);
 		appbar.setAppbarBackgroundColor(getResources().getColor(
 				R.color.theme_actionbar_secoundary));
@@ -126,11 +213,10 @@ public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implem
 		appbar.addOverflowButton(
 				new String[] { getString(R.string.emf_menu_delete) }, this,
 				R.drawable.ic_more_vert_grey600_24dp);
-		
-		
-		/*EMF 主要内容*/
-		scrollView = (ObservableScrollView)findViewById(R.id.scrollView);
-		if(android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.HONEYCOMB){
+
+		/* EMF 主要内容 */
+		scrollView = (ObservableScrollView) findViewById(R.id.scrollView);
+		if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.HONEYCOMB) {
 			scrollView.setScrollViewListener(this);
 		}
 		vgPlayer = (VirtualGiftView) findViewById(R.id.vgPlayer);
@@ -139,12 +225,30 @@ public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implem
 		tvRetry = (TextView) findViewById(R.id.tvRetry);
 		buttonPlay = (ImageButton) findViewById(R.id.buttonPlay);
 		tvEMFdetail = (TextView) findViewById(R.id.tvEMFdetail);
-		llAttachment = (LinearLayout) findViewById(R.id.llAttachment);
+		llAttachments = (LinearLayout) findViewById(R.id.llAttachments);
+		gvAttachment = (GridView) findViewById(R.id.gvAttachment);
 		btnReply = (ButtonRaised) findViewById(R.id.btnReply);
+		btnReply.setOnClickListener(this);
+		
+		/* btnReply获取焦点避免scrollView滚动到gridView位置 */
+		btnReply.setFocusable(true);
+		btnReply.setFocusableInTouchMode(true);
+		btnReply.requestFocus();
+		
 		vgPlayer.setOnVirtualGiftPlayCallback(this);
 		tvRetry.setOnClickListener(this);
 		buttonPlay.setOnClickListener(this);
-		
+
+		/* Quick Reply */
+		ivQuickReply = (ImageView) findViewById(R.id.ivQuickReply);
+		etReply = (EditText) findViewById(R.id.etReply);
+		btnSend = (ButtonRaised) findViewById(R.id.btnSend);
+		tvBonusPoint = (TextView) findViewById(R.id.tvBonusPoint);
+		tvLearnMore = (TextView) findViewById(R.id.tvLearnMore);
+		ivQuickReply.setOnClickListener(this);
+		btnSend.setOnClickListener(this);
+		tvLearnMore.setOnClickListener(this);
+
 		/* Error */
 		includeError = (View) findViewById(R.id.includeError);
 		tvErrorMessage = (TextView) findViewById(R.id.tvErrorMessage);
@@ -183,6 +287,12 @@ public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implem
 
 			ivPhoto.setClickable(true);
 			ivPhoto.setOnClickListener(this);
+
+			/* 请求积分 */
+			if (!TextUtils.isEmpty(emfBean.womanid)) {
+				integralCheck(emfBean.womanid);// 获取积分
+			}
+			/* 获取邮件详情 */
 			getAdmireDetail();
 		}
 	}
@@ -208,56 +318,201 @@ public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implem
 		// TODO Auto-generated method stub
 		super.handleUiMessage(msg);
 		hideProgressDialog();
-		RequestBaseResponse response = (RequestBaseResponse)msg.obj;
 		switch (msg.what) {
-		case GET_EMF_DETAIL_CALLBACK:{
-			if(response.isSuccess){
+		case GET_EMF_DETAIL_CALLBACK: {
+			RequestBaseResponse response = (RequestBaseResponse) msg.obj;
+			if (response.isSuccess) {
 				includeError.setVisibility(View.GONE);
-				admireDetail = (EMFAdmirerViewerItem)response.body;
+				admireDetail = (EMFAdmirerViewerItem) response.body;
 				onGetAdmirerDetailSuccess(admireDetail);
 				initAttachment();
 				/* 已读，通知列表刷新状态 */
 				notifyEmfList(false, true);
-			}else{
+			} else {
 				includeError.setVisibility(View.VISIBLE);
 				onGetDeatilFailed(response);
 			}
-		}break;
-		
-		case DELETE_EMF_CALLBACK:{
-			if(response.isSuccess){
+		}
+			break;
+
+		case DELETE_EMF_CALLBACK: {
+			RequestBaseResponse response = (RequestBaseResponse) msg.obj;
+			if (response.isSuccess) {
 				notifyEmfList(true, false);
 				finish();
-			}else{
+			} else {
 				includeError.setVisibility(View.VISIBLE);
 				onGetDeatilFailed(response);
 			}
-		}break;
-		
-		case DOWNLOAD_GIFT_THUMB_CALLBACK:{
+		}
+			break;
+
+		case DOWNLOAD_GIFT_THUMB_CALLBACK: {
+			RequestBaseResponse response = (RequestBaseResponse) msg.obj;
 			isDownThumbSuccess = response.isSuccess;
 			progressBar.setVisibility(View.GONE);
-			if(response.isSuccess){
+			if (response.isSuccess) {
 				download3gp();
-			}else{
+			} else {
 				tvRetry.setVisibility(View.VISIBLE);
 			}
-		}break;
-		
-		case DOWNLOAD_GIFT_3GP_CALLBACK:{
-			if(response.isSuccess){
+		}
+			break;
+
+		case DOWNLOAD_GIFT_3GP_CALLBACK: {
+			RequestBaseResponse response = (RequestBaseResponse) msg.obj;
+			if (response.isSuccess) {
 				isDown3gpSuccess = true;
 				playVirtualGift();
-			}else{
+			} else {
 				tvRetry.setVisibility(View.VISIBLE);
 			}
-		}break;
+		}
+			break;
+		case REQUEST_GET_BOUNDS:
+			if (msg.arg1 == 1) {// 请求积分成功
+				if (LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED) {
+					LoginParam loginParam = LoginManager.getInstance().GetLoginParam();
+					if (!loginParam.item.bpemf) {
+						/* 风控使用积分发邮件 */
+						useIntegral = true;
+						updateTvBonusPoint();
+					}
+				}
+			}
+			break;
+		case REQUEST_SEND_EMF:
+			MessageCallbackItem callbackItem = (MessageCallbackItem) msg.obj;
+			if (msg.arg1 == 1) {// EMF发送成功
+				/* 发送成功，添加到现有联系人 */
+				FlatToast.showStickToast(mContext, "Sent!",FlatToast.StikyToastType.DONE);
+				finish();
+			} else {
+				sendFail(callbackItem);// 发送失败
+			}
+			break;
 
 		default:
+			
 			break;
 		}
 	}
 	
+	/**
+	 * 更新显示积分提示
+	 */
+	private void updateTvBonusPoint() {
+		// TODO Auto-generated method stub
+		String learnMore = getResources().getString(R.string.emf_quick_reply_learn_more);
+		tvBonusPoint.setText(getResources().getString(R.string.emf_quick_reply_use_integral));
+		SpannableString spStr = new SpannableString(learnMore);
+		spStr.setSpan(new ClickableSpan() {
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setColor(Color.GRAY);       //设置文件颜色
+                ds.setUnderlineText(true);      //设置下划线
+            }
+
+            @Override
+            public void onClick(View widget) {
+	            MaterialDialogAlert dialog = new MaterialDialogAlert(AdmireVirtualGiftDetailActivity.this);
+    			dialog.setMessage(getString(R.string.emf_bp_tips));
+    			dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), null));
+    			dialog.show();
+            }
+	    }, 0, learnMore.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        tvBonusPoint.append(spStr);
+        tvBonusPoint.setMovementMethod(LinkMovementMethod.getInstance());//开始响应点击事件
+	}
+
+	/**
+	 * 发送失败
+	 * @param callbackItem 
+	 */
+	private void sendFail(MessageCallbackItem callbackItem) {
+		// TODO Auto-generated method stub
+		// 首先判断月费类型
+		if(callbackItem.errItem!=null){
+			MemberType type = callbackItem.errItem.memberType;
+			if (type == MemberType.NO_FEED_FIRST_MONTHLY_MEMBER|| type == MemberType.NO_FEED_MONTHLY_MEMBER) {
+				MonthLyFeeTipItem mMonthLyFeeTipItem = MonthlyFeeManager.getInstance().getMonthLyFeeTipItem(callbackItem.errItem.memberType);
+				if (mMonthLyFeeTipItem != null) {
+					//弹出月费充值页面
+					MonthlyFeeDialog dialog = new MonthlyFeeDialog(this,R.style.ChoosePhotoDialog);
+					dialog.setData(mMonthLyFeeTipItem);// 设置数据对象
+					if (isActivityVisible()) {
+						dialog.show();
+					}
+				}else{
+					showErrorDialog();
+				}
+			}else if(callbackItem.errno!=null){
+				if(callbackItem.errno.equals(RequestErrorCode.MBCE10003)){
+					// 弹出充值页面
+					final GetMoreCreditDialog dialog = new GetMoreCreditDialog(mContext, R.style.ChoosePhotoDialog);
+					if (isActivityVisible()) {
+						dialog.show();
+					}
+				}else{
+					showErrorDialog();
+				}
+			}else{
+				showErrorDialog();
+			}
+		}else {
+			showErrorDialog();
+		}
+//		MemberType type = callbackItem.errItem.memberType;
+//		if (type == MemberType.NO_FEED_FIRST_MONTHLY_MEMBER|| type == MemberType.NO_FEED_MONTHLY_MEMBER) {
+//			MonthLyFeeTipItem mMonthLyFeeTipItem = MonthlyFeeManager.getInstance().getMonthLyFeeTipItem(callbackItem.errItem.memberType);
+//			if (mMonthLyFeeTipItem != null) {
+//				MonthlyFeeDialog dialog = new MonthlyFeeDialog(this,R.style.ChoosePhotoDialog);
+//				dialog.setData(mMonthLyFeeTipItem);// 设置数据对象
+//				if (isActivityVisible()) {
+//					dialog.show();
+//				}
+//			}
+//		} else {
+//			// 根据错误码处理
+//			switch (callbackItem.errno) {
+//			case RequestErrorCode.MBCE10003: {
+//				// 弹出充值页面
+//				final GetMoreCreditDialog dialog = new GetMoreCreditDialog(mContext, R.style.ChoosePhotoDialog);
+//				if (isActivityVisible()) {
+//					dialog.show();
+//				}
+//			}
+//				break;
+//			default:{//其他错误
+//				// 网络超时, 或者其他错误
+//				if (!mErrorDialog.isShowing()) {
+//					if (isActivityVisible()) {
+//						mErrorDialog.show();
+//					}
+//				}
+//				break;
+//			}
+//			}
+//		}
+	}
+
+	/**
+	 * 显示错误dialog
+	 */
+	private void showErrorDialog() {
+		// TODO Auto-generated method stub
+		// 网络超时, 或者其他错误
+		if (!mErrorDialog.isShowing()) {
+			if (isActivityVisible()) {
+				mErrorDialog.show();
+			}
+		}
+	}
+
+
+
 	/**
 	 * 下载成功或点击重新播放
 	 */
@@ -299,33 +554,38 @@ public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implem
 			}
 		}
 	}
-	
+
 	/* attchment 处理 */
 	private void initAttachment() {
-		if (mAttachList != null) {
-			llAttachment.setVisibility(View.VISIBLE);
-			llAttachment.removeAllViews();
-			for (int i = 0; i < mAttachList.size(); i++) {
-
-				View v = LayoutInflater.from(this).inflate(
-						R.layout.item_emf_attachment_preview, null);
-				FitTopImageView iv = (FitTopImageView) v
-						.findViewById(R.id.image);
-				iv.setTag(i);
-				iv.setOnClickListener(this);
-
-				EMFAttachmentBean item = mAttachList.get(i);
-				iv.setImageResource(R.drawable.attachment_photo_unloaded_110_150dp);
-				String localPath = FileCacheManager.getInstance()
-						.CacheImagePathFromUrl(item.photoUrl);
-				llAttachment.addView(v);
-				new ImageViewLoader(this).DisplayImage(iv, item.photoUrl, localPath,
-						UnitConversion.dip2px(this, 150),
-						UnitConversion.dip2px(this, 110), null);
-			}
+		if (mAttachList != null && mAttachList.size() > 0 && emfBean != null) {
+			EMFAttachmentAdapter mAdapter = new EMFAttachmentAdapter(this,mAttachList, emfBean);
+			gvAttachment.setAdapter(mAdapter);
+			llAttachments.setVisibility(View.VISIBLE);
 		}
+		// if (mAttachList != null) {
+		// llAttachment.setVisibility(View.VISIBLE);
+		// llAttachment.removeAllViews();
+		// for (int i = 0; i < mAttachList.size(); i++) {
+		//
+		// View v = LayoutInflater.from(this).inflate(
+		// R.layout.item_emf_attachment_preview, null);
+		// FitTopImageView iv = (FitTopImageView) v
+		// .findViewById(R.id.image);
+		// iv.setTag(i);
+		// iv.setOnClickListener(this);
+		//
+		// EMFAttachmentBean item = mAttachList.get(i);
+		// iv.setImageResource(R.drawable.attachment_photo_unloaded_110_150dp);
+		// String localPath = FileCacheManager.getInstance()
+		// .CacheImagePathFromUrl(item.photoUrl);
+		// llAttachment.addView(v);
+		// new ImageViewLoader(this).DisplayImage(iv, item.photoUrl, localPath,
+		// UnitConversion.dip2px(this, 150),
+		// UnitConversion.dip2px(this, 110), null);
+		// }
+		// }
 	}
-	
+
 	@Override
 	public void onClick(View v) {
 		super.onClick(v);
@@ -333,12 +593,14 @@ public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implem
 		case R.id.common_button_back:
 			finish();
 			break;
-		case R.id.common_button_reply:
-		case R.id.btnReply: {
-			String mTab = emfBean.mtab;
-			ReplyType type = ReplyType.ADMIRE;
-			MailEditActivity.launchMailEditActivity(this, emfBean.womanid, type, mTab);
-		}break;
+		// case R.id.common_button_reply:
+		// case R.id.btnReply: {
+		// String mTab = emfBean.mtab;
+		// ReplyType type = ReplyType.ADMIRE;
+		// MailEditActivity.launchMailEditActivity(this, emfBean.womanid,type,
+		// mTab, null);
+		// }
+		// break;
 		case R.id.ivPhoto: {
 			LadyDetailActivity.launchLadyDetailActivity(this, emfBean.womanid, true);
 		}break;
@@ -358,13 +620,57 @@ public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implem
 			}
 		}break;
 		case R.id.buttonPlay: {
-			//点击播放按钮
-		}break;
+			// 点击播放按钮
+		}
+			break;
+		case R.id.common_button_reply:
+		case R.id.btnReply:
+		case R.id.ivQuickReply:// 快捷回复带输入内容
+			if(TextUtils.isEmpty(emfBean.womanid)){
+				break;
+			}
+			String mTempMessage = etReply.getText().toString();// 保存临时输入文本
+			String mTab = emfBean.mtab;
+			ReplyType type = ReplyType.ADMIRE;
+			MailEditActivity.launchMailEditActivity(this, emfBean.womanid,type, mTab, mTempMessage);
+			break;
+		case R.id.tvLearnMore:// 了解更多
+			MaterialDialogAlert dialog = new MaterialDialogAlert(this);
+			dialog.setMessage(getString(R.string.emf_bp_tips));
+			dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), null));
+			dialog.show();
+			break;
+		case R.id.btnSend:// 回复文本
+			sendAdmireTextMessage();// 发送文本信件
 		default:
 			break;
 		}
 	}
-	
+
+	/**
+	 * 发送文本信件
+	 */
+	private void sendAdmireTextMessage() {
+		// TODO Auto-generated method stub
+		if (TextUtils.isEmpty(emfBean.womanid)) {
+			return;
+		}
+		String etContent = etReply.getText().toString();
+		if (TextUtils.isEmpty(etContent)) {
+			shakeView(etReply, true);
+			showSoftInput();
+			return;
+		}
+		showProgressDialog("Loading...");
+
+		String mTab = "";;
+		if(emfBean.mtab!=null){
+			mTab = emfBean.mtab;
+		}
+		ReplyType type = ReplyType.ADMIRE;
+		RequestOperator.getInstance().SendMsg(emfBean.womanid, etContent, useIntegral, type, mTab,new String[] {}, new String[] {}, this);
+	}
+
 	/**
 	 * 通知列表已读
 	 * @param isDelete
@@ -395,9 +701,19 @@ public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implem
 
 				}));
 
-		dialog.show();		
+		dialog.show();
 	}
-	
+
+	/**
+	 * 查询是否可以使用积分
+	 * 
+	 * @param womanId
+	 *            女士Id
+	 */
+	private void integralCheck(String womanId) {
+		RequestOperator.getInstance().IntegralCheck(womanId, this);
+	}
+
 	/**
 	 * 删除邮件
 	 */
@@ -584,5 +900,28 @@ public class AdmireVirtualGiftDetailActivity extends BaseFragmentActivity implem
 		}
 	}
 
+	@Override
+	public void OnOtherIntegralCheck(boolean isSuccess, String errno,
+			String errmsg, OtherIntegralCheckItem item) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		msg.what = REQUEST_GET_BOUNDS;
+		msg.arg1 = isSuccess ? 1 : 0;
+		sendUiMessage(msg);
+	}
+
+	@Override
+	public void OnEMFSendMsg(boolean isSuccess, String errno, String errmsg,
+			EMFSendMsgItem item, EMFSendMsgErrorItem errItem) {
+		// TODO Auto-generated method stub
+		Message msg = Message.obtain();
+		msg.what = REQUEST_SEND_EMF;
+		msg.arg1 = isSuccess ? 1 : 0;
+		MessageCallbackItem callbackItem = new MessageCallbackItem(errno,errmsg);
+		callbackItem.sendItem = item;
+		callbackItem.errItem = errItem;
+		msg.obj = callbackItem;
+		sendUiMessage(msg);
+	}
 
 }

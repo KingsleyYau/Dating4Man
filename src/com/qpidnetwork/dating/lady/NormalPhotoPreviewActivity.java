@@ -29,15 +29,18 @@ public class NormalPhotoPreviewActivity extends BaseFragmentActivity implements
 		OnPageChangeListener {
 
 	public static final String LADY_DETAIL = "ladyDetail";
+	public static final String CURRENT_PHOTO_INDEX = "photoIndex";
 
 	private LadyDetail mLadyDetail;
 	private ViewPagerFixed mViewPager;
 	private NormalPhotoAdapter mAdapter;
 	private boolean mInitPage = true;
+	private int mInitPhotoIndex = 0;
 
-	public static void launchNoramlPhotoActivity(Context context, LadyDetail ladyDetail) {
+	public static void launchNoramlPhotoActivity(Context context, LadyDetail ladyDetail, int photoIndex) {
 		Intent intent = new Intent(context, NormalPhotoPreviewActivity.class);
 		intent.putExtra(LADY_DETAIL, ladyDetail);
+		intent.putExtra(CURRENT_PHOTO_INDEX, photoIndex);
 		context.startActivity(intent);
 	}
 
@@ -57,6 +60,9 @@ public class NormalPhotoPreviewActivity extends BaseFragmentActivity implements
 		if (bundle != null) {
 			if (bundle.containsKey(LADY_DETAIL)) {
 				mLadyDetail = (LadyDetail)bundle.getSerializable(LADY_DETAIL);
+			}
+			if (bundle.containsKey(CURRENT_PHOTO_INDEX)) {
+				mInitPhotoIndex = bundle.getInt(CURRENT_PHOTO_INDEX);
 			}
 		}
 		if(mLadyDetail == null){
@@ -83,6 +89,9 @@ public class NormalPhotoPreviewActivity extends BaseFragmentActivity implements
 		mViewPager.setOnPageChangeListener(this);
 		mViewPager.setOffscreenPageLimit(1);
 		mViewPager.setAdapter(mAdapter);
+		if(mInitPhotoIndex < mLadyDetail.photoList.size()){
+			mViewPager.setCurrentItem(mInitPhotoIndex);
+		}
 //		mViewPager.setCurrentItem(1);
 
 		if (Build.VERSION.SDK_INT >= 21) {

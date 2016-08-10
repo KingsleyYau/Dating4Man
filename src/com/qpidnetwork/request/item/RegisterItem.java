@@ -18,6 +18,9 @@ public class RegisterItem {
 		photosend = true;
 		photoreceived = true;
 		videoreceived = true;
+		gaActivity = "";
+		adOverview = "";
+		adTimestamp = 0;
 	}
 
 	/**
@@ -38,7 +41,9 @@ public class RegisterItem {
 	 * @param photosend			私密照片发送权限
 	 * @param photoreceived		私密照片接收权限
 	 * @param videoreceived     微视频接收权限（true：允许，false：不能）
-	 * 
+	 * @param gaActivity		活动统计GA值
+	 * @param adOverview        主界面弹窗参数
+	 * @param adTimestamp       广告更新有效时间间隔
 	 */
 	public RegisterItem(
 		 boolean login,
@@ -55,7 +60,10 @@ public class RegisterItem {
 		 String ga_uid,
 		 boolean photosend,
 		 boolean photoreceived,
-		 boolean videoreceived
+		 boolean videoreceived,
+		 String gaActivity,
+		 String adOverview,
+		 int adTimestamp
 			) {
 		this.login = login;
 		this.manid = manid;
@@ -72,6 +80,9 @@ public class RegisterItem {
 		this.photosend = photosend;
 		this.photoreceived = photoreceived;
 		this.videoreceived = videoreceived;
+		this.gaActivity = gaActivity;
+		this.adOverview = adOverview;
+		this.adTimestamp = adTimestamp;
 	}
 	
 	public boolean login;
@@ -89,4 +100,7 @@ public class RegisterItem {
 	public boolean photosend;
 	public boolean photoreceived;
 	public boolean videoreceived;
+	public String gaActivity;
+	public String adOverview;
+	public int adTimestamp;
 }

@@ -471,6 +471,35 @@ public class AnalyticsManager
 	}
 	
 	/**
+	 * 设置用户活动统计
+	 * @param gaActivity	活动统计GA值
+	 */
+	public void setGAActivity(String gaActivity)
+	{
+		if (!StringUtil.isEmpty(gaActivity))
+		{
+			
+			// 设置GA用户跟踪ID
+			GaSetActivity(gaActivity);
+		}
+	}
+	
+	/**
+	 * GA设置活动统计
+	 * @param gaActivity	活动统计GA值	
+	 */
+	private void GaSetActivity(String gaActivity)
+	{
+		if (null != mGaTracker
+			&& !StringUtil.isEmpty(gaActivity)) 
+		{
+			Log.d("AnalyticsManager", "GaSetActivity() activity:%s", gaActivity);
+			mGaTracker.send(new HitBuilders.EventBuilder().setCategory("monthGroup").setAction("GA Activity").build());
+			mGaTracker.send(new HitBuilders.EventBuilder().setCategory("monthGroup").setCustomDimension(4, gaActivity).build());
+		}
+	}
+	
+	/**
 	 * 用户注册成功
 	 * @param gaUserId
 	 */

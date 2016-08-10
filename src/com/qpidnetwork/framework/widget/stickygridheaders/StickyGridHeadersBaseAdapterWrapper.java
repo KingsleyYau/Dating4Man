@@ -304,7 +304,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         int adapterPosition = position;
         int place = position;
         int i;
-
+        
         for (i = 0; i < numHeaders; i++) {
             int sectionCount = mDelegate.getCountForHeader(i);
 

@@ -166,7 +166,7 @@ public class ContactsAdapter extends UpdateableAdapter<ContactBean>{
 								ChatActivity.launchChatActivity(mContext, item.womanid, item.firstname, item.photoURL);
 								break;
 							case MAIL:
-								MailEditActivity.launchMailEditActivity(mContext, item.womanid, ReplyType.DEFAULT, "");
+								MailEditActivity.launchMailEditActivity(mContext, item.womanid, ReplyType.DEFAULT, "", "");
 								break;
 							case ADDFAVORITE:
 								

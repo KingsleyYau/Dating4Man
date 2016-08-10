@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import android.annotation.SuppressLint;
 import android.content.Context;
 
+import com.qpidnetwork.request.RequestJniEMF.PrivatePhotoMode;
 import com.qpidnetwork.request.RequestJniEMF.PrivatePhotoType;
 import com.qpidnetwork.tool.Arithmetic;
 
@@ -294,7 +295,7 @@ public class FileCacheManager {
 	 * @param photoId		照片ID
 	 * @return				缓存路径
 	 */
-	public String CachePrivatePhotoImagePath(String sendId, String photoId, PrivatePhotoType type) {
+	public String CachePrivatePhotoImagePath(String sendId, String photoId, PrivatePhotoType type, PrivatePhotoMode mode) {
 		String path = "";
 		String name = "";
 		
@@ -305,6 +306,8 @@ public class FileCacheManager {
 			name = Arithmetic.MD5(name.getBytes(), name.getBytes().length);
 			name += ".";
 			name += type.name();
+			name += "_";
+			name += mode.name();
 			path += name;
 		}
 		

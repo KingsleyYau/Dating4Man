@@ -118,7 +118,9 @@ public class ThemeEmotionPlayer extends View{
 	 * @param frame
 	 */
 	public void setFrame(int frame){
-		MIN_FRAME_SPACE = 1000/frame;
+		if(frame != 0){
+			MIN_FRAME_SPACE = 1000/frame;
+		}
 	}
 	
 	private void init(){

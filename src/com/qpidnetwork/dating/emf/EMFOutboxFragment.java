@@ -3,14 +3,22 @@ package com.qpidnetwork.dating.emf;
 import java.util.Arrays;
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.TextView;
 
+import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.PageBean;
+import com.qpidnetwork.dating.home.HomeActivity;
 import com.qpidnetwork.framework.base.BaseListFragment;
 import com.qpidnetwork.framework.util.ToastUtil;
 import com.qpidnetwork.request.OnEMFOutboxListCallback;
 import com.qpidnetwork.request.RequestJniEMF.ProgressType;
+import com.qpidnetwork.request.RequestJniEMF.ReplyType;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.EMFOutboxListItem;
 
@@ -38,9 +46,41 @@ public class EMFOutboxFragment extends BaseListFragment{
 		super.onActivityCreated(savedInstanceState);
 		mAdapter = new EMFOutboxAdapter(getActivity());
 		getPullToRefreshListView().setAdapter(mAdapter);
+		getFloatButton().setId(R.id.common_button_send);
+		getFloatButton().setOnClickListener(this);
 		queryENFOutboxList(0, EMF_OUTBOX_INIT, "", ProgressType.DEFAULT);
 	}
+
+	/**
+	 * @return 设置emptyView
+	 */
+	private View getEmptyView() {
+		// TODO Auto-generated method stub
+		View view = LayoutInflater.from(mContext).inflate(R.layout.view_emf_empty, null);
+		((TextView)view.findViewById(R.id.tvEmfType)).setText(R.string.emf_outbox_empty);
+		view.findViewById(R.id.btnSearch).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				getActivity().sendBroadcast(new Intent(HomeActivity.REFRESH_NEWEST_LADY));
+				getActivity().finish();
+			}
+		});
+		return view;
+	}
 	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		super.onClick(v);
+		switch (v.getId()) {
+		case R.id.common_button_send:{
+			MailEditActivity.launchMailEditActivity(mContext, "", ReplyType.DEFAULT, "", "");
+		}break;
+		}
+	}
+
 	/**
 	 * 获取EMF列表
 	 * @param operation 用于记录页面操作，用于retry等记录使用
@@ -81,20 +121,35 @@ public class EMFOutboxFragment extends BaseListFragment{
 		super.handleUiMessage(msg);
 		switch (msg.what) {
 		case GET_OUTBOX_LIST_SUCCESS:
-			List<EMFOutboxListItem> list = (List<EMFOutboxListItem>)msg.obj;
-			if((msg.arg1 == EMF_OUTBOX_INIT) || (msg.arg1 == EMF_OUTBOX_REFRESH)){
-				mAdapter.replaceList(list);
-				if(msg.arg1 == EMF_OUTBOX_INIT){
-					isInited = true;
-					hideLoadingPage();
+			List<EMFOutboxListItem> list = (List<EMFOutboxListItem>) msg.obj;
+
+			if ((msg.arg1 == EMF_OUTBOX_INIT)
+					|| (msg.arg1 == EMF_OUTBOX_REFRESH)) {
+				if (list != null && list.size() > 0) {// init和refresh成功加判断
+					mAdapter.replaceList(list);
+					if (msg.arg1 == EMF_OUTBOX_INIT) {
+						isInited = true;
+						hideLoadingPage();
+					}
+					//列表不为空，显示编辑信件按钮
+					getFloatButton().setVisibility(View.VISIBLE);
+				} else {
+					isInited = false;// 重置init
+					showInitEmpty(getEmptyView());// 显示空界面
+					//列表为空时，隐藏
+					getFloatButton().setVisibility(View.GONE);
 				}
 			}else if(msg.arg1 == EMF_OUTBOX_MORE){
 				mAdapter.appendList(list);
+				//列表不为空，显示编辑信件按钮
+				getFloatButton().setVisibility(View.VISIBLE);
 			}
 			
 			break;
 
-		case GET_OUTBOX_LIST_FAILED:
+		case GET_OUTBOX_LIST_FAILED:{
+			//列表为空时，隐藏
+			getFloatButton().setVisibility(View.GONE);
 			if(msg.arg1 == EMF_OUTBOX_INIT){
 				showInitError();
 			}else{
@@ -103,7 +158,7 @@ public class EMFOutboxFragment extends BaseListFragment{
 					ToastUtil.showToast(getActivity(), errorMsg);
 				}
 			}
-			break;
+		}break;
 		}
 		
 		onRefreshComplete();

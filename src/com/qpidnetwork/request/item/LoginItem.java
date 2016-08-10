@@ -37,6 +37,9 @@ public class LoginItem implements Serializable {
 		this.bpemf = false;
 		
 		this.rechargeCredit = 0;
+		this.gaActivity = "";
+		this.adOverview = "";
+		this.adTimestamp = 0;
 	}
 	/**
 	 * 登录成功回调
@@ -65,7 +68,8 @@ public class LoginItem implements Serializable {
 	 * @param bpemf				EMF风控标识（true：有风控，false：无）
 	 * 
 	 * @param rechargeCredit	自动买点配置（0：无权限，大于0：每次买点的数量）
-	 * 
+	 * @param gaActivity		活动统计GA值
+	 * @param adTimestamp       广告更新有效时间间隔
 	 */
 	public LoginItem(
 			String manid,
@@ -92,7 +96,10 @@ public class LoginItem implements Serializable {
 			boolean admirer,
 			boolean bpemf,
 			
-			int rechargeCredit
+			int rechargeCredit,
+			String gaActivity,
+			String adOverview,
+			int adTimestamp
 			) {
 		this.manid = manid;
 		this.email = email;
@@ -131,6 +138,9 @@ public class LoginItem implements Serializable {
 		this.bpemf = bpemf;
 		
 		this.rechargeCredit = rechargeCredit;
+		this.gaActivity = gaActivity;
+		this.adOverview = adOverview;
+		this.adTimestamp = adTimestamp;
 	}
 	
 	public String manid;
@@ -158,6 +168,9 @@ public class LoginItem implements Serializable {
 	public boolean bpemf;
 	
 	public int rechargeCredit;
+	public String gaActivity;
+	public String adOverview;
+	public int adTimestamp;
 	
 	public LoginItem(RegisterItem item) {
 		this();
@@ -175,6 +188,9 @@ public class LoginItem implements Serializable {
 			this.photosend = item.photosend;
 			this.photoreceived = item.photoreceived;
 			this.videoreceived = item.videoreceived;
+			this.gaActivity = item.gaActivity;
+			this.adOverview = item.adOverview;
+			this.adTimestamp = item.adTimestamp;
 		}
 	}
 	
@@ -208,6 +224,9 @@ public class LoginItem implements Serializable {
 			this.bpemf = item.bpemf;
 			
 			this.rechargeCredit = item.rechargeCredit;
+			this.gaActivity = item.gaActivity;
+			this.adOverview = item.adOverview;
+			this.adTimestamp = item.adTimestamp;
 		}
 	}
 	

@@ -2,8 +2,10 @@ package com.qpidnetwork.dating.contacts;
 
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -12,6 +14,7 @@ import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.ContactBean;
 import com.qpidnetwork.dating.bean.RequestFailBean;
 import com.qpidnetwork.dating.contacts.ContactsAdapter.OnContactListItemLongClickListener;
+import com.qpidnetwork.dating.home.HomeActivity;
 import com.qpidnetwork.dating.lady.LadyDetailActivity;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.base.BaseListFragment;
@@ -132,9 +135,15 @@ public class ContactsListFragment extends BaseListFragment implements
 		switch (msg.what) {
 		case GET_CONTACTLIST_SUCCESS:
 			List<ContactBean> list = (List<ContactBean>) msg.obj;
-			mAdapter.replaceList(list);
-			isInited = true;
-			hideLoadingPage();
+			if (list != null && list.size() > 0) {
+				mAdapter.replaceList(list);
+				isInited = true;
+				hideLoadingPage();
+			} else {
+				isInited = false;
+				showInitEmpty(getEmptyView());
+			}
+
 			break;
 
 		case GET_CONTACTLIST_FAILED:
@@ -142,7 +151,7 @@ public class ContactsListFragment extends BaseListFragment implements
 				showInitError();
 			} else {
 				String errorMsg = (String) msg.obj;
-				if(getActivity() != null){
+				if (getActivity() != null) {
 					ToastUtil.showToast(getActivity(), errorMsg);
 				}
 			}
@@ -150,7 +159,11 @@ public class ContactsListFragment extends BaseListFragment implements
 		case CONTACTLIS_UPDATE:
 			/* 联系人更新回调 */
 			List<ContactBean> contactlist = (List<ContactBean>) msg.obj;
-			mAdapter.replaceList(contactlist);
+			if (contactlist != null && contactlist.size() > 0) {
+				mAdapter.replaceList(contactlist);
+				isInited = true;
+				hideLoadingPage();
+			}
 			break;
 
 		case REMOVE_CONTACT_SUCCESS:
@@ -164,6 +177,23 @@ public class ContactsListFragment extends BaseListFragment implements
 			((BaseFragmentActivity) getActivity()).showToastFailed("Failed!");
 			break;
 		}
+	}
+
+	/**
+	 * @return 设置empty view
+	 */
+	private View getEmptyView() {
+		// TODO Auto-generated method stub
+		View view  = LayoutInflater.from(mContext).inflate(R.layout.view_contact_empty, null);
+		view.findViewById(R.id.btnSearch).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				getActivity().sendBroadcast(new Intent(HomeActivity.REFRESH_ONLINE_LADY));
+				getActivity().finish();
+			}
+		});
+		return view;
 	}
 
 	@Override

@@ -26,20 +26,4 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/actionbar_height" />
 
-    <com.qpidnetwork.view.ButtonFloat
-        android:id="@+id/floatButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="24dp"
-        android:layout_marginRight="24dp"
-        android:clickable="true"
-        android:visibility="gone"
-        button:background="@color/blue_color"
-        button:elevation="4dp"
-        button:icon="@drawable/ic_add_white_24dp"
-        button:radius="28dp"
-        button:touch_feedback="@drawable/touch_feedback_holo_dark" />
-
 </RelativeLayout>

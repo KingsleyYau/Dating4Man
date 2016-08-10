@@ -254,7 +254,7 @@ public class LCMessageItem implements Serializable{
 			if (null != record.textMsg) 
 			{
 				LCTextItem textItem = new LCTextItem();
-				textItem.init(record.textMsg);
+				textItem.init(record.textMsg, this.sendType);
 				setTextItem(textItem);
 				result = true;
 			}
@@ -263,7 +263,7 @@ public class LCMessageItem implements Serializable{
 			if (null != record.inviteMsg)
 			{
 				LCTextItem textItem = new LCTextItem();
-				textItem.init(record.inviteMsg);
+				textItem.init(record.inviteMsg, this.sendType);
 				setTextItem(textItem);
 				result = true;
 			}

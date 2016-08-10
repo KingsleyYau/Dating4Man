@@ -32,7 +32,9 @@ import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.RegisterActivity;
 import com.qpidnetwork.dating.bean.ContactBean;
 import com.qpidnetwork.dating.contacts.ContactManager;
+import com.qpidnetwork.dating.credit.BuyCreditActivity;
 import com.qpidnetwork.dating.emf.MailEditActivity;
+import com.qpidnetwork.dating.lady.LadyDetailManager;
 import com.qpidnetwork.dating.livechat.downloader.EmotionPlayImageDownloader2;
 import com.qpidnetwork.dating.livechat.downloader.EmotionPlayImageDownloader2.OnEmotionPlayImageDownloadListener;
 import com.qpidnetwork.dating.livechat.downloader.LivechatVoiceDownloader;
@@ -58,9 +60,13 @@ import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.jni.LiveChatClient.UserStatusType;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
 import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.manager.MonthlyFeeManager;
 import com.qpidnetwork.manager.ThemeConfigManager;
 import com.qpidnetwork.request.RequestJniEMF.ReplyType;
 import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
+import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
+import com.qpidnetwork.request.item.LadyDetail;
+import com.qpidnetwork.request.item.MonthLyFeeTipItem;
 import com.qpidnetwork.request.item.ThemeItem;
 import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.view.EmotionPlayer;
@@ -366,6 +372,8 @@ public class MessageListView extends ScrollLayout implements
 			if(notifyItem.data instanceof ThemeItem){
 				row = getThemeNoMoneyView((ThemeItem)notifyItem.data, bean.fromId);
 			}
+		}else if(notifyItem.notifyType == NotifyType.Monthly_fee){
+			row = getMonthlyFeeNotifyView(bean.fromId);
 		}
 		return row;
 	}
@@ -447,6 +455,41 @@ public class MessageListView extends ScrollLayout implements
 				intent.putExtra("themeItem", item);
 				intent.putExtra("womanId", womanId);
 				mContext.startActivity(intent);				
+			}
+		});
+		return row;
+	}
+	
+	/**
+	 * 第一次月费用户（未缴），遇到服务NoMoney错误提示缴月费
+	 * @return
+	 */
+	private View getMonthlyFeeNotifyView(String womanId){
+		View row = mLayoutInflater.inflate(R.layout.item_monthly_fee_notify, null);
+		ImageView ivPhoto = (ImageView) row.findViewById(R.id.ivPhoto);
+		TextView tvMonlyTips = (TextView) row.findViewById(R.id.tvMonlyTips);
+		TextView tvPriceTips = (TextView) row.findViewById(R.id.tvPriceTips);
+		
+		String monthlyTips = mContext.getString(R.string.livechat_monthly_msg_title_tips);
+		MonthLyFeeTipItem tipItem = MonthlyFeeManager.getInstance().getMonthLyFeeTipItem(MemberType.NO_FEED_FIRST_MONTHLY_MEMBER);
+		String priceTips = String.format(mContext.getString(R.string.livechat_monthly_msg_price_tips), tipItem.priceTitle);
+		tvMonlyTips.setText(monthlyTips);
+		tvPriceTips.setText(priceTips);
+		
+		LadyDetail ladyDetail = LadyDetailManager.getInstance().getLadyDetailById(womanId);
+		if(ladyDetail != null){
+			String loadUrl = ladyDetail.photoMinURL;
+			String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(loadUrl);
+			ImageViewLoader imageDownLoader = new ImageViewLoader(mContext);
+			imageDownLoader.DisplayImage(ivPhoto, loadUrl, localPath, null);
+		}
+		
+		row.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(mContext, BuyCreditActivity.class);
+				mContext.startActivity(intent);	
 			}
 		});
 		return row;
@@ -1098,7 +1141,7 @@ public class MessageListView extends ScrollLayout implements
 							public void onClick(View v) {
 								MailEditActivity.launchMailEditActivity(
 										mContext, item.toId, ReplyType.DEFAULT,
-										"");
+										"", "");
 							}
 						}));
 				dialog.addButton(dialog.createButton(

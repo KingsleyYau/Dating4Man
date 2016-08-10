@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.dating.credit.BuyCreditActivity;
 import com.qpidnetwork.dating.googleanalytics.AnalyticsFragmentActivity;
 import com.qpidnetwork.dating.livechat.downloader.LivechatPrivatePhotoDownloader;
 import com.qpidnetwork.dating.livechat.downloader.LivechatPrivatePhotoDownloader.OnDownloadCallback;
@@ -32,7 +34,10 @@ import com.qpidnetwork.livechat.LCMessageItem.SendType;
 import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.livechat.LiveChatManagerPhotoListener;
 import com.qpidnetwork.livechat.jni.LiveChatClientListener.LiveChatErrType;
+import com.qpidnetwork.manager.MonthlyFeeManager;
 import com.qpidnetwork.request.RequestJniLiveChat.PhotoSizeType;
+import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
+import com.qpidnetwork.request.item.MonthLyFeeTipItem;
 import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.FlatToast;
 import com.qpidnetwork.view.GetMoreCreditDialog;
@@ -54,8 +59,15 @@ public class PrivatePhotoPreviewFragment extends BaseFragment implements
 	 */
 	private RelativeLayout rlDimBody;
 	private ImageView ivDim;
+	private LinearLayout llPrivatePhotoBuy;
 	private TextView textViewTips;
 	private ButtonRaised buttonView;
+	/**
+	 * 处理Nomoney且第一次月费（未缴）提示充值
+	 */
+	private View includeMonthlyFeeError;
+	private TextView tvMonthlyTips;
+	private ButtonRaised btnSubscribe;
 
 	/**
 	 * 已经购买
@@ -130,9 +142,16 @@ public class PrivatePhotoPreviewFragment extends BaseFragment implements
 		 */
 		rlDimBody = (RelativeLayout) view.findViewById(R.id.rlDimBody);
 		ivDim = (ImageView) view.findViewById(R.id.ivDim);
+		llPrivatePhotoBuy = (LinearLayout) view.findViewById(R.id.llPrivatePhotoBuy);
 		textViewTips = (TextView) view.findViewById(R.id.textViewTips);
 		buttonView = (ButtonRaised) view.findViewById(R.id.buttonView);
-
+		
+		/**
+		 * monthly fee
+		 */
+		includeMonthlyFeeError = (View) view.findViewById(R.id.includeMonthlyFeeError);
+		tvMonthlyTips = (TextView) view.findViewById(R.id.tvMonthlyTips);
+		btnSubscribe = (ButtonRaised) view.findViewById(R.id.btnSubscribe);
 		
 		/**
 		 * A view contain a clean image which size is 370 *370
@@ -337,6 +356,11 @@ public class PrivatePhotoPreviewFragment extends BaseFragment implements
 		case R.id.buttonCancel:
 			getActivity().finish();
 			break;
+		case R.id.btnSubscribe:{
+			Intent intent = new Intent(mContext, BuyCreditActivity.class);
+			mContext.startActivity(intent);
+			getActivity().finish();
+		}break;
 		default:
 			break;
 		}
@@ -409,9 +433,19 @@ public class PrivatePhotoPreviewFragment extends BaseFragment implements
 				}else{
 					/*付费失败*/
 					if(callbackItem.errNo.equals("ERROR00003")){
-						final GetMoreCreditDialog dialog = new GetMoreCreditDialog(getActivity(), R.style.ChoosePhotoDialog);
-				        dialog.show();
-				        break;
+						if(MonthlyFeeManager.getInstance().getMemberType() == MemberType.NO_FEED_FIRST_MONTHLY_MEMBER){
+							llPrivatePhotoBuy.setVisibility(View.GONE);
+							includeMonthlyFeeError.setVisibility(View.VISIBLE);
+							MonthLyFeeTipItem monthLyFeeTipItem = MonthlyFeeManager.getInstance().getMonthLyFeeTipItem(MemberType.NO_FEED_FIRST_MONTHLY_MEMBER);
+							String desc = mContext.getString(R.string.livechat_monthly_msg_title_tips) 
+									+ String.format(mContext.getString(R.string.livechat_monthly_msg_price_tips), monthLyFeeTipItem.priceTitle);
+							tvMonthlyTips.setText(desc);
+							btnSubscribe.setOnClickListener(this);
+						}else{
+							final GetMoreCreditDialog dialog = new GetMoreCreditDialog(getActivity(), R.style.ChoosePhotoDialog);
+					        dialog.show();
+					        break;
+						}
 					}
 					
 					UpdateView();

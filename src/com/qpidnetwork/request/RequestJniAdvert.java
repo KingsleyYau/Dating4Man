@@ -36,4 +36,12 @@ public class RequestJniAdvert {
 	 * @return
 	 */
 	static public native long PushAdvert(String deviceId, String pushId, OnAdPushAdvertCallback callback);
+	
+	/**
+	 * 查询App推广广告等Url参数
+	 * @param deviceId		设备唯一标识
+	 * @param callback		回调object
+	 * @return
+	 */
+	static public native long AppPromotionAdvert(String deviceId, OnAppPromotionAdvertCallback callback);
 }

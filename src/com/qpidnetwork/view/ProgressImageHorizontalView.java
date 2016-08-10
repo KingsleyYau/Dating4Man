@@ -3,6 +3,7 @@ package com.qpidnetwork.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,16 +25,18 @@ public class ProgressImageHorizontalView extends RelativeLayout{
 	public ProgressImageHorizontalView(Context context) {
 		super(context);
 		// TODO Auto-generated constructor stub
-		LayoutInflater.from(context).inflate(
-				R.layout.progress_image_horizontal_layout, this, true);
+		View view = LayoutInflater.from(context).inflate(
+				R.layout.progress_image_horizontal_layout, null, true);
+		this.addView(view);
 		init();
 	}
 
 	public ProgressImageHorizontalView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub
-		LayoutInflater.from(context).inflate(
-				R.layout.progress_image_horizontal_layout, this, true);
+		View view = LayoutInflater.from(context).inflate(
+				R.layout.progress_image_horizontal_layout, null, true);
+		this.addView(view);
 		init();
 	}
 
@@ -46,6 +49,6 @@ public class ProgressImageHorizontalView extends RelativeLayout{
 		layoutTips = (LinearLayout) findViewById(R.id.layoutTips);
 		textView = (TextView) findViewById(R.id.textView);
 		buttonCancel = (ImageButton) findViewById(R.id.buttonCancel);
-//		buttonCancel.setBackgroundResource(R.drawable.u211);
+
 	}
 }

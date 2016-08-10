@@ -35,9 +35,9 @@ public class AdmirersListActivity extends BaseActionBarFragmentActivity {
 		getCustomActionBar().setTitle(getString(R.string.menu_admirers), Color.WHITE);
 		getCustomActionBar().setAppbarBackgroundColor(getResources().getColor(WebSiteManager.getInstance().GetWebSite().getSiteColor()));
 		
-		getFloatButton().setId(R.id.common_button_send);
-		getFloatButton().setOnClickListener(this);
-		getFloatButton().setVisibility(View.VISIBLE);
+//		getFloatButton().setId(R.id.common_button_send);
+//		getFloatButton().setOnClickListener(this);
+//		getFloatButton().setVisibility(View.VISIBLE);
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class AdmirersListActivity extends BaseActionBarFragmentActivity {
 			onSearch();
 			break;
 		case R.id.common_button_send:
-			MailEditActivity.launchMailEditActivity(this, "", ReplyType.DEFAULT, "");
+			MailEditActivity.launchMailEditActivity(this, "", ReplyType.DEFAULT, "", "");
 			break;
 		}
 	}

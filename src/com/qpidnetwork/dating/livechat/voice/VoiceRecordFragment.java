@@ -243,7 +243,7 @@ public class VoiceRecordFragment extends BaseFragment {
 			@Override
 			public void onAnimationRepeat(Animation animation) {
 				// TODO Auto-generated method stub
-
+				
 			}
 
 			@Override

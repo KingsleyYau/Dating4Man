@@ -73,13 +73,11 @@ public class EMFAttachmentUploader implements OnClickListener,
 						ContentLength = RequestJni.GetUploadContentLength(mRequestId);
 						SendLength = RequestJni.GetSendLength(mRequestId);
 					}
-					
 					if( mRequestFlag == RequestFlag.REQUEST_UPLOADING ) {
 						if( ContentLength > 0 && SendLength > 0 ) {
 							//view.progressBar.setMax(ContentLength);
 							
 							view.progressBar.setInstantProgress((float)SendLength / (float)ContentLength);
-							Log.v("progress", (float)SendLength / (float)ContentLength + "");
 							//view.progressBar.setProgress(SendLength);
 						}
 //						// 预留20%最后冲刺
@@ -97,13 +95,13 @@ public class EMFAttachmentUploader implements OnClickListener,
 //						mHandler.sendEmptyMessageDelayed(RequestFlag.REQUEST_UPLOADING.ordinal(), 100);
 					} else {
 						// 上传完成
-						view.progressBar.setVisibility(View.GONE);		
+						view.progressBar.setVisibility(View.INVISIBLE);		
 						if( mRequestFlag == RequestFlag.REQUEST_FAIL ) {
 							view.textView.setText("Upload fail");
 							view.buttonCancel.setImageResource(R.drawable.ic_warning_amber_18dp);
 						} else {
 							view.textView.setText("Uploaded");
-							view.buttonCancel.setImageResource(R.drawable.ic_close_white_18dp);
+							view.buttonCancel.setImageResource(R.drawable.ic_close_grey600_18dp);
 						}
 					}
 				}break;

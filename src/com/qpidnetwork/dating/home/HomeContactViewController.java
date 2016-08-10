@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
@@ -72,6 +73,7 @@ public class HomeContactViewController implements OnClickListener,
 	private boolean isInited = false;
 	private MaterialProgressBar progressBar;
 	private LinearLayout noDataView;
+	private LinearLayout llEmpty;//联系人列表为空显示
 	private ButtonRaised noDataViewLogin;
 	private TextView noDataViewTips;
 
@@ -109,8 +111,10 @@ public class HomeContactViewController implements OnClickListener,
 		mContactList = (ListView) mView.findViewById(R.id.lvContacts);
 		expand = (ImageButton) mView.findViewById(R.id.expand);
 		search = (ImageButton) mView.findViewById(R.id.search);
-		progressBar = (MaterialProgressBar) mView
-				.findViewById(R.id.progress_bar);
+		progressBar = (MaterialProgressBar) mView.findViewById(R.id.progress_bar);
+		llEmpty = (LinearLayout) mView.findViewById(R.id.llEmpty);
+		llEmpty.addView(getEmptyView());
+		llEmpty.setVisibility(View.GONE);
 		noDataView = (LinearLayout) mView.findViewById(R.id.no_content);
 		noDataView.setVisibility(View.GONE);
 		noDataViewLogin = (ButtonRaised) mView
@@ -155,6 +159,7 @@ public class HomeContactViewController implements OnClickListener,
 				// showInitLoading();
 			}
 			noDataView.setVisibility(View.GONE);
+			llEmpty.setVisibility(View.GONE);
 			mContactManager.getContacts(this);
 			mRefreshView.setRefreshing(true);
 		} else {
@@ -229,19 +234,34 @@ public class HomeContactViewController implements OnClickListener,
 	private void showListOrNoContent() {
 		if (mAdapter.getDataList() == null
 				|| mAdapter.getDataList().size() == 0) {
-			noDataView.setVisibility(View.VISIBLE);
 			if (LoginManager.getInstance().CheckLogin(mContext, false)) {
-				noDataViewTips
-						.setText(R.string.contact_no_data_tips_logined_in);
-				noDataViewLogin.setVisibility(View.GONE);
+				llEmpty.setVisibility(View.VISIBLE);
+				noDataView.setVisibility(View.GONE);
+				mRefreshView.setVisibility(View.GONE);
 			} else {
-				noDataViewLogin.setVisibility(View.VISIBLE);
+				llEmpty.setVisibility(View.GONE);
+				noDataView.setVisibility(View.VISIBLE);
 				noDataViewTips.setText(R.string.contact_no_data_tips_not_login);
 			}
 
 		} else {
 			noDataView.setVisibility(View.GONE);
+			llEmpty.setVisibility(View.GONE);
+			mRefreshView.setVisibility(View.VISIBLE);
 		}
+	}
+
+	private View getEmptyView() {
+		// TODO Auto-generated method stub
+		View view  = LayoutInflater.from(mContext).inflate(R.layout.view_contact_empty, null);
+		view.findViewById(R.id.btnSearch).setVisibility(View.GONE);
+		view.findViewById(R.id.llPic).setVisibility(View.GONE);
+		LinearLayout llDescription = (LinearLayout)view.findViewById(R.id.llDescription);
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		params.addRule(RelativeLayout.CENTER_IN_PARENT);
+		llDescription.setLayoutParams(params);
+		
+		return view;
 	}
 
 	public void reloadDataIfNull() {

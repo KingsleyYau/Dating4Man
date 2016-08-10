@@ -32,6 +32,7 @@ public class LCNotifyItem implements Serializable{
 		Unknow,
 		Theme_recommand,
 		Theme_nomoney,
+		Monthly_fee,
 	}
 
 }

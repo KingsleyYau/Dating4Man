@@ -58,6 +58,14 @@ public class RequestJniEMF {
 	public enum PrivatePhotoType {
 		LARGE, MIDDLE, SMALL, ORIGINAL
 	}
+	
+	/**
+	 * EMF私密照模糊或清晰
+	 */
+	public enum PrivatePhotoMode{
+		MODE_BLUR,
+		MODE_DISTINCT,
+	}
 
 	/**
 	 * InboxList（查询收件箱列表：/emf/inboxlist）
@@ -147,18 +155,19 @@ public class RequestJniEMF {
 	 * @param useIntegral
 	 * @param gifts
 	 * @param attachs
+	 * @param isLoveCall 是否lovecallReqeust
 	 * @return -1 fails, else success
 	 */
 	static public long SendMsg(String womanid, String body,
 			boolean useIntegral, ReplyType replyType, String mtab,
-			String[] gifts, String[] attachs, OnEMFSendMsgCallback callback) {
+			String[] gifts, String[] attachs, boolean isLoveCall, OnEMFSendMsgCallback callback) {
 		return SendMsg(womanid, body, useIntegral, replyType.ordinal(), mtab,
-				gifts, attachs, callback);
+				gifts, attachs, isLoveCall, callback);
 	}
 
 	static protected native long SendMsg(String womanid, String body,
 			boolean useIntegral, int replyType, String mtab, String[] gifts,
-			String[] attachs, OnEMFSendMsgCallback callback);
+			String[] attachs, boolean isLoveCall, OnEMFSendMsgCallback callback);
 
 	/**
 	 * UploadImage（追加邮件附件：/emf/uploadimage）
@@ -286,14 +295,14 @@ public class RequestJniEMF {
 	 */
 	static public long PrivatePhotoView(String womanId, String photoId,
 			String sendId, String messageId, String filePath,
-			PrivatePhotoType type, OnEMFPrivatePhotoViewCallback callback) {
+			PrivatePhotoType type, PrivatePhotoMode mode, OnEMFPrivatePhotoViewCallback callback) {
 		return PrivatePhotoView(womanId, photoId, sendId, messageId, filePath,
-				type.ordinal(), callback);
+				type.ordinal(), mode.ordinal(), callback);
 	}
 
 	static protected native long PrivatePhotoView(String womanId,
 			String photoId, String sendId, String messageId, String filePath,
-			int type, OnEMFPrivatePhotoViewCallback callback);
+			int type, int mode, OnEMFPrivatePhotoViewCallback callback);
 
 	/**
 	 * 获取EMF详情微视频缩略图

@@ -1,0 +1,270 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:circleimage="http://schemas.android.com/apk/res/com.qpidnetwork.dating"
+    xmlns:button="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tiny_grey_solid"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <!-- header area -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp" >
+
+                <com.qpidnetwork.framework.widget.CircleImageView
+                    android:id="@+id/ivPhoto"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/female_default_profile_photo_40dp"
+                    circleimage:border_color="#FFFFFF"
+                    circleimage:border_width="0dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/tvName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvLadyInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/thin_grey" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/lovecall_mail_schedule_edit_tips"
+                    android:textColor="@color/text_color_dark"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/circle_angle_soild_gray_rect_bg" >
+
+                    <TextView
+                        android:id="@+id/tvSelectCountry"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/touch_feedback_holo_light_round_rectangle"
+                        android:clickable="true"
+                        android:drawableRight="@drawable/ic_expand_more_grey600_24dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:text="@string/lovecall_mail_schedule_edit_selectcountry"
+                        android:textColor="@color/text_color_dark"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/circle_angle_soild_gray_rect_bg" >
+
+                    <TextView
+                        android:id="@+id/tvSelectTimezone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/touch_feedback_holo_light_round_rectangle"
+                        android:clickable="true"
+                        android:drawableRight="@drawable/ic_expand_more_grey600_24dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:text="@string/lovecall_mail_schedule_edit_selectcity"
+                        android:textColor="@color/text_color_dark"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/circle_angle_soild_gray_rect_bg" >
+
+                        <TextView
+                            android:id="@+id/tvSelectDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/touch_feedback_holo_light_round_rectangle"
+                            android:clickable="true"
+                            android:drawableRight="@drawable/ic_expand_more_grey600_24dp"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            android:text="@string/lovecall_mail_schedule_edit_selectdate"
+                            android:textColor="@color/text_color_dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/circle_angle_soild_gray_rect_bg" >
+
+                        <TextView
+                            android:id="@+id/tvSelectTime"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/touch_feedback_holo_light_round_rectangle"
+                            android:clickable="true"
+                            android:drawableRight="@drawable/ic_expand_more_grey600_24dp"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            android:text="@string/lovecall_mail_schedule_edit_selecttime"
+                            android:textColor="@color/text_color_dark"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/lovecall_mail_schedule_edit_message"
+                    android:textColor="@color/text_color_dark"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/etMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/emf_edit_bg"
+                    android:gravity="left|top"
+                    android:minLines="5"
+                    android:padding="8dp"
+                    android:textColorHint="@color/text_color_dark"
+                    android:textSize="16sp" />
+
+                <com.qpidnetwork.view.ButtonRaised
+                    android:id="@+id/btnSend"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    button:background="@color/blue_color"
+                    button:elevation="2dp"
+                    button:title="@string/emf_send"
+                    button:title_color="@color/white"
+                    button:touch_feedback="@drawable/touch_feedback_holo_dark" />
+
+                <TextView
+                    android:id="@+id/tvScheduleTips"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:text="@string/lovecall_mail_schedule_tips_title"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:collapseColumns="2"
+                    android:shrinkColumns="1" >
+
+                    <TableRow>
+
+                        <TextView
+                            android:text="@string/lovecall_mail_schedule_tips_terms_number1"
+                            android:textColor="@color/text_color_grey"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_marginLeft="8dp"
+                            android:text="@string/lovecall_mail_schedule_tips_terms1"
+                            android:textColor="@color/text_color_grey"
+                            android:textSize="14sp" />
+                    </TableRow>
+
+                    <TableRow android:layout_marginTop="4dp" >
+
+                        <TextView
+                            android:text="@string/lovecall_mail_schedule_tips_terms_number2"
+                            android:textColor="@color/text_color_grey"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvTerms"
+                            android:layout_marginLeft="8dp"
+                            android:text="@string/lovecall_mail_schedule_tips_terms2"
+                            android:textColor="@color/text_color_grey"
+                            android:textSize="14sp" />
+                    </TableRow>
+
+                    <TableRow android:layout_marginTop="4dp" >
+
+                        <TextView
+                            android:text="@string/lovecall_mail_schedule_tips_terms_number3"
+                            android:textColor="@color/text_color_grey"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_marginLeft="8dp"
+                            android:text="@string/lovecall_mail_schedule_tips_terms3"
+                            android:textColor="@color/text_color_grey"
+                            android:textSize="14sp" />
+                    </TableRow>
+                </TableLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

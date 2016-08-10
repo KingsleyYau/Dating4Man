@@ -38,6 +38,9 @@ public class LoginFacebookItem implements Serializable {
 		this.bpemf = false;
 		
 		this.rechargeCredit = 0;
+		this.gaActivity = "";
+		this.adOverview = "";
+		this.adTimestamp = 0;
 	}
 	/**
 	 * 登录成功回调
@@ -67,6 +70,9 @@ public class LoginFacebookItem implements Serializable {
 	 * @param bpemf				EMF风控标识（true：有风控，false：无）
 	 * 
 	 * @param rechargeCredit	自动买点配置（0：无权限，大于0：每次买点的数量）
+	 * @param gaActivity		活动统计GA值
+	 * @param adOverview        主界面弹窗参数
+	 * @param adTimestamp       广告更新有效时间间隔
 	 */
 	public LoginFacebookItem(
 			String manid,
@@ -94,7 +100,10 @@ public class LoginFacebookItem implements Serializable {
 			boolean admirer,
 			boolean bpemf,
 			
-			int rechargeCredit
+			int rechargeCredit,
+			String gaActivity,
+			String adOverview,
+			int adTimestamp
 			) {
 		this.manid = manid;
 		this.email = email;
@@ -134,6 +143,9 @@ public class LoginFacebookItem implements Serializable {
 		this.bpemf = bpemf;
 		
 		this.rechargeCredit = rechargeCredit;
+		this.gaActivity = gaActivity;
+		this.adOverview = adOverview;
+		this.adTimestamp = adTimestamp;
 	}
 	
 	public String manid;
@@ -162,4 +174,7 @@ public class LoginFacebookItem implements Serializable {
 	public boolean bpemf;
 	
 	public int rechargeCredit;
+	public String gaActivity;
+	public String adOverview;
+	public int adTimestamp;
 }

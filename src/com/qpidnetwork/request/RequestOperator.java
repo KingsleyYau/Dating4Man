@@ -24,6 +24,7 @@ import com.qpidnetwork.request.RequestEnum.Weight;
 import com.qpidnetwork.request.RequestJniAuthorization.Verify;
 import com.qpidnetwork.request.RequestJniEMF.BlockReasonType;
 import com.qpidnetwork.request.RequestJniEMF.MailType;
+import com.qpidnetwork.request.RequestJniEMF.PrivatePhotoMode;
 import com.qpidnetwork.request.RequestJniEMF.PrivatePhotoType;
 import com.qpidnetwork.request.RequestJniEMF.ProgressType;
 import com.qpidnetwork.request.RequestJniEMF.ReplyType;
@@ -36,6 +37,7 @@ import com.qpidnetwork.request.RequestJniLiveChat.UseType;
 import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
 import com.qpidnetwork.request.RequestJniLiveChat.VideoToFlagType;
 import com.qpidnetwork.request.RequestJniLoveCall.ConfirmType;
+import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 import com.qpidnetwork.request.RequestJniOther.ActionType;
 import com.qpidnetwork.request.RequestJniVideoShow.OrderByType;
 import com.qpidnetwork.request.item.Coupon;
@@ -2543,7 +2545,7 @@ public class RequestOperator {
 					RequestJniEMF.InboxMsg(messageId, callback);
 				} else {
 					// 登录不成功, 回调失败
-					callback.OnEMFInboxMsg(isSuccess, errno, errmsg, null);
+					callback.OnEMFInboxMsg(isSuccess, errno, errmsg, MemberType.NORMAL_MEMBER.ordinal(), null);
 				}
 			}
 		};
@@ -2552,7 +2554,7 @@ public class RequestOperator {
 		return RequestJniEMF.InboxMsg(messageId, new OnEMFInboxMsgCallback() {
 			@Override
 			public void OnEMFInboxMsg(boolean isSuccess, String errno,
-					String errmsg, EMFInboxMsgItem item) {
+					String errmsg, int memberType, EMFInboxMsgItem item) {
 				// TODO Auto-generated method stub
 				// 公共处理
 				boolean bFlag = HandleRequestCallback(isSuccess, errno, errmsg,
@@ -2561,7 +2563,7 @@ public class RequestOperator {
 					// 已经匹配处理, 等待回调
 				} else {
 					// 没有匹配处理, 直接回调
-					callback.OnEMFInboxMsg(isSuccess, errno, errmsg, item);
+					callback.OnEMFInboxMsg(isSuccess, errno, errmsg, memberType, item);
 				}
 			}
 		});
@@ -2774,7 +2776,7 @@ public class RequestOperator {
 					// 登录成功
 					// 再次调用jni接口
 					RequestJniEMF.SendMsg(womanid, body, useIntegral,
-							replyType, mtab, gifts, attachs, callback);
+							replyType, mtab, gifts, attachs, false, callback);
 				} else {
 					// 登录不成功, 回调失败
 					callback.OnEMFSendMsg(isSuccess, errno, errmsg, null, null);
@@ -2784,7 +2786,70 @@ public class RequestOperator {
 
 		// 调用jni接口
 		return RequestJniEMF.SendMsg(womanid, body, useIntegral, replyType,
-				mtab, gifts, attachs, new OnEMFSendMsgCallback() {
+				mtab, gifts, attachs, false, new OnEMFSendMsgCallback() {
+					@Override
+					public void OnEMFSendMsg(boolean isSuccess, String errno,
+							String errmsg, EMFSendMsgItem item,
+							EMFSendMsgErrorItem errItem) {
+						// TODO Auto-generated method stub
+						// 公共处理
+						boolean bFlag = HandleRequestCallback(isSuccess, errno,
+								errmsg, callbackLogin);
+						if (bFlag) {
+							// 已经匹配处理, 等待回调
+						} else {
+							// 没有匹配处理, 直接回调
+							callback.OnEMFSendMsg(isSuccess, errno, errmsg,
+									item, errItem);
+						}
+					}
+				});
+	}
+	
+	/**
+	 * SendLoveCallMsg（发送Lovecall邮件：/emf/sendmsg）
+	 * 
+	 * @param womanid
+	 * @param body
+	 * @param useIntegral
+	 * @param gifts
+	 * @param attachs
+	 * @return -1 fails, else success
+	 */
+	public long SendLoveCallMsg(final String womanid, final String body,
+			final boolean useIntegral, final ReplyType replyType,
+			final String mtab, final String[] gifts, final String[] attachs,
+			final OnEMFSendMsgCallback callback) {
+		// 登录状态改变重新调用接口
+		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
+
+			@Override
+			public void OnLogout(boolean bActive) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void OnLogin(boolean isSuccess, String errno, String errmsg,
+					LoginItem item, LoginErrorItem errItem) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				HandleRequestCallback(isSuccess, errno, errmsg, this);
+				if (isSuccess) {
+					// 登录成功
+					// 再次调用jni接口
+					RequestJniEMF.SendMsg(womanid, body, useIntegral,
+							replyType, mtab, gifts, attachs, true, callback);
+				} else {
+					// 登录不成功, 回调失败
+					callback.OnEMFSendMsg(isSuccess, errno, errmsg, null, null);
+				}
+			}
+		};
+
+		// 调用jni接口
+		return RequestJniEMF.SendMsg(womanid, body, useIntegral, replyType,
+				mtab, gifts, attachs, true, new OnEMFSendMsgCallback() {
 					@Override
 					public void OnEMFSendMsg(boolean isSuccess, String errno,
 							String errmsg, EMFSendMsgItem item,
@@ -3330,7 +3395,7 @@ public class RequestOperator {
 	 */
 	public long PrivatePhotoView(final String womanId, final String photoId,
 			final String sendId, final String messageId, final String filePath,
-			final PrivatePhotoType type,
+			final PrivatePhotoType type, final PrivatePhotoMode mode,
 			final OnEMFPrivatePhotoViewCallback callback) {
 		// 登录状态改变重新调用接口
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
@@ -3351,7 +3416,7 @@ public class RequestOperator {
 					// 登录成功
 					// 再次调用jni接口
 					RequestJniEMF.PrivatePhotoView(womanId, photoId, sendId,
-							messageId, filePath, type, callback);
+							messageId, filePath, type, mode, callback);
 				} else {
 					// 登录不成功, 回调失败
 					callback.OnEMFPrivatePhotoView(isSuccess, errno, errmsg, "");
@@ -3361,7 +3426,7 @@ public class RequestOperator {
 
 		// 调用jni接口
 		return RequestJniEMF.PrivatePhotoView(womanId, photoId, sendId,
-				messageId, filePath, type, new OnEMFPrivatePhotoViewCallback() {
+				messageId, filePath, type, mode, new OnEMFPrivatePhotoViewCallback() {
 					@Override
 					public void OnEMFPrivatePhotoView(boolean isSuccess,
 							String errno, String errmsg, String filePath) {
@@ -3770,7 +3835,7 @@ public class RequestOperator {
 	 * @return 请求唯一标识
 	 */
 	public long ConfirmLoveCall(final String orderId,
-			final ConfirmType confirmType, final OnRequestCallback callback) {
+			final ConfirmType confirmType, final OnConfirmLovecallCallback callback) {
 		// 登录状态改变重新调用接口
 		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
 
@@ -3792,18 +3857,18 @@ public class RequestOperator {
 							callback);
 				} else {
 					// 登录不成功, 回调失败
-					callback.OnRequest(isSuccess, errno, errmsg);
+					callback.OnConfirmLovecall(isSuccess, errno, errmsg, MemberType.NORMAL_MEMBER.ordinal());
 				}
 			}
 		};
 
 		// 调用jni接口
 		return RequestJniLoveCall.ConfirmLoveCall(orderId, confirmType,
-				new OnRequestCallback() {
+				new OnConfirmLovecallCallback() {
 
 					@Override
-					public void OnRequest(boolean isSuccess, String errno,
-							String errmsg) {
+					public void OnConfirmLovecall(boolean isSuccess, String errno,
+							String errmsg, int memberType) {
 						// TODO Auto-generated method stub
 						// 公共处理
 						boolean bFlag = HandleRequestCallback(isSuccess, errno,
@@ -3812,7 +3877,7 @@ public class RequestOperator {
 							// 已经匹配处理, 等待回调
 						} else {
 							// 没有匹配处理, 直接回调
-							callback.OnRequest(isSuccess, errno, errmsg);
+							callback.OnConfirmLovecall(isSuccess, errno, errmsg, memberType);
 						}
 					}
 				});
@@ -4034,7 +4099,7 @@ public class RequestOperator {
 					RequestJniVideoShow.PlayVideo(womanId, videoId, callback);
 				} else {
 					// 登录不成功, 回调失败
-					callback.OnVSPlayVideo(isSuccess, errno, errmsg, 0, null);
+					callback.OnVSPlayVideo(isSuccess, errno, errmsg, MemberType.NORMAL_MEMBER.ordinal(), null);
 				}
 			}
 		};
@@ -4293,6 +4358,68 @@ public class RequestOperator {
 
 	/**************************************************************************************
 	 * VideoShow模块end
+	 **************************************************************************************/
+	
+	/**************************************************************************************
+	 * Advert模块start
+	 **************************************************************************************/
+	
+	/**
+	 * SavedVideoList（查询已收藏的视频列表：/member/saved_video）
+	 * 
+	 * @param pageIndex
+	 * @param pageSize
+	 * @return -1 fails, else success
+	 */
+	public long AppPromotionAdvert(final String deviceId, final OnAppPromotionAdvertCallback callback) {
+		// 登录状态改变重新调用接口
+		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
+
+			@Override
+			public void OnLogout(boolean bActive) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void OnLogin(boolean isSuccess, String errno, String errmsg,
+					LoginItem item, LoginErrorItem errItem) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				HandleRequestCallback(isSuccess, errno, errmsg, this);
+				if (isSuccess) {
+					// 登录成功, 再次调用jni接口
+					RequestJniAdvert.AppPromotionAdvert(deviceId, callback);
+				} else {
+					// 登录不成功, 回调失败
+					callback.OnAppPromotionAdvert(isSuccess, errno, errmsg, "");
+				}
+			}
+		};
+
+		// 调用jni接口
+		return RequestJniAdvert.AppPromotionAdvert(deviceId, new OnAppPromotionAdvertCallback() {
+
+					@Override
+					public void OnAppPromotionAdvert(boolean isSuccess,
+							String errno, String errmsg, String adOverview) {
+						// TODO Auto-generated method stub
+						// 公共处理
+						boolean bFlag = HandleRequestCallback(isSuccess, errno,
+								errmsg, callbackLogin);
+						if (bFlag) {
+							// 已经匹配处理, 等待回调
+						} else {
+							// 没有匹配处理, 直接回调
+							callback.OnAppPromotionAdvert(isSuccess, errno,
+									errmsg, adOverview);
+						}
+					}
+				});
+	}
+	
+	/**************************************************************************************
+	 * Advert模块end
 	 **************************************************************************************/
 
 	/**************************************************************************************

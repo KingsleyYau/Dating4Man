@@ -2,8 +2,6 @@ package com.qpidnetwork.request.item;
 
 import java.io.Serializable;
 
-import com.qpidnetwork.dating.QpidApplication;
-import com.qpidnetwork.dating.R;
 import com.qpidnetwork.request.RequestJniMonthlyFee;
 import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 
@@ -11,15 +9,14 @@ public class MonthLyFeeTipItem implements Serializable{
 
 	private static final long serialVersionUID = 7120978351159031158L;
 	
-	//private static final String firstPriceTitle = "Go Premium to Get All Benefits for only <font color=#006600>$%s</font> today!";//第一次缴月费
-	//private static final String firstPriceTitle = "";//非第一次缴月费
+	private static final String firstPriceTitle = "Go Premium to Get All Benefits for only <font color=green>$%s</font> today!";//第一次缴月费
 	
-	//private static final String normalPriceTitle = "<font color=#999999 size=2>Your premium membership is inactive.</font> <br/> <font color=#333333 size=3><b>Activate to get all benefits</b></font>";//非第一次缴月费
+	private static final String normalPriceTitle = "<small>Your premium membership is inactive.</small><br/><font color=black><b>Activate to get all benefits</b></font>";//非第一次缴月费
 	
 	private static String defaultPriceTitle = "";//默认的priceTitle
 	
 	public MonthLyFeeTipItem(){
-		
+
 	}
 	
 	/**
@@ -34,23 +31,35 @@ public class MonthLyFeeTipItem implements Serializable{
 		this.memberType = RequestJniMonthlyFee.intToMemberType(memberType);
 		this.priceTitle = priceTitle;
 		this.tips = tips;
-		this.priceDescribe = getDefaultPriceTitle(this.memberType);
-		this.priceDescribe = String.format(this.priceDescribe, this.priceTitle);
-		
+		if(this.memberType == MemberType.NO_FEED_FIRST_MONTHLY_MEMBER){
+			//仅第一次月费用户提示使用价格
+			this.priceDescribe = getPriceDescribe();
+		}else{
+			this.priceDescribe = normalPriceTitle;
+		}
 	}
-
+	
+	private String getPriceDescribe() {
+//		String priceDescribe = firstPriceTitle.replace("price", priceTitle);
+		String priceDescribe = String.format(firstPriceTitle, priceTitle);
+		return priceDescribe;
+	}
 	
 	/**
-	 * @return 默认的PriceTitle
+	 * @return 非第一次月费缴费priceTitle
 	 */
+	public String getNormalPriceTitle(){
+		return normalPriceTitle;
+	}
+	
 	/**
 	 * @return 默认的PriceTitle
 	 */
 	public String getDefaultPriceTitle(MemberType type){
 		if(type==MemberType.NO_FEED_FIRST_MONTHLY_MEMBER){//第一次月费默认
-			defaultPriceTitle = QpidApplication.getContext().getString(R.string.first_monthly_fee_title);
-		}else if(type==MemberType.NO_FEED_MONTHLY_MEMBER){//非第一次默认
-			defaultPriceTitle = QpidApplication.getContext().getString(R.string.second_monthly_fee_title);
+			defaultPriceTitle = String.format(firstPriceTitle, "9.99");
+		}else {//非第一次默认
+			defaultPriceTitle = normalPriceTitle;
 		}
 		return defaultPriceTitle;
 	}
@@ -59,7 +68,7 @@ public class MonthLyFeeTipItem implements Serializable{
 	 * @return 默认的tip
 	 */
 	public String[] getDefaultTips(){
-		String[] tip = QpidApplication.getContext().getResources().getStringArray(R.array.default_monthly_fee_package_item);
+		String[] tip = new String[]{"Access all Premium services","Unlock all profile photos","Plus 30 minutes free chat","Plus 10 free first letters"};
 		return tip;
 	}
 

@@ -68,6 +68,8 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 	public static int lastestKickoffTime = 0;
 	public static KickOfflineType kickOffType = KickOfflineType.Unknow;
 	
+	public static long mHomeActicityDestroyTime = 0;//用于推广计算弹出推广广告设计
+	
 	private enum ApplicationHandleType {
 		LOGIN_SUCCESS,
 		LOGOUT,

@@ -1,54 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rlDimBody"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:id="@+id/rlDimBody">
-    
-    
-    
-    <ImageView 
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/ivDim"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:id="@+id/ivDim"/>
-    
-    
-    <View android:layout_width="match_parent"
+        android:layout_centerVertical="true" />
+
+    <View
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/standard_grey"/>
-    
+        android:background="@color/standard_grey" />
+
     <LinearLayout
+        android:id="@+id/llPrivatePhotoBuy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_margin="16dp"
         android:orientation="vertical" >
 
-	    <TextView
-	        android:id="@+id/textViewTips"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:gravity="center_horizontal"
-	        android:text="@string/emf_private_photo_tips"
-	        android:textSize="18sp" 
-	        android:textColor="@color/white"/>
-	
-	    <com.qpidnetwork.view.ButtonRaised
-	        android:id="@+id/buttonView"
-	        android:layout_width="96dp"
-	        android:layout_height="40dp"
-	        android:layout_gravity="center"
-	        android:layout_marginTop="16dp"
-	        android:clickable="true"
-	        android:onClick="onClickView"
-	        app:background="@color/white"
-	        app:elevation="1dp"
-	        app:title="@string/emf_View"
-	        app:title_color="@color/text_color_dark"
-	        app:touch_feedback="@drawable/touch_feedback_round_border_white" />
-	  </LinearLayout>
+        <TextView
+            android:id="@+id/textViewTips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/emf_private_photo_tips"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
 
+        <com.qpidnetwork.view.ButtonRaised
+            android:id="@+id/buttonView"
+            android:layout_width="96dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:clickable="true"
+            android:onClick="onClickView"
+            app:background="@color/white"
+            app:elevation="1dp"
+            app:title="@string/emf_View"
+            app:title_color="@color/text_color_dark"
+            app:touch_feedback="@drawable/touch_feedback_round_border_white" />
+    </LinearLayout>
     
+    <include
+        android:id="@+id/includeMonthlyFeeError" 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        layout="@layout/include_monthly_fee_error"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
 </RelativeLayout>

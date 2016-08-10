@@ -1,4 +1,4 @@
-package com.qpidnetwork.dating.livechat.expression;
+package com.qpidnetwork.dating.livechat.normalexp;
 
 import java.io.File;
 import java.util.List;
@@ -15,10 +15,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.livechat.ChatActivity;
 import com.qpidnetwork.framework.base.BaseFragment;
+import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.livechat.LCMagicIconItem;
 import com.qpidnetwork.livechat.LCMessageItem;
 import com.qpidnetwork.livechat.LiveChatManager;
@@ -28,39 +31,30 @@ import com.qpidnetwork.request.item.MagicIconConfig;
 import com.qpidnetwork.request.item.MagicIconItem;
 import com.qpidnetwork.tool.ImageViewLoader;
 
-public class HighExpressionFragment extends BaseFragment implements LiveChatManagerMagicIconListener{
-	
+public class MagicIconsOtherFragment extends BaseFragment implements
+		LiveChatManagerMagicIconListener {
+
 	private static final int GET_MAGICICON_THUNMB_CALLBACK = 1;
-	
-	private GridView gvEmotion;
-	public OnItemClickCallback itemClickCallback;
+
+	private GridView gvMagicIcon;
 
 	private List<MagicIconItem> mIconItemList;
-	private HighExpressionGridViewAdapter mAdapter;
+	private MagicIconGridviewAdapter mAdapter;
 	private LiveChatManager mLiveChatManager;
 
-	public HighExpressionFragment(List<MagicIconItem> iconItemList) {
+	private int mVpHeight = 0;
+
+	public MagicIconsOtherFragment(int vpHeight, List<MagicIconItem> iconItemList) {
 		super();
 		this.mIconItemList = iconItemList;
+		this.mVpHeight = vpHeight;
 	}
-
-	public interface OnItemClickCallback {
-		public void onItemClick();
-
-		public void onItemLongClick();
-
-		public void onItemLongClickUp();
-	}
-
-	public void setOnItemClickCallback(OnItemClickCallback callback) {
-		this.itemClickCallback = callback;
-	};
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_emotion_gridview, null);
-		gvEmotion = (GridView) view.findViewById(R.id.gvEmotion);
+		View view = inflater.inflate(R.layout.fragment_magic_gridview, null);
+		gvMagicIcon = (GridView) view.findViewById(R.id.gvMagicIcon);
 		return view;
 	}
 
@@ -68,67 +62,79 @@ public class HighExpressionFragment extends BaseFragment implements LiveChatMana
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
+		
+		int gvHeight = (mVpHeight - UnitConversion.dip2px(mContext, 40 + 10));
+		
+		if(gvHeight>0){
+			gvMagicIcon.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, gvHeight));
+		}
+		
 		mLiveChatManager = LiveChatManager.getInstance();
-		if(mIconItemList.size()>0){
+		if (mIconItemList.size() > 0) {
 			mLiveChatManager.RegisterMagicIconListener(this);
-			mAdapter = new HighExpressionGridViewAdapter(getActivity(),mIconItemList);
-			gvEmotion.setAdapter(mAdapter);
-			gvEmotion.setOnItemClickListener(new OnItemClickListener() {
+			mAdapter = new MagicIconGridviewAdapter(getActivity(),(gvHeight-UnitConversion.dip2px(mContext, 1))/2,mIconItemList);
+			gvMagicIcon.setAdapter(mAdapter);
+			gvMagicIcon.setOnItemClickListener(new OnItemClickListener() {
 				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					MagicIconItem item =  mIconItemList.get(position);
+				public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
+					MagicIconItem item = mIconItemList.get(position);
 					Intent intent = new Intent(ChatActivity.SEND_MAGICICON_ACTION);
 					intent.putExtra(ChatActivity.MAGICICON_ID, item.id);
-					mContext.sendBroadcast(intent);					
+					mContext.sendBroadcast(intent);
 				}
 			});
 		}
 	}
-	
+
+
 	@Override
 	protected void handleUiMessage(Message msg) {
 		// TODO Auto-generated method stub
 		super.handleUiMessage(msg);
 		switch (msg.what) {
-		case GET_MAGICICON_THUNMB_CALLBACK:{
-			LCMagicIconItem item = (LCMagicIconItem)msg.obj;
-			if(item != null){
+		case GET_MAGICICON_THUNMB_CALLBACK: {
+			LCMagicIconItem item = (LCMagicIconItem) msg.obj;
+			if (item != null) {
 				String localPath = item.getThumbPath();
-				if(!TextUtils.isEmpty(localPath) && (new File(localPath).exists())){
+				if (!TextUtils.isEmpty(localPath)
+						&& (new File(localPath).exists())) {
 					updateMagicThumbImage(item);
 				}
 			}
-		}break;
+		}
+			break;
 
 		default:
 			break;
 		}
 	}
-	
-	private void updateMagicThumbImage(LCMagicIconItem item){
-		if(item != null){
+
+	private void updateMagicThumbImage(LCMagicIconItem item) {
+		if (item != null) {
 			int position = -1;
-			if(mIconItemList != null){
-				for(int i=0; i<mIconItemList.size(); i++){
-					if(mIconItemList.get(i).id.equals(item.getMagicIconId())){
+			if (mIconItemList != null) {
+				for (int i = 0; i < mIconItemList.size(); i++) {
+					if (mIconItemList.get(i).id.equals(item.getMagicIconId())) {
 						position = i;
 						break;
 					}
 				}
 			}
-			
-			if(position >= 0){
-				/*更新单个Item*/
-				 View childAt = gvEmotion.getChildAt(position - gvEmotion.getFirstVisiblePosition());
-				 if(childAt != null){
-					 ImageView magicIconImage = ((ImageView) childAt.findViewById(R.id.icon));
-					 new ImageViewLoader(mContext).DisplayImage(magicIconImage, null, item.getThumbPath(), null);
-				 }
+
+			if (position >= 0) {
+				/* 更新单个Item */
+				View childAt = gvMagicIcon.getChildAt(position
+						- gvMagicIcon.getFirstVisiblePosition());
+				if (childAt != null) {
+					ImageView magicIconImage = ((ImageView) childAt
+							.findViewById(R.id.icon));
+					new ImageViewLoader(mContext).DisplayImage(magicIconImage,
+							null, item.getThumbPath(), null);
+				}
 			}
 		}
 	}
-	
+
 	@Override
 	public void onDetach() {
 		// TODO Auto-generated method stub
@@ -136,34 +142,34 @@ public class HighExpressionFragment extends BaseFragment implements LiveChatMana
 		mLiveChatManager.UnregisterMagicIconListener(this);
 	}
 
-	//------------------ MagicIcon relative callback --------------------------
+	// ------------------ MagicIcon relative callback --------------------------
 	@Override
 	public void OnGetMagicIconConfig(boolean success, String errno,
 			String errmsg, MagicIconConfig item) {
-		
+
 	}
 
 	@Override
 	public void OnSendMagicIcon(LiveChatErrType errType, String errmsg,
 			LCMessageItem item) {
-		
+
 	}
 
 	@Override
 	public void OnRecvMagicIcon(LCMessageItem item) {
-		
+
 	}
 
 	@Override
 	public void OnGetMagicIconSrcImage(boolean success,
 			LCMagicIconItem magicIconItem) {
-		
+
 	}
 
 	@Override
 	public void OnGetMagicIconThumbImage(boolean success,
 			LCMagicIconItem magicIconItem) {
-		if(success){
+		if (success) {
 			Message msg = Message.obtain();
 			msg.what = GET_MAGICICON_THUNMB_CALLBACK;
 			msg.obj = magicIconItem;

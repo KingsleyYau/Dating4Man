@@ -15,6 +15,7 @@
 #include <livechat/LiveChatJniCallbackItemDef.h>
 #include <common/CheckMemoryLeak.h>
 #include <common/KLog.h>
+#include <AndroidCommon/DeviceJniIntToType.h>
 
 using namespace std;
 

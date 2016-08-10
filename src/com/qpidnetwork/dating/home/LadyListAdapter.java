@@ -13,6 +13,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.widget.CardView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
@@ -30,14 +32,20 @@ import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.advertisement.AdWomanListAdvertItem;
 import com.qpidnetwork.dating.advertisement.AdvertisementManager;
 import com.qpidnetwork.dating.authorization.LoginManager;
+import com.qpidnetwork.dating.contacts.ContactManager;
 import com.qpidnetwork.dating.emf.MailEditActivity;
 import com.qpidnetwork.dating.lady.LadyDetailActivity;
 import com.qpidnetwork.dating.lady.LadyListItem;
 import com.qpidnetwork.dating.lady.LadyListManager;
 import com.qpidnetwork.dating.lady.VideoDetailActivity;
 import com.qpidnetwork.dating.livechat.ChatActivity;
+import com.qpidnetwork.dating.livechat.ExpressionImageGetter;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.UnitConversion;
+import com.qpidnetwork.livechat.LCMessageItem;
+import com.qpidnetwork.livechat.LCUserItem;
+import com.qpidnetwork.livechat.LCUserItem.ChatType;
+import com.qpidnetwork.livechat.LiveChatManager;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.manager.FileCacheManager.LadyFileType;
 import com.qpidnetwork.request.RequestEnum.OnlineStatus;
@@ -75,6 +83,8 @@ public class LadyListAdapter extends BaseAdapter {
 	}
 	public ChatButtonType mChatButtonType = ChatButtonType.Chat;
 	
+	private ExpressionImageGetter imageGetter;
+	
 	@SuppressLint("InflateParams")
 	public LadyListAdapter(Context context, List<LadyListItem> data){
 		this.mContext = context;
@@ -94,6 +104,8 @@ public class LadyListAdapter extends BaseAdapter {
 		
 		// 生成广告view
 		mAdvertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_lady_list_advert_item, null); 
+		//邀请小表情处理
+		imageGetter = new ExpressionImageGetter(context, UnitConversion.dip2px(context, 16), UnitConversion.dip2px(context, 16));
 	}
 
 	@Override
@@ -257,8 +269,24 @@ public class LadyListAdapter extends BaseAdapter {
 		// 是否在线
 		if(item.lady.onlineStatus.equals(OnlineStatus.Online)){
 			holder.onlineIndicator.setBackgroundResource(R.drawable.green_rounded_rect);
+			//添加邀请功能
+			String inviteMessage = getInviteMessage(item.lady.womanid);
+			if(!TextUtils.isEmpty(inviteMessage)){
+				holder.tvInivte.setVisibility(View.VISIBLE);
+				holder.tvInivte.setText(imageGetter.getExpressMsgHTML(inviteMessage));
+				holder.ivCanChat.setVisibility(View.VISIBLE);
+			}else{
+				holder.tvInivte.setVisibility(View.GONE);
+				holder.ivCanChat.setVisibility(View.GONE);
+			}
+			holder.buttonChat.setImageResource(R.drawable.ic_chat_grey600_24dp);
+			holder.buttonChat.setEnabled(true);
 		}else{
 			holder.onlineIndicator.setBackgroundResource(R.drawable.grey_rounded_rect);
+			holder.tvInivte.setVisibility(View.GONE);
+			holder.ivCanChat.setVisibility(View.GONE);
+			holder.buttonChat.setImageResource(R.drawable.ic_chat_greyc8c8c8_24dp);
+			holder.buttonChat.setEnabled(false);
 		}
 		
 		LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)holder.flPhoto.getLayoutParams();
@@ -283,61 +311,38 @@ public class LadyListAdapter extends BaseAdapter {
 		
 		// 第一个按钮
 		switch (mChatButtonType) {
-		case Default: {
-			// 不显示
-			holder.buttonChat.setVisibility(View.GONE);
-		}break;
+		case Default: 
 		case Chat:{
-			// 聊天
-			holder.buttonChat.setVisibility(View.VISIBLE);
-			holder.buttonChat.setImageResource(R.drawable.ic_chat_grey600_24dp);
-			
-			//点击进入Livechat
-			holder.buttonChat.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					ChatActivity.launchChatActivity(mContext, item.lady.womanid, item.lady.firstname, "");
-				}
-			});
+			// 不显示
+			holder.buttonCall.setVisibility(View.GONE);
+			holder.buttonVideo.setVisibility(View.GONE);
 		}break;
 		case Call:{
 			// 打电话
-			holder.buttonChat.setVisibility(View.VISIBLE);
-			holder.buttonChat.setImageResource(R.drawable.ic_call_grey600_24dp);
-			
-			//点击进入Livechat
-			holder.buttonChat.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					if( callback != null ) {
-						callback.OnClickCallLady(item);
-					}
-				}
-			});
+			holder.buttonCall.setVisibility(View.VISIBLE);
+			holder.buttonVideo.setVisibility(View.GONE);
 		}break;
 		case Video:{
 			// 视频
-			holder.buttonChat.setVisibility(View.VISIBLE);
-			holder.buttonChat.setImageResource(R.drawable.ic_video_collection_grey600_24dp);
-			
-			holder.buttonChat.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					VideoDetailActivity.launchLadyVideoDetailActivity(mContext, item.lady.womanid, item.lady.firstname);
-				}
-			});
-			
+			holder.buttonCall.setVisibility(View.GONE);
+			holder.buttonVideo.setVisibility(View.VISIBLE);
 		}break;
 		default:
 			break;
 		}
 
+		//点击进入Livechat
+		holder.buttonChat.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if(item.lady.onlineStatus.equals(OnlineStatus.Online)){
+					//在线打开聊天界面
+					ChatActivity.launchChatActivity(mContext, item.lady.womanid, item.lady.firstname, "");
+				}
+			}
+		});
 		
 		// 点击进入发送emf
 		holder.buttonMail.setOnClickListener(new OnClickListener() {
@@ -349,11 +354,32 @@ public class LadyListAdapter extends BaseAdapter {
 				boolean bFlag = LoginManager.getInstance().CheckLogin(mContext);
 				if( bFlag ) {
 					// 跳进发送emf
-					MailEditActivity.launchMailEditActivity(mContext, item.lady.womanid, ReplyType.DEFAULT, "");
+					MailEditActivity.launchMailEditActivity(mContext, item.lady.womanid, ReplyType.DEFAULT, "", "");
 				}
 			}
 		});
 		
+		//点击拨打电话
+		holder.buttonCall.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if( callback != null ) {
+					callback.OnClickCallLady(item);
+				}
+			}
+		});
+		
+		//点击查看视频
+		holder.buttonVideo.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				VideoDetailActivity.launchLadyVideoDetailActivity(mContext, item.lady.womanid, item.lady.firstname, "");
+			}
+		});
 		
 		
 		holder.imageViewOverFlow.setOnClickListener(new OnClickListener() {
@@ -396,9 +422,13 @@ public class LadyListAdapter extends BaseAdapter {
 		public TextView tvLadyAge;
 		public ImageViewLoader loader;
 		public String womanId;
+		public TextView tvInivte;
 		
+		public ImageView ivCanChat;
 		public ImageButton buttonChat;
 		public ImageButton buttonMail;
+		public ImageButton buttonCall;
+		public ImageButton buttonVideo;
 		public ImageButton imageViewOverFlow;
 		public View onlineIndicator;
 		
@@ -409,9 +439,13 @@ public class LadyListAdapter extends BaseAdapter {
 			tvLadyName = (TextView)convertView.findViewById(R.id.tvLadyName);
 			cvCard = (CardView)convertView.findViewById(R.id.cardView);
 			tvLadyAge = (TextView)convertView.findViewById(R.id.tvLadyAge);
+			tvInivte = (TextView)convertView.findViewById(R.id.tvInivte);
 			
+			ivCanChat = (ImageView)convertView.findViewById(R.id.ivCanChat);
 			buttonChat = (ImageButton)convertView.findViewById(R.id.buttonChat);
 			buttonMail = (ImageButton)convertView.findViewById(R.id.buttonMail);
+			buttonCall = (ImageButton)convertView.findViewById(R.id.buttonCall);
+			buttonVideo = (ImageButton)convertView.findViewById(R.id.buttonVideo);
 			imageViewOverFlow = (ImageButton)convertView.findViewById(R.id.imageViewOverFlow);
 			onlineIndicator = (View)convertView.findViewById(R.id.online_indicator);
 			
@@ -432,9 +466,9 @@ public class LadyListAdapter extends BaseAdapter {
 				((RelativeLayout.LayoutParams)imageViewOverFlow.getLayoutParams()).rightMargin = UnitConversion.dip2px(mContext, -6);
 			}
 			
-			if (mChatButtonType != ChatButtonType.Default){
-				((RelativeLayout.LayoutParams)buttonMail.getLayoutParams()).leftMargin = 0;
-			}
+//			if (mChatButtonType != ChatButtonType.Default){
+//				((RelativeLayout.LayoutParams)buttonMail.getLayoutParams()).leftMargin = 0;
+//			}
 			
 			convertView.setTag(this);
 		}
@@ -489,5 +523,23 @@ public class LadyListAdapter extends BaseAdapter {
             src.recycle(); // 释放Bitmap的native像素数组
         }
         return dst;
+    }
+    
+    /*
+     * 获取这个女士发来的最后一条消息
+     */
+    private String getInviteMessage(String womanId){
+    	String inviteMessage = "";
+    	LiveChatManager livechatManager = LiveChatManager.getInstance();
+    	LCUserItem userItem = livechatManager.GetUserWithId(womanId);
+    	if((userItem.chatType == ChatType.Invite)
+    			&&(userItem.getMsgList()!= null)
+    			&&(userItem.getMsgList().size()>0)){
+    		LCMessageItem lastMsg = userItem.getTheOtherLastMessage();
+    		if(lastMsg != null){
+    			inviteMessage = ContactManager.getInstance().generateMsgHint(lastMsg);
+    		}
+    	}
+    	return inviteMessage;
     }
 }

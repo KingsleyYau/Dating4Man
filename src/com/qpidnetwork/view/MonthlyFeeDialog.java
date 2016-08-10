@@ -1,7 +1,6 @@
 package com.qpidnetwork.view;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,13 +9,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.text.Html;
 import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -24,12 +19,13 @@ import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.credit.BuyCreditActivity;
+import com.qpidnetwork.dating.credit.MonthlyFeeNotifyAdapter;
+import com.qpidnetwork.dating.googleanalytics.AnalyticsDialog;
 import com.qpidnetwork.manager.WebSiteManager;
-import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 import com.qpidnetwork.request.item.MonthLyFeeTipItem;
 
 @SuppressLint("InflateParams")
-public class MonthlyFeeDialog extends Dialog implements OnClickListener {
+public class MonthlyFeeDialog extends AnalyticsDialog implements OnClickListener {
 
 	private float density = this.getContext().getResources().getDisplayMetrics().density;
 	private Context mContext;
@@ -41,7 +37,7 @@ public class MonthlyFeeDialog extends Dialog implements OnClickListener {
 	private MonthLyFeeTipItem mMonthlyFeeTipItem;
 	private WebSiteManager siteManager;
 	
-	private TipsAdapter mAdapter;
+	private MonthlyFeeNotifyAdapter mAdapter;
 
 	public MonthlyFeeDialog(Context context) {
 		super(context);
@@ -128,7 +124,7 @@ public class MonthlyFeeDialog extends Dialog implements OnClickListener {
 	private void updateView() {
 		// TODO Auto-generated method stub
 		tvPrice.setText(Html.fromHtml(mMonthlyFeeTipItem.priceDescribe));
-		mAdapter = new TipsAdapter(mMonthlyFeeTipItem.tips);
+		mAdapter = new MonthlyFeeNotifyAdapter(mContext, mMonthlyFeeTipItem.tips);
 		listView.setAdapter(mAdapter);
 	}
 
@@ -143,46 +139,5 @@ public class MonthlyFeeDialog extends Dialog implements OnClickListener {
 		Intent intent = new Intent(mContext, BuyCreditActivity.class);
 		mContext.startActivity(intent);
 		dismiss();
-	}
-
-	class TipsAdapter extends BaseAdapter {
-
-		private String[] tips;
-		
-		public TipsAdapter(String[] tips) {
-			super();
-			this.tips = tips;
-		}
-
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return tips.length;
-		}
-
-		@Override
-		public Object getItem(int position) {
-			// TODO Auto-generated method stub
-			return tips[position];
-		}
-
-		@Override
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
-			if (convertView == null) {
-				convertView = LayoutInflater.from(mContext).inflate(R.layout.item_dialog_monthly_fee, null);
-			}
-			TextView tv_servers = (TextView)convertView.findViewById(R.id.tv_servers);
-			tv_servers.setText(tips[position]);
-
-			return convertView;
-		}
-
 	}
 }

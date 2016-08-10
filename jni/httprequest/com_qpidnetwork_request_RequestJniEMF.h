@@ -50,10 +50,10 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_MsgTotal
 /*
  * Class:     com_qpidnetwork_request_RequestJniEMF
  * Method:    SendMsg
- * Signature: (Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lcom/qpidnetwork/request/OnEMFSendMsgCallback;)J
+ * Signature: (Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;[Ljava/lang/String;[Ljava/lang/String;ZLcom/qpidnetwork/request/OnEMFSendMsgCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_SendMsg
-  (JNIEnv *, jclass, jstring, jstring, jboolean, jint, jstring, jobjectArray, jobjectArray, jobject);
+  (JNIEnv *, jclass, jstring, jstring, jboolean, jint, jstring, jobjectArray, jobjectArray, jboolean, jobject);
 
 /*
  * Class:     com_qpidnetwork_request_RequestJniEMF
@@ -130,10 +130,10 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_InboxPhotoFee
 /*
  * Class:     com_qpidnetwork_request_RequestJniEMF
  * Method:    PrivatePhotoView
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILcom/qpidnetwork/request/OnEMFPrivatePhotoViewCallback;)J
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IILcom/qpidnetwork/request/OnEMFPrivatePhotoViewCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_PrivatePhotoView
-  (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jstring, jint, jobject);
+  (JNIEnv *, jclass, jstring, jstring, jstring, jstring, jstring, jint, jint, jobject);
 
 /*
  * Class:     com_qpidnetwork_request_RequestJniEMF

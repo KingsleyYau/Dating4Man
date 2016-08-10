@@ -5,17 +5,23 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.ContactBean;
 import com.qpidnetwork.dating.contacts.ContactManager;
+import com.qpidnetwork.framework.util.SystemUtil;
+import com.qpidnetwork.framework.util.UnitConversion;
 import com.qpidnetwork.framework.widget.stickygridheaders.StickyGridHeadersBaseAdapter;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.manager.ThemeConfigManager;
@@ -99,18 +105,32 @@ public class MyScenesAdapter implements StickyGridHeadersBaseAdapter {
 	public View getHeaderView(int position, View convertView, ViewGroup parent) {
 		// b.setText(mTagItem[position].tagName);
 		HeadViewHolder holder = null;
-		if (holder == null) {
+		if (convertView == null) {
 			holder = new HeadViewHolder();
 			convertView = View.inflate(mContext,R.layout.adapter_myscenes_head, null);
 			holder.ivPhoto = (ImageView) convertView.findViewById(R.id.ivPhoto);
 			holder.tvTag = (TextView) convertView.findViewById(R.id.tvTag);
+			holder.imageDownLoader = null;
 			convertView.setTag(holder);
 		} else {
 			holder = (HeadViewHolder) convertView.getTag();
 		}
+		
+		convertView.setLayoutParams(new GridView.LayoutParams(  
+				GridView.LayoutParams.WRAP_CONTENT,  
+				GridView.LayoutParams.WRAP_CONTENT)); 
+		
+		if ( null != holder.imageDownLoader ) {
+			// 停止回收旧Downloader
+			holder.imageDownLoader.ResetImageView();
+		}
 		String imgUrl = getWomanUrlByPosition(position);//获取女士头像
-		String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(imgUrl);// 获取本地缓存路径
-		new ImageViewLoader(mContext).DisplayImage(holder.ivPhoto, imgUrl,localPath, null);
+		if(!TextUtils.isEmpty(imgUrl)){
+			String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(imgUrl);// 获取本地缓存路径
+			holder.imageDownLoader = new ImageViewLoader(mContext);
+			holder.imageDownLoader.SetDefaultImage(mContext.getResources().getDrawable(R.drawable.female_default_profile_photo_40dp));
+			holder.imageDownLoader.DisplayImage(holder.ivPhoto, imgUrl,localPath, null);
+		}
 		
 		holder.tvTag.setText(getWomanNameById(mWomanId.get(position)));
 		return convertView;
@@ -121,10 +141,11 @@ public class MyScenesAdapter implements StickyGridHeadersBaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		ItemViewHolder holder = null;
 		
-		
+
 		if (convertView == null) {
 			convertView = LayoutInflater.from(parent.getContext()).inflate( R.layout.adapter_theme_item, null);
 			holder = new ItemViewHolder(convertView);
+			holder.imageDownLoader = null;
 		} else {
 			holder = (ItemViewHolder) convertView.getTag();
 		}
@@ -142,10 +163,21 @@ public class MyScenesAdapter implements StickyGridHeadersBaseAdapter {
 			holder.btnMost.setVisibility(View.GONE);
 		}
 		holder.tvDes.setText(mThemeList.get(position).title);
-
+		if ( null != holder.imageDownLoader ) {
+			// 停止回收旧Downloader
+			holder.imageDownLoader.ResetImageView();
+		}
 		String imgUrl = ThemeConfigManager.newInstance().getThemeThumbUrl(mThemeList.get(position).themeId);
-		String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(imgUrl);// 获取本地缓存路径
-		new ImageViewLoader(mContext).DisplayImage(holder.ivImg, imgUrl,localPath, null);
+		if((imgUrl != null)&&(!imgUrl.equals(""))){
+			int width = (SystemUtil.getDisplayMetrics(mContext).widthPixels - UnitConversion.dip2px(mContext, 4 + 4 + 4 + 4))/2;
+			int height = UnitConversion.dip2px(mContext, 160);
+			String localPath = FileCacheManager.getInstance().CacheImagePathFromUrl(imgUrl);
+			holder.imageDownLoader = new ImageViewLoader(mContext);
+			Drawable drawable = new ColorDrawable(Color.WHITE);
+			drawable.setBounds(0, 0, width, height);
+			holder.imageDownLoader.SetDefaultImage(drawable);
+			holder.imageDownLoader.DisplayImage(holder.ivImg, true, imgUrl, width, height, 2, 0, localPath, null);
+		}
 
 		return convertView;
 	}
@@ -171,6 +203,7 @@ public class MyScenesAdapter implements StickyGridHeadersBaseAdapter {
 	public class HeadViewHolder {
 		ImageView ivPhoto;//女士头像
 		TextView tvTag;// 分类标题
+		ImageViewLoader imageDownLoader;
 	}
 
 	public class ItemViewHolder {
@@ -179,6 +212,7 @@ public class MyScenesAdapter implements StickyGridHeadersBaseAdapter {
 		ImageView ivImg;// 主题图片
 		TextView tvDes;// 主题描述
 		int position;
+		ImageViewLoader imageDownLoader;
 		
 		public ItemViewHolder(View itemView){
 			ivImg = (ImageView) itemView.findViewById(R.id.ivImg);

@@ -151,6 +151,13 @@
                 android:textCursorDrawable="@drawable/material_text_field_cursor"
                 android:textSize="16sp" />
 
+            <!-- <ImageButton -->
+            <!-- android:id="@+id/btnExpression" -->
+            <!-- android:layout_width="36dp" -->
+            <!-- android:layout_height="36dp" -->
+            <!-- android:layout_marginLeft="4dp" -->
+            <!-- android:background="@drawable/touch_feedback_holo_light_circle" -->
+            <!-- android:src="@drawable/ic_tag_faces_grey600_24dp" /> -->
 
             <ImageButton
                 android:id="@+id/btnSend"
@@ -191,7 +198,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="left|center" >
+                android:gravity="left|center"
+                android:visibility="gone" >
 
                 <ImageButton
                     android:id="@+id/btnEmotion"

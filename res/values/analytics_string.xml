@@ -84,6 +84,7 @@
 	<string name="LoveCall.Scheduled_com.qpidnetwork.dating.lovecall.LoveCallDetailActivity">LoveCall.ScheduledDetail</string>
 	<string name="com.qpidnetwork.dating.lovecall.LoveCallListActivity_1">LoveCall.Request</string>
 	<string name="LoveCall.Request_com.qpidnetwork.dating.lovecall.LoveCallDetailActivity">LoveCall.RequestDetail</string>
+	<string name="com.qpidnetwork.dating.lovecall.ScheduleCallActivity">LoveCall.ScheduleCall</string>
 	
 	<string name="com.qpidnetwork.dating.livechat.ChatActivity">LiveChat.Chat</string>
 	<string name="com.qpidnetwork.dating.livechat.picture.PictureSelectActivity">LiveChat.PictureSelect</string>
@@ -92,6 +93,9 @@
 	<string name="LiveChat.VideoHistoryList_com.qpidnetwork.dating.livechat.VideoPlayActivity">LiveChat.VideoInRecent</string>
 	<string name="LiveChat.Chat_com.qpidnetwork.dating.livechat.VideoPlayActivity">LiveChat.VideoInChat</string>
 	<string name="com.qpidnetwork.dating.livechat.invite.LivechatInviteListActivity">LiveChat.InviteList</string>
+	<string name="com_qpidnetwork_dating_livechat_theme_store_ThemeMainActivity_0">LiveChat.SceneStore</string>
+	<string name="com_qpidnetwork_dating_livechat_theme_store_ThemeMainActivity_1">LiveChat.MyScene</string>
+	<string name="com_qpidnetwork_dating_livechat_theme_store_SceneDetailActivity">LiveChat.SceneDetail</string>
 	
 	<string name="com.qpidnetwork.dating.lady.LadyDetailActivity">Lady.Detail</string>
 	<string name="com.qpidnetwork.dating.lady.LadyLabelActivity">Lady.Label</string>
@@ -117,6 +121,7 @@
 	<string name="Setting.Main_com.qpidnetwork.dating.WebViewActivity">Help</string>
 	
 	<string name="com.qpidnetwork.view.GetMoreCreditDialog">;parentkeywords;CreditAdd</string>
+	<string name="com.qpidnetwork.view.MonthlyFeeDialog">;parentkeywords;BuyPremium</string>
 	<string name="com.qpidnetwork.dating.credit.BuyCreditActivity">BuyCredit</string>
 
 	<string name="com.qpidnetwork.dating.contactus.ContactTicketListActivity">ContactUs.ContactTicketList</string>	
@@ -139,6 +144,10 @@
 	<string name="LiveChatF_Label_AnimatedEmotions">LiveChat.AnimatedEmotions</string>
 	<string name="LiveChatF_Action_MagicIcon">MagicIcon</string>
 	<string name="LiveChatF_Label_MagicIcon">LiveChat.MagicIcon</string>
+	<string name="LiveChatF_Action_BuyScene">BuyScene</string>
+	<string name="LiveChatF_Label_BuyScene">LiveChat.BuyScene</string>
+	<string name="LiveChatF_Action_ActaviteScene">ActaviteScene</string>
+	<string name="LiveChatF_Label_ActaviteScene">LiveChat.ActaviteScene</string>
 	
 	<string name="BuyCredit_Category">AppError</string>
 	<string name="BuyCredit_Action_SSLError">BuyCredit_SSLError</string>

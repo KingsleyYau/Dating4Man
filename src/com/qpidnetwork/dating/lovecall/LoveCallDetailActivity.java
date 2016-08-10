@@ -26,15 +26,20 @@ import com.qpidnetwork.framework.base.BaseActionBarFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.SystemUtil;
 import com.qpidnetwork.manager.FileCacheManager;
-import com.qpidnetwork.request.OnRequestCallback;
+import com.qpidnetwork.manager.MonthlyFeeManager;
+import com.qpidnetwork.request.OnConfirmLovecallCallback;
 import com.qpidnetwork.request.RequestJniLoveCall.ConfirmType;
+import com.qpidnetwork.request.RequestJniMonthlyFee;
+import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 import com.qpidnetwork.request.RequestOperator;
+import com.qpidnetwork.request.item.MonthLyFeeTipItem;
 import com.qpidnetwork.tool.ImageViewLoader;
 import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.GetMoreCreditDialog;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogAlert;
 import com.qpidnetwork.view.MaterialThreeButtonDialog;
+import com.qpidnetwork.view.MonthlyFeeDialog;
 
 public class LoveCallDetailActivity extends BaseActionBarFragmentActivity {
 	private static final String LOVE_CALL_DETAIL_ITEM = "lovecallitem";
@@ -222,28 +227,41 @@ public class LoveCallDetailActivity extends BaseActionBarFragmentActivity {
 			showToastDone("Confirmed!");
 			onConfirmOrDeclineSuccess();
 			break;
-		case LOVECALL_CONFIRM_FAILED:
+		case LOVECALL_CONFIRM_FAILED:{
 			RequestBaseResponse response = (RequestBaseResponse)msg.obj;
-			if(response.errno.equals("MBCE67007")){
-				/*余额不足处理*/
+			//先判断月费类型
+			MemberType type = RequestJniMonthlyFee.intToMemberType(msg.arg1);
+			if (type == MemberType.NO_FEED_FIRST_MONTHLY_MEMBER|| type == MemberType.NO_FEED_MONTHLY_MEMBER) {
 				cancelToastImmediately();
-				final GetMoreCreditDialog dialog = new GetMoreCreditDialog(LoveCallDetailActivity.this, R.style.ChoosePhotoDialog);
+				MonthlyFeeManager.getInstance().onMemberTypeUpdate(type);
+				MonthLyFeeTipItem monthLyFeeTipItem = MonthlyFeeManager.getInstance().getMonthLyFeeTipItem(type);
+				MonthlyFeeDialog dialog = new MonthlyFeeDialog(this,R.style.ChoosePhotoDialog);
+				dialog.setData(monthLyFeeTipItem);// 设置数据对象
 				if(isActivityVisible()){
-					dialog.show();
+					dialog.show();						
 				}
-			}else if(response.errno.equals("MBCE67003")){
-				/*过期，无法确认*/
-				cancelToastImmediately();
-				showLovecallOuttime(response.errmsg);
-			}else if(response.errno.equals("MBCE67002")){
-				/*重复请求, 算成功*/
-				showToastDone("Confirmed!");
-				onConfirmOrDeclineSuccess();
 			}else{
-				/*普通错误提示*/
-				showConfirmFailedTips();
+				if(response.errno.equals("MBCE67007")){
+					/*余额不足处理*/
+					cancelToastImmediately();
+					final GetMoreCreditDialog dialog = new GetMoreCreditDialog(LoveCallDetailActivity.this, R.style.ChoosePhotoDialog);
+					if(isActivityVisible()){
+						dialog.show();
+					}
+				}else if(response.errno.equals("MBCE67003")){
+					/*过期，无法确认*/
+					cancelToastImmediately();
+					showLovecallOuttime(response.errmsg);
+				}else if(response.errno.equals("MBCE67002")){
+					/*重复请求, 算成功*/
+					showToastDone("Confirmed!");
+					onConfirmOrDeclineSuccess();
+				}else{
+					/*普通错误提示*/
+					showConfirmFailedTips();
+				}
 			}
-			break;
+		}break;
 		case LOVECALL_DECLINE_SUCCESS:
 			showToastDone("Declined!");
 			onConfirmOrDeclineSuccess();
@@ -289,11 +307,11 @@ public class LoveCallDetailActivity extends BaseActionBarFragmentActivity {
 	private void confirmLoveCall(final ConfirmType type) {
 		showToastProgressing("Loading");
 		RequestOperator.getInstance().ConfirmLoveCall(lovecallBean.orderid, type,
-				new OnRequestCallback() {
+				new OnConfirmLovecallCallback() {
 
 					@Override
-					public void OnRequest(boolean isSuccess, String errno,
-							String errmsg) {
+					public void OnConfirmLovecall(boolean isSuccess, String errno,
+							String errmsg, int memberType) {
 						// TODO Auto-generated method stub
 						Message msg = Message.obtain();
 						if (isSuccess) {
@@ -310,6 +328,7 @@ public class LoveCallDetailActivity extends BaseActionBarFragmentActivity {
 							}
 						}
 						msg.obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
+						msg.arg1 = memberType;
 						sendUiMessage(msg);
 					}
 				});

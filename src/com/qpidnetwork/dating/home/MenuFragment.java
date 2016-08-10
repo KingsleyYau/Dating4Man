@@ -419,7 +419,7 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
 		
 		WebSiteManager.getInstance().ChangeWebSite(type);
 		ReloadData();
-		LoginManager.getInstance().Logout();
+		LoginManager.getInstance().Logout(true);
 		LoginManager.getInstance().AutoLogin();
 		
 		// 统计event

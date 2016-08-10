@@ -56,6 +56,8 @@ public class ImageViewLoader {
 	private Drawable mDefaultImage = null;
 	private boolean mbAlphaAnimation = false;
 	private boolean mbBigFileDontUseCache = false;
+	
+	private boolean isCanceled = false;//记录是否被取消，即处理请求成功是否解图及回调，防止网路差，一次回调多个导致内存泄露
 
 	public void SetBigFileDontUseCache(boolean bBigFileDontUseCache) {
 		mbBigFileDontUseCache = bBigFileDontUseCache;
@@ -214,28 +216,30 @@ public class ImageViewLoader {
 					@Override
 					public void onSuccess(FileDownloader loader) {
 						// TODO Auto-generated method stub
-						if (!loader.notModified || bitmap == null) {
-							// 下载成功
-							Point displaySize = GetDisplaySize(destWidth, destHeight, -1);
-							Bitmap tempBitmap = ImageUtil.decodeSampledBitmapFromFile(
-													localPath,
-													displaySize.x, 
-													displaySize.y);
-							if (null != tempBitmap) {
-								// 显示图片
-								Message msg = Message.obtain();
-								msg.what = DownloadFlag.SUCCESS_IMAGEVIEW
-										.ordinal();
-								msg.obj = tempBitmap;
-								mHandler.sendMessage(msg);
-							}
-							
-							if (callback != null) {
-								callback.OnDisplayNewImageFinish(tempBitmap);
-							}
-						}else{
-							if (callback != null) {
-								callback.OnDisplayNewImageFinish(bitmap);
+						if(!isCanceled){
+							if (!loader.notModified || bitmap == null) {
+								// 下载成功
+								Point displaySize = GetDisplaySize(destWidth, destHeight, -1);
+								Bitmap tempBitmap = ImageUtil.decodeSampledBitmapFromFile(
+														localPath,
+														displaySize.x, 
+														displaySize.y);
+								if (null != tempBitmap) {
+									// 显示图片
+									Message msg = Message.obtain();
+									msg.what = DownloadFlag.SUCCESS_IMAGEVIEW
+											.ordinal();
+									msg.obj = tempBitmap;
+									mHandler.sendMessage(msg);
+								}
+								
+								if (callback != null) {
+									callback.OnDisplayNewImageFinish(tempBitmap);
+								}
+							}else{
+								if (callback != null) {
+									callback.OnDisplayNewImageFinish(bitmap);
+								}
 							}
 						}
 
@@ -299,7 +303,6 @@ public class ImageViewLoader {
 			final int desHeight, final int topRadius, final int bottomRadius,
 			final String localPath, final ImageViewLoaderCallback callback) {
 		Stop();
-
 		if (localPath == null) {
 			return false;
 		}
@@ -334,6 +337,7 @@ public class ImageViewLoader {
 				// 显示图片
 				Bitmap bitmap = getBitmapWithFile(localPath, desWidth,
 						desHeight);
+				
 				if (null != bitmap) {
 					// 显示图片
 					Message msg = Message.obtain();
@@ -365,51 +369,52 @@ public class ImageViewLoader {
 							@Override
 							public void onSuccess(FileDownloader loader) {
 								// TODO Auto-generated method stub
-								Bitmap bitmap = getBitmapWithFile(localPath);
-								if (!loader.notModified || bitmap == null) {
-									// localPath图片加载不成功或图片已经更新
-									boolean result = false;
-									// 处理下载图片
-									Point displaySize = GetDisplaySize(desWidth, desHeight, -1);
-									Bitmap bitmapBig = ImageUtil.decodeSampledBitmapFromFile(
-															srcFilePath, 
-															displaySize.x,
-															displaySize.y);
-									if (null != bitmapBig) {
-										// 处理图片为圆角
-										bitmapBig = ImageUtil
-												.filletBitmap(
-														bitmapBig,
-														topRadius,
-														bottomRadius,
-														mContext.getResources()
-																.getDisplayMetrics().density);
-										// 保存本地图片
-										ImageUtil.saveBitmapToFile(localPath,
-												bitmapBig,
-												Bitmap.CompressFormat.PNG, 100);
-
-										result = null != bitmapBig;
-									}
-
-									if (result) {
-										// 显示图片
-										Message msg = Message.obtain();
-										msg.what = DownloadFlag.SUCCESS_IMAGEVIEW_FILLET
-												.ordinal();
-										msg.obj = bitmapBig;
-										mHandler.sendMessage(msg);
-									}
-									
-									if (callback != null) {
-										callback.OnDisplayNewImageFinish(bitmapBig);
-									}
-								}else{
-									if (callback != null) {
-										callback.OnDisplayNewImageFinish(bitmap);
+								if(!isCanceled){
+									Bitmap bitmap = getBitmapWithFile(localPath);
+									if (!loader.notModified || bitmap == null) {
+										// localPath图片加载不成功或图片已经更新
+										boolean result = false;
+										// 处理下载图片
+										Point displaySize = GetDisplaySize(desWidth, desHeight, -1);
+										Bitmap bitmapBig = ImageUtil.decodeSampledBitmapFromFile(
+																srcFilePath, 
+																displaySize.x,
+																displaySize.y);
+										if (null != bitmapBig) {
+											// 处理图片为圆角
+											bitmapBig = ImageUtil
+													.filletBitmap(
+															bitmapBig,
+															topRadius,
+															bottomRadius,
+															mContext.getResources()
+																	.getDisplayMetrics().density);
+											// 保存本地图片
+											ImageUtil.saveBitmapToFile(localPath,
+													bitmapBig,
+													Bitmap.CompressFormat.PNG, 100);
+	
+											result = null != bitmapBig;
+										}
+	
+										if (result) {
+											// 显示图片
+											Message msg = Message.obtain();
+											msg.what = DownloadFlag.SUCCESS_IMAGEVIEW_FILLET
+													.ordinal();
+											msg.obj = bitmapBig;
+											mHandler.sendMessage(msg);
+										}
+										
+										if (callback != null) {
+											callback.OnDisplayNewImageFinish(bitmapBig);
+										}
+									}else{
+										if (callback != null) {
+											callback.OnDisplayNewImageFinish(bitmap);
+										}
 									}
 								}
-								
 							}
 
 							@Override
@@ -500,6 +505,7 @@ public class ImageViewLoader {
 	public void ResetImageView() {
 		// TODO Auto-generated method stub
 		this.imageView = null;
+		isCanceled = true;
 		if (null != mFileDownloader) {
 			mFileDownloader.StopDonotWait();
 		}

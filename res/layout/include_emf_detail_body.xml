@@ -3,49 +3,87 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
-    
-    
-    <View android:layout_width="match_parent"
+
+    <View
+        android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/listview_divider_grey"/>
+        android:background="@color/listview_divider_grey" />
 
     <TextView
         android:id="@+id/tvEMFdetail"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
         android:textColor="@color/text_color_dark"
         android:textSize="16sp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/llAttachment"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:gravity="left|center"
         android:orientation="vertical"
-        android:visibility="gone"
-        android:gravity="left|center">
+        android:visibility="gone" >
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/llAttachments"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" 
-        android:id="@+id/llTranslator"
-        android:visibility="gone"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/grey_border_rect_solid_white">
+        android:orientation="vertical"
+        android:visibility="gone" >
 
         <TextView
             android:layout_width="fill_parent"
-            android:layout_height="36dp"           
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_marginLeft="6dp"
+            android:text="@string/emf_attachment_tag"
+            android:textColor="@color/text_color_grey" 
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="2dp"
+            android:background="@color/listview_divider_grey" />
+
+        <com.qpidnetwork.view.CustomGridView
+            android:id="@+id/gvAttachment"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:horizontalSpacing="6dp"
+            android:columnWidth="156dp"
+            android:numColumns="2"
+            android:scrollbars="@null"
+            android:verticalSpacing="6dp" >
+        </com.qpidnetwork.view.CustomGridView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llTranslator"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/grey_border_rect_solid_white"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="36dp"
             android:background="#10000000"
             android:gravity="left|center"
             android:paddingLeft="16dp"
             android:text="@string/emf_translators_message"
             android:textColor="@color/text_color_dark"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tvMessage"
@@ -62,16 +100,15 @@
         android:id="@+id/btnReply"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:layout_marginBottom="56dp"
         android:layout_marginTop="32dp"
         android:clickable="true"
+        android:visibility="gone"
         button:background="@color/white"
         button:elevation="0dp"
         button:icon="@drawable/ic_reply_all_grey600_24dp"
         button:title="@string/emf_reply"
         button:title_color="@color/text_color_dark"
-        button:touch_feedback="@drawable/touch_feedback_round_border_white" 
-        android:layout_marginBottom="56dp"
-        android:visibility="gone"/>
-    
+        button:touch_feedback="@drawable/touch_feedback_round_border_white" />
 
 </merge>

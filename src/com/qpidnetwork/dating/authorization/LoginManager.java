@@ -185,6 +185,7 @@ public class LoginManager implements Session.StatusCallback,
 						}
 						
 						AnalyticsManager.newInstance().setGAUserId(obj.loginItem.ga_uid);
+						AnalyticsManager.newInstance().setGAActivity(obj.loginItem.gaActivity);
 						
 						getThemeConfig(obj.loginItem.sessionid, obj.loginItem.manid);
 					}
@@ -738,6 +739,7 @@ public class LoginManager implements Session.StatusCallback,
 //			Log.file("LoginManager", "AnalyticsManager setGAUserId usrId： " + obj.loginItem.ga_uid);
 			
 			AnalyticsManager.newInstance().setGAUserId(obj.loginItem.ga_uid);
+			AnalyticsManager.newInstance().setGAActivity(obj.loginItem.gaActivity);
 		} else {
         	mLoginStatus = LoginStatus.NONE;
 			switch (obj.errno) {

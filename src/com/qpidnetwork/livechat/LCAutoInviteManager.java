@@ -49,7 +49,7 @@ public class LCAutoInviteManager {
 					, StatusType.Finish);
 			// 生成TextItem
 			LCTextItem textItem = new LCTextItem();
-			textItem.init(message);
+			textItem.init(message, SendType.Recv);
 			// 把TextItem添加到MessageItem
 			item.setTextItem(textItem);
 			//设置自动邀请消息关键信息

@@ -32,6 +32,7 @@ import com.qpidnetwork.dating.lady.LadyDetailManager;
 import com.qpidnetwork.dating.lady.LadyListItem;
 import com.qpidnetwork.dating.lady.LadyListManager;
 import com.qpidnetwork.dating.lovecall.DirectCallManager;
+import com.qpidnetwork.dating.lovecall.ScheduleCallActivity;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.SystemUtil;
@@ -56,6 +57,7 @@ import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.AdWomanListAdvert;
 import com.qpidnetwork.request.item.Lady;
 import com.qpidnetwork.request.item.LadyCall;
+import com.qpidnetwork.request.item.LadyDetail;
 import com.qpidnetwork.view.GetMoreCreditDialog;
 import com.qpidnetwork.view.HomeLadySearchWindow;
 import com.qpidnetwork.view.MaterialAppBar;
@@ -176,7 +178,7 @@ public class HomeContentViewController implements View.OnClickListener {
 			public void OnClickCallLady(LadyListItem item) {
 				// TODO Auto-generated method stub
 				mCallingLadyItem = item;
-				QueryLadyCall(item.lady.womanid);
+				QueryLadyCall(item.lady);
 			}
 
 			@Override
@@ -368,6 +370,35 @@ public class HomeContentViewController implements View.OnClickListener {
     	mWomanId = "";
 	}
 	
+	/**
+	 * 刷新女士在线列表
+	 */
+	public void refreshOnlineLady(){
+		dropList.setSelectedItem(mDefaultItem);
+		resetSearchCriteria();
+		SelectProc(mDefaultItem);
+	}
+	
+	/**
+	 * 刷新女士在线列表
+	 */
+	public void refreshNewestLady(){
+		dropList.setSelectedItem(3);
+		resetSearchCriteria();
+		SelectProc(3);
+	}
+	
+	/**
+	 * 刷新女士在线列表
+	 */
+	public void refreshAvaiableCallLady(){
+		dropList.setSelectedItem(1);
+		resetSearchCriteria();
+		SelectProc(1);
+	}
+	
+	
+	
 	private void SelectProc(int arg)
 	{
 		ClearLadyList();
@@ -550,10 +581,28 @@ public class HomeContentViewController implements View.OnClickListener {
 					//Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();
 					
 					MaterialDialogAlert dialog = new MaterialDialogAlert(mContext);
-					dialog.setMessage(obj.errmsg);
 					
 					if (!obj.errno.equals("MBCE61005")){   //RequestErrorCode 裏面沒有這個錯誤代碼.
-						dialog.addButton(dialog.createButton(mContext.getString(R.string.common_btn_cancel), null));
+						Lady[] ladyList = (Lady[])obj.ladyList;
+						if(ladyList != null && ladyList.length > 0){
+							final Lady lady = ladyList[0];
+							dialog.setMessage(String.format(mContext.getResources().getString(R.string.lovecall_mail_schedule_makecall_error_tips), lady.firstname));
+							dialog.addButton(dialog.createButton(mContext.getString(R.string.common_btn_ok), new OnClickListener(){
+								@Override
+								public void onClick(View v) {
+									// TODO Auto-generated method stub
+									LadyDetail ladyDetail = new LadyDetail();
+									ladyDetail.womanid = lady.womanid;
+									ladyDetail.age = lady.age;
+									ladyDetail.firstname = lady.firstname;
+									ladyDetail.country = lady.country;
+									ScheduleCallActivity.launchScheduleCallActivity(mContext, ladyDetail);
+								}
+							}));
+						}else{
+							dialog.setMessage(obj.errmsg);
+						}
+						dialog.addButton(dialog.createButton(mContext.getString(R.string.common_btn_no), null));
 						if((mContext != null) && (mContext instanceof BaseFragmentActivity)){
 							if(((BaseFragmentActivity)mContext).isActivityVisible()){
 								dialog.show();
@@ -561,9 +610,12 @@ public class HomeContentViewController implements View.OnClickListener {
 						}else{
 							dialog.show();
 						}
+						if( mCallback != null ) {
+							mCallback.OnRequestFinish(false, null);
+						}
 						return;
 					}
-					
+					dialog.setMessage(obj.errmsg);
 					dialog.addButton(dialog.createButton(mContext.getString(R.string.common_btn_add_credit), new OnClickListener(){
 
 						@Override
@@ -583,7 +635,6 @@ public class HomeContentViewController implements View.OnClickListener {
 					}else{
 						dialog.show();
 					}
-					
 					if( mCallback != null ) {
 						mCallback.OnRequestFinish(false, null);
 					}
@@ -793,7 +844,7 @@ public class HomeContentViewController implements View.OnClickListener {
 	 * 请求女士lovecall
 	 * @param womanId
 	 */
-	public void QueryLadyCall(String womanId) {
+	public void QueryLadyCall(final Lady lady) {
 		if( !LoginManager.getInstance().CheckLogin(mContext) ) {
 			return;
 		}
@@ -801,7 +852,7 @@ public class HomeContentViewController implements View.OnClickListener {
 		if( mCallback != null ) {
 			mCallback.OnRequest("Calling");
 		}
-		RequestOperator.getInstance().QueryLadyCall(womanId, new OnQueryLadyCallCallback() {
+		RequestOperator.getInstance().QueryLadyCall(lady.womanid, new OnQueryLadyCallCallback() {
 			
 			@Override
 			public void OnQueryLadyCall(boolean isSuccess, String errno, String errmsg,
@@ -816,6 +867,7 @@ public class HomeContentViewController implements View.OnClickListener {
 				} else {
 					// 获取个人信息失败
 					msg.what = RequestFlag.REQUEST_GET_LOVE_CALL_FAIL.ordinal();
+					obj.ladyList = new Lady[]{lady};
 				}
 				msg.obj = obj;
 				mHandler.sendMessage(msg);
@@ -926,15 +978,25 @@ public class HomeContentViewController implements View.OnClickListener {
 			dialog.setSecondButtonText(mContext.getString(R.string.love_call_dont_tell_again));
 			dialog.getMessage().setGravity(Gravity.LEFT);
 			dialog.getTitle().setGravity(Gravity.LEFT);
-			dialog.show();
-
-			
+			if((mContext != null) && (mContext instanceof BaseFragmentActivity)){
+				if(((BaseFragmentActivity)mContext).isActivityVisible()){
+					dialog.show();
+				}
+			}else{
+				dialog.show();
+			}
 		} else {
 			MaterialDialogAlert dialog = new MaterialDialogAlert(mContext);
 			dialog.setTitle(mContext.getString(R.string.lovecall_no_sim_tips));
 			dialog.setMessage(mContext.getString(R.string.lovecall_instruction, callcenterNumber));
 			dialog.addButton(dialog.createButton(mContext.getString(R.string.common_btn_ok), null));
-			dialog.show();
+			if((mContext != null) && (mContext instanceof BaseFragmentActivity)){
+				if(((BaseFragmentActivity)mContext).isActivityVisible()){
+					dialog.show();
+				}
+			}else{
+				dialog.show();
+			}
 		}
 	}
 	

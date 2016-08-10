@@ -10,7 +10,7 @@
 #include <manrequesthandler/RequestLoveCallController.h>
 
 void onQueryLoveCallList(long requestId, bool success, list<LoveCall> itemList, int totalCount, string errnum, string errmsg);
-void onConfirmLoveCall(long requestId, bool success, string errnum, string errmsg);
+void onConfirmLoveCall(long requestId, bool success, string errnum, string errmsg, int memberType);
 void onQueryLoveCallRequestCount(long requestId, bool success, string errnum, string errmsg, int num);
 
 RequestLoveCallControllerCallback gRequestLoveCallControllerCallback {
@@ -157,7 +157,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLoveCall_QueryLov
 }
 
 /******************************************************************************/
-void onConfirmLoveCall(long requestId, bool success, string errnum, string errmsg) {
+void onConfirmLoveCall(long requestId, bool success, string errnum, string errmsg, int memberType) {
 	FileLog("httprequest", "LoveCall.Native::onConfirmLoveCall( success : %s )", success?"true":"false");
 
 	/* turn object to java object here */
@@ -169,8 +169,8 @@ void onConfirmLoveCall(long requestId, bool success, string errnum, string errms
 	jobject callbackObj = gCallbackMap.Erase(requestId);
 	jclass callbackCls = env->GetObjectClass(callbackObj);
 
-	string signure = "(ZLjava/lang/String;Ljava/lang/String;)V";
-	jmethodID callback = env->GetMethodID(callbackCls, "OnRequest", signure.c_str());
+	string signure = "(ZLjava/lang/String;Ljava/lang/String;I)V";
+	jmethodID callback = env->GetMethodID(callbackCls, "OnConfirmLovecall", signure.c_str());
 	FileLog("httprequest", "LoveCall.Native::onConfirmLoveCall( callbackCls : %p, callback : %p, signure : %s )",
 			callbackCls, callback, signure.c_str());
 
@@ -180,7 +180,7 @@ void onConfirmLoveCall(long requestId, bool success, string errnum, string errms
 
 		FileLog("httprequest", "LoveCall.Native::onConfirmLoveCall( CallObjectMethod )");
 
-		env->CallVoidMethod(callbackObj, callback, success, jerrno, jerrmsg);
+		env->CallVoidMethod(callbackObj, callback, success, jerrno, jerrmsg, memberType);
 
 		env->DeleteGlobalRef(callbackObj);
 

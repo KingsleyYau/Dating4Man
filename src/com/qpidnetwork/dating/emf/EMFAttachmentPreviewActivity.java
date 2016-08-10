@@ -40,6 +40,7 @@ import com.qpidnetwork.request.OnEMFInboxPhotoFeeCallback;
 import com.qpidnetwork.request.OnEMFPrivatePhotoViewCallback;
 import com.qpidnetwork.request.RequestErrorCode;
 import com.qpidnetwork.request.RequestJni;
+import com.qpidnetwork.request.RequestJniEMF.PrivatePhotoMode;
 import com.qpidnetwork.request.RequestJniEMF.PrivatePhotoType;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.view.GetMoreCreditDialog;
@@ -152,7 +153,8 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 											.CachePrivatePhotoImagePath(
 													item.privatePhoto.sendId,
 													item.privatePhoto.photoId,
-													PrivatePhotoType.LARGE);
+													PrivatePhotoType.LARGE,
+													PrivatePhotoMode.MODE_DISTINCT);
 
 									// 是否已经缓存
 									File file = new File(localPhotoPath);
@@ -188,7 +190,8 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 											.CachePrivatePhotoImagePath(
 													item.privatePhoto.sendId,
 													item.privatePhoto.photoId,
-													PrivatePhotoType.LARGE);
+													PrivatePhotoType.LARGE,
+													PrivatePhotoMode.MODE_DISTINCT);
 
 									// 是否已经缓存
 									File file = new File(localPhotoPath);
@@ -204,7 +207,8 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 											.CachePrivatePhotoImagePath(
 													item.privatePhoto.sendId,
 													item.privatePhoto.photoId,
-													PrivatePhotoType.ORIGINAL);
+													PrivatePhotoType.ORIGINAL,
+													PrivatePhotoMode.MODE_DISTINCT);
 
 									// 是否已经缓存
 									file = new File(localPhotoPathOriginal);
@@ -250,7 +254,8 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 							.CachePrivatePhotoImagePath(
 									item.privatePhoto.sendId,
 									item.privatePhoto.photoId,
-									PrivatePhotoType.LARGE);
+									PrivatePhotoType.LARGE,
+									PrivatePhotoMode.MODE_DISTINCT);
 
 					// 是否已经缓存
 					File file = new File(localPhotoPath);
@@ -550,7 +555,7 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 
 		// 生成缓存路径
 		String localPhotoPath = FileCacheManager.getInstance()
-				.CachePrivatePhotoImagePath(item.sendId, item.photoId, type);
+				.CachePrivatePhotoImagePath(item.sendId, item.photoId, type, PrivatePhotoMode.MODE_DISTINCT);
 
 		// if( requestMap.containsKey(localPhotoPath) ) {
 		// Long request = requestMap.get(localPhotoPath);
@@ -561,7 +566,7 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 		// long requestId = RequestOperator.getInstance().PrivatePhotoView(
 		RequestOperator.getInstance().PrivatePhotoView(item.womanid,
 				item.photoId, item.sendId, item.messageid, localPhotoPath,
-				type, new OnEMFPrivatePhotoViewCallback() {
+				type, PrivatePhotoMode.MODE_DISTINCT, new OnEMFPrivatePhotoViewCallback() {
 
 					@Override
 					public void OnEMFPrivatePhotoView(boolean isSuccess,
@@ -645,12 +650,14 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 			item.privatePhoto.photoFee = true;
 			String localPhotoPath = FileCacheManager.getInstance()
 					.CachePrivatePhotoImagePath(item.privatePhoto.sendId,
-							item.privatePhoto.photoId, PrivatePhotoType.LARGE);
+							item.privatePhoto.photoId, PrivatePhotoType.LARGE,
+							PrivatePhotoMode.MODE_DISTINCT);
 
 			String localPhotoPathOriginal = FileCacheManager.getInstance()
 					.CachePrivatePhotoImagePath(item.privatePhoto.sendId,
 							item.privatePhoto.photoId,
-							PrivatePhotoType.ORIGINAL);
+							PrivatePhotoType.ORIGINAL,
+							PrivatePhotoMode.MODE_DISTINCT);
 
 			if (callbackItem.type == PrivatePhotoType.LARGE) {
 				// 获取大图, 刷新界面
@@ -666,7 +673,8 @@ public class EMFAttachmentPreviewActivity extends BaseFragmentActivity
 				localPhotoPathOriginal = FileCacheManager.getInstance()
 						.CachePrivatePhotoImagePath(item.privatePhoto.sendId,
 								item.privatePhoto.photoId,
-								PrivatePhotoType.ORIGINAL);
+								PrivatePhotoType.ORIGINAL,
+								PrivatePhotoMode.MODE_DISTINCT);
 				String fileName = item.privatePhoto.womanid + "-"
 						+ System.currentTimeMillis() + ".jpg";
 				if (ImageUtil.SaveImageToGallery(this, localPhotoPath,

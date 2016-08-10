@@ -100,13 +100,16 @@ public class LivechatInviteListActivity extends BaseActionBarFragmentActivity im
 				inviteItem.username = item.userName;
 				/*提示消息内容*/
 				LCMessageItem lastMsg = item.getTheOtherLastMessage();
-				inviteItem.msgDesc = mContactManager.generateMsgHint(lastMsg);
-				if(ladyInfo != null){
-					inviteItem.photoUrl = ladyInfo.imgUrl;
-				}else{
-					mCurrInviteMap.put(item.userId, inviteItem);
+				if(lastMsg != null){
+					inviteItem.msgDesc = mContactManager.generateMsgHint(lastMsg);
+					if(ladyInfo != null){
+						inviteItem.username = ladyInfo.userName;
+						inviteItem.photoUrl = ladyInfo.imgUrl;
+					}else{
+						mCurrInviteMap.put(item.userId, inviteItem);
+					}
+					mInviteList.add(inviteItem); 
 				}
-				mInviteList.add(inviteItem); 
 			}
 			/*10个分组获取女士详情更新*/
 			List<String> userIdList = new ArrayList<String>();

@@ -81,7 +81,8 @@ public class ContactManager implements OnLoginManagerCallback,
 	 * 请求消息
 	 */
 	private enum RequestFlag {
-		REQUEST_LIVECHAT_NOTIFICATION_SUCCESS, REQUEST_LIVECHAT_EMF_CONATCT_UPDATE, REQUEST_LIVECHAT_MESSAGE_CONATCT_UPDATE, REQUEST_LIVECHAT_KICK_OFF
+		REQUEST_LIVECHAT_NOTIFICATION_SUCCESS, REQUEST_LIVECHAT_EMF_CONATCT_UPDATE, REQUEST_LIVECHAT_MESSAGE_CONATCT_UPDATE, REQUEST_LIVECHAT_KICK_OFF,
+		REQUEST_LIVECHAT_LOGIN_FAIL_NEED_RELOGIN
 	}
 
 	protected final String tag = getClass().getName();
@@ -106,6 +107,8 @@ public class ContactManager implements OnLoginManagerCallback,
 
 	/* invite 更新监控 */
 	private List<OnNewInviteUpdateCallback> mInviteCallbackList;
+	
+	private int mLivechatLoginExceptionCount = 0;
 
 	@SuppressLint("HandlerLeak")
 	public void InitHandler() {
@@ -253,6 +256,10 @@ public class ContactManager implements OnLoginManagerCallback,
 					updateByMessage(userItem, isInvite);
 				}
 					break;
+				case REQUEST_LIVECHAT_LOGIN_FAIL_NEED_RELOGIN: {
+					LoginManager.getInstance().Logout(false);
+					LoginManager.getInstance().AutoLogin();
+				}break;
 				default:
 					break;
 				}
@@ -1463,8 +1470,27 @@ public class ContactManager implements OnLoginManagerCallback,
 	public void OnLogin(LiveChatErrType errType, String errmsg,
 			boolean isAutoLogin) {
 		/* 联系人下载成功开始更新在线状态 */
-		handler.removeCallbacks(statusUpdate);
-		handler.post(statusUpdate);
+		if(errType == LiveChatErrType.Success){
+			mLivechatLoginExceptionCount = 0;
+			handler.removeCallbacks(statusUpdate);
+			handler.post(statusUpdate);
+		}else{
+			if((errType == LiveChatErrType.NoSession ||
+					errType == LiveChatErrType.InvalidPassword) && !isAutoLogin){			
+				if(mLivechatLoginExceptionCount < 1){
+					Message msg = Message.obtain();
+					msg.what = RequestFlag.REQUEST_LIVECHAT_LOGIN_FAIL_NEED_RELOGIN.ordinal();
+					mHandler.sendMessage(msg);
+				}else{
+					//连续两次异常，当服务器主动踢
+					Message msg = Message.obtain();
+					msg.what = RequestFlag.REQUEST_LIVECHAT_KICK_OFF.ordinal();
+					msg.arg1 = KickOfflineType.Maintain.ordinal();
+					mHandler.sendMessage(msg);
+				}
+				mLivechatLoginExceptionCount++;
+			}
+		}
 	}
 
 	@Override

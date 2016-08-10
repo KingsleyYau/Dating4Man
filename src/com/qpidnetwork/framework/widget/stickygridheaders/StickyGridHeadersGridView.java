@@ -498,6 +498,10 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
         this.mAdapter = new StickyGridHeadersBaseAdapterWrapper(getContext(), this, baseAdapter);
         this.mAdapter.registerDataSetObserver(mDataSetObserver);
+        //修改通过重置Adapter方式刷新界面时，由于Column number异常导致view重用异常crash
+        if(mNumColumnsSet){
+        	this.mAdapter.setNumColumns(mNumColumns);
+        }
         reset();
         super.setAdapter(this.mAdapter);
     }

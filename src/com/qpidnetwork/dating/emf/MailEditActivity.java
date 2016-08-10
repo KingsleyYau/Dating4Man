@@ -22,7 +22,13 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
@@ -35,6 +41,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.qpidnetwork.dating.R;
@@ -75,6 +83,7 @@ import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.request.item.MonthLyFeeTipItem;
 import com.qpidnetwork.request.item.OtherIntegralCheckItem;
 import com.qpidnetwork.tool.ImageViewLoader;
+import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.ChooseRemoveAttachmentDialog;
 import com.qpidnetwork.view.CustomGridView;
 import com.qpidnetwork.view.FlatToast;
@@ -110,6 +119,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 	public static final String WOMANID = "WOMAINID";
 	public static final String REPLYTYPE = "REPLYTYPE";
 	public static final String MTAB = "MTAB";
+	public static final String TEMPMESSAGE = "TEMPMESSAGE";
 
 	public static final int MAX_ATTACHMENT = 6;
 	/**
@@ -127,6 +137,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 
 	private Context mContext;
 
+	private ScrollView scContent;
 	private EditText etLadyId;
 	private MaterialProgressBar progressBarId;
 	private int progressCount = 0;
@@ -139,6 +150,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 
 	private ImageView ivContacts;
 	private TextView tvBonusPoint;
+	private TextView tvLearnMore;
 	private EditText tvEMFBody;
 	private CustomGridView gvAttachments;
 
@@ -147,8 +159,14 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 
 	private boolean isRequestingLadyDetail = false;
 
+	private boolean loadDraft = true;// 是否读取草稿
+	private RelativeLayout rlAttachments;
+	private RelativeLayout rlGift;
+	private ButtonRaised btnSend;
+
 	private ReplyType mReplyType = ReplyType.DEFAULT;
 	private String mMtab = "";
+	private boolean useIntegral = false;// 是否使用积分
 
 	/**
 	 * Dialogs
@@ -220,39 +238,42 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 
 	/**
 	 * 邮件编辑功能界面统一入口，方便风控等处理
+	 * 
 	 * @param context
 	 * @param womanId
 	 * @param replayType
 	 * @param mTab
 	 */
 	public static void launchMailEditActivity(Context context, String womanId,
-			ReplyType replayType, String mTab) {
+			ReplyType replayType, String mTab, String mTempMessage) {
 		boolean isCanEnter = true;
-		if(LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED){
+		if (LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED) {
 			LoginParam loginParam = LoginManager.getInstance().GetLoginParam();
-			if(loginParam.item.premit){
-				if(((replayType == ReplyType.ADMIRE)&&loginParam.item.admirer)||
-							loginParam.item.ladyprofile){
+			if (loginParam.item.premit) {
+				if (((replayType == ReplyType.ADMIRE) && loginParam.item.admirer)|| loginParam.item.ladyprofile) {
 					isCanEnter = false;
 				}
-			}else{
+			} else {
 				isCanEnter = false;
 			}
-			if(!isCanEnter){
-				/*被风控，不能进入*/
+			if (!isCanEnter) {
+				/* 被风控，不能进入 */
 				MaterialDialogAlert dialog = new MaterialDialogAlert(context);
 				dialog.setMessage(context.getString(R.string.common_risk_control_notify));
 				dialog.addButton(dialog.createButton(context.getString(R.string.common_btn_ok), null));
 				dialog.show();
-			}else{
-				/*未被风控，可以进入*/
+			} else {
+				/* 未被风控，可以进入 */
 				Intent intent = new Intent(context, MailEditActivity.class);
-				if(!StringUtil.isEmpty(womanId)){
+				if (!StringUtil.isEmpty(womanId)) {
 					intent.putExtra(WOMANID, womanId);
 				}
-				intent.putExtra(MailEditActivity.REPLYTYPE, replayType);
-				if(!StringUtil.isEmpty(mTab)){
+				intent.putExtra(MailEditActivity.REPLYTYPE, replayType.ordinal());
+				if (!StringUtil.isEmpty(mTab)) {
 					intent.putExtra(MailEditActivity.MTAB, mTab);
+				}
+				if (!TextUtils.isEmpty(mTempMessage)) {
+					intent.putExtra(MailEditActivity.TEMPMESSAGE, mTempMessage);
 				}
 				context.startActivity(intent);
 			}
@@ -264,40 +285,41 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);
 		mContext = this;
-		setCustomContentView(R.layout.activity_mail_edit);
+		setCustomContentView(R.layout.activity_emf_edit);
 		/* 初始化头部 */
 		getCustomActionBar().setTouchFeedback(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
 
-		getCustomActionBar().addButtonToRight(R.id.common_button_gift, "",
-				R.drawable.ic_wallet_giftcard_grey600_24dp);
+		// getCustomActionBar().addButtonToRight(R.id.common_button_gift,
+		// "",R.drawable.ic_wallet_giftcard_grey600_24dp);
+
 		LoginItem item = LoginManager.getInstance().GetLoginParam().item;
-		if((item != null)&& (item.photosend)){
-			/*私密照发送风控，当允许发送时才显示添加附件按钮，否则直接隐藏*/
-			getCustomActionBar().addButtonToRight(R.id.common_button_attachments,
-					"", R.drawable.ic_attachment_grey600_24dp);
-		}
-		getCustomActionBar().addButtonToRight(R.id.common_button_send, "",
-				R.drawable.ic_send_grey600_24dp);
-		getCustomActionBar().setTitle(getString(R.string.emf_edit_title),
-				getResources().getColor(R.color.text_color_dark));
-		getCustomActionBar().changeIconById(R.id.common_button_back,
-				R.drawable.ic_arrow_back_grey600_24dp);
+		
+		getCustomActionBar().addButtonToRight(R.id.common_button_send, "",R.drawable.ic_send_grey600_24dp);
+		getCustomActionBar().setTitle(getString(R.string.emf_mail_writter),getResources().getColor(R.color.text_color_dark));
+		getCustomActionBar().changeIconById(R.id.common_button_back,R.drawable.ic_arrow_back_grey600_24dp);
 		getCustomActionBar().getButtonById(R.id.common_button_back).setBackgroundResource(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
-		getCustomActionBar().setAppbarBackgroundDrawable(
-				new ColorDrawable(Color.WHITE));
+		getCustomActionBar().setAppbarBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
 		initViews();
+		
+		if ((item != null) && (item.photosend)) {
+			/* 私密照发送风控，当允许发送时才显示添加附件按钮，否则直接隐藏 */
+			rlAttachments.setVisibility(View.VISIBLE);
+//			getCustomActionBar().addButtonToRight(R.id.common_button_attachments, "",R.drawable.ic_attachment_grey600_24dp);
+		}
+		
+		
 
-//		// 清空临时附件目录
-//		ClearCaceh();
+		// // 清空临时附件目录
+		// ClearCaceh();
 
 	}
 
 	private void initViews() {
 
 		mChooseRemoveAttachmentDialog = new ChooseRemoveAttachmentDialog(this);
-		
-		//初始化dialog
+
+		// 初始化dialog
 		mErrorDialog = new MaterialDialogAlert(this);
 		mErrorDialog.setMessage(getString(R.string.emf_send_fail));
 		mErrorDialog.addButton(mErrorDialog.createButton(
@@ -312,11 +334,15 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 						SendEMFMessage();
 					}
 				}));
+		
+		scContent = (ScrollView) findViewById(R.id.scContent);
 
 		/* 使用积分按钮 */
 		tvBonusPoint = (TextView) findViewById(R.id.tvBonusPoint);
-		tvBonusPoint.setOnClickListener(this);
-		tvBonusPoint.setVisibility(View.GONE);
+		tvLearnMore = (TextView) findViewById(R.id.tvLearnMore);
+		tvLearnMore.setOnClickListener(this);
+//		tvBonusPoint.setOnClickListener(this);
+//		tvBonusPoint.setVisibility(View.GONE);
 
 		/* 女士Id */
 		etLadyId = (EditText) findViewById(R.id.etLadyId);
@@ -348,7 +374,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 				etLadyId.setTextColor(Color.BLACK);
 
 				// 隐藏可用积分
-				tvBonusPoint.setVisibility(View.GONE);
+//				tvBonusPoint.setVisibility(View.GONE);
 
 				// 查询女士Id是否正确, 就是查询女士详情
 				isRequestingLadyDetail = true;
@@ -358,6 +384,13 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 
 		progressBarId = (MaterialProgressBar) findViewById(R.id.progressBarId);
 		progressBarId.setVisibility(View.GONE);
+
+		rlAttachments = (RelativeLayout) findViewById(R.id.rlAttachments);
+		rlGift = (RelativeLayout) findViewById(R.id.rlGift);
+		btnSend = (ButtonRaised) findViewById(R.id.btnSend);
+		rlAttachments.setOnClickListener(this);
+		rlGift.setOnClickListener(this);
+		btnSend.setOnClickListener(this);
 
 		layoutId = (LinearLayout) findViewById(R.id.layoutId);
 		layoutId.setVisibility(View.GONE);
@@ -426,7 +459,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 				/* 默认有女士Id光标置于EMF内容编辑处 */
 				tvEMFBody.requestFocus();
 
-				tvBonusPoint.setVisibility(View.GONE);
+//				tvBonusPoint.setVisibility(View.GONE);
 				integralCheck();
 			}
 
@@ -439,9 +472,16 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 			if (mtab != null) {
 				mMtab = mtab;
 			}
-		}
 
-		tvEMFBody.setText(GetMailBody());
+			String mTempMessage = bundle.getString(TEMPMESSAGE);
+			if (!TextUtils.isEmpty(mTempMessage)) {
+				tvEMFBody.setText(mTempMessage);
+				loadDraft = false;// 不再去读草稿
+			}
+		}
+		if (loadDraft) {
+			tvEMFBody.setText(GetMailBody());
+		}
 		gvAttachments = (CustomGridView) findViewById(R.id.gvAttachments);
 
 		mUploadList = new ArrayList<EMFAttachmentUploader>();
@@ -606,14 +646,12 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 			}
 		}
 			break;
-		case R.id.common_button_gift:
+		case R.id.rlGift:
 			// 点击虚拟礼物
 			if (CheckSelecedVirtualGift()) {
 				// 已经选择过, 弹出对话框
 				MaterialDialogAlert dialog = new MaterialDialogAlert(this);
-
-				dialog.addButton(dialog.createButton(
-						getString(R.string.common_btn_ok), null));
+				dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), null));
 				dialog.show();
 				dialog.setMessage(getString(R.string.emf_remove_virtual_gift));
 
@@ -627,7 +665,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 				startActivityForResult(intent, RESULT_VIRTUAL_GIFT);
 			}
 			break;
-		case R.id.common_button_attachments:
+		case R.id.rlAttachments:
 			if (CheckMaxAttachment()) {
 				// 超过最大附件数, 弹出对话框
 
@@ -647,6 +685,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 			}
 			break;
 		case R.id.common_button_send:
+		case R.id.btnSend:
 			// 点击发送邮件
 			if (CheckAttachmentAllUpload()) {
 				// 不是全部附件都已经上传, 弹出对话框
@@ -686,9 +725,8 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 			// 弹出联系人列表
 			contactsListPopwindow.showAsDropDown(ivContacts);
 			break;
-		case R.id.tvBonusPoint:
-			// 弹出使用积分
-
+		case R.id.tvLearnMore:
+			// 弹出使用积分Dialog提示
 			MaterialDialogAlert dialog = new MaterialDialogAlert(this);
 			dialog.setMessage(getString(R.string.emf_bp_tips));
 			dialog.addButton(dialog.createButton(
@@ -969,6 +1007,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 			// womanId为空不能发送
 			shakeView(etLadyId, true);
 			showSoftInput();
+			scContent.scrollTo(0, 0);
 			return;
 		}
 
@@ -986,6 +1025,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 			// 邮件内容为空不能发送
 			shakeView(tvEMFBody, true);
 			showSoftInput();
+			scContent.scrollTo(0, 0);
 			return;
 		}
 
@@ -995,7 +1035,7 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 		RequestOperator.getInstance().SendMsg(
 				womanId,
 				emfBody,
-				tvBonusPoint.getVisibility() == View.VISIBLE,
+				useIntegral,
 				mReplyType,
 				mMtab,
 				(String[]) mVgIdList.toArray(new String[mVgIdList.size()]),
@@ -1175,18 +1215,14 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 			// 请求积分成功
 			String ladyId = etLadyId.getText().toString().toUpperCase();
 			if (ladyId.compareTo(callbackItem.womanId.toUpperCase()) == 0) {
-				if(LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED){
+				if (LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED) {
 					LoginParam loginParam = LoginManager.getInstance().GetLoginParam();
-					if(loginParam.item.bpemf){
-						/*风控使用积分发邮件*/
-						tvBonusPoint.setVisibility(View.GONE);
-					}else{
-						tvBonusPoint.setVisibility(View.VISIBLE);
+					if (!loginParam.item.bpemf) {
+						/* 未风控使用积分发邮件 */
+						useIntegral = true;
+						updateTvBonusPoint();
 					}
-				}else{
-					/*无法风控，走旧流程*/
-					tvBonusPoint.setVisibility(View.VISIBLE);
-				}
+				} 
 			}
 		}
 			break;
@@ -1290,6 +1326,35 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 		default:
 			break;
 		}
+	}
+	
+	/**
+	 * 更新显示积分提示
+	 */
+	private void updateTvBonusPoint() {
+		// TODO Auto-generated method stub
+		String learnMore = getResources().getString(R.string.emf_quick_reply_learn_more);
+		tvBonusPoint.setText(getResources().getString(R.string.emf_quick_reply_use_integral));
+		SpannableString spStr = new SpannableString(learnMore);
+		spStr.setSpan(new ClickableSpan() {
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setColor(Color.GRAY);       //设置文件颜色
+                ds.setUnderlineText(true);      //设置下划线
+            }
+
+            @Override
+            public void onClick(View widget) {
+	            MaterialDialogAlert dialog = new MaterialDialogAlert(MailEditActivity.this);
+    			dialog.setMessage(getString(R.string.emf_bp_tips));
+    			dialog.addButton(dialog.createButton(getString(R.string.common_btn_ok), null));
+    			dialog.show();
+            }
+	    }, 0, learnMore.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        tvBonusPoint.append(spStr);
+        tvBonusPoint.setMovementMethod(LinkMovementMethod.getInstance());//开始响应点击事件
 	}
 
 	@Override

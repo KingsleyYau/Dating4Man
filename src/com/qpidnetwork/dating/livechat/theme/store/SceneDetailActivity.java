@@ -250,12 +250,20 @@ public class SceneDetailActivity extends BaseFragmentActivity implements
 		}break;
 		case R.id.btnCommit:
 			switch (themeStatus) {
-			case NO_PAID:
+			case NO_PAID:{
 				sceneBuy();// 购买主题
-				break;
-			case PAID_NO_USED:
+				// 统计event
+				onAnalyticsEvent(getString(R.string.LiveChatF_Category)
+						, getString(R.string.LiveChatF_Action_BuyScene)
+						, getString(R.string.LiveChatF_Label_BuyScene));
+			}break;
+			case PAID_NO_USED:{
 				sceneActivate();// 应用主题
-				break;
+				// 统计event
+				onAnalyticsEvent(getString(R.string.LiveChatF_Category)
+						, getString(R.string.LiveChatF_Action_ActaviteScene)
+						, getString(R.string.LiveChatF_Label_ActaviteScene));
+			}break;
 			case USED:
 
 				break;
@@ -357,7 +365,7 @@ public class SceneDetailActivity extends BaseFragmentActivity implements
 			if (applyErrType == LiveChatErrType.Success) {// 应用成功
 				showToastDone("Success");
 				btnCommit.setButtonTitle("In Use");
-				btnCommit.setBackgroundColor(Color.GRAY);
+				btnCommit.setCardBackgroundColor(Color.GRAY);
 				themeStatus = ThemeStatus.USED;// 设置状态为应用中
 				
 				//通知聊天界面刷新主题配置
@@ -377,7 +385,9 @@ public class SceneDetailActivity extends BaseFragmentActivity implements
 		case THEME_DOWNLOAD_PROGRESS:// 更新下载进度
 			cancelToast();
 			mThemeProgressDialog.setCancelable(false);
-			mThemeProgressDialog.show();
+			if(isActivityVisible()){
+				mThemeProgressDialog.show();
+			}
 			mThemeProgressDialog.setProgress(msg.arg1);
 			startProgressTimer();
 			break;
@@ -445,7 +455,7 @@ public class SceneDetailActivity extends BaseFragmentActivity implements
 		cvLady.setVisibility(View.VISIBLE);
 		tvLadyName.setText(themeInfo.womanId);
 		btnCommit.setButtonTitle(mContext.getString(R.string.theme_store_btn_in_use));
-		btnCommit.setBackgroundColor(Color.GRAY);
+		btnCommit.setCardBackgroundColor(Color.GRAY);
 		themeStatus = ThemeStatus.USED;// 设置状态为应用中
 
 		mLiveChatManager.GetThemeResource(themeInfo.themeId);// 购买成功后下载主题资料

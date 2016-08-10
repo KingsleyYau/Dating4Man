@@ -7,6 +7,7 @@
 #include "com_qpidnetwork_request_RequestJniLiveChat.h"
 #include "com_qpidnetwork_request_RequestJni_GobalFunc.h"
 #include <manrequesthandler/RequestLiveChatController.h>
+#include <AndroidCommon/DeviceJniIntToType.h>
 
 class RequestLiveChatControllerCallback : public IRequestLiveChatControllerCallback
 {
@@ -1931,10 +1932,11 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniLiveChat_CheckFun
 			}
 		}
 	}
+	TDEVICE_TYPE type = IntToDeviceType(deviceType);
 
 	requestId = gRequestLiveChatController.CheckFunctions(
 			functionIds,
-			deviceType,
+			type,
 			JString2String(env, versionCode),
 			JString2String(env, user_sid),
 			JString2String(env, user_id)

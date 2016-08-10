@@ -1,23 +1,22 @@
 package com.qpidnetwork.dating.lady;
 
+import java.util.HashMap;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.HttpAuthHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow.OnDismissListener;
 import android.widget.Toast;
 
 import com.qpidnetwork.dating.QpidApplication;
@@ -29,31 +28,37 @@ import com.qpidnetwork.dating.authorization.LoginParam;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.contacts.ContactManager;
-import com.qpidnetwork.dating.emf.MailEditActivity;
+import com.qpidnetwork.dating.home.AppUrlHandler;
 import com.qpidnetwork.dating.lady.LadyDetailManager.OnLadyDetailManagerQueryLadyDetailCallback;
-import com.qpidnetwork.dating.livechat.ChatActivity;
 import com.qpidnetwork.dating.lovecall.DirectCallManager;
+import com.qpidnetwork.dating.lovecall.ScheduleCallActivity;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.SystemUtil;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnQueryLadyCallCallback;
 import com.qpidnetwork.request.OnRequestCallback;
-import com.qpidnetwork.request.RequestJniEMF.ReplyType;
+import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.LadyCall;
 import com.qpidnetwork.request.item.LadyDetail;
-import com.qpidnetwork.request.item.LadyDetail.ShowLoveCall;
-import com.qpidnetwork.view.ButtonFloat;
 import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.GetMoreCreditDialog;
 import com.qpidnetwork.view.MaterialAppBar;
 import com.qpidnetwork.view.MaterialDialogAlert;
-import com.qpidnetwork.view.MaterialDropDownMenu;
 import com.qpidnetwork.view.MaterialThreeButtonDialog;
 
 @SuppressLint({ "SetJavaScriptEnabled", "RtlHardcoded" })
 public class LadyDetailActivity extends BaseFragmentActivity {
+	/**
+	 * 常用重定向Url
+	 */
+	public static final String URL_OPEN_PHOTO_VIEW = "qpidnetwork://app/womanphoto";
+	public static final String URL_OPEN_VIDEO_VIEW = "qpidnetwork://app/womanvideo";
+	public static final String URL_MAKE_CALL_VIEW = "qpidnetwork://app/makecall";
+	public static final String URL_ADD_OR_REMOVE_FAVORITE = "qpidnetwork://app/favorite";
+	public static final String URL_OPEN_APP_MODULE = "qpidnetwork://app/open";
+	
 	/**
 	 * 其他界面进入参数
 	 */
@@ -89,13 +94,6 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 	}	
 	
 	/**
-	 * 界面返回
-	 */
-	private enum ActivityResultFlag {
-		RESULT_LADY_LABEL,
-	}
-	
-	/**
 	 * 接口消息
 	 *
 	 */
@@ -119,13 +117,9 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 	 * 界面控件
 	 */
 	private MaterialAppBar appbar;
-	private LinearLayout llBody;
 	private WebView mWebView;
 	private WebViewClient mWebViewClient;
 	public LadyDetail item;
-	private MaterialDropDownMenu overflowMenu;
-	private ButtonFloat floatButton;
-	private ProfileActionPopupWindow profileActionWindow;
 	
 	/**
 	 * 女士Id
@@ -137,6 +131,8 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 	private View errorPage;
 	private ButtonRaised btnErrorRetry;
 	private boolean isLoadError = false;
+	
+	private String mVideoId = "";//当前点击选中VideoId
 	
 	/**
 	 * Javascript调用java方法交互类
@@ -160,6 +156,8 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			mShowButtons = this.getIntent().getExtras().getBoolean(SHOW_BUTTONS);
 		}
 		
+		mWomanId = getIntent().getExtras().getString(WOMANID);
+		
 		// 刷新界面数据
 		ReloadData();
 		
@@ -167,6 +165,16 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 		AdvertisementManager advertManager = AdvertisementManager.getInstance();
 		if (null != advertManager) {
 			advertManager.showMainAdvert(this);
+		}
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		if(LadyDetailManager.getInstance().getLadyDetailReloadFlag()){
+			//界面返回需要刷新
+			ReloadData();
 		}
 	}
 	
@@ -181,124 +189,14 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			mShowButtons = this.getIntent().getExtras().getBoolean(SHOW_BUTTONS);
 		}
 		
-		// profile action
-		profileActionWindow = new ProfileActionPopupWindow(this);
-		floatButton = (ButtonFloat) findViewById(R.id.floatButton);
-		floatButton.setVisibility(View.VISIBLE);
-		floatButton.setOnClickListener(this);
-		
-		profileActionWindow.setOnDismissListener(new OnDismissListener(){
-
-			@Override
-			public void onDismiss() {
-				// TODO Auto-generated method stub
-				floatButton.setIcon(R.drawable.ic_add_white_24dp);
-			}
-			
-		});
-		
-		
-		profileActionWindow.setOnItemClickListener(new ProfileActionPopupWindow.OnItemClickListener() {
-			
-			@Override
-			public void onMailClick(ButtonFloat button) {
-				// 点击emf
-				if(  CheckLogin() ) {
-					MailEditActivity.launchMailEditActivity(mContext, mWomanId, ReplyType.DEFAULT, "");
-				}
-			}
-			
-			@Override
-			public void onFavoriteClick(ButtonFloat button) {
-				if(item != null){
-					if ( item.isfavorite ) {
-						RemoveFavour();
-					} else {
-						//finish add should execute showToastDone("Done!") to cancel this toast.
-						AddFavour();
-					}
-				}
-			}
-			
-			@Override
-			public void onChatClick(ButtonFloat button) {
-				// 点击在线
-				if( item != null ) {
-					ChatActivity.launchChatActivity(mContext, item.womanid, item.firstname, item.photoMinURL);
-				}else{
-					ChatActivity.launchChatActivity(mContext, mWomanId, "", "");
-				}
-			}
-		});
-		
 		// 导航栏
 		appbar = (MaterialAppBar)findViewById(R.id.appbar);
 		appbar.setAppbarBackgroundColor(getResources().getColor(R.color.theme_actionbar_secoundary));
 		appbar.setTouchFeedback(MaterialAppBar.TOUCH_FEEDBACK_HOLO_LIGHT);
-		
-		appbar.addButtonToLeft(R.id.common_button_call, "", R.drawable.ic_call_grey600_24dp);
-		appbar.getButtonById(R.id.common_button_call).setVisibility(View.GONE);
-		appbar.addButtonToLeft(R.id.common_button_emf, "", R.drawable.ic_email_grey600_24dp);
-		appbar.addButtonToLeft(R.id.common_button_online, "", R.drawable.ic_chat_greyc8c8c8_24dp);
-		appbar.getButtonById(R.id.common_button_online).setEnabled(false);
 		appbar.addButtonToLeft(R.id.common_button_back, "", R.drawable.ic_arrow_back_grey600_24dp);
-		appbar.addButtonToRight(R.id.common_button_overflow, "overflow", R.drawable.ic_more_vert_grey600_24dp);
-		appbar.getButtonById(R.id.common_button_overflow).setOnClickListener(new OnClickListener(){
+		appbar.addButtonToRight(R.id.common_button_favorite, "", R.drawable.ic_more_vert_grey600_24dp);
+		appbar.getButtonById(R.id.common_button_favorite).setVisibility(View.GONE);
 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				if (item == null) return;
-				
-				String[] menuItems = new String[]{getString(R.string.contact_add_to_favourite)};
-				if (item.isfavorite) menuItems = new String[]{getString(R.string.contact_remove_from_favourite)};
-				
-				if (overflowMenu != null){
-					overflowMenu.setMenuItems(menuItems);
-					overflowMenu.showAsDropDown(v);
-					return;
-				}
-				
-				if (overflowMenu == null) overflowMenu = new MaterialDropDownMenu(mContext, menuItems, new MaterialDropDownMenu.OnClickCallback() {
-					
-					@Override
-					public void onClick(AdapterView<?> adptView, View v, int which) {
-						// TODO Auto-generated method stub
-
-						if(  CheckLogin() ) {
-							if ( item == null ) {
-								return;
-							}
-							
-							appbar.getButtonById(R.id.common_button_overflow).setEnabled(false);
-							if ( item.isfavorite ) {
-								RemoveFavour();
-							} else {
-								//finish add should execute showToastDone("Done!") to cancel this toast.
-								AddFavour();
-							}
-						}
-
-					}
-				} , new Point((int)(208.0f * mContext.getResources().getDisplayMetrics().density), LayoutParams.WRAP_CONTENT));
-				
-				overflowMenu.showAsDropDown(v);
-				return;
-			}
-			
-		});
-		
-		if (!mShowButtons){
-			appbar.getButtonById(R.id.common_button_call).setVisibility(View.GONE);
-			appbar.getButtonById(R.id.common_button_emf).setVisibility(View.GONE);
-			appbar.getButtonById(R.id.common_button_online).setVisibility(View.GONE);
-			floatButton.setVisibility(View.GONE);
-		}
-		
-		
-		
-
-		
 		appbar.setOnButtonClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -307,24 +205,16 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 				case R.id.common_button_back:{
 					finish();
 				}break;
-				case R.id.common_button_online:{
-					// 点击在线
-					if( item != null ) {
-						ChatActivity.launchChatActivity(mContext, item.womanid, item.firstname, item.photoMinURL);
-					}else{
-						ChatActivity.launchChatActivity(mContext, mWomanId, "", "");
-					}
-				}break;
-				case R.id.common_button_emf:{
-					// 点击emf
-					if(  CheckLogin() ) {
-						MailEditActivity.launchMailEditActivity(mContext, mWomanId, ReplyType.DEFAULT, "");
-					}
-				}break;
-				case R.id.common_button_call:{
-					// 点击打lovecall
-					if(  CheckLogin() ) {
-						QueryLadyCall(mWomanId);
+				case R.id.common_button_favorite:{
+					//点击收藏或取消收藏
+					if(CheckLogin()){
+						if(item != null){
+							if(item.isfavorite){
+								RemoveFavour();
+							}else{
+								AddFavour();
+							}
+						}
 					}
 				}break;
 				default:break;
@@ -340,13 +230,8 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 		btnErrorRetry.requestFocus();
 		
 		// 浏览器控件
-//		llBody = (LinearLayout)findViewById(R.id.llBody);
 		mWebView = (WebView) findViewById(R.id.webView);
-//		mWebView = new WebView(getApplicationContext());
-//		llBody.addView(mWebView,LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 		mWebView.getSettings().setJavaScriptEnabled(true);
-//		mWebView.addJavascriptInterface(new JavascriptInterface(this), "labelListner");
-		
 		mWebViewClient = new WebViewClient() {  
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -409,33 +294,8 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 	}
 	
 	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-//		isWebViewDestroy = true;
-//		mWebView.removeAllViews();
-//		mWebView.destroy();
-	}
-
-	@Override
 	public void onClick(View v){
 		super.onClick(v);
-		if (v == floatButton){
-			if (profileActionWindow.isShowing()){
-				profileActionWindow.dismiss();
-			}else{
-				if(item != null){
-					profileActionWindow.setIsOnline(item.isonline);
-					profileActionWindow.setFavorite(item.isfavorite, true);
-				}else{
-					profileActionWindow.setIsOnline(false);
-					profileActionWindow.setFavorite(false, false);
-				}
-				profileActionWindow.show(floatButton);
-				floatButton.setIcon(R.drawable.ic_close_white_18dp);
-			}
-		}
-		
 		switch (v.getId()) {
 		case R.id.btnErrorRetry:{
 //			errorPage.setVisibility(View.GONE);
@@ -458,31 +318,14 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 		RequestBaseResponse obj = (RequestBaseResponse) msg.obj;
 		if((obj.body != null) && (obj.body instanceof LadyDetail)){
 			LadyDetail ladyDetail = (LadyDetail)obj.body;
-			// 是否在线
-			if( ladyDetail.isonline ) {
-				appbar.changeIconById(R.id.common_button_online, R.drawable.ic_chat_grey600_24dp);
-				appbar.getButtonById(R.id.common_button_online).setEnabled(true);
-				appbar.pushBadgeById(R.id.common_button_online, Color.parseColor("#228B22"));
-			} else {
-				appbar.changeIconById(R.id.common_button_online, R.drawable.ic_chat_greyc8c8c8_24dp);
-				appbar.getButtonById(R.id.common_button_online).setEnabled(false);
-				appbar.cancelBadgeById(R.id.common_button_online);
+			appbar.getButtonById(R.id.common_button_favorite).setVisibility(View.VISIBLE);
+			if(ladyDetail.isfavorite){
+				appbar.setButtonIconById(R.id.common_button_favorite, R.drawable.ic_favorite_remove_yellow_24dp);
+			}else{
+				appbar.setButtonIconById(R.id.common_button_favorite, R.drawable.ic_favorite_add_yellow_24dp);
 			}
-			
-			
-			// 是否允许打电话
-			if( ladyDetail.show_lovecall == ShowLoveCall.CallMeNow) {
-				appbar.getButtonById(R.id.common_button_call).setVisibility(View.VISIBLE);
-			} else {
-				appbar.getButtonById(R.id.common_button_call).setVisibility(View.GONE);
-			}
-			
-			
-			if(!mShowButtons){
-				appbar.getButtonById(R.id.common_button_call).setVisibility(View.GONE);
-				appbar.setTitle(ladyDetail.firstname, getResources().getColor(R.color.text_color_dark));
-			}
-			
+			String title = String.format(getResources().getString(R.string.lady_profile_title), ladyDetail.firstname);
+			appbar.setTitle(title, getResources().getColor(R.color.text_color_dark));
 			ReloadFavorite(ladyDetail.isfavorite);
 		}
 		
@@ -496,7 +339,7 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 				// 获取图片成功
 				LadyDetail photoLadyDetail = (LadyDetail)obj.body;
 				// 打开预览图片
-				NormalPhotoPreviewActivity.launchNoramlPhotoActivity(mContext, photoLadyDetail);
+				NormalPhotoPreviewActivity.launchNoramlPhotoActivity(mContext, photoLadyDetail, msg.arg1);
 			}
 		}break;
 		case REQUEST_VIDEO_SUCCESS:{
@@ -504,7 +347,9 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			if( CheckLogin() ) {
 				// 打开预览视频
 				LadyDetail videoLadyDetail = (LadyDetail)obj.body;
-				VideoDetailActivity.launchLadyVideoDetailActivity(mContext, videoLadyDetail.womanid, videoLadyDetail.firstname);
+				if(videoLadyDetail != null){
+					VideoDetailActivity.launchLadyVideoDetailActivity(mContext, videoLadyDetail.womanid, videoLadyDetail.firstname, mVideoId);
+				}
 			}
 		}break;
 		case REQUEST_FAIL:{
@@ -516,32 +361,29 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			if( item != null ) {
 				item.isfavorite = true;
 				ReloadFavorite(item.isfavorite);
+				appbar.setButtonIconById(R.id.common_button_favorite, R.drawable.ic_favorite_remove_yellow_24dp);
 			}
 			/*添加favorite成功，添加到现有联系人或更新联系人*/
 			ContactManager.getInstance().updateBySendEMF(item);
-			
-			appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
 		}break;
 		case REQUEST_ADD_FAVOUR_FAIL:{
 			// 收藏失败
 			cancelToastImmediately();
 			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
-			appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
 		}break;
 		case REQUEST_REMOVE_FAVOUR_SUCCESS:{
 			showToastDone("Removed!");
 			if( item != null ) {
 				item.isfavorite = false;
 				ReloadFavorite(item.isfavorite);
+				appbar.setButtonIconById(R.id.common_button_favorite, R.drawable.ic_favorite_add_yellow_24dp);
 			}
-			appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
 			ContactManager.getInstance().updateFavoriteStatus(item.womanid, false);
 		}break;
 		case REQUEST_REMOVE_FAVOUR_FAIL:{
 			// 删除收藏失败
 			cancelToastImmediately();
 			Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();	
-			appbar.getButtonById(R.id.common_button_overflow).setEnabled(true);
 		}break;
 		case REQUEST_GET_LOVE_CALL_SUCCESS:{
 			// 请求lovecall成功
@@ -559,6 +401,25 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			dialog.setMessage(obj.errmsg);
 			
 			if (!obj.errno.equals("MBCE61005")){   //RequestErrorCode 裏面沒有這個錯誤代碼.
+				String ladyName = "The lady";
+				if(item != null){
+					ladyName = item.firstname;
+				}
+				dialog.setMessage(String.format(mContext.getResources().getString(R.string.lovecall_mail_schedule_makecall_error_tips), ladyName));
+				dialog.addButton(dialog.createButton(mContext.getString(R.string.common_btn_ok), new OnClickListener(){
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						LadyDetail ladyDetail = new LadyDetail();
+						if(item != null){
+							ladyDetail = item;
+						}else{
+							ladyDetail.womanid = mWomanId;
+						}
+						ScheduleCallActivity.launchScheduleCallActivity(mContext, ladyDetail);
+					}
+				}));
+				
 				dialog.addButton(dialog.createButton(getString(R.string.common_btn_cancel), null));
 				if(isActivityVisible()){
 					dialog.show();
@@ -600,8 +461,8 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 	 * 刷新界面数据
 	 */
 	public void ReloadData() {
-		mWomanId = getIntent().getExtras().getString(WOMANID);
-		
+		LadyDetailManager.getInstance().updateLadyDetailReloadFlag(false);
+		LadyDetailManager.getInstance().RemoveLadyDetailCache(mWomanId);
 		LadyDetailManager.getInstance().QueryLadyDetail(mWomanId, new OnLadyDetailManagerQueryLadyDetailCallback() {
 			
 			@Override
@@ -625,154 +486,189 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 		
 		// 域名
 		String domain = WebSiteManager.getInstance().GetWebSite().getAppSiteHost();
-//		// Cookie 认证
-//		CookieManager cookieManager = CookieManager.getInstance();
-//		cookieManager.setAcceptCookie(true);
-//		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
-//		cookieManager.setCookie(domain, phpSession);
-//		CookieSyncManager.getInstance().sync();
-		String url = domain;
+		// Cookie 认证
+		/*getInstance 前必须createInstance */
+		CookieSyncManager.createInstance(this);
+		CookieManager cookieManager = CookieManager.getInstance();
+		cookieManager.setAcceptCookie(true);
+		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
+		if(!TextUtils.isEmpty(phpSession)){
+			cookieManager.setCookie(domain, phpSession);
+		}else{
+			cookieManager.removeAllCookie();
+		}
+		CookieSyncManager.getInstance().sync();
 		
+		String url = domain;
 		url += "/member/lady_profile/womanid/";
 		url += mWomanId;
-		
 		url += "/versioncode/";
 		url += QpidApplication.versionCode;
-//		url = "http://demo-mobile.idateasia.com/member/lady_profile/womanid/P580502";
+		url += "/showButton/";
+		url += mShowButtons?1:0;
 		mWebView.loadUrl(url);
-		
 	}
-
-	public boolean StartActivityByUrl(String url) {
+	
+	/**
+	 * 重定向Url统一处理
+	 * @param url
+	 * @return
+	 */
+	private boolean StartActivityByUrl(String url) {
 		boolean bFlag = false;
-		String womanId = "";
-		String[] reslult = url.split("womanid=", 2);
-		if( reslult != null && reslult.length > 1) {
-			womanId = reslult[1];
-		}
-		
-		if( url.contains("qpidnetwork://app/womanphoto") ){
-			// 点击图片
-			showProgressDialog("Loading...");
-			LadyDetailManager.getInstance().RemoveLadyDetailCache(womanId);
-			LadyDetailManager.getInstance().QueryLadyDetail(womanId, new OnLadyDetailManagerQueryLadyDetailCallback() {
-				
-				@Override
-				public void OnQueryLadyDetailCallback(boolean isSuccess, String errno,
-						String errmsg, LadyDetail item) {
-					// TODO Auto-generated method stub
-					Message msg = Message.obtain();
-					RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
-					if( isSuccess ) {
-						// 获取个人信息成功
-						msg.what = RequestFlag.REQUEST_PHOTO_SUCCESS.ordinal();
-						obj.body = item;
-					} else {
-						// 获取个人信息失败
-						msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-					}
-					msg.obj = obj;
-					sendUiMessage(msg);
+		if(!TextUtils.isEmpty(url)){
+			if(url.contains(URL_OPEN_PHOTO_VIEW)
+					|| url.contains(URL_OPEN_VIDEO_VIEW)
+					|| url.contains(URL_MAKE_CALL_VIEW)
+					|| url.contains(URL_ADD_OR_REMOVE_FAVORITE)){
+				//点击功能响应
+				if(CheckLogin()){
+					onPageClickListen(url);
 				}
-			});
-			
-			// 标记已经处理
-			bFlag = true;
-		} else if( url.contains("qpidnetwork://app/womanvideo") ) {
-			// 点击video
-			LadyDetailManager.getInstance().QueryLadyDetail(womanId, new OnLadyDetailManagerQueryLadyDetailCallback() {
-				
-				@Override
-				public void OnQueryLadyDetailCallback(boolean isSuccess, String errno,
-						String errmsg, LadyDetail item) {
-					// TODO Auto-generated method stub
-					Message msg = Message.obtain();
-					RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
-					if( isSuccess ) {
-						// 获取个人信息成功
-						msg.what = RequestFlag.REQUEST_VIDEO_SUCCESS.ordinal();
-						obj.body = item;
-					} else {
-						// 获取个人信息失败
-						msg.what = RequestFlag.REQUEST_FAIL.ordinal();
-					}
-					msg.obj = obj;
-					sendUiMessage(msg);
-				}
-			});
-			
-			// 标记已经处理
-			bFlag = true;
-		} else if( url.contains("qpidnetwork://app/womansign") ) {
-			if( CheckLogin() ) {
-				// 打开标签页
-				mContext.startActivityForResult(LadyLabelActivity.getIntent(mContext, womanId, ""), ActivityResultFlag.RESULT_LADY_LABEL.ordinal());
+				// 标记已经处理
+				bFlag = true;
+			}else if(url.contains(URL_OPEN_APP_MODULE)){
+				//打开系统标准模块
+				AppUrlHandler.AppUrlHandle(this, url);
+				// 标记已经处理
+				bFlag = true;
 			}
-			// 标记已经处理
-			bFlag = true;
 		}
-		
 		return bFlag;
 	}
 	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    super.onActivityResult(requestCode, resultCode, data);
-	 
-	    switch( ActivityResultFlag.values()[requestCode] ) {
-	    case RESULT_LADY_LABEL:{
-	    	// 标签页返回
-	    	if( resultCode == RESULT_OK ) {
-	    		String[] ladyLabelAdd = data.getExtras().getStringArray(LadyLabelActivity.LADY_LABEL_ADD);
-	    		String[] ladyLabelDel = data.getExtras().getStringArray(LadyLabelActivity.LADY_LABEL_DEL);
-	    		
-	    		// 刷新女士标签
-	    		ReloadLadyLabel(ladyLabelAdd, ladyLabelDel);
-	    	}
-	    }
-	    default:break;
-	    }
-	}
-	
 	/**
-	 * 调用Javascript刷新女士标签
-	 * @param ladyLabelAdd		增加的女士标签数组
-	 * @param ladyLabelDel		删除的女士标签数组
+	 * 重定向普通点击响应处理
+	 * @param url
 	 */
-	public void ReloadLadyLabel(String[] ladyLabelAdd, String[] ladyLabelDel) {
-		String paramAdd = "";
-		for( String item :  ladyLabelAdd ) {
-			paramAdd += item;
-			paramAdd += ",";
+	private void onPageClickListen(String url){
+		HashMap<String, String> args = parseUrlKeyValue(url);
+		if(args != null){
+			String womanId = "";
+			if(args.containsKey("womanid")){
+				womanId = args.get("womanid");
+			}
+			if(url.contains(URL_OPEN_PHOTO_VIEW)){
+				//点击打开照片列表
+				int photoIndex = 0;
+				if(args.containsKey("photoindex")){
+					photoIndex = Integer.valueOf(args.get("photoindex"));
+				}
+				onPhotoClick(womanId, photoIndex);
+			}else if(url.contains(URL_OPEN_VIDEO_VIEW)){
+				//点击打开Video列表预览
+				mVideoId = "";
+				if(args.containsKey("videoid")){
+					mVideoId = args.get("videoid");
+				}
+				onVideoClick(womanId);
+			}else if(url.contains(URL_MAKE_CALL_VIEW)){
+				//点击拨打电话
+				QueryLadyCall(womanId);
+			}else if(url.contains(URL_ADD_OR_REMOVE_FAVORITE)){
+				//点击添加或删除Favorite
+				int operate = -1;
+				if(args.containsKey("operate")){
+					operate = Integer.valueOf(args.get("operate"));
+				}
+				if(operate == 0){
+					AddFavour();
+				}else if(operate == 1){
+					RemoveFavour();
+				}
+			}
 		}
-		if( paramAdd.length() > 0 ) {
-			paramAdd = paramAdd.substring(0, paramAdd.length() - 1);
-		}
-		
-		String paramDel = "";
-		for( String item :  ladyLabelDel ) {
-			paramDel += item;
-			paramDel += ",";
-		}
-		
-		if( paramDel.length() > 0 ) {
-			paramDel = paramDel.substring(0, paramDel.length() - 1);
-		}
-		
-		String url = "javascript:js_update_sign(";
-		url += "'" +  paramAdd + "'";
-		url += ",";
-		url += "'" + paramDel + "'";
-		url += ")";
-		
-		mWebView.loadUrl(url);
 	}
 	
+	/**
+	 * 点击图片响应
+	 * @param womanId
+	 * @param photoIndex
+	 */
+	private void onPhotoClick(String womanId, final int photoIndex){
+		// 点击图片
+		showProgressDialog("Loading...");
+		LadyDetailManager.getInstance().RemoveLadyDetailCache(womanId);
+		LadyDetailManager.getInstance().QueryLadyDetail(womanId, new OnLadyDetailManagerQueryLadyDetailCallback() {
+			
+			@Override
+			public void OnQueryLadyDetailCallback(boolean isSuccess, String errno,
+					String errmsg, LadyDetail item) {
+				// TODO Auto-generated method stub
+				Message msg = Message.obtain();
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
+				if( isSuccess ) {
+					// 获取个人信息成功
+					msg.what = RequestFlag.REQUEST_PHOTO_SUCCESS.ordinal();
+					obj.body = item;
+				} else {
+					// 获取个人信息失败
+					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+				}
+				msg.obj = obj;
+				msg.arg1 = photoIndex;
+				sendUiMessage(msg);
+			}
+		});
+	}
 	
 	/**
-	 * 调用Javascript刷新女士标签
-	 * @param ladyLabelAdd		增加的女士标签数组
-	 * @param ladyLabelDel		删除的女士标签数组
+	 * 点击video响应
+	 * @param womanId
+	 */
+	private void onVideoClick(String womanId){
+		showProgressDialog("Loading...");
+		LadyDetailManager.getInstance().QueryLadyDetail(womanId, new OnLadyDetailManagerQueryLadyDetailCallback() {
+			
+			@Override
+			public void OnQueryLadyDetailCallback(boolean isSuccess, String errno,
+					String errmsg, LadyDetail item) {
+				// TODO Auto-generated method stub
+				Message msg = Message.obtain();
+				RequestBaseResponse obj = new RequestBaseResponse(isSuccess, errno, errmsg, null);
+				if( isSuccess ) {
+					// 获取个人信息成功
+					msg.what = RequestFlag.REQUEST_VIDEO_SUCCESS.ordinal();
+					obj.body = item;
+				} else {
+					// 获取个人信息失败
+					msg.what = RequestFlag.REQUEST_FAIL.ordinal();
+				}
+				msg.obj = obj;
+				sendUiMessage(msg);
+			}
+		});
+	}
+	
+	/**
+	 * 解析Url中参数
+	 * @param url
+	 * @return
+	 */
+	private HashMap<String, String> parseUrlKeyValue(String url){
+		HashMap<String, String> argMap = new HashMap<String, String>();
+		if(!TextUtils.isEmpty(url)){
+			if(url.contains("?")){
+				String[] result = url.split("\\?");
+				if(result != null && result.length > 1){
+					String[] params = result[1].split("&");
+					if(params != null){
+						for(String param : params){
+							String[] keyValue = param.split("=");
+							if(keyValue != null && keyValue.length > 1){
+								argMap.put(keyValue[0], keyValue[1]);
+							}
+						}
+					}
+				}
+			}
+		}
+		return argMap;
+	}
+	
+	/**
+	 * 重新加载favorite状态
+	 * @param isFavour
 	 */
 	public void ReloadFavorite(boolean isFavour) {
 
@@ -798,7 +694,6 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			return;
 		}
 		showToastProgressing("Adding");
-//		RequestOperator.getInstance().AddFavouritesLady(mWomanId, new OnRequestCallback() {
 		LadyDetailManager.getInstance().AddFavour(mWomanId, new OnRequestCallback() {
 			@Override
 			public void OnRequest(boolean isSuccess, String errno, String errmsg) {
@@ -823,7 +718,6 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			return;
 		}
 		showToastProgressing("Removing");
-//		RequestOperator.getInstance().RemoveFavouritesLady(item.womanid, new OnRequestCallback() {
 		LadyDetailManager.getInstance().RemoveFavour(mWomanId, new OnRequestCallback() {
 			@Override
 			public void OnRequest(boolean isSuccess, String errno, String errmsg) {

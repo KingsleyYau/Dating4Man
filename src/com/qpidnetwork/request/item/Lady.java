@@ -1,8 +1,13 @@
 package com.qpidnetwork.request.item;
 
+import java.io.Serializable;
+
 import com.qpidnetwork.request.RequestEnum.OnlineStatus;
 
-public class Lady {
+public class Lady implements Serializable{
+
+	private static final long serialVersionUID = 6361735860068550447L;
+	
 	public Lady() {
 		
 	}

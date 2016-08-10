@@ -48,6 +48,7 @@ public class MyScenesFragment extends BaseSortedGridViewFragment implements Live
 		// TODO Auto-generated method stub
 		super.onDataNeedRefresh();
 		if(!mLiveChatManager.GetAllPaidTheme()){
+			sgvTheme = getSortedGridView();
 			updateView(new ArrayList<String>(), 
 					new ArrayList<List<ThemeItem>>(), new ArrayList<ThemeItem>());// 获取主题数据后填充到view中
 			onRefreshComplete(false);

@@ -87,9 +87,9 @@ public class EMFListActivity extends BaseTabbarTitleFragmentActivity implements 
 //		}, R.drawable.ic_more_vert_white_24dp);
 		tabBar.SelectTab(0);
 		
-		getFloatButton().setId(R.id.common_button_send);
-		getFloatButton().setOnClickListener(this);
-		getFloatButton().setVisibility(View.VISIBLE);
+//		getFloatButton().setId(R.id.common_button_send);
+//		getFloatButton().setOnClickListener(this);
+//		getFloatButton().setVisibility(View.VISIBLE);
 		
 		LiveChatManager.getInstance().RegisterOtherListener(this);
 		// 清空emf消息中心
@@ -189,7 +189,7 @@ public class EMFListActivity extends BaseTabbarTitleFragmentActivity implements 
 		super.onClick(v);
 		switch (v.getId()) {
 		case R.id.common_button_send:
-			MailEditActivity.launchMailEditActivity(this, "", ReplyType.DEFAULT, "");
+			MailEditActivity.launchMailEditActivity(this, "", ReplyType.DEFAULT, "", "");
 			break;
 		case R.id.common_button_search:
 			onSearch();

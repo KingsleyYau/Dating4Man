@@ -67,7 +67,9 @@ public class ThemePreviewer extends PopupWindow {
 	 * @param frame
 	 */
 	public void setFrame(int frame) {
-		mFrame = frame;
+		if(frame != 0){
+			mFrame = frame;
+		}
 	}
 
 	/**

@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
@@ -51,6 +52,7 @@ import com.qpidnetwork.manager.MonthlyFeeManager;
 import com.qpidnetwork.request.OnVSPlayVideoCallback;
 import com.qpidnetwork.request.OnVSSaveVideoCallback;
 import com.qpidnetwork.request.OnVSVideoDetailCallback;
+import com.qpidnetwork.request.RequestJniMonthlyFee;
 import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.MonthLyFeeTipItem;
@@ -88,6 +90,7 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 	
 	private static final String INPUT_LADY_ID = "inputLadyId";
 	private static final String INPUT_LADY_NAME = "inputLadyName";
+	private static final String INPUT_VIDEO_ID = "inputVideoId";
 	
 //	private LinearLayout bottomArea;
 
@@ -160,6 +163,7 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 	
 	/*data*/
 	private LadyInfo mLadyDetail;
+	private String mCurrentVideoId = "";
 	private List<VSVideoDetailItem> mVideoDetailList;
 	private int mCurrentPosition = 0; //当前播放的视频索引
 	private String mCurrentVideoUrl; //用于记录当前正在播放的视频的url
@@ -170,12 +174,13 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 	
 
 	
-	public static void launchLadyVideoDetailActivity(Context context, String ladyId, String ladyName){
+	public static void launchLadyVideoDetailActivity(Context context, String ladyId, String ladyName, String videoId){
 		
 		if(LoginManager.getInstance().CheckLogin(context)){
 			Intent intent = new Intent(context, VideoDetailActivity.class);
 			intent.putExtra(INPUT_LADY_ID, ladyId);
 			intent.putExtra(INPUT_LADY_NAME, ladyName);
+			intent.putExtra(INPUT_VIDEO_ID, videoId);
 			context.startActivity(intent);
 		}
 	}
@@ -360,7 +365,10 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 			finish();
 			return;
 		}
-		
+		if(bundle.containsKey(INPUT_VIDEO_ID)){
+			//外部指定当前选中Video
+			mCurrentVideoId = bundle.getString(INPUT_VIDEO_ID);
+		}
 		mLadyDetail = new LadyInfo(bundle.getString(INPUT_LADY_ID), bundle.getString(INPUT_LADY_NAME));
 
 		if(mLadyDetail == null){
@@ -926,7 +934,7 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 			RequestFailBean bean = (RequestFailBean)msg.obj;
 			
 			//先判断月费类型
-			MemberType type = MemberType.values()[msg.arg1];
+			MemberType type = RequestJniMonthlyFee.intToMemberType(msg.arg1);
 			if (type == MemberType.NO_FEED_FIRST_MONTHLY_MEMBER|| type == MemberType.NO_FEED_MONTHLY_MEMBER) {
 				MonthlyFeeManager.getInstance().onMemberTypeUpdate(type);
 				mMonthLyFeeTipItem = MonthlyFeeManager.getInstance().getMonthLyFeeTipItem(type);
@@ -1047,7 +1055,24 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 		seekBar.setProgress(0);
 		seekBar.setEnabled(false);
 		
-		VSVideoDetailItem video = mVideoDetailList.get(0);
+		//修改加载默认传入那个
+		VSVideoDetailItem video = null;
+		int position = 0;
+		if(!TextUtils.isEmpty(mCurrentVideoId)){
+			for(int i=0; i < mVideoDetailList.size(); i++){
+				if(mCurrentVideoId.equals(mVideoDetailList.get(i).id)){
+					position = i;
+					video = mVideoDetailList.get(i);
+					break;
+				}
+			}
+		}
+		
+		if(video == null){
+			//未匹配到默认使用第一个
+			video = mVideoDetailList.get(0);
+			position = 0;
+		}
 		
 		background_img.setImageDrawable(null);
 		background_img.setScaleType(ScaleType.CENTER_CROP);
@@ -1085,7 +1110,8 @@ public class VideoDetailActivity extends BaseFragmentActivity implements
 		} else {
 		}
 		
-		galleryLadyVideos.setItemSelected(0);
+		mCurrentPosition = position;
+		galleryLadyVideos.setItemSelected(position);
 	}
 
 

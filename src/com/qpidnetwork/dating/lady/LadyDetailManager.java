@@ -49,6 +49,12 @@ public class LadyDetailManager implements LiveChatManagerOtherListener, OnLoginM
 	
 	private static LadyDetailManager gLadyDetailManager;
 	private Context mContext;
+	/**
+	 * 女士详情是否需要重新刷新标志（用于LadyDetail页面详情界面resume刷新）
+	 * 当前主要条件是:1.登陆成功；2.进入买点页面（月费及购点等返回）
+	 */
+	private boolean isNeedReload = false;
+	
 	public static LadyDetailManager newInstance(Context context) {
 		if( gLadyDetailManager == null ) {
 			gLadyDetailManager = new LadyDetailManager(context);
@@ -310,6 +316,7 @@ public class LadyDetailManager implements LiveChatManagerOtherListener, OnLoginM
 				mLadyDetailMap.clear();
 			}
 		}
+		updateLadyDetailReloadFlag(true);
 	}
 
 	@Override
@@ -346,6 +353,22 @@ public class LadyDetailManager implements LiveChatManagerOtherListener, OnLoginM
 				mLadyDetailMap.remove(womanId);
 			}
 		}
+	}
+	
+	/**
+	 * 更新Resume时是否需要Reload详情
+	 * @param needReload
+	 */
+	public void updateLadyDetailReloadFlag(boolean needReload){
+		this.isNeedReload = needReload;
+	}
+	
+	/**
+	 * 获取女士资料刷新标志
+	 * @return
+	 */
+	public boolean getLadyDetailReloadFlag(){
+		return isNeedReload;
 	}
 	
 }

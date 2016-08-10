@@ -47,10 +47,10 @@ public class RequestJniLoveCall {
      * @param callback
      * @return					请求唯一标识
      */
-    static public long ConfirmLoveCall(String orderId, ConfirmType confirmType, OnRequestCallback callback) {
+    static public long ConfirmLoveCall(String orderId, ConfirmType confirmType, OnConfirmLovecallCallback callback) {
     	return ConfirmLoveCall(orderId, confirmType.ordinal(), callback);
     }
-    static protected native long ConfirmLoveCall(String orderId, int confirmType, OnRequestCallback callback);
+    static protected native long ConfirmLoveCall(String orderId, int confirmType, OnConfirmLovecallCallback callback);
     
     /**
      * 11.3.获取LoveCall未处理数接口

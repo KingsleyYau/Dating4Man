@@ -1,0 +1,1573 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="timezone_country">
+		<item>Afghanistan</item>
+		<item>Albania</item>
+		<item>Algeria</item>
+		<item>American Samoa</item>
+		<item>Andorra</item>
+		<item>Angola</item>
+		<item>Anguilla</item>
+		<item>Antigua and Barbuda</item>
+		<item>Argentina</item>
+		<item>Armenia</item>
+		<item>Aruba</item>
+		<item>Australia</item>
+		<item>Austria</item>
+		<item>Azerbaijan</item>
+		<item>Bahamas</item>
+		<item>Bahrain</item>
+		<item>Bangladesh</item>
+		<item>Barbados</item>
+		<item>Belarus</item>
+		<item>Belgium</item>
+		<item>Belize</item>
+		<item>Benin</item>
+		<item>Bermuda Islands</item>
+		<item>Bhutan</item>
+		<item>Bolivia</item>
+		<item>Bosnia-Herzegovina</item>
+		<item>Botswana</item>
+		<item>Brazil</item>
+		<item>British Virgin Islands</item>
+		<item>Brunei Darussalam</item>
+		<item>Bulgaria</item>
+		<item>Burkina Faso</item>
+		<item>Burundi</item>
+		<item>Cambodia</item>
+		<item>Cameroon</item>
+		<item>Canada</item>
+		<item>Cape Verde</item>
+		<item>Cayman Islands</item>
+		<item>Central African Republic</item>
+		<item>Chad</item>
+		<item>Chile</item>
+		<item>China</item>
+		<item>Colombia</item>
+		<item>Comoros</item>
+		<item>Congo</item>
+		<item>Congo Dem.Rep.</item>
+		<item>Cook Islands</item>
+		<item>Costa Rica</item>
+		<item>Cote d\'Ivoire (Ivory Coast)</item>
+		<item>Croatia</item>
+		<item>Cuba</item>
+		<item>Curaçao</item>
+		<item>Cyprus</item>
+		<item>Czech Republic</item>
+		<item>Denmark</item>
+		<item>Djibouti</item>
+		<item>Dominica</item>
+		<item>Dominican Republic</item>
+		<item>Ecuador</item>
+		<item>Egypt</item>
+		<item>El Salvador</item>
+		<item>Equatorial Guinea</item>
+		<item>Eritrea</item>
+		<item>Estonia</item>
+		<item>Ethiopia</item>
+		<item>Falkland Islands</item>
+		<item>Faroe Islands</item>
+		<item>Fiji</item>
+		<item>Finland</item>
+		<item>France</item>
+		<item>French Guiana</item>
+		<item>French Polynesia</item>
+		<item>Gabon</item>
+		<item>Gambia</item>
+		<item>Gaza Strip</item>
+		<item>Georgia</item>
+		<item>Germany</item>
+		<item>Ghana</item>
+		<item>Gibraltar</item>
+		<item>Greece</item>
+		<item>Greenland</item>
+		<item>Grenada</item>
+		<item>Guadeloupe</item>
+		<item>Guam</item>
+		<item>Guatemala</item>
+		<item>Guinea</item>
+		<item>Guyana</item>
+		<item>Haiti</item>
+		<item>Honduras</item>
+		<item>Hong Kong</item>
+		<item>Hungary</item>
+		<item>Iceland</item>
+		<item>India</item>
+		<item>Indonesia</item>
+		<item>Iran</item>
+		<item>Iraq</item>
+		<item>Ireland</item>
+		<item>Israel</item>
+		<item>Italy</item>
+		<item>Jamaica</item>
+		<item>Japan</item>
+		<item>Jordan</item>
+		<item>Kazakhstan</item>
+		<item>Kenya</item>
+		<item>Kerguelen Islands</item>
+		<item>Kiribati</item>
+		<item>Kosovo</item>
+		<item>Kuwait</item>
+		<item>Kyrgyzstan</item>
+		<item>Laos</item>
+		<item>Latvia</item>
+		<item>Lebanon</item>
+		<item>Lesotho</item>
+		<item>Liberia</item>
+		<item>Libya</item>
+		<item>Liechtenstein</item>
+		<item>Lithuania</item>
+		<item>Luxembourg</item>
+		<item>Macau</item>
+		<item>Macedonia</item>
+		<item>Madagascar</item>
+		<item>Malawi</item>
+		<item>Malaysia</item>
+		<item>Maldives</item>
+		<item>Mali</item>
+		<item>Malta</item>
+		<item>Marshall Islands</item>
+		<item>Martinique</item>
+		<item>Mauritania</item>
+		<item>Mauritius</item>
+		<item>Mayotte</item>
+		<item>Mexico</item>
+		<item>Micronesia</item>
+		<item>Moldova</item>
+		<item>Monaco</item>
+		<item>Mongolia</item>
+		<item>Montenegro</item>
+		<item>Montserrat</item>
+		<item>Morocco</item>
+		<item>Mozambique</item>
+		<item>Myanmar</item>
+		<item>Namibia</item>
+		<item>Nauru</item>
+		<item>Nepal</item>
+		<item>Netherlands</item>
+		<item>New Zealand</item>
+		<item>Nicaragua</item>
+		<item>Niger</item>
+		<item>Nigeria</item>
+		<item>Niue</item>
+		<item>Norfolk Island</item>
+		<item>North Korea</item>
+		<item>Northern Mariana Islands</item>
+		<item>Norway</item>
+		<item>Oman</item>
+		<item>Pakistan</item>
+		<item>Palau</item>
+		<item>Panama</item>
+		<item>Papua New Guinea</item>
+		<item>Paraguay</item>
+		<item>Peru</item>
+		<item>Philippine</item>
+		<item>Pitcairn Islands</item>
+		<item>Poland</item>
+		<item>Portugal</item>
+		<item>Puerto Rico</item>
+		<item>Qatar</item>
+		<item>Republic of South Sudan</item>
+		<item>Reunion (French)</item>
+		<item>Romania</item>
+		<item>Russia</item>
+		<item>Rwanda</item>
+		<item>Saint Kitts and Nevis</item>
+		<item>Saint Lucia</item>
+		<item>Saint Pierre and Miquelon</item>
+		<item>Saint Vincent and Grenadines</item>
+		<item>Samoa</item>
+		<item>San Marino</item>
+		<item>Sao Tome and Principe</item>
+		<item>Saudi Arabia</item>
+		<item>Senegal</item>
+		<item>Serbia</item>
+		<item>Seychelles</item>
+		<item>Sierra Leone</item>
+		<item>Singapore</item>
+		<item>Slovak Republic</item>
+		<item>Slovenia</item>
+		<item>Solomon Islands</item>
+		<item>Somalia</item>
+		<item>South Africa</item>
+		<item>South Korea</item>
+		<item>Spain</item>
+		<item>Sri Lanka</item>
+		<item>Sudan</item>
+		<item>Suriname</item>
+		<item>Swaziland</item>
+		<item>Sweden</item>
+		<item>Switzerland</item>
+		<item>Syria</item>
+		<item>Taiwan</item>
+		<item>Tajikistan</item>
+		<item>Tanzania</item>
+		<item>Thailand</item>
+		<item>Timor-Leste</item>
+		<item>Togo</item>
+		<item>Tonga</item>
+		<item>Trinidad and Tobago</item>
+		<item>Tunisia</item>
+		<item>Turkey</item>
+		<item>Turkmenistan</item>
+		<item>Tuvalu</item>
+		<item>Uganda</item>
+		<item>Ukraine</item>
+		<item>United Arab Emirates</item>
+		<item>United Kingdom</item>
+		<item>United States</item>
+		<item>Uruguay</item>
+		<item>Uzbekistan</item>
+		<item>Vanuatu</item>
+		<item>Vatican City State</item>
+		<item>Venezuela</item>
+		<item>Vietnam</item>
+		<item>West Bank</item>
+		<item>Western Sahara</item>
+		<item>Yemen</item>
+		<item>Zambia</item>
+		<item>Zimbabwe</item>
+	</string-array>
+	<string-array name="timezone_country_short">
+		<item>AF</item>
+		<item>AL</item>
+		<item>DZ</item>
+		<item>AS</item>
+		<item>AD</item>
+		<item>AO</item>
+		<item>AI</item>
+		<item>AG</item>
+		<item>AR</item>
+		<item>AM</item>
+		<item>AW</item>
+		<item>AU</item>
+		<item>AT</item>
+		<item>AZ</item>
+		<item>BS</item>
+		<item>BH</item>
+		<item>BD</item>
+		<item>BB</item>
+		<item>BY</item>
+		<item>BE</item>
+		<item>BZ</item>
+		<item>BJ</item>
+		<item>BM</item>
+		<item>BT</item>
+		<item>BO</item>
+		<item>BA</item>
+		<item>BW</item>
+		<item>BR</item>
+		<item>VG</item>
+		<item>BN</item>
+		<item>BG</item>
+		<item>BF</item>
+		<item>BI</item>
+		<item>KH</item>
+		<item>CM</item>
+		<item>CA</item>
+		<item>CV</item>
+		<item>KY</item>
+		<item>CF</item>
+		<item>TD</item>
+		<item>CL</item>
+		<item>CN</item>
+		<item>CO</item>
+		<item>KM</item>
+		<item>CG</item>
+		<item>CD</item>
+		<item>CK</item>
+		<item>CR</item>
+		<item>CI</item>
+		<item>HR</item>
+		<item>CU</item>
+		<item>AN</item>
+		<item>CY</item>
+		<item>CZ</item>
+		<item>DK</item>
+		<item>DJ</item>
+		<item>DM</item>
+		<item>DO</item>
+		<item>EC</item>
+		<item>EG</item>
+		<item>SV</item>
+		<item>GN</item>
+		<item>ER</item>
+		<item>EE</item>
+		<item>ET</item>
+		<item>FK</item>
+		<item>FO</item>
+		<item>FJ</item>
+		<item>FI</item>
+		<item>FR</item>
+		<item>GF</item>
+		<item>PF</item>
+		<item>GA</item>
+		<item>GM</item>
+		<item>GZ</item>
+		<item>GE</item>
+		<item>DE</item>
+		<item>GH</item>
+		<item>GI</item>
+		<item>GR</item>
+		<item>GL</item>
+		<item>GD</item>
+		<item>GP</item>
+		<item>GU</item>
+		<item>GT</item>
+		<item>GN</item>
+		<item>GY</item>
+		<item>HT</item>
+		<item>HN</item>
+		<item>HK</item>
+		<item>HU</item>
+		<item>IS</item>
+		<item>IN</item>
+		<item>ID</item>
+		<item>IR</item>
+		<item>IQ</item>
+		<item>IE</item>
+		<item>IL</item>
+		<item>IT</item>
+		<item>JM</item>
+		<item>JP</item>
+		<item>JO</item>
+		<item>KZ</item>
+		<item>KE</item>
+		<item>KL</item>
+		<item>KI</item>
+		<item>KS</item>
+		<item>KW</item>
+		<item>KG</item>
+		<item>LA</item>
+		<item>LV</item>
+		<item>LB</item>
+		<item>LS</item>
+		<item>LR</item>
+		<item>LY</item>
+		<item>LI</item>
+		<item>LT</item>
+		<item>LU</item>
+		<item>MO</item>
+		<item>MK</item>
+		<item>MG</item>
+		<item>MW</item>
+		<item>MY</item>
+		<item>MV</item>
+		<item>ML</item>
+		<item>MT</item>
+		<item>MH</item>
+		<item>MQ</item>
+		<item>MR</item>
+		<item>MU</item>
+		<item>YT</item>
+		<item>MX</item>
+		<item>FM</item>
+		<item>MD</item>
+		<item>MC</item>
+		<item>MN</item>
+		<item>ME</item>
+		<item>MS</item>
+		<item>MA</item>
+		<item>MZ</item>
+		<item>MM</item>
+		<item>NA</item>
+		<item>NR</item>
+		<item>NP</item>
+		<item>NL</item>
+		<item>NZ</item>
+		<item>NI</item>
+		<item>NE</item>
+		<item>NG</item>
+		<item>NU</item>
+		<item>NF</item>
+		<item>KP</item>
+		<item>MP</item>
+		<item>NO</item>
+		<item>OM</item>
+		<item>PK</item>
+		<item>PW</item>
+		<item>PA</item>
+		<item>PG</item>
+		<item>PY</item>
+		<item>PE</item>
+		<item>PH</item>
+		<item>PN</item>
+		<item>PL</item>
+		<item>PT</item>
+		<item>PR</item>
+		<item>QA</item>
+		<item>SS</item>
+		<item>RE</item>
+		<item>RO</item>
+		<item>RU</item>
+		<item>RW</item>
+		<item>KN</item>
+		<item>LC</item>
+		<item>PM</item>
+		<item>VC</item>
+		<item>WS</item>
+		<item>SM</item>
+		<item>ST</item>
+		<item>SA</item>
+		<item>SN</item>
+		<item>RS</item>
+		<item>SC</item>
+		<item>SL</item>
+		<item>SG</item>
+		<item>SK</item>
+		<item>SI</item>
+		<item>SB</item>
+		<item>SO</item>
+		<item>ZA</item>
+		<item>KR</item>
+		<item>ES</item>
+		<item>LK</item>
+		<item>SD</item>
+		<item>SR</item>
+		<item>SZ</item>
+		<item>SE</item>
+		<item>CH</item>
+		<item>SY</item>
+		<item>TW</item>
+		<item>TJ</item>
+		<item>TZ</item>
+		<item>TH</item>
+		<item>TL</item>
+		<item>TG</item>
+		<item>TO</item>
+		<item>TT</item>
+		<item>TN</item>
+		<item>TR</item>
+		<item>TM</item>
+		<item>TV</item>
+		<item>UG</item>
+		<item>UA</item>
+		<item>AE</item>
+		<item>GB</item>
+		<item>US</item>
+		<item>UY</item>
+		<item>UZ</item>
+		<item>VU</item>
+		<item>VA</item>
+		<item>VE</item>
+		<item>VN</item>
+		<item>WB</item>
+		<item>EH</item>
+		<item>YE</item>
+		<item>ZM</item>
+		<item>ZW</item>
+	</string-array>
+	<string-array name="AF_cities">
+	    <item>Kabul ( GMT +04:30 )</item>
+	</string-array>
+	<string-array name="AL_cities">
+	    <item>Tirane ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="DZ_cities">
+	    <item>Algiers ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="AS_cities">
+	    <item>Pago Pago ( GMT -11:00 )</item>
+	</string-array>
+	<string-array name="AD_cities">
+	    <item>Andorra La Vella ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="AO_cities">
+	    <item>Luanda ( GMT +01:00 )</item>
+	    <item>Lubango ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="AI_cities">
+	    <item>The Valley ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="AG_cities">
+	    <item>Saint John\'s ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="AR_cities">
+	    <item>Buenos Aires ( GMT -03:00 )</item>
+	    <item>Buenos Aires - La Plata ( GMT -03:00 )</item>
+	    <item>Buenos Aires - Mar del Plata ( GMT -03:00 )</item>
+	    <item>Mendoza - Mendoza ( GMT -03:00 )</item>
+	    <item>Neuquén - Neuquén ( GMT -03:00 )</item>
+	    <item>Salta - Salta ( GMT -03:00 )</item>
+	    <item>Santa Fe - Rosario ( GMT -03:00 )</item>
+	    <item>Tucumán - Tucumán ( GMT -03:00 )</item>
+	</string-array>
+	<string-array name="AM_cities">
+	    <item>Yerevan ( GMT +04:00 )</item>
+	</string-array>
+	<string-array name="AW_cities">
+	    <item>Oranjestad ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="AU_cities">
+	    <item>Australian Capital Territory - Canberra ( GMT +10:00 )</item>
+	    <item>Christmas Island - The Settlement ( GMT +07:00 )</item>
+	    <item>Lord Howe Island - Lord Howe Island ( GMT +10:00 )</item>
+	    <item>New South Wales - Sydney ( GMT +10:00 )</item>
+	    <item>Northern Territory - Darwin ( GMT +09:30 )</item>
+	    <item>Queensland - Brisbane ( GMT +10:00 )</item>
+	    <item>South Australia - Adelaide ( GMT +09:30 )</item>
+	    <item>Tasmania - Hobart ( GMT +10:00 )</item>
+	    <item>Victoria - Melbourne ( GMT +10:00 )</item>
+	    <item>Western Australia - Eucla ( GMT +08:45 )</item>
+	    <item>Western Australia - Perth ( GMT +08:00 )</item>
+	</string-array>
+	<string-array name="AT_cities">
+	    <item>Salzburg ( GMT +01:00 )</item>
+	    <item>Vienna ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="AZ_cities">
+	    <item>Baku ( GMT +04:00 )</item>
+	</string-array>
+	<string-array name="BS_cities">
+	    <item>Nassau ( GMT -05:00 )</item>
+	</string-array>
+	<string-array name="BH_cities">
+	    <item>Manama ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="BD_cities">
+	    <item>Chittagong ( GMT +06:00 )</item>
+	    <item>Dhaka ( GMT +06:00 )</item>
+	    <item>Khulna ( GMT +06:00 )</item>
+	</string-array>
+	<string-array name="BB_cities">
+	    <item>Bridgetown ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="BY_cities">
+	    <item>Minsk ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="BE_cities">
+	    <item>Brussels ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="BZ_cities">
+	    <item>Belmopan ( GMT -06:00 )</item>
+	</string-array>
+	<string-array name="BJ_cities">
+	    <item>Cotonou ( GMT +01:00 )</item>
+	    <item>Porto Novo ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="BM_cities">
+	    <item>Hamilton ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="BT_cities">
+	    <item>Thimphu ( GMT +06:00 )</item>
+	</string-array>
+	<string-array name="BO_cities">
+	    <item>La Paz ( GMT -04:00 )</item>
+	    <item>Sucre ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="BA_cities">
+	    <item>Sarajevo ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="BW_cities">
+	    <item>Gaborone ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="BR_cities">
+	    <item>Acre - Rio Branco ( GMT -04:00 )</item>
+	    <item>Amazonas - Manaus ( GMT -04:00 )</item>
+	    <item>Bahia - Salvador ( GMT -03:00 )</item>
+	    <item>Distrito Federal - Brasilia ( GMT -03:00 )</item>
+	    <item>Pernambuco - Fernando de Noronha ( GMT -02:00 )</item>
+	    <item>Pernambuco - Recife ( GMT -03:00 )</item>
+	    <item>Rio de Janeiro - Rio de Janeiro ( GMT -03:00 )</item>
+	    <item>Rio Grande do Sul - Porto Alegre ( GMT -03:00 )</item>
+	    <item>São Paulo - São Paulo ( GMT -03:00 )</item>
+	</string-array>
+	<string-array name="VG_cities">
+	    <item>Tortola - Road Town ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="BN_cities">
+	    <item>Bandar Seri Begawan ( GMT +08:00 )</item>
+	</string-array>
+	<string-array name="BG_cities">
+	    <item>Sofia ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="BF_cities">
+	    <item>Ouagadougou ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="BI_cities">
+	    <item>Bujumbura ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="KH_cities">
+	    <item>Phnom Penh ( GMT +07:00 )</item>
+	</string-array>
+	<string-array name="CM_cities">
+	    <item>Yaoundé ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="CA_cities">
+	    <item>Alberta - Calgary ( GMT -07:00 )</item>
+	    <item>Alberta - Edmonton ( GMT -07:00 )</item>
+	    <item>British Columbia - Surrey ( GMT -08:00 )</item>
+	    <item>British Columbia - Vancouver ( GMT -08:00 )</item>
+	    <item>British Columbia - Victoria ( GMT -08:00 )</item>
+	    <item>Manitoba - Winnipeg ( GMT -06:00 )</item>
+	    <item>New Brunswick - Saint John ( GMT -04:00 )</item>
+	    <item>Newfoundland and Labrador - St. John\'s ( GMT -03:30 )</item>
+	    <item>Northwest Territories - Yellowknife ( GMT -07:00 )</item>
+	    <item>Nova Scotia - Halifax ( GMT -04:00 )</item>
+	    <item>Nunavut Territory - Iqaluit ( GMT -05:00 )</item>
+	    <item>Ontario - Brampton ( GMT -05:00 )</item>
+	    <item>Ontario - Hamilton ( GMT -05:00 )</item>
+	    <item>Ontario - London ( GMT -05:00 )</item>
+	    <item>Ontario - Markham ( GMT -05:00 )</item>
+	    <item>Ontario - Mississauga ( GMT -05:00 )</item>
+	    <item>Ontario - Ottawa ( GMT -05:00 )</item>
+	    <item>Ontario - Toronto ( GMT -05:00 )</item>
+	    <item>Ontario - Windsor ( GMT -05:00 )</item>
+	    <item>Pr.Edward I - Charlottetown ( GMT -04:00 )</item>
+	    <item>Quebec - Blanc-Sablon ( GMT -04:00 )</item>
+	    <item>Quebec - Gatineau ( GMT -05:00 )</item>
+	    <item>Quebec - Laval ( GMT -05:00 )</item>
+	    <item>Quebec - Longueuil ( GMT -05:00 )</item>
+	    <item>Quebec - Montreal ( GMT -05:00 )</item>
+	    <item>Quebec - Québec ( GMT -05:00 )</item>
+	    <item>Saskatchewan - Regina ( GMT -06:00 )</item>
+	    <item>Saskatchewan - Saskatoon ( GMT -06:00 )</item>
+	    <item>Yukon Territory - Whitehorse ( GMT -08:00 )</item>
+	</string-array>
+	<string-array name="CV_cities">
+	    <item>Praia ( GMT -01:00 )</item>
+	</string-array>
+	<string-array name="KY_cities">
+	    <item>George Town ( GMT -05:00 )</item>
+	</string-array>
+	<string-array name="CF_cities">
+	    <item>Bangui ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="TD_cities">
+	    <item>Ndjamena ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="CL_cities">
+	    <item>Easter Island ( GMT -06:00 )</item>
+	    <item>Santiago ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="CN_cities">
+	    <item>Anshan ( GMT +08:00 )</item>
+	    <item>Baotou ( GMT +08:00 )</item>
+	    <item>Beijing ( GMT +08:00 )</item>
+	    <item>Changchun ( GMT +08:00 )</item>
+	    <item>Changsha ( GMT +08:00 )</item>
+	    <item>Chengdu ( GMT +08:00 )</item>
+	    <item>Chongqing ( GMT +08:00 )</item>
+	    <item>Dalian ( GMT +08:00 )</item>
+	    <item>Foochow ( GMT +08:00 )</item>
+	    <item>Fushun ( GMT +08:00 )</item>
+	    <item>Guangzhou ( GMT +08:00 )</item>
+	    <item>Guiyang ( GMT +08:00 )</item>
+	    <item>Hangzhou ( GMT +08:00 )</item>
+	    <item>Harbin ( GMT +08:00 )</item>
+	    <item>Hefei ( GMT +08:00 )</item>
+	    <item>Hohhot ( GMT +08:00 )</item>
+	    <item>Jilin ( GMT +08:00 )</item>
+	    <item>Jinan ( GMT +08:00 )</item>
+	    <item>Jinzhou ( GMT +08:00 )</item>
+	    <item>Kunming ( GMT +08:00 )</item>
+	    <item>Lanchow ( GMT +08:00 )</item>
+	    <item>Lanzhou ( GMT +08:00 )</item>
+	    <item>Lhasa ( GMT +08:00 )</item>
+	    <item>Luoyang ( GMT +08:00 )</item>
+	    <item>Nanchang ( GMT +08:00 )</item>
+	    <item>Nanjing ( GMT +08:00 )</item>
+	    <item>Nanning ( GMT +08:00 )</item>
+	    <item>Qiqihar ( GMT +08:00 )</item>
+	    <item>Shanghai ( GMT +08:00 )</item>
+	    <item>Shenyang ( GMT +08:00 )</item>
+	    <item>Shenzhen ( GMT +08:00 )</item>
+	    <item>Shijiazhuang ( GMT +08:00 )</item>
+	    <item>Sian ( GMT +08:00 )</item>
+	    <item>Taiyuan ( GMT +08:00 )</item>
+	    <item>Tangshan ( GMT +08:00 )</item>
+	    <item>Tianjin ( GMT +08:00 )</item>
+	    <item>Tsingtao ( GMT +08:00 )</item>
+	    <item>Wuhan ( GMT +08:00 )</item>
+	    <item>Xiamen ( GMT +08:00 )</item>
+	    <item>Zhengzhou ( GMT +08:00 )</item>
+	    <item>Zibo ( GMT +08:00 )</item>
+	</string-array>
+	<string-array name="CO_cities">
+	    <item>Bogota ( GMT -05:00 )</item>
+	    <item>Cali ( GMT -05:00 )</item>
+	    <item>Medellin ( GMT -05:00 )</item>
+	</string-array>
+	<string-array name="KM_cities">
+	    <item>Moroni ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="CG_cities">
+	    <item>Brazzaville ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="CD_cities">
+	    <item>Kinshasa ( GMT +01:00 )</item>
+	    <item>Lubumbashi ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="CK_cities">
+	    <item>Rarotonga ( GMT -10:00 )</item>
+	</string-array>
+	<string-array name="CR_cities">
+	    <item>San Jose ( GMT -06:00 )</item>
+	</string-array>
+	<string-array name="CI_cities">
+	    <item>Abidjan ( GMT +00:00 )</item>
+	    <item>Yamoussoukro ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="HR_cities">
+	    <item>Zagreb ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="CU_cities">
+	    <item>Havana ( GMT -05:00 )</item>
+	</string-array>
+	<string-array name="AN_cities">
+	    <item>Willemstad ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="CY_cities">
+	    <item>Nicosia ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="CZ_cities">
+	    <item>Brno ( GMT +01:00 )</item>
+	    <item>Prague ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="DK_cities">
+	    <item>Copenhagen ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="DJ_cities">
+	    <item>Djibouti ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="DM_cities">
+	    <item>Roseau ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="DO_cities">
+	    <item>Santo Domingo ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="EC_cities">
+	    <item>Galapagos Islands ( GMT -06:00 )</item>
+	    <item>Guayaquil ( GMT -05:00 )</item>
+	    <item>Quito ( GMT -05:00 )</item>
+	</string-array>
+	<string-array name="EG_cities">
+	    <item>Al Jizah ( GMT +02:00 )</item>
+	    <item>Alexandria ( GMT +02:00 )</item>
+	    <item>Cairo ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="SV_cities">
+	    <item>San Salvador ( GMT -06:00 )</item>
+	    <item>Santa Ana ( GMT -06:00 )</item>
+	</string-array>
+	<string-array name="GN_cities">
+	    <item>Malabo ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="ER_cities">
+	    <item>Asmara ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="EE_cities">
+	    <item>Tallinn ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="ET_cities">
+	    <item>Addis Ababa ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="FK_cities">
+	    <item>Stanley ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="FO_cities">
+	    <item>Faroe Islands - Tórshavn ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="FJ_cities">
+	    <item>Suva ( GMT +12:00 )</item>
+	</string-array>
+	<string-array name="FI_cities">
+	    <item>Helsinki ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="FR_cities">
+	    <item>Corsica - Bastia ( GMT +01:00 )</item>
+	    <item>Marquesas Islands - Taiohae ( GMT -09:30 )</item>
+	    <item>New Caledonia - Noumea ( GMT +11:00 )</item>
+	    <item>Nice ( GMT +01:00 )</item>
+	    <item>Paris ( GMT +01:00 )</item>
+	    <item>Tahiti - Papeete ( GMT -10:00 )</item>
+	</string-array>
+	<string-array name="GF_cities">
+	    <item>Cayenne ( GMT -03:00 )</item>
+	</string-array>
+	<string-array name="PF_cities">
+	    <item>Gambier Islands ( GMT -09:00 )</item>
+	</string-array>
+	<string-array name="GA_cities">
+	    <item>Libreville ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="GM_cities">
+	    <item>Banjul ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="GZ_cities">
+	    <item>Gaza ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="GE_cities">
+	    <item>Tbilisi ( GMT +04:00 )</item>
+	</string-array>
+	<string-array name="DE_cities">
+	    <item>Bavaria - Munich ( GMT +01:00 )</item>
+	    <item>Berlin - Berlin ( GMT +01:00 )</item>
+	    <item>Hamburg - Hamburg ( GMT +01:00 )</item>
+	    <item>Hesse - Frankfurt ( GMT +01:00 )</item>
+	    <item>North Rhine-Westphalia - Düsseldorf ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="GH_cities">
+	    <item>Accra ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="GI_cities">
+	    <item>Gibraltar ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="GR_cities">
+	    <item>Athens ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="GL_cities">
+	    <item>Nuuk ( GMT -03:00 )</item>
+	</string-array>
+	<string-array name="GD_cities">
+	    <item>Saint George\'s ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="GP_cities">
+	    <item>Basse-Terre ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="GU_cities">
+	    <item>Guam ( GMT +10:00 )</item>
+	</string-array>
+	<string-array name="GT_cities">
+	    <item>Guatemala ( GMT -06:00 )</item>
+	</string-array>
+	<string-array name="GN_cities">
+	    <item>Conakry ( GMT +00:00 )</item>
+	    <item>Bissau ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="GY_cities">
+	    <item>Georgetown ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="HT_cities">
+	    <item>Port-au-Prince ( GMT -05:00 )</item>
+	</string-array>
+	<string-array name="HN_cities">
+	    <item>Tegucigalpa ( GMT -06:00 )</item>
+	</string-array>
+	<string-array name="HK_cities">
+	    <item>Hong Kong ( GMT +08:00 )</item>
+	    <item>Kowloon ( GMT +08:00 )</item>
+	</string-array>
+	<string-array name="HU_cities">
+	    <item>Budapest ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="IS_cities">
+	    <item>Reykjavik ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="IN_cities">
+	    <item>Andhra Pradesh - Anantapur ( GMT +05:30 )</item>
+	    <item>Andhra Pradesh - Hyderãbãd ( GMT +05:30 )</item>
+	    <item>Andhra Pradesh - Visakhapatnam ( GMT +05:30 )</item>
+	    <item>Bihar - Patna ( GMT +05:30 )</item>
+	    <item>Delhi - Delhi ( GMT +05:30 )</item>
+	    <item>Delhi - New Delhi ( GMT +05:30 )</item>
+	    <item>Gujarat - Ahmedabad ( GMT +05:30 )</item>
+	    <item>Gujarat - Surat ( GMT +05:30 )</item>
+	    <item>Gujarat - Vadodara ( GMT +05:30 )</item>
+	    <item>Karnataka - Bangalore ( GMT +05:30 )</item>
+	    <item>Kerala - Thiruvananthapuram ( GMT +05:30 )</item>
+	    <item>Madhya Pradesh - Indore ( GMT +05:30 )</item>
+	    <item>Maharashtra - Mumbai ( GMT +05:30 )</item>
+	    <item>Maharashtra - Nãgpur ( GMT +05:30 )</item>
+	    <item>Maharashtra - Pune ( GMT +05:30 )</item>
+	    <item>Orissa - Bhubaneshwar ( GMT +05:30 )</item>
+	    <item>Punjab - Ludhiana ( GMT +05:30 )</item>
+	    <item>Rajasthan - Jaipur ( GMT +05:30 )</item>
+	    <item>Tamil Nadu - Chennai ( GMT +05:30 )</item>
+	    <item>Tamil Nadu - Madurai ( GMT +05:30 )</item>
+	    <item>Uttar Pradesh - Agra ( GMT +05:30 )</item>
+	    <item>Uttar Pradesh - Kãnpur ( GMT +05:30 )</item>
+	    <item>Uttar Pradesh - Lucknow ( GMT +05:30 )</item>
+	    <item>Uttar Pradesh - Varanasi ( GMT +05:30 )</item>
+	    <item>West Bengal - Durgapur ( GMT +05:30 )</item>
+	    <item>West Bengal - Kolkata ( GMT +05:30 )</item>
+	</string-array>
+	<string-array name="ID_cities">
+	    <item>Bali - Denpasar ( GMT +08:00 )</item>
+	    <item>Bali - Singaraja ( GMT +08:00 )</item>
+	    <item>Flores - Endeh ( GMT +08:00 )</item>
+	    <item>Halmahera - Ternate ( GMT +09:00 )</item>
+	    <item>Java - Bandung ( GMT +07:00 )</item>
+	    <item>Java - Jakarta ( GMT +07:00 )</item>
+	    <item>Java - Malang ( GMT +07:00 )</item>
+	    <item>Java - Semarang ( GMT +07:00 )</item>
+	    <item>Java - Surabaya ( GMT +07:00 )</item>
+	    <item>Java - Surakarta ( GMT +07:00 )</item>
+	    <item>Kalimantan - Balikpapan ( GMT +08:00 )</item>
+	    <item>Lombok - Mataram ( GMT +08:00 )</item>
+	    <item>Papua - Jayapura ( GMT +09:00 )</item>
+	    <item>Seram - Ambon ( GMT +09:00 )</item>
+	    <item>Sulawesi - Manado ( GMT +08:00 )</item>
+	    <item>Sumatera - Medan ( GMT +07:00 )</item>
+	    <item>Sumatera - Palembang ( GMT +07:00 )</item>
+	    <item>Sumbawa - Raba ( GMT +08:00 )</item>
+	    <item>West Timor - Kupang ( GMT +08:00 )</item>
+	</string-array>
+	<string-array name="IR_cities">
+	    <item>Esfahãn ( GMT +03:30 )</item>
+	    <item>Rasht ( GMT +03:30 )</item>
+	    <item>Tehran ( GMT +03:30 )</item>
+	</string-array>
+	<string-array name="IQ_cities">
+	    <item>Baghdad ( GMT +03:00 )</item>
+	    <item>Basra ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="IE_cities">
+	    <item>Dublin ( GMT +00:00 )</item>
+	    <item>Limerick ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="IL_cities">
+	    <item>Jerusalem ( GMT +02:00 )</item>
+	    <item>Tel Aviv ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="IT_cities">
+	    <item>Milan ( GMT +01:00 )</item>
+	    <item>Naples ( GMT +01:00 )</item>
+	    <item>Rome ( GMT +01:00 )</item>
+	    <item>Turin ( GMT +01:00 )</item>
+	    <item>Venice ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="JM_cities">
+	    <item>Kingston ( GMT -05:00 )</item>
+	</string-array>
+	<string-array name="JP_cities">
+	    <item>Fukuoka ( GMT +09:00 )</item>
+	    <item>Hiroshima ( GMT +09:00 )</item>
+	    <item>Kawasaki ( GMT +09:00 )</item>
+	    <item>Kitakyushu ( GMT +09:00 )</item>
+	    <item>Kobe ( GMT +09:00 )</item>
+	    <item>Kyoto ( GMT +09:00 )</item>
+	    <item>Nagoya ( GMT +09:00 )</item>
+	    <item>Okayama ( GMT +09:00 )</item>
+	    <item>Osaka ( GMT +09:00 )</item>
+	    <item>Sapporo ( GMT +09:00 )</item>
+	    <item>Sendai ( GMT +09:00 )</item>
+	    <item>Tokyo ( GMT +09:00 )</item>
+	    <item>Yokohama ( GMT +09:00 )</item>
+	</string-array>
+	<string-array name="JO_cities">
+	    <item>Amman ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="KZ_cities">
+	    <item>Almaty ( GMT +06:00 )</item>
+	    <item>Aqtau ( GMT +05:00 )</item>
+	    <item>Aqtobe ( GMT +05:00 )</item>
+	    <item>Astana ( GMT +06:00 )</item>
+	    <item>Atyrau ( GMT +05:00 )</item>
+	</string-array>
+	<string-array name="KE_cities">
+	    <item>Mombasa ( GMT +03:00 )</item>
+	    <item>Nairobi ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="KL_cities">
+	    <item>Port-aux-Francais ( GMT +05:00 )</item>
+	</string-array>
+	<string-array name="KI_cities">
+	    <item>Christmas Island - Kiritimati ( GMT +14:00 )</item>
+	    <item>Phoenix Islands - Rawaki ( GMT +13:00 )</item>
+	    <item>Tarawa ( GMT +12:00 )</item>
+	</string-array>
+	<string-array name="KS_cities">
+	    <item>Pristina ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="KW_cities">
+	    <item>Kuwait City ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="KG_cities">
+	    <item>Bishkek ( GMT +06:00 )</item>
+	</string-array>
+	<string-array name="LA_cities">
+	    <item>Vientiane ( GMT +07:00 )</item>
+	</string-array>
+	<string-array name="LV_cities">
+	    <item>Riga ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="LB_cities">
+	    <item>Beirut ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="LS_cities">
+	    <item>Maseru ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="LR_cities">
+	    <item>Monrovia ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="LY_cities">
+	    <item>Tripoli ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="LI_cities">
+	    <item>Vaduz ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="LT_cities">
+	    <item>Kaunas ( GMT +02:00 )</item>
+	    <item>Vilnius ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="LU_cities">
+	    <item>Luxembourg ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="MO_cities">
+	    <item>Macau ( GMT +08:00 )</item>
+	</string-array>
+	<string-array name="MK_cities">
+	    <item>Skopje ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="MG_cities">
+	    <item>Antananarivo ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="MW_cities">
+	    <item>Lilongwe ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="MY_cities">
+	    <item>Kuala Lumpur ( GMT +08:00 )</item>
+	</string-array>
+	<string-array name="MV_cities">
+	    <item>Male ( GMT +05:00 )</item>
+	</string-array>
+	<string-array name="ML_cities">
+	    <item>Bamako ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="MT_cities">
+	    <item>Valletta ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="MH_cities">
+	    <item>Majuro ( GMT +12:00 )</item>
+	</string-array>
+	<string-array name="MQ_cities">
+	    <item>Fort-de-France ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="MR_cities">
+	    <item>Nouakchott ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="MU_cities">
+	    <item>Port Louis ( GMT +04:00 )</item>
+	</string-array>
+	<string-array name="YT_cities">
+	    <item>Mamoutzou ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="MX_cities">
+	    <item>Aguascalientes - Aguascalientes ( GMT -06:00 )</item>
+	    <item>Baja California - Mexicali ( GMT -08:00 )</item>
+	    <item>Baja California - Tijuana ( GMT -08:00 )</item>
+	    <item>Chihuahua - Chihuahua ( GMT -07:00 )</item>
+	    <item>Federal District - Mexico City ( GMT -06:00 )</item>
+	    <item>Guanajuato - Leon ( GMT -06:00 )</item>
+	    <item>Guerrero - Acapulco ( GMT -06:00 )</item>
+	    <item>Jalisco - Guadalajara ( GMT -06:00 )</item>
+	    <item>Nuevo León - Monterrey ( GMT -06:00 )</item>
+	    <item>Oaxaca - Oaxaca ( GMT -06:00 )</item>
+	    <item>Quintana Roo - Cancún ( GMT -06:00 )</item>
+	    <item>San Luis Potosí - San Luis Potosi ( GMT -06:00 )</item>
+	    <item>Sinaloa - Mazatlan ( GMT -07:00 )</item>
+	    <item>Veracruz - Veracruz ( GMT -06:00 )</item>
+	    <item>Yucatán - Merida ( GMT -06:00 )</item>
+	</string-array>
+	<string-array name="FM_cities">
+	    <item>Ponape - Palikir ( GMT +11:00 )</item>
+	</string-array>
+	<string-array name="MD_cities">
+	    <item>Chisinau ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="MC_cities">
+	    <item>Monaco ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="MN_cities">
+	    <item>Choibalsan ( GMT +08:00 )</item>
+	    <item>Hovd ( GMT +07:00 )</item>
+	    <item>Ulaanbaatar ( GMT +08:00 )</item>
+	</string-array>
+	<string-array name="ME_cities">
+	    <item>Podgorica ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="MS_cities">
+	    <item>Brades ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="MA_cities">
+	    <item>Agadir ( GMT +00:00 )</item>
+	    <item>Casablanca ( GMT +00:00 )</item>
+	    <item>Fes ( GMT +00:00 )</item>
+	    <item>Marrakech ( GMT +00:00 )</item>
+	    <item>Rabat ( GMT +00:00 )</item>
+	    <item>Tangier ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="MZ_cities">
+	    <item>Maputo ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="MM_cities">
+	    <item>Yangon ( GMT +06:30 )</item>
+	</string-array>
+	<string-array name="NA_cities">
+	    <item>Windhoek ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="NR_cities">
+	    <item>Yaren ( GMT +12:00 )</item>
+	</string-array>
+	<string-array name="NP_cities">
+	    <item>Kathmandu ( GMT +05:45 )</item>
+	</string-array>
+	<string-array name="NL_cities">
+	    <item>Amsterdam ( GMT +01:00 )</item>
+	    <item>Rotterdam ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="NZ_cities">
+	    <item>Auckland ( GMT +12:00 )</item>
+	    <item>Chatham Islands ( GMT +12:45 )</item>
+	    <item>Christchurch ( GMT +12:00 )</item>
+	    <item>Wellington ( GMT +12:00 )</item>
+	</string-array>
+	<string-array name="NI_cities">
+	    <item>Managua ( GMT -06:00 )</item>
+	</string-array>
+	<string-array name="NE_cities">
+	    <item>Niamey ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="NG_cities">
+	    <item>Abuja ( GMT +01:00 )</item>
+	    <item>Kaduna ( GMT +01:00 )</item>
+	    <item>Kano Nigeria ( GMT +01:00 )</item>
+	    <item>Lagos ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="NU_cities">
+	    <item>Alofi ( GMT -11:00 )</item>
+	</string-array>
+	<string-array name="NF_cities">
+	    <item>Kingston ( GMT +11:30 )</item>
+	</string-array>
+	<string-array name="KP_cities">
+	    <item>Pyongyang ( GMT +09:00 )</item>
+	</string-array>
+	<string-array name="MP_cities">
+	    <item>Saipan ( GMT +10:00 )</item>
+	</string-array>
+	<string-array name="NO_cities">
+	    <item>Oslo ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="OM_cities">
+	    <item>Muscat ( GMT +04:00 )</item>
+	</string-array>
+	<string-array name="PK_cities">
+	    <item>Faisalabad ( GMT +05:00 )</item>
+	    <item>Islamabad ( GMT +05:00 )</item>
+	    <item>Karachi ( GMT +05:00 )</item>
+	    <item>Lahore ( GMT +05:00 )</item>
+	    <item>Peshawar ( GMT +05:00 )</item>
+	    <item>Rawalpindi ( GMT +05:00 )</item>
+	    <item>Sialkot ( GMT +05:00 )</item>
+	</string-array>
+	<string-array name="PW_cities">
+	    <item>Koror ( GMT +09:00 )</item>
+	</string-array>
+	<string-array name="PA_cities">
+	    <item>Panama ( GMT -05:00 )</item>
+	</string-array>
+	<string-array name="PG_cities">
+	    <item>Port Moresby ( GMT +10:00 )</item>
+	</string-array>
+	<string-array name="PY_cities">
+	    <item>Asuncion ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="PE_cities">
+	    <item>Lima - Lima ( GMT -05:00 )</item>
+	</string-array>
+	<string-array name="PH_cities">
+	    <item>Bacolod ( GMT +08:00 )</item>
+	    <item>Cebu City ( GMT +08:00 )</item>
+	    <item>Davao ( GMT +08:00 )</item>
+	    <item>Makati ( GMT +08:00 )</item>
+	    <item>Manila ( GMT +08:00 )</item>
+	    <item>Quezon ( GMT +08:00 )</item>
+	</string-array>
+	<string-array name="PN_cities">
+	    <item>Adamstown ( GMT -08:00 )</item>
+	</string-array>
+	<string-array name="PL_cities">
+	    <item>Gdansk ( GMT +01:00 )</item>
+	    <item>Kraków ( GMT +01:00 )</item>
+	    <item>Lódz ( GMT +01:00 )</item>
+	    <item>Poznan ( GMT +01:00 )</item>
+	    <item>Szczecin ( GMT +01:00 )</item>
+	    <item>Warsaw ( GMT +01:00 )</item>
+	    <item>Wroclaw ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="PT_cities">
+	    <item>Azores ( GMT -01:00 )</item>
+	    <item>Lisbon ( GMT +00:00 )</item>
+	    <item>Madeira - Funchal ( GMT +00:00 )</item>
+	    <item>Porto ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="PR_cities">
+	    <item>San Juan ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="QA_cities">
+	    <item>Doha ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="SS_cities">
+	    <item>Juba ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="RE_cities">
+	    <item>Saint-Denis ( GMT +04:00 )</item>
+	</string-array>
+	<string-array name="RO_cities">
+	    <item>Bucharest ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="RU_cities">
+	    <item>Anadyr ( GMT +11:00 )</item>
+	    <item>Arkhangelsk ( GMT +03:00 )</item>
+	    <item>Barnaul ( GMT +06:00 )</item>
+	    <item>Cheboksary ( GMT +03:00 )</item>
+	    <item>Chelyabinsk ( GMT +05:00 )</item>
+	    <item>Kaliningrad ( GMT +02:00 )</item>
+	    <item>Kamchatka ( GMT +11:00 )</item>
+	    <item>Kazan ( GMT +03:00 )</item>
+	    <item>Krasnoyarsk ( GMT +07:00 )</item>
+	    <item>Magnitogorsk ( GMT +05:00 )</item>
+	    <item>Moscow ( GMT +03:00 )</item>
+	    <item>Murmansk ( GMT +03:00 )</item>
+	    <item>Nizhny Novgorod ( GMT +03:00 )</item>
+	    <item>Novgorod ( GMT +03:00 )</item>
+	    <item>Novosibirsk ( GMT +06:00 )</item>
+	    <item>Omsk ( GMT +06:00 )</item>
+	    <item>Perm ( GMT +05:00 )</item>
+	    <item>Ryazan ( GMT +03:00 )</item>
+	    <item>Saint-Petersburg ( GMT +03:00 )</item>
+	    <item>Samara ( GMT +03:00 )</item>
+	    <item>Sochi ( GMT +03:00 )</item>
+	    <item>Tyumen ( GMT +05:00 )</item>
+	    <item>Ufa ( GMT +05:00 )</item>
+	    <item>Vladimir ( GMT +03:00 )</item>
+	    <item>Vladivostok ( GMT +10:00 )</item>
+	    <item>Yakutsk ( GMT +09:00 )</item>
+	    <item>Yekaterinburg ( GMT +05:00 )</item>
+	    <item>Yuzhno-Sakhalinsk ( GMT +10:00 )</item>
+	    <item>Moscow 2 ( GMT +04:00 )</item>
+	</string-array>
+	<string-array name="RW_cities">
+	    <item>Kigali ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="KN_cities">
+	    <item>Basseterre ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="LC_cities">
+	    <item>Castries ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="PM_cities">
+	    <item>Saint-Pierre ( GMT -03:00 )</item>
+	</string-array>
+	<string-array name="VC_cities">
+	    <item>Kingstown ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="WS_cities">
+	    <item>Apia ( GMT -11:00 )</item>
+	</string-array>
+	<string-array name="SM_cities">
+	    <item>San Marino ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="ST_cities">
+	    <item>São Tomé ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="SA_cities">
+	    <item>Dammam ( GMT +03:00 )</item>
+	    <item>Jeddah ( GMT +03:00 )</item>
+	    <item>Makkah ( GMT +03:00 )</item>
+	    <item>Medina ( GMT +03:00 )</item>
+	    <item>Riyadh ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="SN_cities">
+	    <item>Dakar ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="RS_cities">
+	    <item>Belgrade ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="SC_cities">
+	    <item>Victoria ( GMT +04:00 )</item>
+	</string-array>
+	<string-array name="SL_cities">
+	    <item>Freetown ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="SG_cities">
+	    <item>Singapore ( GMT +08:00 )</item>
+	</string-array>
+	<string-array name="SK_cities">
+	    <item>Bratislava ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="SI_cities">
+	    <item>Ljubljana ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="SB_cities">
+	    <item>Honiara ( GMT +11:00 )</item>
+	</string-array>
+	<string-array name="SO_cities">
+	    <item>Mogadishu ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="ZA_cities">
+	    <item>Cape Town ( GMT +02:00 )</item>
+	    <item>Durban ( GMT +02:00 )</item>
+	    <item>Johannesburg ( GMT +02:00 )</item>
+	    <item>Port Elizabeth ( GMT +02:00 )</item>
+	    <item>Pretoria ( GMT +02:00 )</item>
+	    <item>Rustenburg ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="KR_cities">
+	    <item>Busan ( GMT +09:00 )</item>
+	    <item>Daegu ( GMT +09:00 )</item>
+	    <item>Incheon ( GMT +09:00 )</item>
+	    <item>Seoul ( GMT +09:00 )</item>
+	</string-array>
+	<string-array name="ES_cities">
+	    <item>Alicante ( GMT +01:00 )</item>
+	    <item>Barcelona - Barcelona ( GMT +01:00 )</item>
+	    <item>Canary Islands - Las Palmas ( GMT +00:00 )</item>
+	    <item>Córdoba ( GMT +01:00 )</item>
+	    <item>La Coruña ( GMT +01:00 )</item>
+	    <item>Madrid ( GMT +01:00 )</item>
+	    <item>Majorca - Palma ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="LK_cities">
+	    <item>Colombo ( GMT +05:30 )</item>
+	    <item>Sri Jayawardenapura Kotte ( GMT +05:30 )</item>
+	</string-array>
+	<string-array name="SD_cities">
+	    <item>Khartoum ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="SR_cities">
+	    <item>Paramaribo ( GMT -03:00 )</item>
+	</string-array>
+	<string-array name="SZ_cities">
+	    <item>Mbabane ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="SE_cities">
+	    <item>Stockholm ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="CH_cities">
+	    <item>Basel ( GMT +01:00 )</item>
+	    <item>Bern ( GMT +01:00 )</item>
+	    <item>Geneva ( GMT +01:00 )</item>
+	    <item>Lausanne ( GMT +01:00 )</item>
+	    <item>Zürich ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="SY_cities">
+	    <item>Aleppo ( GMT +02:00 )</item>
+	    <item>Damascus ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="TW_cities">
+	    <item>Kaohsiung ( GMT +08:00 )</item>
+	    <item>Taipei ( GMT +08:00 )</item>
+	</string-array>
+	<string-array name="TJ_cities">
+	    <item>Dushanbe ( GMT +05:00 )</item>
+	</string-array>
+	<string-array name="TZ_cities">
+	    <item>Dar es Salaam ( GMT +03:00 )</item>
+	    <item>Dodoma ( GMT +03:00 )</item>
+	    <item>Zanzibar City ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="TH_cities">
+	    <item>Bangkok ( GMT +07:00 )</item>
+	    <item>Chiang Mai ( GMT +07:00 )</item>
+	    <item>Khon Kaen ( GMT +07:00 )</item>
+	</string-array>
+	<string-array name="TL_cities">
+	    <item>Dili ( GMT +09:00 )</item>
+	</string-array>
+	<string-array name="TG_cities">
+	    <item>Lome ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="TO_cities">
+	    <item>Nukualofa ( GMT +13:00 )</item>
+	</string-array>
+	<string-array name="TT_cities">
+	    <item>Port of Spain ( GMT -04:00 )</item>
+	</string-array>
+	<string-array name="TN_cities">
+	    <item>Tunis ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="TR_cities">
+	    <item>Ankara ( GMT +02:00 )</item>
+	    <item>Bursa ( GMT +02:00 )</item>
+	    <item>Istanbul ( GMT +02:00 )</item>
+	    <item>Izmir ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="TM_cities">
+	    <item>Ashgabat ( GMT +05:00 )</item>
+	</string-array>
+	<string-array name="TV_cities">
+	    <item>Funafuti ( GMT +12:00 )</item>
+	</string-array>
+	<string-array name="UG_cities">
+	    <item>Kampala ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="UA_cities">
+	    <item>Kharkiv ( GMT +02:00 )</item>
+	    <item>Kryvyi Rih ( GMT +02:00 )</item>
+	    <item>Kyiv ( GMT +02:00 )</item>
+	    <item>Odesa ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="AE_cities">
+	    <item>Abu Dhabi - Abu Dhabi ( GMT +04:00 )</item>
+	    <item>Dubai - Dubai ( GMT +04:00 )</item>
+	</string-array>
+	<string-array name="GB_cities">
+	    <item>England - Birmingham ( GMT +00:00 )</item>
+	    <item>England - Liverpool ( GMT +00:00 )</item>
+	    <item>England - London ( GMT +00:00 )</item>
+	    <item>Jersey - Saint Helier ( GMT +00:00 )</item>
+	    <item>Northern Ireland - Belfast ( GMT +00:00 )</item>
+	    <item>Scotland - Edinburgh ( GMT +00:00 )</item>
+	    <item>Scotland - Glasgow ( GMT +00:00 )</item>
+	    <item>Wales - Cardiff ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="US_cities">
+	    <item>Alabama - Birmingham ( GMT -06:00 )</item>
+	    <item>Alabama - Mobile ( GMT -06:00 )</item>
+	    <item>Alabama - Montgomery ( GMT -06:00 )</item>
+	    <item>Alaska - Adak ( GMT -10:00 )</item>
+	    <item>Alaska - Anchorage ( GMT -09:00 )</item>
+	    <item>Alaska - Fairbanks ( GMT -09:00 )</item>
+	    <item>Alaska - Juneau ( GMT -09:00 )</item>
+	    <item>Alaska - Nome ( GMT -09:00 )</item>
+	    <item>Alaska - Unalaska ( GMT -09:00 )</item>
+	    <item>Arizona - Mesa ( GMT -07:00 )</item>
+	    <item>Arizona - Phoenix ( GMT -07:00 )</item>
+	    <item>Arizona - Tucson ( GMT -07:00 )</item>
+	    <item>Arkansas - Little Rock ( GMT -06:00 )</item>
+	    <item>California - Anaheim ( GMT -08:00 )</item>
+	    <item>California - Fresno ( GMT -08:00 )</item>
+	    <item>California - Long Beach ( GMT -08:00 )</item>
+	    <item>California - Los Angeles ( GMT -08:00 )</item>
+	    <item>California - Oakland ( GMT -08:00 )</item>
+	    <item>California - Riverside ( GMT -08:00 )</item>
+	    <item>California - Sacramento ( GMT -08:00 )</item>
+	    <item>California - San Bernardino ( GMT -08:00 )</item>
+	    <item>California - San Diego ( GMT -08:00 )</item>
+	    <item>California - San Francisco ( GMT -08:00 )</item>
+	    <item>California - San Jose ( GMT -08:00 )</item>
+	    <item>California - Stockton ( GMT -08:00 )</item>
+	    <item>Colorado - Aurora ( GMT -07:00 )</item>
+	    <item>Colorado - Denver ( GMT -07:00 )</item>
+	    <item>Connecticut - Hartford ( GMT -05:00 )</item>
+	    <item>Delaware - Dover ( GMT -05:00 )</item>
+	    <item>District of Columbia - Washington DC ( GMT -05:00 )</item>
+	    <item>Florida - Jacksonville ( GMT -05:00 )</item>
+	    <item>Florida - Miami ( GMT -05:00 )</item>
+	    <item>Florida - Orlando ( GMT -05:00 )</item>
+	    <item>Florida - Pensacola ( GMT -06:00 )</item>
+	    <item>Florida - St. Petersburg ( GMT -05:00 )</item>
+	    <item>Florida - Tampa ( GMT -05:00 )</item>
+	    <item>Georgia - Atlanta ( GMT -05:00 )</item>
+	    <item>Hawaii - Honolulu ( GMT -10:00 )</item>
+	    <item>Idaho - Boise ( GMT -07:00 )</item>
+	    <item>Illinois - Chicago ( GMT -06:00 )</item>
+	    <item>Indiana - Indianapolis ( GMT -05:00 )</item>
+	    <item>Iowa - Des Moines ( GMT -06:00 )</item>
+	    <item>Kansas - Topeka ( GMT -06:00 )</item>
+	    <item>Kansas - Wichita ( GMT -06:00 )</item>
+	    <item>Kentucky - Frankfort ( GMT -05:00 )</item>
+	    <item>Kentucky - Lexington-Fayette ( GMT -05:00 )</item>
+	    <item>Kentucky - Louisville ( GMT -05:00 )</item>
+	    <item>Louisiana - Baton Rouge ( GMT -06:00 )</item>
+	    <item>Louisiana - New Orleans ( GMT -06:00 )</item>
+	    <item>Maine - Augusta ( GMT -05:00 )</item>
+	    <item>Maryland - Annapolis ( GMT -05:00 )</item>
+	    <item>Maryland - Baltimore ( GMT -05:00 )</item>
+	    <item>Massachusetts - Boston ( GMT -05:00 )</item>
+	    <item>Michigan - Detroit ( GMT -05:00 )</item>
+	    <item>Midway Islands - Midway ( GMT -11:00 )</item>
+	    <item>Minnesota - Minneapolis ( GMT -06:00 )</item>
+	    <item>Minnesota - St. Paul ( GMT -06:00 )</item>
+	    <item>Mississippi - Jackson ( GMT -06:00 )</item>
+	    <item>Missouri - Jefferson City ( GMT -06:00 )</item>
+	    <item>Missouri - Kansas City ( GMT -06:00 )</item>
+	    <item>Missouri - St. Louis ( GMT -06:00 )</item>
+	    <item>Montana - Billings ( GMT -07:00 )</item>
+	    <item>Montana - Helena ( GMT -07:00 )</item>
+	    <item>Nebraska - Lincoln ( GMT -06:00 )</item>
+	    <item>Nevada - Carson City ( GMT -08:00 )</item>
+	    <item>Nevada - Las Vegas ( GMT -08:00 )</item>
+	    <item>New Hampshire - Concord ( GMT -05:00 )</item>
+	    <item>New Jersey - Jersey City ( GMT -05:00 )</item>
+	    <item>New Jersey - Newark ( GMT -05:00 )</item>
+	    <item>New Jersey - Trenton ( GMT -05:00 )</item>
+	    <item>New Mexico - Albuquerque ( GMT -07:00 )</item>
+	    <item>New Mexico - Santa Fe ( GMT -07:00 )</item>
+	    <item>New York - Albany ( GMT -05:00 )</item>
+	    <item>New York - Buffalo ( GMT -05:00 )</item>
+	    <item>New York - New York ( GMT -05:00 )</item>
+	    <item>New York - Rochester ( GMT -05:00 )</item>
+	    <item>North Carolina - Charlotte ( GMT -05:00 )</item>
+	    <item>North Carolina - Raleigh ( GMT -05:00 )</item>
+	    <item>North Dakota - Bismarck ( GMT -06:00 )</item>
+	    <item>North Dakota - Fargo ( GMT -06:00 )</item>
+	    <item>Ohio - Akron ( GMT -05:00 )</item>
+	    <item>Ohio - Cincinnati ( GMT -05:00 )</item>
+	    <item>Ohio - Cleveland ( GMT -05:00 )</item>
+	    <item>Ohio - Columbus ( GMT -05:00 )</item>
+	    <item>Ohio - Toledo ( GMT -05:00 )</item>
+	    <item>Oklahoma - Oklahoma City ( GMT -06:00 )</item>
+	    <item>Oregon - Portland ( GMT -08:00 )</item>
+	    <item>Oregon - Salem ( GMT -08:00 )</item>
+	    <item>Pennsylvania - Harrisburg ( GMT -05:00 )</item>
+	    <item>Pennsylvania - Philadelphia ( GMT -05:00 )</item>
+	    <item>Pennsylvania - Pittsburgh ( GMT -05:00 )</item>
+	    <item>Rhode Island - Providence ( GMT -05:00 )</item>
+	    <item>South Carolina - Columbia ( GMT -05:00 )</item>
+	    <item>South Dakota - Pierre ( GMT -06:00 )</item>
+	    <item>South Dakota - Rapid City ( GMT -07:00 )</item>
+	    <item>South Dakota - Sioux Falls ( GMT -06:00 )</item>
+	    <item>Tennessee - Knoxville ( GMT -05:00 )</item>
+	    <item>Tennessee - Memphis ( GMT -06:00 )</item>
+	    <item>Tennessee - Nashville ( GMT -06:00 )</item>
+	    <item>Texas - Arlington ( GMT -06:00 )</item>
+	    <item>Texas - Austin ( GMT -06:00 )</item>
+	    <item>Texas - Dallas ( GMT -06:00 )</item>
+	    <item>Texas - El Paso ( GMT -07:00 )</item>
+	    <item>Texas - Fort Worth ( GMT -06:00 )</item>
+	    <item>Texas - Houston ( GMT -06:00 )</item>
+	    <item>Texas - Midland ( GMT -06:00 )</item>
+	    <item>Texas - San Antonio ( GMT -06:00 )</item>
+	    <item>Utah - Salt Lake City ( GMT -07:00 )</item>
+	    <item>Vermont - Montpelier ( GMT -05:00 )</item>
+	    <item>Virginia - Norfolk ( GMT -05:00 )</item>
+	    <item>Virginia - Richmond ( GMT -05:00 )</item>
+	    <item>Virginia - Virginia Beach ( GMT -05:00 )</item>
+	    <item>Washington - Seattle ( GMT -08:00 )</item>
+	    <item>West Virginia - Charleston ( GMT -05:00 )</item>
+	    <item>Wisconsin - Madison ( GMT -06:00 )</item>
+	    <item>Wisconsin - Milwaukee ( GMT -06:00 )</item>
+	    <item>Wyoming - Cheyenne ( GMT -07:00 )</item>
+	</string-array>
+	<string-array name="UY_cities">
+	    <item>Montevideo ( GMT -03:00 )</item>
+	</string-array>
+	<string-array name="UZ_cities">
+	    <item>Tashkent ( GMT +05:00 )</item>
+	</string-array>
+	<string-array name="VU_cities">
+	    <item>Port Vila ( GMT +11:00 )</item>
+	</string-array>
+	<string-array name="VA_cities">
+	    <item>Vatican City ( GMT +01:00 )</item>
+	</string-array>
+	<string-array name="VE_cities">
+	    <item>Caracas ( GMT -04:30 )</item>
+	</string-array>
+	<string-array name="VN_cities">
+	    <item>Hai Phong ( GMT +07:00 )</item>
+	    <item>Hanoi ( GMT +07:00 )</item>
+	    <item>Ho Chi Minh ( GMT +07:00 )</item>
+	</string-array>
+	<string-array name="WB_cities">
+	    <item>Bethlehem ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="EH_cities">
+	    <item>El Aaiún ( GMT +00:00 )</item>
+	</string-array>
+	<string-array name="YE_cities">
+	    <item>Aden ( GMT +03:00 )</item>
+	    <item>Sana ( GMT +03:00 )</item>
+	</string-array>
+	<string-array name="ZM_cities">
+	    <item>Lusaka ( GMT +02:00 )</item>
+	</string-array>
+	<string-array name="ZW_cities">
+	    <item>Harare ( GMT +02:00 )</item>
+	</string-array>
+</resources>

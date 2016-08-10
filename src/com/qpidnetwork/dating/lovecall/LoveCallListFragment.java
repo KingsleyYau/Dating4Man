@@ -7,9 +7,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.TextView;
 
+import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.LoveCallBean;
 import com.qpidnetwork.dating.bean.PageBean;
+import com.qpidnetwork.dating.home.HomeActivity;
 import com.qpidnetwork.framework.base.BaseListFragment;
 import com.qpidnetwork.request.OnQueryLoveCallListCallback;
 import com.qpidnetwork.request.RequestJniLoveCall.SearchType;
@@ -127,12 +133,19 @@ public class LoveCallListFragment extends BaseListFragment{
 		case GET_LOVE_CALL_SUCCESS:
 			LoveCall[] itemList = (LoveCall[])msg.obj;
 			if((msg.arg1 == LOVE_CALL_LIST_INIT) || (msg.arg1 == LOVE_CALL_LIST_REFRESH)){
-				mAdapter.replaceList(convertLoveCallBean(itemList));
-				lastUpdate = System.currentTimeMillis();
-				if(msg.arg1 == LOVE_CALL_LIST_INIT){
-					isInited = true;
-					hideLoadingPage();
+				if(itemList != null && itemList.length > 0){//加判断
+					mAdapter.replaceList(convertLoveCallBean(itemList));
+					lastUpdate = System.currentTimeMillis();
+					if(msg.arg1 == LOVE_CALL_LIST_INIT){
+						isInited = true;
+						hideLoadingPage();
+					}
+				}else{
+					isInited = false;//重置init
+					showInitEmpty(getEmptyView());// 显示空界面
 				}
+				
+				
 			}else if(msg.arg1 == LOVE_CALL_LIST_MORE){
 				mAdapter.appendList(convertLoveCallBean(itemList));
 			}
@@ -148,7 +161,28 @@ public class LoveCallListFragment extends BaseListFragment{
 		
 		onRefreshComplete();
 	}
-	
+	/**
+	 * @return 设置emptyView
+	 */
+	private View getEmptyView() {
+		// TODO Auto-generated method stub
+		View view  = LayoutInflater.from(mContext).inflate(R.layout.view_love_call_empty, null);
+		if(mIndex==0){
+			((TextView)view.findViewById(R.id.tvLoveCallType)).setText(R.string.love_call_scheduled_empty);
+		}else if(mIndex==1){
+			((TextView)view.findViewById(R.id.tvLoveCallType)).setText(R.string.love_call_request_empty);
+		}
+		view.findViewById(R.id.btnCall).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				getActivity().sendBroadcast(new Intent(HomeActivity.REFRESH_AVAIABLE_CALL_LADY));
+				getActivity().finish();
+			}
+		});
+		return view;
+	}
+
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub

@@ -3,14 +3,22 @@ package com.qpidnetwork.dating.admirer;
 import java.util.Arrays;
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
 
+import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.PageBean;
+import com.qpidnetwork.dating.emf.MailEditActivity;
+import com.qpidnetwork.dating.home.HomeActivity;
 import com.qpidnetwork.framework.base.BaseListFragment;
 import com.qpidnetwork.framework.util.ToastUtil;
 import com.qpidnetwork.request.OnEMFAdmirerListCallback;
 import com.qpidnetwork.request.RequestJniEMF;
+import com.qpidnetwork.request.RequestJniEMF.ReplyType;
 import com.qpidnetwork.request.RequestJniEMF.SortType;
 import com.qpidnetwork.request.item.EMFAdmirerListItem;
 
@@ -37,6 +45,8 @@ public class AdmireListFragment extends BaseListFragment{
 		super.onActivityCreated(savedInstanceState);
 		mAdapter = new AdmirerListAdapter(getActivity());
 		getPullToRefreshListView().setAdapter(mAdapter);
+		getFloatButton().setId(R.id.common_button_send);
+		getFloatButton().setOnClickListener(this);
 		queryAdmirerList(0, EMF_ADMIRER_INIT, SortType.DEFAULT, "");
 	}
 	
@@ -82,18 +92,31 @@ public class AdmireListFragment extends BaseListFragment{
 		case GET_ADMIRER_SUCCESS:
 			List<EMFAdmirerListItem> list = (List<EMFAdmirerListItem>)msg.obj;
 			if((msg.arg1 == EMF_ADMIRER_INIT) || (msg.arg1 == EMF_ADMIRER_REFRESH)){
-				mAdapter.replaceList(list);
-				if(msg.arg1 == EMF_ADMIRER_INIT){
-					isInited = true;
-					hideLoadingPage();
+				if(list != null && list.size() > 0){//加判断
+					mAdapter.replaceList(list);
+					if(msg.arg1 == EMF_ADMIRER_INIT){
+						isInited = true;
+						hideLoadingPage();
+					}
+					//列表不为空，显示编辑信件按钮
+					getFloatButton().setVisibility(View.VISIBLE);
+				}else{
+					isInited = false;
+					showInitEmpty(getEmptyView());// 显示空界面
+					//除非列表不为空，否则都隐藏
+					getFloatButton().setVisibility(View.GONE);
 				}
 			}else if(msg.arg1 == EMF_ADMIRER_MORE){
+				//列表不为空，显示编辑信件按钮
+				getFloatButton().setVisibility(View.VISIBLE);
 				mAdapter.appendList(list);
 			}
 			
 			break;
 
-		case GET_ADMIRER_FAILED:
+		case GET_ADMIRER_FAILED:{
+			//除非列表不为空，否则都隐藏
+			getFloatButton().setVisibility(View.GONE);
 			if(msg.arg1 == EMF_ADMIRER_INIT){
 				showInitError();
 			}else{
@@ -102,11 +125,40 @@ public class AdmireListFragment extends BaseListFragment{
 					ToastUtil.showToast(getActivity(), errorMsg);
 				}
 			}
-			break;
+		}break;
 		}
 		
 		onRefreshComplete();
 		
+	}
+	
+	/**
+	 * @return 设置emptyView
+	 */
+	private View getEmptyView() {
+		// TODO Auto-generated method stub
+		View view  = LayoutInflater.from(getActivity()).inflate(R.layout.view_admirer_mail_empty, null);
+		view.findViewById(R.id.btnSearch).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				getActivity().sendBroadcast(new Intent(HomeActivity.REFRESH_ONLINE_LADY));
+				getActivity().finish();
+			}
+		});
+		return view;
+	}
+	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		super.onClick(v);
+		switch (v.getId()) {
+		case R.id.common_button_send:{
+			MailEditActivity.launchMailEditActivity(mContext, "", ReplyType.DEFAULT, "", "");
+		}break;
+		}
 	}
 	
 	/**

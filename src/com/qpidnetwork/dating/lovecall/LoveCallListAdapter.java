@@ -30,8 +30,6 @@ import com.qpidnetwork.view.MaterialThreeButtonDialog;
 public class LoveCallListAdapter extends UpdateableAdapter<LoveCallBean> implements OnClickListener {
 	
 	public Activity mContext;
-	private SimpleDateFormat scheduleFormat = new SimpleDateFormat("HH:mm dd MMM", Locale.getDefault());
-	private SimpleDateFormat requestFormat = new SimpleDateFormat("dd MMM", Locale.getDefault());
 	
 	public LoveCallListAdapter(Activity context){
 		this.mContext = context;
@@ -65,7 +63,7 @@ public class LoveCallListAdapter extends UpdateableAdapter<LoveCallBean> impleme
 		if(item.isconfirm){
 			//预约列表
 			holder.tvTips.setVisibility(View.GONE);
-			holder.tvDesc.setText(mContext.getResources().getString(R.string.lovecall_schedule_time, scheduleFormat.format(item.longbegintime)));
+			holder.tvDesc.setText(mContext.getResources().getString(R.string.lovecall_schedule_time, new SimpleDateFormat("HH:mm dd MMM", Locale.getDefault()).format(item.longbegintime)));
 			if (item.isCallActive()){
 				holder.btnCall.setVisibility(View.VISIBLE);
 				holder.btnCall.setTag(item);
@@ -75,7 +73,7 @@ public class LoveCallListAdapter extends UpdateableAdapter<LoveCallBean> impleme
 		}else{
 			//预约申请列表
 			holder.tvTips.setVisibility(View.VISIBLE);
-			holder.tvDesc.setText(mContext.getResources().getString(R.string.lovecall_request_time, requestFormat.format(item.longendtime)));
+			holder.tvDesc.setText(mContext.getResources().getString(R.string.lovecall_request_time, new SimpleDateFormat("dd MMM", Locale.getDefault()).format(item.longbegintime)));
 		}
 		
 		holder.ivPhoto.setImageResource(R.drawable.female_default_profile_photo_40dp);

@@ -8,10 +8,12 @@ import java.util.List;
 import me.tangke.slidemenu.SlideMenu;
 import me.tangke.slidemenu.SlideMenu.OnSlideStateChangeListener;
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,7 +35,9 @@ import com.qpidnetwork.dating.R.string;
 import com.qpidnetwork.dating.advertisement.AdvertisementManager;
 import com.qpidnetwork.dating.analysis.AdAnakysisManager;
 import com.qpidnetwork.dating.authorization.LoginManager;
+import com.qpidnetwork.dating.authorization.LoginManager.LoginStatus;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
+import com.qpidnetwork.dating.authorization.LoginParam;
 import com.qpidnetwork.dating.authorization.RegisterActivity;
 import com.qpidnetwork.dating.bean.ContactBean;
 import com.qpidnetwork.dating.contacts.ContactManager;
@@ -64,6 +68,7 @@ import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.manager.WebSiteManager.OnChangeWebsiteCallback;
 import com.qpidnetwork.manager.WebSiteManager.WebSite;
 import com.qpidnetwork.manager.WebSiteManager.WebSiteType;
+import com.qpidnetwork.request.OnAppPromotionAdvertCallback;
 import com.qpidnetwork.request.OnEMFMsgTotalCallback;
 import com.qpidnetwork.request.OnOtherGetCountCallback;
 import com.qpidnetwork.request.OnQueryLoveCallRequestCountCallback;
@@ -82,6 +87,7 @@ import com.qpidnetwork.request.item.OtherSynConfigItem;
 import com.qpidnetwork.tool.CrashPerfence;
 import com.qpidnetwork.tool.CrashPerfence.CrashParam;
 import com.qpidnetwork.view.MaterialDialogAlert;
+import com.qpidnetwork.view.NormalWebviewDialog;
 
 @SuppressLint({ "RtlHardcoded", "UseValueOf" })
 public class HomeActivity extends BaseFragmentActivity implements
@@ -98,6 +104,9 @@ public class HomeActivity extends BaseFragmentActivity implements
 	public static final String START_BROWSER_LINK = "start_brower_link";
 	public static final String OPEN_LEFT_MENU = "open_left_menu";// 打开左侧导航菜单
 	public static final String OPEN_RIGHT_MENU = "open_right_menu";// 打开右侧chat列表
+	public static final String REFRESH_ONLINE_LADY="refresh_online_lady";//广播刷新女士列表
+	public static final String REFRESH_NEWEST_LADY="refresh_newest_lady";//广播刷新女士列表
+	public static final String REFRESH_AVAIABLE_CALL_LADY="refresh_avaable_call_lady";//广播刷新女士列表
 
 	// 广告传入参数
 	public static final String START_ADVERT = "";
@@ -142,7 +151,7 @@ public class HomeActivity extends BaseFragmentActivity implements
 		/**
 		 * 强制显示客服消息
 		 */
-		REQUEST_FORCED_SHOW_TICKET,REQUEST_LOGIN_CALLBACK,
+		REQUEST_FORCED_SHOW_TICKET,REQUEST_LOGIN_CALLBACK,REQUEST_APP_EXTENSION_ACTIVITY,REQUEST_UPDATE_APP_EXTENSION_CALLBACK
 	}
 
 	/**
@@ -173,6 +182,12 @@ public class HomeActivity extends BaseFragmentActivity implements
 	// 弹出窗口消息列表
 	private List<Integer> mPopMsgList = new LinkedList<Integer>();
 	private LoginItem mLoginItem = null;
+	
+	/* 广播用于activity刷新在线女士列表 */
+	private BroadcastReceiver mBroadcastReceiver;
+	
+	/*推广广告参数，登陆成功和主动触发（AppPromotion接口）是更新*/
+	private String mAdOverview = "";
 
 	// ********************* 界面相关 *********************
 
@@ -209,6 +224,36 @@ public class HomeActivity extends BaseFragmentActivity implements
 
 		// 统计中间页(OnlineLady)
 		onAnalyticsPageSelected(1);
+		
+		initReceiver();
+		
+		//当用户在登陆状态下推出界面重新启动界面时，由于不执行登陆逻辑，需要客户端主动和后台同步App推广相关
+		CheckPromotionActivity();
+	}
+	/**
+	 * 刷新在线女士列表广播
+	 */
+	private void initReceiver() {
+		mBroadcastReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				// TODO Auto-generated method stub
+				String action = intent.getAction();
+				if (action.equals(REFRESH_ONLINE_LADY)) {
+					contentViewController.refreshOnlineLady();
+				}else if (action.equals(REFRESH_NEWEST_LADY)) {
+					contentViewController.refreshNewestLady();
+				}else if (action.equals(REFRESH_AVAIABLE_CALL_LADY)) {
+					contentViewController.refreshAvaiableCallLady();
+				}
+			}
+		};
+
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(REFRESH_ONLINE_LADY);
+		filter.addAction(REFRESH_NEWEST_LADY);
+		filter.addAction(REFRESH_AVAIABLE_CALL_LADY);
+		registerReceiver(mBroadcastReceiver, filter);
 	}
 
 	@Override
@@ -219,9 +264,10 @@ public class HomeActivity extends BaseFragmentActivity implements
 		WebSiteManager.getInstance().RemoveListenner(this);
 		mContactManager.unregisterContactUpdata(this);
 		mContactManager.unregisterInviteUpdata(this);
+		unregisterReceiver(mBroadcastReceiver);
+		QpidApplication.mHomeActicityDestroyTime = System.currentTimeMillis();
 		super.onDestroy();
 	}
-	
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -281,6 +327,10 @@ public class HomeActivity extends BaseFragmentActivity implements
 		mHandler.removeMessages(RequestFlag.REQUEST_FORCED_SHOW_TICKET
 				.ordinal());
 		mHandler.removeMessages(RequestFlag.REQUEST_LOGIN_CALLBACK
+				.ordinal());
+		mHandler.removeMessages(RequestFlag.REQUEST_APP_EXTENSION_ACTIVITY
+				.ordinal());
+		mHandler.removeMessages(RequestFlag.REQUEST_UPDATE_APP_EXTENSION_CALLBACK
 				.ordinal());
 	}
 
@@ -512,6 +562,22 @@ public class HomeActivity extends BaseFragmentActivity implements
 			contentViewController.QueryOnlineLadyList(false);
 		}
 			break;
+		case REQUEST_APP_EXTENSION_ACTIVITY: {
+			// App 推广等活动弹窗提示
+			showAppExtensionDialog();
+		}
+			break;
+		case REQUEST_UPDATE_APP_EXTENSION_CALLBACK: {
+			// App主动更新推广成功
+			if(isActivityVisible()){
+				//在当前页面，直接弹框
+				showAppExtensionDialog();
+			}else{
+				mPopMsgList.add(RequestFlag.REQUEST_APP_EXTENSION_ACTIVITY
+						.ordinal());
+			}
+		}
+			break;
 		default:
 			break;
 		}
@@ -555,7 +621,7 @@ public class HomeActivity extends BaseFragmentActivity implements
 		mMenuFragment.menuHelper.updateMenuItem(MenuType.MENU_MY_ADMIRERS, 0);
 
 		// 重新自动登录
-		LoginManager.getInstance().Logout();
+		LoginManager.getInstance().Logout(true);
 		LoginManager.getInstance().AutoLogin();
 
 		contentViewController.OnChangeWebsite(website);
@@ -800,6 +866,14 @@ public class HomeActivity extends BaseFragmentActivity implements
 		// TODO Auto-generated method stub
 		if (isSuccess) {
 			mLoginItem = item;
+			// 弹出活动消息（目前用于App推广）
+			if(null != mLoginItem 
+					&& !TextUtils.isEmpty(mLoginItem.adOverview)){
+				mAdOverview = mLoginItem.adOverview; 
+				mPopMsgList.add(RequestFlag.REQUEST_APP_EXTENSION_ACTIVITY
+						.ordinal());
+			}
+			
 			// 弹出客服消息
 			if (null != mLoginItem && null != mLoginItem.ticketid
 					&& !mLoginItem.ticketid.isEmpty()) {
@@ -1175,6 +1249,72 @@ public class HomeActivity extends BaseFragmentActivity implements
 				}
 			}
 		}		
+	}
+	
+	/**
+	 * 检测推广活动
+	 */
+	private void CheckPromotionActivity(){
+		if(LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED){
+			LoginParam loginParams = LoginManager.getInstance().GetLoginParam();
+			long timestamp = 0;
+			if(null != loginParams 
+					&& null != loginParams.item){
+				timestamp = loginParams.item.adTimestamp;
+			}
+			if(timestamp > 0){
+				//timestamp有效
+				long currentTime = System.currentTimeMillis();
+				if(QpidApplication.mHomeActicityDestroyTime > 0
+						&& ((currentTime - QpidApplication.mHomeActicityDestroyTime) > timestamp*1000)){
+					promotionNotify();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 和服务器同步App推广信息
+	 */
+	private void promotionNotify(){
+		TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		RequestOperator.getInstance().AppPromotionAdvert(RequestJni.GetDeviceId(tm), new OnAppPromotionAdvertCallback() {
+			
+			@Override
+			public void OnAppPromotionAdvert(boolean isSuccess, String errno,
+					String errmsg, String adOverview) {
+				if(isSuccess && !TextUtils.isEmpty(adOverview)){
+					mAdOverview = adOverview;
+					Message msg = Message.obtain();
+					msg.what = RequestFlag.REQUEST_UPDATE_APP_EXTENSION_CALLBACK.ordinal();
+					sendUiMessage(msg);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 弹出推广信息
+	 */
+	private void showAppExtensionDialog(){
+		if(LoginManager.getInstance().GetLoginStatus() == LoginStatus.LOGINED){
+			//已登录弹出提示，否则取消
+			if(!TextUtils.isEmpty(mAdOverview)){
+				TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+				String domain = WebSiteManager.getInstance().GetWebSite().getAppSiteHost();
+				String url = domain;
+				url += "/advert/overviewadvert";
+				url += "/deviceId/";
+				url += RequestJni.GetDeviceId(tm);
+				url += "/adkey/";
+				url += mAdOverview;
+				NormalWebviewDialog dialog = new NormalWebviewDialog(this);
+				dialog.loadUrl(url);
+				if(isActivityVisible()){
+					dialog.show();
+				}
+			}
+		}
 	}
 
 //	 private void showContacts() {

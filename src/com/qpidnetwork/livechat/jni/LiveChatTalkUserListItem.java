@@ -2,8 +2,6 @@ package com.qpidnetwork.livechat.jni;
 
 import com.qpidnetwork.livechat.jni.LiveChatClient.UserStatusType;
 
-import android.util.Log;
-
 
 /**
  * 获取邀请/在聊用户列表user item

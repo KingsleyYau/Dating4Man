@@ -29,6 +29,7 @@ import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.dating.lady.LadyDetailManager;
 import com.qpidnetwork.framework.base.BaseActionBarFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.StringUtil;
@@ -134,6 +135,9 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 		LoginManager.getInstance().AddListenner(this);
 		
 		ConfigManager.getInstance().GetOtherSynConfigItem(this);
+		
+		//进入买点页面，设置女士详情刷新标志为True，返回女士详情需要刷新
+		LadyDetailManager.getInstance().updateLadyDetailReloadFlag(true);
 	}
 	
 	@Override

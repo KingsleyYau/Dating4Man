@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:button="http://schemas.android.com/apk/res-auto"
+    xmlns:circleimage="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    
+    <LinearLayout
+        android:id="@+id/llDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp" 
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_alignParentBottom="true">
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/include_contact_empty_advert" />
+
+        <com.qpidnetwork.view.ButtonRaised
+            android:id="@+id/btnSearch"
+            android:layout_width="160dp"
+            android:layout_height="36dp"
+            android:clickable="true"
+            button:background="@color/blue_color"
+            button:elevation="1dp"
+            button:radius="2dp"
+            button:title="@string/common_btn_search"
+            button:title_color="@color/white"
+            button:touch_feedback="@drawable/touch_feedback_holo_dark" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llPic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible" 
+        android:layout_above="@id/llDescription"
+        android:gravity="center">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center" >
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/circle_grey_stroke_4dp_white_bg"
+                android:scaleType="center"
+                android:src="@drawable/ic_chat_green_24dp" />
+
+            <com.qpidnetwork.framework.widget.CircleImageView
+                android:id="@+id/ivPhoto"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_marginRight="12dp"
+                android:src="@drawable/image_lady_cd"
+                circleimage:border_color="@color/white"
+                circleimage:border_width="4dp" />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/circle_grey_stroke_4dp_white_bg"
+                android:scaleType="center"
+                android:src="@drawable/ic_call_yellow_24dp" />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/circle_grey_stroke_4dp_white_bg"
+                android:scaleType="center"
+                android:src="@drawable/ic_email_blue_24dp" />
+        </LinearLayout>
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/contact_no_data_tips_logined_in"
+            android:textColor="@color/text_color_grey"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    
+
+</RelativeLayout>

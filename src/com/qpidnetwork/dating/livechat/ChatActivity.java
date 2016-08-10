@@ -62,7 +62,6 @@ import com.qpidnetwork.dating.home.HomeActivity;
 import com.qpidnetwork.dating.lady.LadyDetailActivity;
 import com.qpidnetwork.dating.lady.LadyDetailManager;
 import com.qpidnetwork.dating.lady.LadyDetailManager.OnLadyDetailManagerQueryLadyDetailCallback;
-import com.qpidnetwork.dating.livechat.expression.EmotionMainFragment;
 import com.qpidnetwork.dating.livechat.normalexp.NormalExprssionFragment;
 import com.qpidnetwork.dating.livechat.picture.PictureHelper;
 import com.qpidnetwork.dating.livechat.picture.PictureSelectActivity;
@@ -182,7 +181,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 	private NormalExprssionFragment normalExprssionFragment;
 	private PictureSelectFragment pictureSelectFragment;
 	private VoiceRecordFragment voiceRecordFragment;
-	private EmotionMainFragment emotionMainFragment;
+//	private EmotionMainFragment emotionMainFragment;
 	private CameraViewFragment cameraViewFragment;
 	
 	/* root */
@@ -1069,10 +1068,10 @@ public class ChatActivity extends BaseFragmentActivity implements
 			btnVoice.setImageResource(R.drawable.ic_mic_blue_24dp);
 			break;
 		case EMOTION_PAN:
-			if (emotionMainFragment == null)
-				emotionMainFragment = new EmotionMainFragment();
-			transaction.replace(R.id.flPane, emotionMainFragment);
-			btnEmotion.setImageResource(R.drawable.ic_premium_emotion_blue_24dp);
+//			if (emotionMainFragment == null)
+//				emotionMainFragment = new EmotionMainFragment();
+//			transaction.replace(R.id.flPane, emotionMainFragment);
+//			btnEmotion.setImageResource(R.drawable.ic_premium_emotion_blue_24dp);
 			break;
 		case USE_CAMERA:
 			//Android api 11 or above will use in app camera. otherwise will open system camera.
@@ -1269,6 +1268,12 @@ public class ChatActivity extends BaseFragmentActivity implements
 			dialog.addButton(dialog.createButton(
 					getString(R.string.common_btn_ok), null));
 			dialog.show();
+			return;
+		}
+		
+		if(recordTime < 1){
+			//录音时长小于1秒，提示不发送
+			Toast.makeText(this, getString(R.string.livechat_record_voice_too_short), Toast.LENGTH_SHORT).show();
 			return;
 		}
 
@@ -1532,12 +1537,12 @@ public class ChatActivity extends BaseFragmentActivity implements
 				mLiveChatManager.GetVideo((LCMessageItem)response.body);
 			}else{
 				//购买失败处理没钱提示并停止处理中状态
-				if(response.errno.equals("ERROR00003")){
-					final GetMoreCreditDialog dialog = new GetMoreCreditDialog(this, R.style.ChoosePhotoDialog);
-					if(isCurrActivityVisible){
-						dialog.show();
-					}
-				}
+//				if(response.errno.equals("ERROR00003")){
+//					final GetMoreCreditDialog dialog = new GetMoreCreditDialog(this, R.style.ChoosePhotoDialog);
+//					if(isCurrActivityVisible){
+//						dialog.show();
+//					}
+//				}//修改聊天界面统一以消息的形式通知，屏蔽传统九宫格弹出
 				msgList.updateVideoStatus((LCMessageItem)response.body);
 			}
 		}
@@ -1564,7 +1569,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 					offlineDialog.addButton(offlineDialog.createButton(getString(R.string.common_send_email), new OnClickListener() {
 							@Override
 							public void onClick(View v) {
-								MailEditActivity.launchMailEditActivity(ChatActivity.this, targetId, ReplyType.DEFAULT, "");
+								MailEditActivity.launchMailEditActivity(ChatActivity.this, targetId, ReplyType.DEFAULT, "", "");
 							}
 						}));
 					offlineDialog.addButton(offlineDialog.createButton(getString(R.string.common_btn_cancel), null));
@@ -1640,7 +1645,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 			break;
 		case RECIEVE_THEME_PLAY_REQUEST: {
 			//女士通知男士端播放动画
-			if(mCurrentTheme != null){
+			if( (mCurrentTheme != null) && isActivityVisible()){
 				playCurrentThemeAnimation();
 			}
 		}
@@ -2160,7 +2165,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 	 * 
 	 * @return
 	 */
-	private int getKeyboardHeight() {
+	public int getKeyboardHeight() {
 		SharedPreferences preference = getSharedPreferences("virtualKeyboard",
 				MODE_PRIVATE);
 		return preference.getInt("keyboardheight", -1);

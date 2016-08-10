@@ -367,7 +367,7 @@ public class LCNormalInviteManager {
 					, StatusType.Finish);
 			// 生成TextItem
 			LCTextItem textItem = new LCTextItem();
-			textItem.init(message);
+			textItem.init(message, SendType.Recv);
 			// 把TextItem添加到MessageItem
 			item.setTextItem(textItem);
 			// 添加到用户聊天记录中

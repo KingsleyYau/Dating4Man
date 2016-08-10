@@ -84,6 +84,9 @@ void onLoginWithFacebook(long requestId, bool success, LoginFacebookItem item, s
 					"Z"
 					"Z"
 					"I"
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"I"
 					")V"
 					);
 
@@ -101,6 +104,8 @@ void onLoginWithFacebook(long requestId, bool success, LoginFacebookItem item, s
 				jstring sessionid = env->NewStringUTF(item.sessionid.c_str());
 				jstring ga_uid = env->NewStringUTF(item.ga_uid.c_str());
 				jstring ticketid = env->NewStringUTF(item.ticketid.c_str());
+				jstring gaActivity = env->NewStringUTF(item.gaActivity.c_str());
+				jstring adOverview = env->NewStringUTF(item.adOverview.c_str());
 
 				jItem = env->NewObject(cls, init,
 						manid,
@@ -128,7 +133,10 @@ void onLoginWithFacebook(long requestId, bool success, LoginFacebookItem item, s
 						item.admirer,
 						item.bpemf,
 
-						item.rechargeCredit
+						item.rechargeCredit,
+						gaActivity,
+						adOverview,
+						item.adTimestamp
 						);
 
 				env->DeleteLocalRef(manid);
@@ -141,6 +149,8 @@ void onLoginWithFacebook(long requestId, bool success, LoginFacebookItem item, s
 				env->DeleteLocalRef(sessionid);
 				env->DeleteLocalRef(ga_uid);
 				env->DeleteLocalRef(ticketid);
+				env->DeleteLocalRef(gaActivity);
+				env->DeleteLocalRef(adOverview);
 				FileLog("httprequest", "Authorization.Native::onFacebookLogin( NewObject jItem : %p )", jItem);
 			}
 		}
@@ -311,6 +321,9 @@ void onRegister(long requestId, bool success, RegisterItem item, string errnum, 
 					"Z"
 					"Z"
 					"Z"
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"I"
 					")V"
 					);
 
@@ -329,6 +342,8 @@ void onRegister(long requestId, bool success, RegisterItem item, string errnum, 
 				jstring photoURL = env->NewStringUTF(item.photoURL.c_str());
 				jstring sessionid = env->NewStringUTF(item.sessionid.c_str());
 				jstring ga_uid = env->NewStringUTF(item.ga_uid.c_str());
+				jstring gaActivity = env->NewStringUTF(item.gaActivity.c_str());
+				jstring adOverview = env->NewStringUTF(item.adOverview.c_str());
 
 				jItem = env->NewObject(cls, init,
 						item.login,
@@ -345,7 +360,10 @@ void onRegister(long requestId, bool success, RegisterItem item, string errnum, 
 						ga_uid,
 						item.photosend,
 						item.photoreceived,
-						item.videoreceived
+						item.videoreceived,
+						gaActivity,
+						adOverview,
+						item.adTimestamp
 						);
 
 				env->DeleteLocalRef(manid);
@@ -359,6 +377,8 @@ void onRegister(long requestId, bool success, RegisterItem item, string errnum, 
 				env->DeleteLocalRef(photoURL);
 				env->DeleteLocalRef(sessionid);
 				env->DeleteLocalRef(ga_uid);
+				env->DeleteLocalRef(gaActivity);
+				env->DeleteLocalRef(adOverview);
 				FileLog("httprequest", "Authorization.Native::onRegister( NewObject : %p )", jItem);
 			}
 		}
@@ -561,6 +581,9 @@ void onLogin(long requestId, bool success, LoginItem item, string errnum, string
 					"Z"
 					"Z"
 					"I"
+					"Ljava/lang/String;"
+					"Ljava/lang/String;"
+					"I"
 					")V"
 					);
 
@@ -578,6 +601,8 @@ void onLogin(long requestId, bool success, LoginItem item, string errnum, string
 				jstring sessionid = env->NewStringUTF(item.sessionid.c_str());
 				jstring ga_uid = env->NewStringUTF(item.ga_uid.c_str());
 				jstring ticketid = env->NewStringUTF(item.ticketid.c_str());
+				jstring gaActivity = env->NewStringUTF(item.gaActivity.c_str());
+				jstring adOverview = env->NewStringUTF(item.adOverview.c_str());
 
 				jItem = env->NewObject(cls, init,
 						manid,
@@ -604,7 +629,10 @@ void onLogin(long requestId, bool success, LoginItem item, string errnum, string
 						item.admirer,
 						item.bpemf,
 
-						item.rechargeCredit
+						item.rechargeCredit,
+						gaActivity,
+						adOverview,
+						item.adTimestamp
 						);
 
 				env->DeleteLocalRef(manid);
@@ -617,6 +645,8 @@ void onLogin(long requestId, bool success, LoginItem item, string errnum, string
 				env->DeleteLocalRef(sessionid);
 				env->DeleteLocalRef(ga_uid);
 				env->DeleteLocalRef(ticketid);
+				env->DeleteLocalRef(gaActivity);
+				env->DeleteLocalRef(adOverview);
 				FileLog("httprequest", "Authorization.Native::onLogin( NewObject : %p )", jItem);
 			}
 		}

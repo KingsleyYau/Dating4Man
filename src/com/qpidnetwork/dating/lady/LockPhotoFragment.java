@@ -10,7 +10,6 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.credit.BuyCreditActivity;
+import com.qpidnetwork.dating.credit.MonthlyFeeNotifyAdapter;
 import com.qpidnetwork.dating.emf.MailEditActivity;
 import com.qpidnetwork.dating.googleanalytics.AnalyticsFragmentActivity;
 import com.qpidnetwork.dating.livechat.ChatActivity;
@@ -47,7 +47,7 @@ public class LockPhotoFragment extends BaseFragment {
 	private ButtonRaised btnSubscribe;// 购买月费
 	private TextView tvPrice;// 支付价格
 	
-	private TipsAdapter mAdapter;
+	private MonthlyFeeNotifyAdapter mAdapter;
 	private List<String> serverslist;// 服务列表
 
 	private MonthlyFeeManager mMonthlyFeeManager;//月费管理器
@@ -134,7 +134,7 @@ public class LockPhotoFragment extends BaseFragment {
 			if (ladyDetail != null) {
 				if (LoginManager.getInstance().CheckLogin(getActivity())) {
 					MailEditActivity.launchMailEditActivity(getActivity(),
-							ladyDetail.womanid, ReplyType.DEFAULT, "");
+							ladyDetail.womanid, ReplyType.DEFAULT, "", "");
 					// getActivity().finish();
 				}
 			}
@@ -196,13 +196,13 @@ public class LockPhotoFragment extends BaseFragment {
 			case NO_FEED_FIRST_MONTHLY_MEMBER:
 				showMonthlyView(true);//显示月费提示
 				tvPrice.setText(Html.fromHtml(mMonthlyItem.priceDescribe));
-				mAdapter = new TipsAdapter(mMonthlyItem.tips);
+				mAdapter = new MonthlyFeeNotifyAdapter(mContext, mMonthlyItem.tips);
 				listView.setAdapter(mAdapter);
 				break;
 			case NO_FEED_MONTHLY_MEMBER:
 				showMonthlyView(true);//显示月费提示
 				tvPrice.setText(Html.fromHtml(mMonthlyItem.priceDescribe));
-				mAdapter = new TipsAdapter(mMonthlyItem.tips);
+				mAdapter = new MonthlyFeeNotifyAdapter(mContext, mMonthlyItem.tips);
 				listView.setAdapter(mAdapter);
 				break;
 			default:
@@ -253,44 +253,4 @@ public class LockPhotoFragment extends BaseFragment {
 		}
 	}
 
-	class TipsAdapter extends BaseAdapter {
-		
-		private String[] tips;
-
-		public TipsAdapter(String[] tips) {
-			super();
-			this.tips = tips;
-			// TODO Auto-generated constructor stub
-		}
-
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return tips.length;
-		}
-
-		@Override
-		public Object getItem(int position) {
-			// TODO Auto-generated method stub
-			return tips[position];
-		}
-
-		@Override
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
-			if (convertView == null) {
-				convertView = LayoutInflater.from(mContext).inflate(R.layout.item_dialog_monthly_fee, null);
-			}
-			TextView tv_servers = (TextView) convertView.findViewById(R.id.tv_servers);
-			tv_servers.setText(tips[position]);
-			return convertView;
-		}
-
-	}
 }

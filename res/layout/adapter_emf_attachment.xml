@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/emf_attachment_item_bg" >
+
+    <com.qpidnetwork.view.FitTopImageView
+        android:id="@+id/ivPreview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <LinearLayout
+        android:id="@+id/llPrivate"
+        android:layout_width="80dp"
+        android:layout_height="26dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/emf_private_bg"
+        android:orientation="horizontal"
+        android:gravity="center" >
+
+        <ImageView
+            android:id="@+id/ivPrivate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_lock_outline_white_18dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/emf_private_photo_tag"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="4dp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivPlay"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/touch_feedback_dark_grey_round"
+        android:src="@drawable/ic_play_circle_outline_white_48dp"
+        android:visibility="gone" 
+        android:scaleType="center"/>
+
+    <ImageView
+        android:id="@+id/ivVirtual"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/touch_feedback_dark_grey_round"
+        android:src="@drawable/ic_wallet_giftcard_white_24dp"
+        android:visibility="gone"
+        android:clickable="false"
+        android:scaleType="center"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="8dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/touch_feedback_holo_light" />
+
+</RelativeLayout>

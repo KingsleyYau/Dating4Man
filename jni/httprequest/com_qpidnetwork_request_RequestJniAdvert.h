@@ -31,6 +31,14 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAdvert_WomanListA
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAdvert_PushAdvert
   (JNIEnv *, jclass, jstring, jstring, jobject);
 
+/*
+ * Class:     com_qpidnetwork_request_RequestJniAdvert
+ * Method:    AppPromotionAdvert
+ * Signature: (Ljava/lang/String;Lcom/qpidnetwork/request/OnAppPromotionAdvertCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAdvert_AppPromotionAdvert
+  (JNIEnv *, jclass, jstring, jobject);
+
 
 #ifdef __cplusplus
 }

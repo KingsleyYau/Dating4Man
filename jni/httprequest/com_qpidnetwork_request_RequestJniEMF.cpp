@@ -9,7 +9,7 @@
 #include <manrequesthandler/RequestEMFController.h>
 
 void OnInboxList(long requestId, bool success, const string& errnum, const string& errmsg, int pageIndex, int pageSize, int dataCount, const EMFInboxList& inboxList);
-void OnInboxMsg(long requestId, bool success, const string& errnum, const string& errmsg, const EMFInboxMsgItem& item);
+void OnInboxMsg(long requestId, bool success, const string& errnum, const string& errmsg, int memberType, const EMFInboxMsgItem& item);
 void OnOutboxList(long requestId, bool success, const string& errnum, const string& errmsg, int pageIndex, int pageSize, int dataCount, const EMFOutboxList& outboxList);
 void OnOutboxMsg(long requestId, bool success, const string& errnum, const string& errmsg, const EMFOutboxMsgItem& item);
 void OnMsgTotal(long requestId, bool success, const string& errnum, const string& errmsg, const EMFMsgTotalItem& item);
@@ -329,7 +329,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_InboxMsg
 	return requestId;
 }
 
-void OnInboxMsg(long requestId, bool success, const string& errnum, const string& errmsg, const EMFInboxMsgItem& item)
+void OnInboxMsg(long requestId, bool success, const string& errnum, const string& errmsg, int memberType, const EMFInboxMsgItem& item)
 {
 	FileLog("httprequest", "EMF.Native::OnInboxMsg( success : %s )", success?"true":"false");
 	FileLog("httprequest", "EMF.Native::OnInboxMsg( item.privatePhotoList.size:%d )", item.privatePhotoList.size());
@@ -450,7 +450,7 @@ void OnInboxMsg(long requestId, bool success, const string& errnum, const string
 
 	jclass jCallbackCls = env->GetObjectClass(jCallbackObj);
 
-	string signure = "(ZLjava/lang/String;Ljava/lang/String;";
+	string signure = "(ZLjava/lang/String;Ljava/lang/String;I";
 	signure += "L";
 	signure += EMF_INBOXMSG_ITEM_CLASS;
 	signure += ";";
@@ -461,7 +461,7 @@ void OnInboxMsg(long requestId, bool success, const string& errnum, const string
 		jstring jerrno = env->NewStringUTF(errnum.c_str());
 		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
 
-		env->CallVoidMethod(jCallbackObj, jCallback, success, jerrno, jerrmsg, jItem);
+		env->CallVoidMethod(jCallbackObj, jCallback, success, jerrno, jerrmsg, memberType, jItem);
 
 		env->DeleteLocalRef(jerrno);
 		env->DeleteLocalRef(jerrmsg);
@@ -932,10 +932,10 @@ void OnMsgTotal(long requestId, bool success, const string& errnum, const string
 /*
  * Class:     com_qpidnetwork_request_RequestJniEMF
  * Method:    SendMsg
- * Signature: (Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Lcom/qpidnetwork/request/OnEMFSendMsgCallback;)J
+ * Signature: (Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;[Ljava/lang/String;[Ljava/lang/String;ZLcom/qpidnetwork/request/OnEMFSendMsgCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_SendMsg
-  (JNIEnv *env, jclass cls, jstring womanid, jstring body, jboolean useIntegral, jint replyType, jstring mtab, jobjectArray gifts, jobjectArray attachs, jobject callback) {
+  (JNIEnv *env, jclass cls, jstring womanid, jstring body, jboolean useIntegral, jint replyType, jstring mtab, jobjectArray gifts, jobjectArray attachs, jboolean isLovecall, jobject callback) {
 	jlong requestId = -1;
 
 	// 生成转换的字符串
@@ -982,7 +982,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_SendMsg
 	}
 
 	// 发出请求
-	requestId = gRequestController.SendMsg(strWomanId, strBody, useIntegral, replyType, strMtab, giftList, attachList);
+	requestId = gRequestController.SendMsg(strWomanId, strBody, useIntegral, replyType, strMtab, giftList, attachList, isLovecall);
 	if (requestId != -1) {
 		// 保存callback
 		jobject jObj = env->NewGlobalRef(callback);
@@ -2096,7 +2096,7 @@ void OnInboxPhotoFee(long requestId, bool success, const string& errnum, const s
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnEMFPrivatePhotoViewCallback;)J
  */
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_PrivatePhotoView
-  (JNIEnv *env, jclass cls, jstring womanId, jstring photoId, jstring sendId, jstring messageId, jstring filePath, jint type, jobject callback)
+  (JNIEnv *env, jclass cls, jstring womanId, jstring photoId, jstring sendId, jstring messageId, jstring filePath, jint type, jint mode, jobject callback)
 {
 	jlong requestId = -1;
 
@@ -2127,7 +2127,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniEMF_PrivatePhotoV
 	env->ReleaseStringUTFChars(filePath, cpFilePath);
 
 	// 发出请求
-	requestId = gRequestController.PrivatePhotoView(strWomanId, strPhotoId, strSendId, strMessageId, strFilePath, type);
+	requestId = gRequestController.PrivatePhotoView(strWomanId, strPhotoId, strSendId, strMessageId, strFilePath, type, mode);
 	if (requestId != -1) {
 		// 保存callback
 		jobject jObj = env->NewGlobalRef(callback);

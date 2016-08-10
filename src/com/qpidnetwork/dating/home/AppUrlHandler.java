@@ -224,7 +224,7 @@ public class AppUrlHandler {
 				// 打开与指定女士的写信界面（必需附带"ladyid"参数来指定女士）
 				String womanId = getSplitWomanId(url);
 				if(womanId != null){
-					MailEditActivity.launchMailEditActivity(mContext, womanId, ReplyType.DEFAULT, "");
+					MailEditActivity.launchMailEditActivity(mContext, womanId, ReplyType.DEFAULT, "", "");
 				}
 			}
 

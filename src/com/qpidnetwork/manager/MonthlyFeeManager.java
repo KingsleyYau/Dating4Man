@@ -126,6 +126,7 @@ public class MonthlyFeeManager {
 		}
 		if(item == null){
 			//设置默认的Item
+			item = getDefaultMonthLyFeeTipItem(type);
 		}
 		return item;
 	}
@@ -164,5 +165,24 @@ public class MonthlyFeeManager {
 	public interface OnMemberMonthlyTypeUpdate{
 		public void onMemberTypeUpdate(MemberType memberType);
 	}
+	
+	/**
+	 * 获取默认的MonthLyFeeTipItem
+	 * @param type
+	 * @return
+	 */
+	private MonthLyFeeTipItem getDefaultMonthLyFeeTipItem(MemberType type) {
+		// TODO Auto-generated method stub
+		MonthLyFeeTipItem item = null;
+		if(type==MemberType.NO_FEED_FIRST_MONTHLY_MEMBER||type==MemberType.NO_FEED_MONTHLY_MEMBER){
+			item = new MonthLyFeeTipItem();
+			item.memberType = type;
+			item.priceTitle = "9.99";
+			item.priceDescribe=item.getDefaultPriceTitle(type);//设置默认价格提示
+			item.tips=item.getDefaultTips();//设置默认tips
+		}
+		return item;
+	}
+
 
 }

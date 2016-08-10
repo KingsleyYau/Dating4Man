@@ -1,0 +1,212 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    xmlns:button="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tiny_grey_solid"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/scContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/llContact"
+                android:layout_width="fill_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/emf_edit_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textViewTo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp"
+                    android:text="To"
+                    android:textColor="@color/text_color_dark"
+                    android:textSize="18sp" />
+
+                <include
+                    android:id="@+id/layoutId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp"
+                    android:layout_toRightOf="@+id/textViewTo"
+                    layout="@layout/layout_lady_detail_id" />
+
+                <EditText
+                    android:id="@+id/etLadyId"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="18dp"
+                    android:layout_toRightOf="@+id/textViewTo"
+                    android:background="@null"
+                    android:hint="Enter lady&apos;s ID"
+                    android:inputType="text"
+                    android:lines="1" />
+
+                <com.qpidnetwork.view.MaterialProgressBar
+                    android:id="@+id/progressBarId"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:layout_toLeftOf="@+id/ivContacts"
+                    wheel:matProg_barColor="@color/blue_color"
+                    wheel:matProg_progressIndeterminate="true" />
+
+                <ImageView
+                    android:id="@+id/ivContacts"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:background="@drawable/touch_feedback_holo_light_round_rectangle"
+                    android:src="@drawable/ic_expand_more_grey600_24dp" />
+            </RelativeLayout>
+
+            <EditText
+                android:id="@+id/tvEMFBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/emf_edit_bg"
+                android:gravity="left|top"
+                android:hint="@string/emf_edit_hint"
+                android:minLines="10"
+                android:padding="8dp"
+                android:textColorHint="@color/text_color_grey"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:id="@+id/llBonusPoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/tvBonusPoint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:text="@string/emf_quick_reply_use_credit"
+                    android:textColor="@color/text_color_grey" />
+
+                <TextView
+                    android:id="@+id/tvLearnMore"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/emf_quick_reply_learn_more"
+                    android:textColor="@color/text_color_grey"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical|left"
+                android:orientation="horizontal" >
+
+                <RelativeLayout
+                    android:id="@+id/rlAttachments"
+                    android:layout_width="128dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/emf_attachment_bg"
+                    android:clickable="true"
+                    android:visibility="gone" >
+
+                    <ImageView
+                        android:id="@+id/ivAttachment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/ic_attachment_grey600_24dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="3dp"
+                        android:layout_toRightOf="@+id/ivAttachment"
+                        android:gravity="center"
+                        android:text="@string/emf_add_photo"
+                        android:textColor="@color/text_color_dark" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/touch_feedback_holo_light_round_rectangle" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlGift"
+                    android:layout_width="128dp"
+                    android:layout_height="36dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/emf_attachment_bg"
+                    android:clickable="true" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="@string/emf_add_virtual_gift"
+                        android:textColor="@color/text_color_dark" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/touch_feedback_holo_light_round_rectangle" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <com.qpidnetwork.view.CustomGridView
+                android:id="@+id/gvAttachments"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:columnWidth="156dp"
+                android:horizontalSpacing="5dp"
+                android:numColumns="2"
+                android:scrollbars="none"
+                android:verticalSpacing="5dp" >
+            </com.qpidnetwork.view.CustomGridView>
+
+            <com.qpidnetwork.view.ButtonRaised
+                android:id="@+id/btnSend"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
+                android:clickable="true"
+                button:background="@color/blue_color"
+                button:elevation="1dp"
+                button:title="@string/emf_send"
+                button:title_color="@color/white"
+                button:touch_feedback="@drawable/touch_feedback_holo_dark" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

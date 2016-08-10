@@ -101,12 +101,43 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/llAttachment"
+        android:id="@+id/llAttachments"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="left|center"
         android:orientation="vertical"
         android:visibility="gone" >
+		
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_marginLeft="6dp"
+            android:text="@string/emf_attachment_tag"
+            android:textColor="@color/text_color_grey" 
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="2dp"
+            android:background="@color/listview_divider_grey" />
+
+        <com.qpidnetwork.view.CustomGridView
+            android:id="@+id/gvAttachment"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:horizontalSpacing="6dp"
+            android:columnWidth="156dp"
+            android:numColumns="2"
+            android:scrollbars="@null"
+            android:verticalSpacing="6dp" >
+        </com.qpidnetwork.view.CustomGridView>
+        
     </LinearLayout>
 
     <com.qpidnetwork.view.ButtonRaised

@@ -11,10 +11,12 @@
 void OnMainAdvert(long requestId, bool success, const string& errnum, const string& errmsg, const AdMainAdvertItem& item);
 void OnWomanListAdvert(long requestId, bool success, const string& errnum, const string& errmsg, const AdWomanListAdvertItem& item);
 void OnPushAdvert(long requestId, bool success, const string& errnum, const string& errmsg, const AdPushAdvertList& pushList);
+void OnAppPromotionAdvert(long requestId, bool success, const string& errnum, const string& errmsg,  const string& adOverview);
 static RequestAdvertControllerCallback gRequestControllerCallback {
 	OnMainAdvert,
 	OnWomanListAdvert,
-	OnPushAdvert
+	OnPushAdvert,
+	OnAppPromotionAdvert
 };
 static RequestAdvertController gRequestController(&gHttpRequestManager, gRequestControllerCallback);
 
@@ -397,6 +399,82 @@ void OnPushAdvert(long requestId, bool success, const string& errnum, const stri
 	// delete itemArray
 	if( jItemArray != NULL ) {
 		env->DeleteLocalRef(jItemArray);
+	}
+
+	if( iRet == JNI_OK ) {
+		gJavaVM->DetachCurrentThread();
+	}
+}
+
+// ------------------------------ AppPromotion ---------------------------------
+/*
+ * Class:     com_qpidnetwork_request_RequestJniAdvert
+ * Method:    AppPromotionAdvert
+ * Signature: (Ljava/lang/String;Lcom/qpidnetwork/request/OnAppPromotionAdvertCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAdvert_AppPromotionAdvert
+  (JNIEnv *env, jclass cls, jstring deviceId, jobject callback)
+{
+	jlong requestId = -1;
+
+	// deviceId
+	string strDeviceId("");
+	const char *cpDeviceId = env->GetStringUTFChars(deviceId, 0);
+	strDeviceId = cpDeviceId;
+	env->ReleaseStringUTFChars(deviceId, cpDeviceId);
+
+	// 发出请求
+	requestId = gRequestController.AppPromotionAdvert(strDeviceId);
+	if (requestId != -1) {
+		// 保存callback
+		jobject jObj = env->NewGlobalRef(callback);
+		gCallbackMap.Insert(requestId, jObj);
+		FileLog("httprequest", "Native::AppPromotionAdvert() requestId:%lld, callback:%p, jObj:%p", requestId, callback, jObj);
+	}
+	else {
+		FileLog("httprequest", "Native::AppPromotionAdvert() fails. requestId:%lld, deviceId:%s", requestId, strDeviceId.c_str());
+	}
+
+	return requestId;
+}
+
+void OnAppPromotionAdvert(long requestId, bool success, const string& errnum, const string& errmsg, const string& adOverview)
+{
+	FileLog("httprequest", "Native::OnAppPromotionAdvert( success : %s )", success?"true":"false");
+
+	/* turn object to java object here */
+	JNIEnv* env;
+	jint iRet = JNI_ERR;
+	gJavaVM->GetEnv((void**)&env, JNI_VERSION_1_4);
+	if( env == NULL ) {
+		iRet = gJavaVM->AttachCurrentThread((JNIEnv **)&env, NULL);
+	}
+
+	/* real callback java */
+	jobject jCallbackObj = gCallbackMap.Erase(requestId);
+	jclass jCallbackCls = env->GetObjectClass(jCallbackObj);
+
+	string signure = "(ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V";
+	jmethodID jCallback = env->GetMethodID(jCallbackCls, "OnAppPromotionAdvert", signure.c_str());
+
+	if( jCallbackObj != NULL && jCallback != NULL ) {
+		jstring jerrno = env->NewStringUTF(errnum.c_str());
+		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+		jstring jadoverview = env->NewStringUTF(adOverview.c_str());
+
+		env->CallVoidMethod(jCallbackObj, jCallback, success, jerrno, jerrmsg, jadoverview);
+
+		env->DeleteLocalRef(jerrno);
+		env->DeleteLocalRef(jerrmsg);
+		env->DeleteLocalRef(jadoverview);
+	}
+
+	// delete callback object & class
+	if (jCallbackObj != NULL) {
+		env->DeleteGlobalRef(jCallbackObj);
+	}
+	if (jCallbackCls != NULL) {
+		env->DeleteLocalRef(jCallbackCls);
 	}
 
 	if( iRet == JNI_OK ) {

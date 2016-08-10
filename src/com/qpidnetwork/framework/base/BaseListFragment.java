@@ -10,6 +10,8 @@ import android.widget.ListView;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.bean.PageBean;
+import com.qpidnetwork.manager.WebSiteManager;
+import com.qpidnetwork.view.ButtonFloat;
 import com.qpidnetwork.view.ButtonRaised;
 import com.qpidnetwork.view.MartinListView;
 import com.qpidnetwork.view.MartinListView.OnPullRefreshListener;
@@ -31,6 +33,7 @@ public class BaseListFragment extends BaseFragment implements OnPullRefreshListe
 	
 	/*第一次初始化特殊加载及错误逻辑处理*/
 	private LinearLayout llInitContainer;
+	private LinearLayout llEmpty;//数据为空显示
 	private MaterialProgressBar pbLoading;
 	private View includeError;
 //	private ImageView ivError;
@@ -39,16 +42,18 @@ public class BaseListFragment extends BaseFragment implements OnPullRefreshListe
 	private ButtonRaised btnRetry;
 
 	private MartinListView refreshListview;
+	
+	private ButtonFloat floatButton;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		View view = inflater.inflate(
-				R.layout.fragment_base_pulltorefreshlistview, null);
+		View view = inflater.inflate(R.layout.fragment_base_pulltorefreshlistview, null);
 		refreshListview = (MartinListView) view.findViewById(R.id.refreshListview);
 		
 		llInitContainer = (LinearLayout)view.findViewById(R.id.llInitContainer);
+		llEmpty = (LinearLayout) view.findViewById(R.id.llEmpty);
 		pbLoading = (MaterialProgressBar) view.findViewById(R.id.pbLoading11);
 		pbLoading.setBarColor(getResources().getColor(R.color.blue_color));
 		pbLoading.spin();
@@ -57,6 +62,9 @@ public class BaseListFragment extends BaseFragment implements OnPullRefreshListe
 //		ivError = (ImageView) view.findViewById(R.id.ivError);
 //		tvErrorMsg = (TextView) view.findViewById(R.id.tvErrorMsg);
 		btnRetry = (ButtonRaised) view.findViewById(R.id.btnRetry);
+		
+		floatButton = (ButtonFloat)view.findViewById(R.id.btnFloat);
+		floatButton.setButtonBackground(getResources().getColor(WebSiteManager.getInstance().GetWebSite().getSiteColor()));
 
 		setRefreshView();
 		return view;
@@ -94,6 +102,7 @@ public class BaseListFragment extends BaseFragment implements OnPullRefreshListe
 		refreshListview.setVisibility(View.GONE);
 		pbLoading.setVisibility(View.VISIBLE);
 		includeError.setVisibility(View.GONE);
+		llEmpty.setVisibility(View.GONE);
 	}
 
 	/**
@@ -104,8 +113,21 @@ public class BaseListFragment extends BaseFragment implements OnPullRefreshListe
 		refreshListview.setVisibility(View.GONE);
 		pbLoading.setVisibility(View.GONE);
 		includeError.setVisibility(View.VISIBLE);
+		llEmpty.setVisibility(View.GONE);
 		btnRetry.setOnClickListener(this);
 	}
+	
+	/**
+	 * 数据为空显示UI效果
+	 */
+	public void showInitEmpty(View emptyView){
+		refreshListview.setVisibility(View.GONE);
+		llInitContainer.setVisibility(View.GONE);
+		llEmpty.setVisibility(View.VISIBLE);
+		llEmpty.removeAllViews();
+		llEmpty.addView(emptyView);
+	}
+	
 
 	/**
 	 * 初始化成功处理
@@ -113,6 +135,7 @@ public class BaseListFragment extends BaseFragment implements OnPullRefreshListe
 	public void hideLoadingPage() {
 		llInitContainer.setVisibility(View.GONE);
 		refreshListview.setVisibility(View.VISIBLE);
+		llEmpty.setVisibility(View.GONE);
 	}
 	
 	/*下拉刷新*/
@@ -161,5 +184,13 @@ public class BaseListFragment extends BaseFragment implements OnPullRefreshListe
 	 */
 	public void closePullDownRefresh(){
 		refreshListview.setCanPullDown(false);
+	}
+	
+	/**
+	 * 右下角浮窗按钮
+	 * @return
+	 */
+	public ButtonFloat getFloatButton(){
+		return floatButton;
 	}
 }

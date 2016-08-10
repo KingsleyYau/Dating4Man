@@ -24,6 +24,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.text.TextUtils.TruncateAt;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -154,7 +155,7 @@ public class MaterialDialogSingleChoice extends BaseDialog{
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						listView.smoothScrollToPosition(checked_position);
+						listView.setSelection(checked_position);
 					}
         			
         		});
@@ -246,54 +247,78 @@ class ThisAdapter extends ArrayAdapter<ArrayList<String>>{
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		
-		if (position + 1 <= views.size()){
-			return views.get(position);
+		//if (position + 1 <= views.size()){
+		//	return views.get(position);
+		//}
+		ViewHolder viewHolder;
+		if (convertView == null){
+			viewHolder = new ViewHolder(parent.getContext());
+			convertView = viewHolder.itemView;
+		}else{
+			viewHolder = (ViewHolder)convertView.getTag();
 		}
 		
-		float density = mContext.getResources().getDisplayMetrics().density;
-		int item_height = (int)(48.0f * density);
-		int padding = (int)(24.0f * density);
-		int check_indicator_size = (int)(36.0f * density);
 		
-		AbsListView.LayoutParams params = new AbsListView.LayoutParams(LayoutParams.MATCH_PARENT, item_height);
-		LinearLayout item = new LinearLayout(mContext);
-		item.setPadding(padding, 0, padding, 0);
-		item.setOrientation(LinearLayout.HORIZONTAL);
-		item.setLayoutParams(params);
-		
-		TextView text = new TextView(mContext);
-		LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		tp.weight = 1;
-		tp.gravity = Gravity.LEFT | Gravity.CENTER;
-		text.setTextSize(18);
-		text.setTextColor(mContext.getResources().getColor(R.color.text_color_dark));
-		text.setLayoutParams(tp);
-		text.setId(android.R.id.text1);
-		text.setText(mListData[position]);
-		
-		
-		ImageView check_indicator = new ImageView(mContext);
-		LinearLayout.LayoutParams cip = new LinearLayout.LayoutParams(check_indicator_size, check_indicator_size);
-		cip.weight = 0;
-		cip.gravity = Gravity.LEFT | Gravity.CENTER;
-		check_indicator.setScaleType(ScaleType.CENTER);
-		check_indicator.setId(android.R.id.icon);
-		check_indicator.setVisibility(View.GONE);
-		check_indicator.setImageResource(R.drawable.ic_done_grey600_24dp);
-		check_indicator.setLayoutParams(cip);
 		if (position == mCheckedPosition || mListData[position].equals(mCheckedItemString)){
-			check_indicator.setVisibility(View.VISIBLE);
+			viewHolder.imageView.setVisibility(View.VISIBLE);
 			mCheckedPosition = position;
+		}else{
+			viewHolder.imageView.setVisibility(View.GONE);
 		}
 		
-		item.addView(text);
-		item.addView(check_indicator);
-		
-		views.add(item);
-		
-		return item;
+		viewHolder.textView.setText(mListData[position]);
+		return convertView;
 	
 	
+	}
+	
+	class ViewHolder{
+		
+		public LinearLayout itemView;
+		public TextView textView;
+		public ImageView imageView;
+		
+		public ViewHolder(Context context){
+			float density = context.getResources().getDisplayMetrics().density;
+			int item_height = (int)(48.0f * density);
+			int padding = (int)(24.0f * density);
+			int check_indicator_size = (int)(36.0f * density);
+			
+			AbsListView.LayoutParams params = new AbsListView.LayoutParams(LayoutParams.MATCH_PARENT, item_height);
+			itemView = new LinearLayout(context);
+			itemView.setPadding(padding, 0, padding, 0);
+			itemView.setOrientation(LinearLayout.HORIZONTAL);
+			itemView.setLayoutParams(params);
+			
+			textView = new TextView(context);
+			LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			tp.weight = 1;
+			tp.gravity = Gravity.LEFT | Gravity.CENTER;
+			textView.setTextSize(18);
+			textView.setTextColor(mContext.getResources().getColor(R.color.text_color_dark));
+			textView.setLayoutParams(tp);
+			textView.setSingleLine();
+			textView.setEllipsize(TruncateAt.END);
+			//textView.setId(android.R.id.text1);
+			//
+			
+			imageView = new ImageView(context);
+			LinearLayout.LayoutParams cip = new LinearLayout.LayoutParams(check_indicator_size, check_indicator_size);
+			cip.weight = 0;
+			cip.gravity = Gravity.LEFT | Gravity.CENTER;
+			imageView.setScaleType(ScaleType.CENTER);
+			imageView.setId(android.R.id.icon);
+			imageView.setVisibility(View.GONE);
+			imageView.setImageResource(R.drawable.ic_done_grey600_24dp);
+			imageView.setLayoutParams(cip);
+			
+			
+			itemView.addView(textView);
+			itemView.addView(imageView);
+			
+			itemView.setTag(this);
+		}
+		
 	}
 	
 	

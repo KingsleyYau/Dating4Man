@@ -2,6 +2,8 @@ package com.qpidnetwork.livechat;
 
 import java.io.Serializable;
 
+import com.qpidnetwork.livechat.LCMessageItem.SendType;
+
 /**
  * 文本消息item
  * @author Samson Fan
@@ -11,9 +13,14 @@ public class LCTextItem implements Serializable{
 
 	private static final long serialVersionUID = 7392858016957384450L;
 	/**
-	 * 消息内容
+	 * 消息显示内容
 	 */
 	public String message;
+	/**
+	 * 保存消息原内容
+	 */
+	private String content = "";
+
 	/**
 	 * 内容是否合法
 	 */
@@ -24,9 +31,10 @@ public class LCTextItem implements Serializable{
 		illegal = false;
 	}
 	
-	public void init(String message) {
+	public void init(String message, SendType sendType) {
+		this.content = message;
 		this.illegal = LCMessageFilter.isIllegalMessage(message);
-		if (this.illegal) {
+		if (this.illegal && (sendType == SendType.Recv)) {
 			this.message = LCMessageFilter.filterMessage(message);
 		} 
 		else {

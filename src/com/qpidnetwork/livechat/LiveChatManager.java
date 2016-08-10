@@ -48,6 +48,7 @@ import com.qpidnetwork.livechat.jni.LiveChatUserStatus;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
 import com.qpidnetwork.manager.FileCacheManager;
+import com.qpidnetwork.manager.MonthlyFeeManager;
 import com.qpidnetwork.manager.ThemeConfigManager;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.manager.WebSiteManager.WebSite;
@@ -72,8 +73,10 @@ import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestJniLiveChat;
 import com.qpidnetwork.request.RequestJniLiveChat.PhotoModeType;
 import com.qpidnetwork.request.RequestJniLiveChat.PhotoSizeType;
+import com.qpidnetwork.request.RequestJniLiveChat.ToFlagType;
 import com.qpidnetwork.request.RequestJniLiveChat.VideoPhotoType;
 import com.qpidnetwork.request.RequestJniLiveChat.VideoToFlagType;
+import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 import com.qpidnetwork.request.RequestJniOther;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.item.Coupon;
@@ -129,6 +132,10 @@ public class LiveChatManager
 	 * 是否已登录的标志
 	 */
 	private boolean mIsLogin;
+	/**
+	 * 是否重置数据
+	 */
+	private boolean mIsResetParam = false;
 	/**
 	 * 是否自动重登录
 	 */
@@ -685,7 +692,7 @@ public class LiveChatManager
 			LiveChatClient.SetLogDirectory(logPath);
 		}
 		
-		if (result) 
+		if (result && mIsResetParam) 
 		{
 			// 初始化成功
 			// 清除资源文件
@@ -701,69 +708,71 @@ public class LiveChatManager
 	 */
 	private void ResetParam()
 	{
-		mUserId = null;
-		mSid = null;
-		mDeviceId = null;
-		mRiskControl = false;
-		mIsRecvVideoMsg = true;
-		mMsgIdIndex.set(MsgIdIndexBegin);
-		
-		Log.d("livechat", "ResetParam() clear emotion begin");
-		// 停止获取高级表情配置请求
-		if (RequestJni.InvalidRequestId != mEmotionMgr.mEmotionConfigReqId) {
-//			RequestJni.StopRequest(mEmotionMgr.mEmotionConfigReqId);
-			mEmotionMgr.mEmotionConfigReqId = RequestJni.InvalidRequestId;
+		if (mIsResetParam) {
+			mUserId = "";
+			mSid = "";
+			mDeviceId = "";
+			mRiskControl = false;
+			mIsRecvVideoMsg = true;
+			mMsgIdIndex.set(MsgIdIndexBegin);
+			
+			Log.d("livechat", "ResetParam() clear emotion begin");
+			// 停止获取高级表情配置请求
+			if (RequestJni.InvalidRequestId != mEmotionMgr.mEmotionConfigReqId) {
+	//			RequestJni.StopRequest(mEmotionMgr.mEmotionConfigReqId);
+				mEmotionMgr.mEmotionConfigReqId = RequestJni.InvalidRequestId;
+			}
+			Log.d("livechat", "ResetParam() clear emotion StopAllDownload3gp");
+			mEmotionMgr.StopAllDownload3gp();
+			Log.d("livechat", "ResetParam() clear emotion StopAllDownloadImage");
+			mEmotionMgr.StopAllDownloadImage();
+			Log.d("livechat", "ResetParam() clear emotion removeAllSendingItems");
+			mEmotionMgr.removeAllSendingItems();
+			
+			Log.d("livechat", "ResetParam() clear photo begin");
+			// 停止所有图片请求
+			mPhotoMgr.clearAllRequestItems();
+	//		ArrayList<Long> photoRequestIds = mPhotoMgr.clearAllRequestItems();
+	//		if (null != photoRequestIds) {
+	//			for (Iterator<Long> iter = photoRequestIds.iterator(); iter.hasNext(); ) {
+	//				long requestId = iter.next();
+	//				RequestJni.StopRequest(requestId);
+	//			}
+	//		}
+			Log.d("livechat", "ResetParam() clear photo clearAllSendingItems");
+			mPhotoMgr.clearAllSendingItems();
+			
+			Log.d("livechat", "ResetParam() clear voice begin");
+			// 停止所有语音请求
+			mVoiceMgr.clearAllRequestItem();
+	//		ArrayList<Long> voiceRequestIds = mVoiceMgr.clearAllRequestItem();
+	//		if (null != voiceRequestIds) {
+	//			for (Iterator<Long> iter = voiceRequestIds.iterator(); iter.hasNext(); ) {
+	//				long requestId = iter.next();
+	//				RequestJni.StopRequest(requestId);
+	//			}
+	//		}
+			Log.d("livechat", "ResetParam() clear voice clearAllSendingItems");
+			mVoiceMgr.clearAllSendingItems();
+			
+			// 停止获取小高级表情配置请求
+			if (RequestJni.InvalidRequestId != mMagicIconMgr.mGetMagicIconConfigReqId) {
+				mMagicIconMgr.mGetMagicIconConfigReqId = RequestJni.InvalidRequestId;
+			}
+			Log.d("livechat", "ResetParam() clear magicIcon StopAllDownloadImage");
+			mMagicIconMgr.StopAllDownloadImage();
+			Log.d("livechat", "ResetParam() clear magicIcon StopAllDownloadThumbImage");
+			mMagicIconMgr.StopAllDownloadThumbImage();
+			Log.d("livechat", "ResetParam() clear magicIcon removeAllSendingItems");
+			mMagicIconMgr.removeAllSendingItems();
+			
+			Log.d("livechat", "ResetParam() clear other begin");
+			mTextMgr.removeAllSendingItems();
+			Log.d("livechat", "ResetParam() clear other removeAllUserItem");
+			mUserMgr.removeAllUserItem();
+			Log.d("livechat", "ResetParam() clear all paid theme list");
+			mLCThemeManager.clear();
 		}
-		Log.d("livechat", "ResetParam() clear emotion StopAllDownload3gp");
-		mEmotionMgr.StopAllDownload3gp();
-		Log.d("livechat", "ResetParam() clear emotion StopAllDownloadImage");
-		mEmotionMgr.StopAllDownloadImage();
-		Log.d("livechat", "ResetParam() clear emotion removeAllSendingItems");
-		mEmotionMgr.removeAllSendingItems();
-		
-		Log.d("livechat", "ResetParam() clear photo begin");
-		// 停止所有图片请求
-		mPhotoMgr.clearAllRequestItems();
-//		ArrayList<Long> photoRequestIds = mPhotoMgr.clearAllRequestItems();
-//		if (null != photoRequestIds) {
-//			for (Iterator<Long> iter = photoRequestIds.iterator(); iter.hasNext(); ) {
-//				long requestId = iter.next();
-//				RequestJni.StopRequest(requestId);
-//			}
-//		}
-		Log.d("livechat", "ResetParam() clear photo clearAllSendingItems");
-		mPhotoMgr.clearAllSendingItems();
-		
-		Log.d("livechat", "ResetParam() clear voice begin");
-		// 停止所有语音请求
-		mVoiceMgr.clearAllRequestItem();
-//		ArrayList<Long> voiceRequestIds = mVoiceMgr.clearAllRequestItem();
-//		if (null != voiceRequestIds) {
-//			for (Iterator<Long> iter = voiceRequestIds.iterator(); iter.hasNext(); ) {
-//				long requestId = iter.next();
-//				RequestJni.StopRequest(requestId);
-//			}
-//		}
-		Log.d("livechat", "ResetParam() clear voice clearAllSendingItems");
-		mVoiceMgr.clearAllSendingItems();
-		
-		// 停止获取小高级表情配置请求
-		if (RequestJni.InvalidRequestId != mMagicIconMgr.mGetMagicIconConfigReqId) {
-			mMagicIconMgr.mGetMagicIconConfigReqId = RequestJni.InvalidRequestId;
-		}
-		Log.d("livechat", "ResetParam() clear magicIcon StopAllDownloadImage");
-		mMagicIconMgr.StopAllDownloadImage();
-		Log.d("livechat", "ResetParam() clear magicIcon StopAllDownloadThumbImage");
-		mMagicIconMgr.StopAllDownloadThumbImage();
-		Log.d("livechat", "ResetParam() clear magicIcon removeAllSendingItems");
-		mMagicIconMgr.removeAllSendingItems();
-		
-		Log.d("livechat", "ResetParam() clear other begin");
-		mTextMgr.removeAllSendingItems();
-		Log.d("livechat", "ResetParam() clear other removeAllUserItem");
-		mUserMgr.removeAllUserItem();
-		Log.d("livechat", "ResetParam() clear all paid theme list");
-		mLCThemeManager.clear();
 	}
 	
 	/**
@@ -850,9 +859,12 @@ public class LiveChatManager
 	 * 注销
 	 * @return
 	 */
-	public synchronized boolean Logout() 
+	public synchronized boolean Logout(boolean isResetParam) 
 	{
 		Log.d("livechat", "LiveChatManager::Logout() begin");
+		
+		// 设置是否重置数据
+		mIsResetParam = isResetParam;
 		
 		// 设置不自动重登录
 		mIsAutoRelogin = false;
@@ -1676,7 +1688,7 @@ public class LiveChatManager
 					, StatusType.Processing);
 			// 生成TextItem
 			LCTextItem textItem = new LCTextItem();
-			textItem.init(message);
+			textItem.init(message, SendType.Send);
 			// 把TextItem加到MessageItem
 			item.setTextItem(textItem);
 			// 添加到历史记录
@@ -1737,11 +1749,16 @@ public class LiveChatManager
 	{
 		if (errType == LiveChatErrType.NoMoney) 
 		{
-			// 获取消息内容
-			String message = mContext.getString(R.string.livechat_msg_no_credit_warning);
-			String linkMsg = mContext.getString(R.string.livechat_msg_no_credit_warning_link);
-			// 生成余额不足的警告消息
-			BuildAndInsertWarning(userItem, message, linkMsg);
+			if(MonthlyFeeManager.getInstance().getMemberType() == MemberType.NO_FEED_FIRST_MONTHLY_MEMBER){
+				//LiveChat 系统没钱消息提示，当用户为第一次月费用户（未购买）时，提示月费逻辑
+				BuildAndInsertNotifyMsg(userItem.userId, NotifyType.Monthly_fee, null);
+			}else{
+				// 获取消息内容
+				String message = mContext.getString(R.string.livechat_msg_no_credit_warning);
+				String linkMsg = mContext.getString(R.string.livechat_msg_no_credit_warning_link);
+				// 生成余额不足的警告消息
+				BuildAndInsertWarning(userItem, message, linkMsg);
+			}
 		}
 	}
 	
@@ -2236,8 +2253,7 @@ public class LiveChatManager
 		if (item.msgType != MessageType.Photo
 			|| item.fromId.isEmpty()
 			|| item.inviteId.isEmpty()
-			|| item.getPhotoItem().photoId.isEmpty()
-			|| item.statusType != StatusType.Finish) 
+			|| item.getPhotoItem().photoId.isEmpty()) //item.statusType != StatusType.Finish
 		{
 			Log.e("livechat", String.format("%s::%s() param error, msgType:%s, fromId:%s, inviteId%s, photoId:%s, statusType:%s", "LiveChatManager", "PhotoFee"
 					, item.msgType.name(), item.fromId, item.inviteId, item.getPhotoItem().photoId, item.statusType.name()));
@@ -2262,7 +2278,7 @@ public class LiveChatManager
 					return;
 				}
 				
-				item.statusType = isSuccess ? StatusType.Finish : StatusType.Fail;
+//				item.statusType = isSuccess ? StatusType.Finish : StatusType.Fail;
 				photoItem.charge = isSuccess;
 				photoItem.statusType = LCPhotoItem.StatusType.Finish;
 				
@@ -2286,7 +2302,7 @@ public class LiveChatManager
 		
 		boolean result = false;
 		if (requestId != RequestJni.InvalidRequestId) {
-			item.statusType = StatusType.Processing;
+//			item.statusType = StatusType.Processing;
 			LCPhotoItem photoItem = item.getPhotoItem();
 			photoItem.statusType = LCPhotoItem.StatusType.PhotoFee;
 			
@@ -2296,7 +2312,7 @@ public class LiveChatManager
 			}
 		}
 		else {
-			item.statusType = StatusType.Fail;
+//			item.statusType = StatusType.Fail;
 			mCallbackHandler.OnPhotoFee(false, "request fail", "", item);
 		}
 		
@@ -2343,8 +2359,7 @@ public class LiveChatManager
 			return false;
 		}
 		
-		if (item.statusType == StatusType.Processing
-			&& RequestJni.InvalidRequestId != mPhotoMgr.getRequestIdWithItem(item)) 
+		if (RequestJni.InvalidRequestId != mPhotoMgr.getRequestIdWithItem(item)) //item.statusType == StatusType.Processing
 		{
 			// 正在下载
 			return true;
@@ -2352,16 +2367,19 @@ public class LiveChatManager
 		
 		// 请求下载图片
 		final PhotoModeType modeType;
+		ToFlagType toFlagType = RequestJniLiveChat.ToFlagType.ManGetWoman;
 		if (item.sendType == SendType.Send) {
 			// 男士发送（直接获取清晰图片）
 			modeType = PhotoModeType.Clear;
+			toFlagType = ToFlagType.ManGetSelf;
 		}
 		else  {
 			// 女士发送（判断是否已购买）
 			modeType = (item.getPhotoItem().charge ? PhotoModeType.Clear : PhotoModeType.Fuzzy);
+			toFlagType = RequestJniLiveChat.ToFlagType.ManGetWoman;
 		}
 		long requestId = RequestOperator.getInstance().GetPhoto(
-				RequestJniLiveChat.ToFlagType.ManGetWoman
+				toFlagType
 				, item.getUserItem().userId
 				, mUserId
 				, mSid
@@ -2385,13 +2403,13 @@ public class LiveChatManager
 					mPhotoMgr.tempToPhoto(item, tempPath, modeType, sizeType);
 
 					item.getPhotoItem().statusType = LCPhotoItem.StatusType.Finish; 
-					item.statusType = StatusType.Finish;
+//					item.statusType = StatusType.Finish;
 					mCallbackHandler.OnGetPhoto(LiveChatErrType.Success, "", "", item);
 				}
 				else {
 					// 获取图片失败
 					item.getPhotoItem().statusType = LCPhotoItem.StatusType.Finish;
-					item.statusType = StatusType.Fail;
+//					item.statusType = StatusType.Fail;
 					mCallbackHandler.OnGetPhoto(LiveChatErrType.Fail, errno, errmsg, item);
 				}
 			}
@@ -2399,7 +2417,7 @@ public class LiveChatManager
 		
 		boolean result = false;
 		if (requestId != RequestJni.InvalidRequestId) {
-			item.statusType = StatusType.Processing;
+//			item.statusType = StatusType.Processing;
 			LCPhotoItem photoItem = item.getPhotoItem();
 			photoItem.SetStatusType(modeType, sizeType);
 			
@@ -2541,7 +2559,7 @@ public class LiveChatManager
 				// TODO Auto-generated method stub
 				LCMessageItem item = mVoiceMgr.getAndRemoveRquestItem(requestId);
 				if (null != item) {
-					item.statusType = isSuccess ? StatusType.Finish : StatusType.Fail;
+//					item.statusType = isSuccess ? StatusType.Finish : StatusType.Fail;
 					LiveChatErrType errType = isSuccess ? LiveChatErrType.Success : LiveChatErrType.Fail;
 					mCallbackHandler.OnGetVoice(errType, errmsg, item);
 				}
@@ -2554,7 +2572,7 @@ public class LiveChatManager
 		
 		if (requestId != RequestJni.InvalidRequestId) {
 			// 添加至请求map
-			item.statusType = StatusType.Processing;
+//			item.statusType = StatusType.Processing;
 			mVoiceMgr.addRequestItem(requestId, item);
 			result = true;
 			
@@ -2565,7 +2583,7 @@ public class LiveChatManager
 					, "LiveChatManager"
 					, "GetVoice"
 					, voiceItem.voiceId, siteType, voiceItem.filePath)); 
-			item.statusType = StatusType.Fail;
+//			item.statusType = StatusType.Fail;
 			mCallbackHandler.OnGetVoice(LiveChatErrType.Fail, "", item);
 			result = false;
 		}
@@ -2967,6 +2985,10 @@ public class LiveChatManager
 						} 
 						
 						// callback
+						if(!TextUtils.isEmpty(errno) && (errno.equals("ERROR00003"))){
+							//no money failed
+							BuildAndInsertWarningWithErrType(userItem, LiveChatErrType.NoMoney);
+						}
 						mCallbackHandler.OnVideoFee(isSuccess, errno, errmsg, item);
 					}
 				});
@@ -3294,11 +3316,6 @@ public class LiveChatManager
 			msgAutoRelogin.what = LiveChatRequestOptType.AutoRelogin.ordinal();
 			mHandler.sendMessageDelayed(msgAutoRelogin, mAutoReloginTime);
 			Log.d("livechat", "OnLogin() AutoRelogin() end");
-		}
-		else {
-			mUserId = null;
-			mSid = null;
-			mDeviceId = null;
 		}
 		
 		Log.d("livechat", "OnLogin() callback");
@@ -4078,7 +4095,7 @@ public class LiveChatManager
 					, StatusType.Finish);
 			// 生成TextItem
 			LCTextItem textItem = new LCTextItem();
-			textItem.init(message);
+			textItem.init(message, SendType.Recv);
 			// 把TextItem添加到MessageItem
 			item.setTextItem(textItem);
 			// 添加到用户聊天记录中
@@ -4723,7 +4740,9 @@ public class LiveChatManager
 					{
 						// 初始化并登录livechat
 						TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-						Logout();
+						if (IsLogin()) {
+							Logout(false);
+						}
 						Init(
 							ipList.toArray(new String[ipList.size()]), 
 							portFinal, 
@@ -4731,7 +4750,7 @@ public class LiveChatManager
 							);
 						Login(
 							loginItem.manid, 
-							loginItem.sessionid, 
+							loginItem.sessionid,
 							RequestJni.GetDeviceId(tm),
 							loginItem.videoreceived
 							);
@@ -4760,6 +4779,11 @@ public class LiveChatManager
 				// for test
 //				Log.d("test", "sid:%s", item.sessionid);
 			}
+		}else{
+			//登陆失败，注销Livechat，防止出现类似session过期重登陆，登陆失败，Livechat还在
+			if (IsLogin()) {
+				Logout(false);
+			}
 		}
 	}
 
@@ -4770,7 +4794,12 @@ public class LiveChatManager
 	public void OnLogout(boolean bActive) {
 		// TODO Auto-generated method stub
 		if (bActive) { 
-			Logout();
+			// 主动注销
+			Logout(true);
+		}
+		else {
+			// 被动注销(如session超时)
+			Logout(false);
 		}
 	}
 
