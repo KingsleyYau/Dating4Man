@@ -1,9 +1,12 @@
 package com.qpidnetwork.framework.util;
 
+import java.io.File;
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -52,7 +55,13 @@ public class CompatUtil {
 				    	cursor.close();
 				    }
 			    }catch(Exception e){
-			    	
+			    	if(!TextUtils.isEmpty(id)){
+			    		filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + id;
+			    		if(new File(filePath).exists()){
+			    			return filePath;
+			    		}
+			    	}
+			    	e.printStackTrace();
 			    }
 		    }
 		    

@@ -169,7 +169,9 @@ public class ContactsListFragment extends BaseListFragment implements
 		case REMOVE_CONTACT_SUCCESS:
 			/* 删除联系人成功 */
 			String[] womanId = (String[]) msg.obj;
-			((BaseFragmentActivity) getActivity()).showToastDone("Done!");
+			if(getActivity() != null){
+				((BaseFragmentActivity) getActivity()).showToastDone("Done!");
+			}
 			mContactManager.deleteContactByUserId(womanId);
 			break;
 		case REMOVE_CONTACT_FAILED:

@@ -222,7 +222,11 @@ public class LoginManager implements Session.StatusCallback,
 					}
 					// 通知其他模块
 					LoginParam param = GetLoginParam();
-					notifyAllListener(response.isSuccess, "", "", param.item, null);
+					if(param != null && param.item != null){
+						notifyAllListener(response.isSuccess, "", "", param.item, null);
+					}else{
+						notifyAllListener(false, "", "", null, null);
+					}
 				}
 			}
 		};

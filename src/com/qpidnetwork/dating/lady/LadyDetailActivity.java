@@ -32,6 +32,7 @@ import com.qpidnetwork.dating.home.AppUrlHandler;
 import com.qpidnetwork.dating.lady.LadyDetailManager.OnLadyDetailManagerQueryLadyDetailCallback;
 import com.qpidnetwork.dating.lovecall.DirectCallManager;
 import com.qpidnetwork.dating.lovecall.ScheduleCallActivity;
+import com.qpidnetwork.framework.base.BaseCustomWebViewClient;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.SystemUtil;
@@ -232,7 +233,7 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 		// 浏览器控件
 		mWebView = (WebView) findViewById(R.id.webView);
 		mWebView.getSettings().setJavaScriptEnabled(true);
-		mWebViewClient = new WebViewClient() {  
+		mWebViewClient = new BaseCustomWebViewClient(this) {  
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
 				// TODO Auto-generated method stub
@@ -265,7 +266,7 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 		    	bFlag = StartActivityByUrl(url);
 		    	
 		    	if( !bFlag ) {
-		    		view.loadUrl(url);
+		    		super.shouldOverrideUrlLoading(view, url);
 		    	}
 		    	
 		        return true;  
@@ -362,9 +363,9 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 				item.isfavorite = true;
 				ReloadFavorite(item.isfavorite);
 				appbar.setButtonIconById(R.id.common_button_favorite, R.drawable.ic_favorite_remove_yellow_24dp);
+				/*添加favorite成功，添加到现有联系人或更新联系人*/
+				ContactManager.getInstance().updateBySendEMF(item);
 			}
-			/*添加favorite成功，添加到现有联系人或更新联系人*/
-			ContactManager.getInstance().updateBySendEMF(item);
 		}break;
 		case REQUEST_ADD_FAVOUR_FAIL:{
 			// 收藏失败
@@ -377,8 +378,8 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 				item.isfavorite = false;
 				ReloadFavorite(item.isfavorite);
 				appbar.setButtonIconById(R.id.common_button_favorite, R.drawable.ic_favorite_add_yellow_24dp);
-			}
-			ContactManager.getInstance().updateFavoriteStatus(item.womanid, false);
+				ContactManager.getInstance().updateFavoriteStatus(item.womanid, false);
+			}	
 		}break;
 		case REQUEST_REMOVE_FAVOUR_FAIL:{
 			// 删除收藏失败
@@ -807,15 +808,17 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 			dialog.setSecondButtonText(mContext.getString(R.string.love_call_dont_tell_again));
 			dialog.getMessage().setGravity(Gravity.LEFT);
 			dialog.getTitle().setGravity(Gravity.LEFT);
-			dialog.show();
-
-			
+			if(isActivityVisible()){
+				dialog.show();
+			}
 		} else {
 			MaterialDialogAlert dialog = new MaterialDialogAlert(mContext);
 			dialog.setTitle(mContext.getString(R.string.lovecall_no_sim_tips));
 			dialog.setMessage(mContext.getString(R.string.lovecall_instruction, callcenterNumber));
 			dialog.addButton(dialog.createButton(mContext.getString(R.string.common_btn_ok), null));
-			dialog.show();
+			if(isActivityVisible()){
+				dialog.show();
+			}
 		}
 	}
 }

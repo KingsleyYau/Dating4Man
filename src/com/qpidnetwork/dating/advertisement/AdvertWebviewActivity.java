@@ -16,6 +16,7 @@ import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.R.color;
 import com.qpidnetwork.dating.home.AppUrlHandler;
+import com.qpidnetwork.framework.base.BaseCustomWebViewClient;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
@@ -102,7 +103,7 @@ public class AdvertWebviewActivity extends BaseFragmentActivity
 		cookieManager.setCookie(domain, phpSession);	
 		CookieSyncManager.getInstance().sync();
 		
-		mWebView.setWebViewClient(new WebViewClient() { 
+		mWebView.setWebViewClient(new BaseCustomWebViewClient(this) { 
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
 				// TODO Auto-generated method stub
@@ -127,7 +128,7 @@ public class AdvertWebviewActivity extends BaseFragmentActivity
 		    		AppUrlHandler.AppUrlHandle(AdvertWebviewActivity.this, url);
 		    		finish();
 		    	}else{
-		    		view.loadUrl(url);
+		    		return super.shouldOverrideUrlLoading(view, url);
 		    	}
 		        return true;  
 		    } 

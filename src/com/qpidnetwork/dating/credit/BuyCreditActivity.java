@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,6 +32,7 @@ import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.lady.LadyDetailManager;
 import com.qpidnetwork.framework.base.BaseActionBarFragmentActivity;
+import com.qpidnetwork.framework.base.BaseCustomWebViewClient;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.manager.ConfigManager;
@@ -127,6 +129,9 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 		webSettings.setDefaultTextEncodingName("utf-8");
 		webSettings.setBuiltInZoomControls(true);
 		webSettings.setDomStorageEnabled(true);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    	webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+		}
 //		mWebView.setInitialScale(100);//解决打开后导致页面非常小不好看
 		mWebView.setWebViewClient(wvc);
 		mWebView.setWebChromeClient(client);
@@ -180,7 +185,7 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 		}
 	};
 	
-	WebViewClient wvc = new WebViewClient() {
+	WebViewClient wvc = new BaseCustomWebViewClient(this) {
 
 		@Override
 		public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
@@ -225,8 +230,7 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 				startActivity(intent);
 				return true;
 			}else{
-				super.shouldOverrideUrlLoading(view, url);
-				return false;
+				return super.shouldOverrideUrlLoading(view, url);
 			}
 		}
 

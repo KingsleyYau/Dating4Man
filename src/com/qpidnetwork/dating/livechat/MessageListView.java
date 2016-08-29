@@ -1344,6 +1344,7 @@ public class MessageListView extends ScrollLayout implements
 		/* 关闭所有正在播放的动画 */
 		isDestroyed = true;
 		stopPlaying();
+		getContainer().removeAllViews();
 		if (beanList != null) {
 			for (LCMessageItem item : beanList) {
 				if (item.msgType == MessageType.Emotion) {

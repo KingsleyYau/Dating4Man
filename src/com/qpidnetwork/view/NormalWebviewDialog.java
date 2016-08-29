@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 
 import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
+import com.qpidnetwork.framework.base.BaseCustomWebViewClient;
 import com.qpidnetwork.framework.base.BaseDialog;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
@@ -35,7 +36,7 @@ public class NormalWebviewDialog extends BaseDialog{
 		rlBody = (RelativeLayout)contentView.findViewById(R.id.rlBody);
 		
 		mWebView.getSettings().setJavaScriptEnabled(true);
-		WebViewClient webViewClient = new WebViewClient() {  
+		WebViewClient webViewClient = new BaseCustomWebViewClient(mContext) {  
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
 				rlProgress.setVisibility(View.VISIBLE);

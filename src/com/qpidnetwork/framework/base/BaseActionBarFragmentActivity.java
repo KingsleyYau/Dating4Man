@@ -41,7 +41,6 @@ public class BaseActionBarFragmentActivity extends BaseFragmentActivity{
 		mActionBar.setOnButtonClickListener(this);
 		
 		floatButton.setButtonBackground(getResources().getColor(WebSiteManager.getInstance().GetWebSite().getSiteColor()));
-		
 	}
 	
 	protected View getBackButton(){

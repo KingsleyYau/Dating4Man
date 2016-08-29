@@ -12,12 +12,12 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.HttpAuthHandler;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.qpidnetwork.dating.R.color;
 import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
+import com.qpidnetwork.framework.base.BaseCustomWebViewClient;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
@@ -94,7 +94,7 @@ public class WebViewActivity extends BaseFragmentActivity implements OnLoginMana
 		cookieManager.setCookie(domain, phpSession);
 		CookieSyncManager.getInstance().sync();
 		
-		mWebView.setWebViewClient(new WebViewClient() { 
+		mWebView.setWebViewClient(new BaseCustomWebViewClient(this) { 
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
 				// TODO Auto-generated method stub
@@ -119,7 +119,7 @@ public class WebViewActivity extends BaseFragmentActivity implements OnLoginMana
 					isSessionOutTimeError = true;
 					errorPage.setVisibility(View.VISIBLE);
 		    	} else {
-			    	view.loadUrl(url); 
+			    	return super.shouldOverrideUrlLoading(view, url); 
 		    	}
 		        return true;  
 		    } 
@@ -152,12 +152,12 @@ public class WebViewActivity extends BaseFragmentActivity implements OnLoginMana
 				// TODO Auto-generated method stub
 				switch (v.getId()) {
 				case R.id.common_button_back:{
-					// 点击取消
-					if( mWebView.canGoBack() ) {
-						mWebView.goBack();
-					} else {
+					// 点击取消，直接关闭当前界面，防止部分重定向页面无法关闭
+//					if( mWebView.canGoBack() ) {
+//						mWebView.goBack();
+//					} else {
 						finish();
-					}
+//					}
 				}break;
 				}
 			}
