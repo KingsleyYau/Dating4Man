@@ -408,9 +408,6 @@ public class HomeContentViewController implements View.OnClickListener {
 			appbar.getTitileView().setText(mTitle);
 			mSearchType = SearchType.DEFAULT;
 			mOnlineType = OnlineType.ONLINE;
-			if(mLadyList != null){
-				mLadyList.clear();
-			}
 			QueryOnlineLadyList(false);
 			break;
 			
@@ -418,9 +415,6 @@ public class HomeContentViewController implements View.OnClickListener {
 			mTitle = mContext.getString(R.string.lady_category_with_call);
 			appbar.getTitileView().setText(mTitle);
 			mSearchType = SearchType.WITHPHONE;
-			if(mLadyList != null){
-				mLadyList.clear();
-			}
 			QueryOnlineLadyList(false);
 			break;
 			
@@ -428,9 +422,6 @@ public class HomeContentViewController implements View.OnClickListener {
 			mTitle = mContext.getString(R.string.lady_category_with_video);
 			appbar.getTitileView().setText(mTitle);
 			mSearchType = SearchType.WITHVIDEO;
-			if(mLadyList != null){
-				mLadyList.clear();
-			}
 			QueryOnlineLadyList(false);
 			break;
 			
@@ -439,9 +430,6 @@ public class HomeContentViewController implements View.OnClickListener {
 			appbar.getTitileView().setText(mTitle);
 			mSearchType = SearchType.DEFAULT;  /**Newest 改爲使用default, 按最新的排在最前面**/
 			mOrderType = OrderType.NEWST;
-			if(mLadyList != null){
-				mLadyList.clear();
-			}
 			QueryOnlineLadyList(false);
 			break;
 		case -1:
@@ -495,10 +483,9 @@ public class HomeContentViewController implements View.OnClickListener {
 					progressbar.setVisibility(View.GONE);
 					progressbar = null;
 				}
-				
-				MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
 				switch ( RequestFlag.values()[msg.what] ) {
 				case REQUEST_LADY_LIST_SUCCESS:{
+					MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
 					if( obj.bLoadMore ) {
 						// 上拉更多成功
 						mbLoadingMore = false;
@@ -538,6 +525,7 @@ public class HomeContentViewController implements View.OnClickListener {
 					mAdapter.notifyDataSetChanged();
 				}break;
 				case REQUEST_LADY_LIST_FAIL:{
+					MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
 					if( obj.bLoadMore ) {
 						// 上拉更多成功
 						mbLoadingMore = false;
@@ -552,8 +540,8 @@ public class HomeContentViewController implements View.OnClickListener {
 					
 				}break;
 				case REQUEST_LADY_LIST_ADVERT_SUCCESS: {
-//					AdWomanListAdvertItem tempItem = new AdWomanListAdvertItem(mAdWomanListAdvertItem);
-//					mAdapter.SetAdvert(tempItem);
+					AdWomanListAdvert advert = (AdWomanListAdvert)msg.obj;
+					mAdWomanListAdvertItem.SetWomanListAdvert(mContext, advert);
 					mAdapter.SetAdvert(mAdWomanListAdvertItem);
 					mAdapter.notifyDataSetChanged();
 				}break;
@@ -570,6 +558,7 @@ public class HomeContentViewController implements View.OnClickListener {
 					}
 				}break;
 				case REQUEST_GET_LOVE_CALL_SUCCESS:{
+					MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
 					// 请求lovecall成功
 					makeCall(obj.ladyCall.lc_centernumber, obj.ladyCall.lovecallid);
 					if( mCallback != null ) {
@@ -579,7 +568,7 @@ public class HomeContentViewController implements View.OnClickListener {
 				case REQUEST_GET_LOVE_CALL_FAIL:{
 					// 请求lovecall失败
 					//Toast.makeText(mContext, obj.errmsg, Toast.LENGTH_LONG).show();
-					
+					MessageCallbackItem obj = (MessageCallbackItem) msg.obj;
 					MaterialDialogAlert dialog = new MaterialDialogAlert(mContext);
 					
 					if (!obj.errno.equals("MBCE61005")){   //RequestErrorCode 裏面沒有這個錯誤代碼.
@@ -1023,8 +1012,10 @@ public class HomeContentViewController implements View.OnClickListener {
 							// TODO Auto-generated method stub
 							if (isSuccess) 
 							{
-								mAdWomanListAdvertItem.SetWomanListAdvert(mContext, advert);
-								mHandler.sendEmptyMessage(RequestFlag.REQUEST_LADY_LIST_ADVERT_SUCCESS.ordinal());
+								Message msg = Message.obtain();
+								msg.what = RequestFlag.REQUEST_LADY_LIST_ADVERT_SUCCESS.ordinal();
+								msg.obj = advert;
+								mHandler.sendMessage(msg);
 							}
 						}
 					});

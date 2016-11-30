@@ -1251,7 +1251,7 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniOther_UploadCrash
 			0x51, 0x70, 0x69, 0x64, 0x5F, 0x44, 0x61, 0x74, 0x69, 0x6E, 0x67, 0x00
 	}; // Qpid_Dating
 
-	bool bFlag = zip.CreateZipFromDir(cpDirectory, pZipFileName, password, comment);
+	bool bFlag = zip.CreateZipFromDir(cpDirectory, pZipFileName, "", comment);
 
 	FileLog("httprequest", "UploadCrashLog ( pZipFileName : %s  zip  : %s ) ", pZipFileName, bFlag?"ok":"fail");
 

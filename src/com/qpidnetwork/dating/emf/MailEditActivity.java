@@ -1146,7 +1146,10 @@ public class MailEditActivity extends BaseActionBarFragmentActivity
 			break;
 		case REQUEST_FAIL: {
 			// 首先判断月费类型
-			MemberType type = callbackItem.errItem.memberType;
+			MemberType type = MemberType.NORMAL_MEMBER;
+			if(callbackItem.errItem != null){
+				type = callbackItem.errItem.memberType;
+			}
 			if (type == MemberType.NO_FEED_FIRST_MONTHLY_MEMBER|| type == MemberType.NO_FEED_MONTHLY_MEMBER) {
 				MonthlyFeeManager.getInstance().onMemberTypeUpdate(type);
 				mMonthLyFeeTipItem = MonthlyFeeManager.getInstance().getMonthLyFeeTipItem(callbackItem.errItem.memberType);

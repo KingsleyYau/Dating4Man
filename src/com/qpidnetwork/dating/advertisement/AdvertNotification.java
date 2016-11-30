@@ -12,6 +12,7 @@ import android.widget.RemoteViews;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.home.HomeActivity;
+import com.qpidnetwork.framework.util.NotificationGenerator;
 import com.qpidnetwork.request.item.AdMainAdvert.OpenType;
 
 /**
@@ -129,7 +130,7 @@ public class AdvertNotification {
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
 		stackBuilder.addParentStack(HomeActivity.class);
 		stackBuilder.addNextIntent(intent);
-		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(NotificationGenerator.getNotificationRequestId(),
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		builder.setContentIntent(resultPendingIntent);
 

@@ -100,8 +100,8 @@ public class SettingActivity extends BaseFragmentActivity implements OnOtherVers
 			@Override
 			public void onClick(AdapterView<?> adptView, View v, int which) {
 				// TODO Auto-generated method stub
-				if( which > -1 && which < SettingPerfence.Notification.values().length ) {
-					mNotificationItem.mChatNotification = SettingPerfence.Notification.values()[which];
+				if( which > -1 && which < SettingPerfence.NotificationSetting.values().length ) {
+					mNotificationItem.mChatNotification = SettingPerfence.NotificationSetting.values()[which];
 					SettingPerfence.SaveNotificationItem(mContext, mNotificationItem);
 					ReloadData();
 				}
@@ -124,8 +124,8 @@ public class SettingActivity extends BaseFragmentActivity implements OnOtherVers
 			@Override
 			public void onClick(AdapterView<?> adptView, View v, int which) {
 				// TODO Auto-generated method stub
-				if( which > -1 && which < SettingPerfence.Notification.values().length ) {
-					mNotificationItem.mMailNotification = SettingPerfence.Notification.values()[which];
+				if( which > -1 && which < SettingPerfence.NotificationSetting.values().length ) {
+					mNotificationItem.mMailNotification = SettingPerfence.NotificationSetting.values()[which];
 					SettingPerfence.SaveNotificationItem(mContext, mNotificationItem);
 					ReloadData();
 				}
@@ -148,8 +148,8 @@ public class SettingActivity extends BaseFragmentActivity implements OnOtherVers
 			@Override
 			public void onClick(AdapterView<?> adptView, View v, int which) {
 				// TODO Auto-generated method stub
-				if( which > -1 && which < SettingPerfence.Notification.values().length ) {
-					mNotificationItem.mPushNotification = SettingPerfence.Notification.values()[which];
+				if( which > -1 && which < SettingPerfence.NotificationSetting.values().length ) {
+					mNotificationItem.mPushNotification = SettingPerfence.NotificationSetting.values()[which];
 					SettingPerfence.SaveNotificationItem(mContext, mNotificationItem);
 					ReloadData();
 				}

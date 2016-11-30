@@ -41,6 +41,7 @@ import com.qpidnetwork.request.OnQueryLadyCallCallback;
 import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestOperator;
+import com.qpidnetwork.request.item.CookiesItem;
 import com.qpidnetwork.request.item.LadyCall;
 import com.qpidnetwork.request.item.LadyDetail;
 import com.qpidnetwork.view.ButtonRaised;
@@ -492,12 +493,22 @@ public class LadyDetailActivity extends BaseFragmentActivity {
 		CookieSyncManager.createInstance(this);
 		CookieManager cookieManager = CookieManager.getInstance();
 		cookieManager.setAcceptCookie(true);
-		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
-		if(!TextUtils.isEmpty(phpSession)){
-			cookieManager.setCookie(domain, phpSession);
-		}else{
-			cookieManager.removeAllCookie();
+		cookieManager.removeSessionCookie();
+		CookiesItem[] cookieList = RequestJni.GetCookiesItem();
+		if(cookieList != null && cookieList.length > 0){
+			for(CookiesItem item : cookieList){
+				if(item != null){
+					String sessionString = item.cName + "=" + item.value;
+					cookieManager.setCookie(item.domain, sessionString);	
+				}
+			}
 		}
+//		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
+//		if(!TextUtils.isEmpty(phpSession)){
+//			cookieManager.setCookie(domain, phpSession);
+//		}else{
+//			cookieManager.removeAllCookie();
+//		}
 		CookieSyncManager.getInstance().sync();
 		
 		String url = domain;

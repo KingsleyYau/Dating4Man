@@ -1,5 +1,7 @@
 package com.qpidnetwork.request;
 
+import com.qpidnetwork.request.item.CookiesItem;
+
 import android.telephony.TelephonyManager;
 
 /**
@@ -75,6 +77,12 @@ public class RequestJni {
      * @return
      */
     static public native String[] GetCookiesInfo();
+    
+    /**
+     * 获取所有cookiesItem
+     * @return
+     */
+    static public native CookiesItem[] GetCookiesItem();
     
     /**
      * 停止请求

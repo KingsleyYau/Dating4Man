@@ -12,6 +12,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Environment;
+import android.text.TextUtils;
 
 import com.qpidnetwork.database.DatabaseHelper;
 import com.qpidnetwork.dating.R;
@@ -280,6 +281,46 @@ public class WebSiteManager {
 	 */
 	public String GetFacebookLink() {
 		return mWebSite.facebookLink;
+	}
+	
+	/**
+	 * 服务器数据本地同步
+	 * @param webSiteID
+	 * @return
+	 */
+	public WebSiteType ParsingWebSite(String webSiteID){
+		WebSiteType webType = null;
+		switch (Integer.valueOf(webSiteID)) {
+		case 0:{
+			webType = WebSiteType.ChnLove;
+		}break;
+		case 1:{
+			webType = WebSiteType.IDateAsia;
+		}break;
+		case 4:{
+			webType = WebSiteType.CharmDate;
+		}break;
+		case 5:{
+			webType = WebSiteType.LatamDate;
+		}break;
+		default:
+			break;
+		}
+		return webType;
+	}
+	
+	/**
+	 * 是否当前站点
+	 * @param siteType
+	 * @return
+	 */
+	public boolean isCurrentSite(WebSiteType siteType){
+		boolean isCurrentSite = false;
+		if(siteType != null && mWebSite != null
+				&& !TextUtils.isEmpty(mWebSite.getSiteKey())){
+			isCurrentSite = mWebSite.getSiteKey().equals(siteType.name());
+		}
+		return isCurrentSite;
 	}
 	
 	public void initConfig(Context context) {

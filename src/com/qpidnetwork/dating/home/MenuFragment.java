@@ -413,13 +413,13 @@ public class MenuFragment extends BaseFragment implements OnLoginManagerCallback
     	return view;
     }
 	
-	private void onWebSiteChange(WebSiteType type){
+	public void onWebSiteChange(WebSiteType type){
 		WebSite website = WebSiteManager.getInstance().GetWebSite();
 		WebSite site = WebSiteManager.getInstance().mWebSiteMap.get(type.name());
 		
 		WebSiteManager.getInstance().ChangeWebSite(type);
 		ReloadData();
-		LoginManager.getInstance().Logout(true);
+		LoginManager.getInstance().Logout(true, false);
 		LoginManager.getInstance().AutoLogin();
 		
 		// 统计event

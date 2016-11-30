@@ -50,6 +50,7 @@ import com.qpidnetwork.dating.home.HomeContentViewController.HomeContentViewCont
 import com.qpidnetwork.dating.home.MenuHelper.MenuType;
 import com.qpidnetwork.dating.setting.SettingPerfence;
 import com.qpidnetwork.dating.setting.SettingPerfence.NotificationItem;
+import com.qpidnetwork.dating.setting.SettingPerfence.NotificationSetting;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.livechat.LCMessageItem;
@@ -102,6 +103,7 @@ public class HomeActivity extends BaseFragmentActivity implements
 	public static final String START_EMF_LIST = "start_emf_list";
 	public static final String START_LIVECHAT_LIST = "start_livechat_list";
 	public static final String START_BROWSER_LINK = "start_brower_link";
+	public static final String START_SITE_ID = "start_site_id";
 	public static final String OPEN_LEFT_MENU = "open_left_menu";// 打开左侧导航菜单
 	public static final String OPEN_RIGHT_MENU = "open_right_menu";// 打开右侧chat列表
 	public static final String REFRESH_ONLINE_LADY="refresh_online_lady";//广播刷新女士列表
@@ -139,6 +141,8 @@ public class HomeActivity extends BaseFragmentActivity implements
 	private boolean isForceClose = false;
 
 	private MaterialDialogAlert mCrashDialog = null;
+	
+	private MaterialDialogAlert mChangeWebSiteDialog = null;
 
 	// ********************* 界面相关 *********************
 
@@ -229,6 +233,8 @@ public class HomeActivity extends BaseFragmentActivity implements
 		
 		//当用户在登陆状态下推出界面重新启动界面时，由于不执行登陆逻辑，需要客户端主动和后台同步App推广相关
 		CheckPromotionActivity();
+		
+		QpidApplication.isAppOpen = true;//用于Push打开App默认换站还是弹窗控制
 	}
 	/**
 	 * 刷新在线女士列表广播
@@ -478,37 +484,38 @@ public class HomeActivity extends BaseFragmentActivity implements
 				// 显示到消息中心
 				NotificationItem ni = SettingPerfence
 						.GetNotificationItem(QpidApplication.getContext());
-
-				boolean bSound = false;
-				boolean bVibrate = true;
-
-				switch (ni.mMailNotification) {
-				case SoundWithVibrate: {
-					bSound = true;
-					bVibrate = true;
+				if(ni.mMailNotification != NotificationSetting.None){
+					boolean bSound = false;
+					boolean bVibrate = true;
+	
+					switch (ni.mMailNotification) {
+					case SoundWithVibrate: {
+						bSound = true;
+						bVibrate = true;
+					}
+						break;
+					case Vibrate: {
+						bSound = false;
+						bVibrate = true;
+					}
+						break;
+					case Silent: {
+						bSound = false;
+						bVibrate = false;
+					}
+					default: {
+						bSound = false;
+						bVibrate = false;
+					}
+						break;
+					}
+	
+					EMFNotification.newInstance(mContext).ShowNotification(
+							com.qpidnetwork.dating.R.drawable.logo_40dp,
+							String.format(getString(string.emf_notification_unread,
+									obj.emfMsgTotalItem.msgTotal)), bVibrate,
+							bSound);
 				}
-					break;
-				case Vibrate: {
-					bSound = false;
-					bVibrate = true;
-				}
-					break;
-				case Silent: {
-					bSound = true;
-					bVibrate = false;
-				}
-				default: {
-					bSound = false;
-					bVibrate = false;
-				}
-					break;
-				}
-
-				EMFNotification.newInstance(mContext).ShowNotification(
-						com.qpidnetwork.dating.R.drawable.logo_40dp,
-						String.format(getString(string.emf_notification_unread,
-								obj.emfMsgTotalItem.msgTotal)), bVibrate,
-						bSound);
 			}
 		}
 			break;
@@ -621,7 +628,7 @@ public class HomeActivity extends BaseFragmentActivity implements
 		mMenuFragment.menuHelper.updateMenuItem(MenuType.MENU_MY_ADMIRERS, 0);
 
 		// 重新自动登录
-		LoginManager.getInstance().Logout(true);
+		LoginManager.getInstance().Logout(true, false);
 		LoginManager.getInstance().AutoLogin();
 
 		contentViewController.OnChangeWebsite(website);
@@ -843,10 +850,12 @@ public class HomeActivity extends BaseFragmentActivity implements
 					}
 				}
 			} else if (bundle.containsKey(START_BROWSER_LINK)) {
-				String moduleName = bundle.getString(START_BROWSER_LINK);
-				if (!TextUtils.isEmpty(moduleName)) {
-					// 打开指定模块
-					AppUrlHandler.AppUrlHandle(this, moduleName);
+				if(!needChangeWebSite(bundle)){
+					String moduleName = bundle.getString(START_BROWSER_LINK);
+					if (!TextUtils.isEmpty(moduleName)) {
+						// 打开指定模块
+						AppUrlHandler.AppUrlHandle(this, moduleName);
+					}
 				}
 			} else if (bundle.containsKey(OPEN_LEFT_MENU)) {//打开左侧菜单
 				if (mDrawerLayout != null) {
@@ -1315,6 +1324,43 @@ public class HomeActivity extends BaseFragmentActivity implements
 				}
 			}
 		}
+	}
+	
+	/**
+	 * 是否需要切换站点
+	 * @param bundle
+	 * @return
+	 */
+	private boolean needChangeWebSite(Bundle bundle){
+		boolean isNeedChange = false;
+		if(bundle != null && bundle.containsKey(START_SITE_ID)){
+			int siteId = bundle.getInt(START_SITE_ID);
+			final WebSiteType siteType = WebSiteType.values()[siteId];
+			if(!WebSiteManager.getInstance().isCurrentSite(siteType)){
+				isNeedChange = true;
+				if(mChangeWebSiteDialog == null){
+					mChangeWebSiteDialog = new MaterialDialogAlert(mContext);
+					mChangeWebSiteDialog.setMessage(String.format(getString(R.string.website_change_notify), siteType.name()));
+					mChangeWebSiteDialog.addButton(mChangeWebSiteDialog.createButton(
+							mContext.getString(R.string.common_btn_ok),
+							new OnClickListener() {
+
+								@Override
+								public void onClick(View v) {
+									if(mMenuFragment != null){
+										mMenuFragment.onWebSiteChange(siteType);
+									}
+								}
+							}));
+					mChangeWebSiteDialog.addButton(mChangeWebSiteDialog.createButton(
+							mContext.getString(R.string.common_btn_cancel), null));
+				}
+				if(!mChangeWebSiteDialog.isShowing()){
+					mChangeWebSiteDialog.show();
+				}
+			}
+		}
+		return isNeedChange;
 	}
 
 //	 private void showContacts() {

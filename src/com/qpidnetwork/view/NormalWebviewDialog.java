@@ -18,6 +18,7 @@ import com.qpidnetwork.framework.base.BaseCustomWebViewClient;
 import com.qpidnetwork.framework.base.BaseDialog;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
+import com.qpidnetwork.request.item.CookiesItem;
 
 public class NormalWebviewDialog extends BaseDialog{
 	
@@ -88,8 +89,18 @@ public class NormalWebviewDialog extends BaseDialog{
 			CookieSyncManager.createInstance(mContext);
 			CookieManager cookieManager = CookieManager.getInstance();
 			cookieManager.setAcceptCookie(true);
-			String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
-			cookieManager.setCookie(domain, phpSession);
+			cookieManager.removeSessionCookie();
+			CookiesItem[] cookieList = RequestJni.GetCookiesItem();
+			if(cookieList != null && cookieList.length > 0){
+				for(CookiesItem item : cookieList){
+					if(item != null){
+						String sessionString = item.cName + "=" + item.value;
+						cookieManager.setCookie(item.domain, sessionString);	
+					}
+				}
+			}
+//			String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
+//			cookieManager.setCookie(domain, phpSession);
 			CookieSyncManager.getInstance().sync();
 			
 			mWebView.loadUrl(url);

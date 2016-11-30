@@ -21,6 +21,8 @@ void onGetSms(long requestId, bool success, string errnum, string errmsg);
 void onVerifySms(long requestId, bool success, string errnum, string errmsg);
 void onGetFixedPhone(long requestId, bool success, string errnum, string errmsg);
 void onVerifyFixedPhone(long requestId, bool success, string errnum, string errmsg);
+void onSummitAppToken(long requestId, bool success, string errnum, string errmsg);
+void onUnbindAppToken(long requestId, bool success, string errnum, string errmsg);
 
 RequestAuthorizationControllerCallback gRequestAuthorizationControllerCallback {
 	onLoginWithFacebook,
@@ -31,7 +33,9 @@ RequestAuthorizationControllerCallback gRequestAuthorizationControllerCallback {
 	onGetSms,
 	onVerifySms,
 	onGetFixedPhone,
-	onVerifyFixedPhone
+	onVerifyFixedPhone,
+	onSummitAppToken,
+	onUnbindAppToken
 };
 RequestAuthorizationController gRequestAuthorizationController(&gHttpRequestManager, gRequestAuthorizationControllerCallback);
 
@@ -81,6 +85,7 @@ void onLoginWithFacebook(long requestId, bool success, LoginFacebookItem item, s
 					"Z"
 					"Z"
 					"Z"
+					"I"
 					"Z"
 					"Z"
 					"I"
@@ -130,6 +135,7 @@ void onLoginWithFacebook(long requestId, bool success, LoginFacebookItem item, s
 						item.premit,
 						item.ladyprofile,
 						item.livechat,
+						item.livechat_invite,
 						item.admirer,
 						item.bpemf,
 
@@ -578,6 +584,7 @@ void onLogin(long requestId, bool success, LoginItem item, string errnum, string
 					"Z"
 					"Z"
 					"Z"
+					"I"
 					"Z"
 					"Z"
 					"I"
@@ -626,6 +633,7 @@ void onLogin(long requestId, bool success, LoginItem item, string errnum, string
 						item.premit,
 						item.ladyprofile,
 						item.livechat,
+						item.livechat_invite,
 						item.admirer,
 						item.bpemf,
 
@@ -1025,6 +1033,124 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_Ver
 	gCallbackMap.Insert(requestId, obj);
 
 	env->ReleaseStringUTFChars(verify_code, cpVerify_code);
+
+	return requestId;
+}
+
+void onSummitAppToken(long requestId, bool success, string errnum, string errmsg) {
+	FileLog("httprequest", "Authorization.Native::onSummitAppToken( success : %s )", success?"true":"false");
+
+	/* turn object to java object here */
+	JNIEnv* env;
+	jint iRet = JNI_ERR;
+	gJavaVM->GetEnv((void**)&env, JNI_VERSION_1_4);
+	if( env == NULL ) {
+		iRet = gJavaVM->AttachCurrentThread((JNIEnv **)&env, NULL);
+	}
+
+	/* real callback java */
+	jobject callbackObj = gCallbackMap.Erase(requestId);
+	jclass callbackCls = env->GetObjectClass(callbackObj);
+
+	string signure = "(ZLjava/lang/String;Ljava/lang/String;)V";
+	jmethodID callback = env->GetMethodID(callbackCls, "OnRequest", signure.c_str());
+	FileLog("httprequest", "Authorization.Native::onSummitAppToken( callbackCls : %p, callback : %p, signure : %s )",
+			callbackCls, callback, signure.c_str());
+
+	if( callbackObj != NULL && callback != NULL ) {
+		jstring jerrno = env->NewStringUTF(errnum.c_str());
+		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+
+		FileLog("httprequest", "Authorization.Native::onSummitAppToken( CallObjectMethod )");
+
+		env->CallVoidMethod(callbackObj, callback, success, jerrno, jerrmsg);
+
+		env->DeleteGlobalRef(callbackObj);
+
+		env->DeleteLocalRef(jerrno);
+		env->DeleteLocalRef(jerrmsg);
+	}
+
+	if( iRet == JNI_OK ) {
+		gJavaVM->DetachCurrentThread();
+	}
+}
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJniAuthorization
+ * Method:    SummitAppToken
+ * Signature: (Ljava/lang/String;Lcom/qpidnetwork/request/OnRequestCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_SummitAppToken
+  (JNIEnv *env, jclass, jstring deviceId, jstring tokenId, jobject callback) {
+	jlong requestId = -1;
+
+	const char *cpTokenId = env->GetStringUTFChars(tokenId, 0);
+	const char *cpDeviceId = env->GetStringUTFChars(deviceId, 0);
+
+	requestId = gRequestAuthorizationController.SummitAppToken(cpDeviceId, cpTokenId);
+
+	jobject obj = env->NewGlobalRef(callback);
+	gCallbackMap.Insert(requestId, obj);
+
+	env->ReleaseStringUTFChars(tokenId, cpTokenId);
+	env->ReleaseStringUTFChars(deviceId, cpDeviceId);
+
+	return requestId;
+}
+
+void onUnbindAppToken(long requestId, bool success, string errnum, string errmsg) {
+	FileLog("httprequest", "Authorization.Native::onUnbindAppToken( success : %s )", success?"true":"false");
+
+	/* turn object to java object here */
+	JNIEnv* env;
+	jint iRet = JNI_ERR;
+	gJavaVM->GetEnv((void**)&env, JNI_VERSION_1_4);
+	if( env == NULL ) {
+		iRet = gJavaVM->AttachCurrentThread((JNIEnv **)&env, NULL);
+	}
+
+	/* real callback java */
+	jobject callbackObj = gCallbackMap.Erase(requestId);
+	jclass callbackCls = env->GetObjectClass(callbackObj);
+
+	string signure = "(ZLjava/lang/String;Ljava/lang/String;)V";
+	jmethodID callback = env->GetMethodID(callbackCls, "OnRequest", signure.c_str());
+	FileLog("httprequest", "Authorization.Native::onUnbindAppToken( callbackCls : %p, callback : %p, signure : %s )",
+			callbackCls, callback, signure.c_str());
+
+	if( callbackObj != NULL && callback != NULL ) {
+		jstring jerrno = env->NewStringUTF(errnum.c_str());
+		jstring jerrmsg = env->NewStringUTF(errmsg.c_str());
+
+		FileLog("httprequest", "Authorization.Native::onUnbindAppToken( CallObjectMethod )");
+
+		env->CallVoidMethod(callbackObj, callback, success, jerrno, jerrmsg);
+
+		env->DeleteGlobalRef(callbackObj);
+
+		env->DeleteLocalRef(jerrno);
+		env->DeleteLocalRef(jerrmsg);
+	}
+
+	if( iRet == JNI_OK ) {
+		gJavaVM->DetachCurrentThread();
+	}
+}
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJniAuthorization
+ * Method:    UnbindAppToken
+ * Signature: (Lcom/qpidnetwork/request/OnRequestCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_UnbindAppToken
+  (JNIEnv *env, jclass, jobject callback) {
+	jlong requestId = -1;
+
+	requestId = gRequestAuthorizationController.UnbindAppToken();
+
+	jobject obj = env->NewGlobalRef(callback);
+	gCallbackMap.Insert(requestId, obj);
 
 	return requestId;
 }

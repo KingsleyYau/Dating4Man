@@ -332,6 +332,62 @@ public class RequestOperator {
 					}
 				});
 	}
+	
+	/**
+	 * 2.11.添加App token
+	 * 
+	 * @param tokenId
+	 * @param callback
+	 * @return 请求唯一标识
+	 */
+	public long SummitTokenId(final String deviceId, final String tokenId,
+			final OnRequestCallback callback) {
+		// 登录状态改变重新调用接口
+		final OnLoginManagerCallback callbackLogin = new OnLoginManagerCallback() {
+
+			@Override
+			public void OnLogout(boolean bActive) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void OnLogin(boolean isSuccess, String errno, String errmsg,
+					LoginItem item, LoginErrorItem errItem) {
+				// TODO Auto-generated method stub
+				// 公共处理
+				HandleRequestCallback(isSuccess, errno, errmsg, this);
+				if (isSuccess) {
+					// 登录成功
+					// 再次调用jni接口
+					RequestJniAuthorization.SummitAppToken(deviceId, tokenId, callback);
+				} else {
+					// 登录不成功, 回调失败
+					callback.OnRequest(isSuccess, errno, errmsg);
+				}
+			}
+		};
+
+		// 调用jni接口
+		return RequestJniAuthorization.SummitAppToken(deviceId, tokenId,
+				new OnRequestCallback() {
+
+					@Override
+					public void OnRequest(boolean isSuccess, String errno,
+							String errmsg) {
+						// TODO Auto-generated method stub
+						// 公共处理
+						boolean bFlag = HandleRequestCallback(isSuccess, errno,
+								errmsg, callbackLogin);
+						if (bFlag) {
+							// 已经匹配处理, 等待回调
+						} else {
+							// 没有匹配处理, 直接回调
+							callback.OnRequest(isSuccess, errno, errmsg);
+						}
+					}
+				});
+	}
 
 	/**************************************************************************************
 	 * 认证模块

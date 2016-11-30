@@ -3,6 +3,7 @@ package com.qpidnetwork.request.item;
 import java.io.Serializable;
 
 import com.qpidnetwork.request.RequestEnum.Country;
+import com.qpidnetwork.request.RequestEnum.LivechatInviteRiskType;
 
 public class LoginItem implements Serializable {
 	/**
@@ -33,6 +34,7 @@ public class LoginItem implements Serializable {
 		this.premit = true;
 		this.ladyprofile = false;
 		this.livechat = false;
+		this.livechatInvite = LivechatInviteRiskType.UNLIMITED;
 		this.admirer = false;
 		this.bpemf = false;
 		
@@ -64,6 +66,7 @@ public class LoginItem implements Serializable {
 	 * @param premit			帐号可用状态
 	 * @param ladyprofile		女士详细信息风控标识（true：有风控，false：无）
 	 * @param livechat			LiveChat详细风控标识（true：有风控，false：无）
+	 * @param livechat_invite   聊天邀请（0：不作任何限制 ，1：限制发送信息，2：限制接受邀请，3 ：收发全部限制；）
 	 * @param admirer			意向信风控标识（true：有风控，false：无）
 	 * @param bpemf				EMF风控标识（true：有风控，false：无）
 	 * 
@@ -93,6 +96,7 @@ public class LoginItem implements Serializable {
 			boolean premit,
 			boolean ladyprofile,
 			boolean livechat,
+			int livechat_invite,
 			boolean admirer,
 			boolean bpemf,
 			
@@ -134,6 +138,11 @@ public class LoginItem implements Serializable {
 		this.premit = premit;
 		this.ladyprofile = ladyprofile;
 		this.livechat = livechat;
+		if( livechat_invite < 0 || livechat_invite >= LivechatInviteRiskType.values().length ) {
+			this.livechatInvite = LivechatInviteRiskType.values()[0];
+		} else {
+			this.livechatInvite = LivechatInviteRiskType.values()[livechat_invite];
+		}
 		this.admirer = admirer;
 		this.bpemf = bpemf;
 		
@@ -164,6 +173,7 @@ public class LoginItem implements Serializable {
 	public boolean premit;
 	public boolean ladyprofile;
 	public boolean livechat;
+	public LivechatInviteRiskType livechatInvite = LivechatInviteRiskType.UNLIMITED;
 	public boolean admirer;
 	public boolean bpemf;
 	
@@ -220,6 +230,7 @@ public class LoginItem implements Serializable {
 			this.premit = item.premit;
 			this.ladyprofile = item.ladyprofile;
 			this.livechat = item.livechat;
+			this.livechatInvite = item.livechatInvite;
 			this.admirer = item.admirer;
 			this.bpemf = item.bpemf;
 			

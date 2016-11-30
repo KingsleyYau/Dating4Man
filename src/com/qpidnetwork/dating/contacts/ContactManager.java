@@ -31,6 +31,7 @@ import com.qpidnetwork.dating.lady.LadyDetailManager.OnLadyDetailManagerQueryLad
 import com.qpidnetwork.dating.livechat.LiveChatNotification;
 import com.qpidnetwork.dating.setting.SettingPerfence;
 import com.qpidnetwork.dating.setting.SettingPerfence.NotificationItem;
+import com.qpidnetwork.dating.setting.SettingPerfence.NotificationSetting;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.StringUtil;
@@ -124,56 +125,58 @@ public class ContactManager implements OnLoginManagerCallback,
 							.newInstance(QpidApplication.getContext());
 					NotificationItem ni = SettingPerfence
 							.GetNotificationItem(QpidApplication.getContext());
-
-					boolean bSound = false;
-					boolean bVibrate = true;
-
-					switch (ni.mChatNotification) {
-					case SoundWithVibrate: {
-						bSound = true;
-						bVibrate = true;
-					}
-						break;
-					case Vibrate: {
-						bSound = false;
-						bVibrate = true;
-					}
-						break;
-					case Silent: {
-						bSound = true;
-						bVibrate = false;
-					}
-					default: {
-						bSound = false;
-						bVibrate = false;
-					}
-						break;
-					}
-
-					// ExpressionImageGetter imageGetter = new
-					// ExpressionImageGetter(
-					// QpidApplication.getContext(),
-					// UnitConversion.dip2px(QpidApplication.getContext(), 28),
-					// UnitConversion.dip2px(QpidApplication.getContext(), 28)
-					// );
-					String tips = "";
-					if (item.msgType != MessageType.Text) {
-						if(item.getUserItem() != null){
-							tips = item.getUserItem().userName + ": "
-									+ generateMsgHint(item);
+					
+					if(ni.mChatNotification != NotificationSetting.None){
+						boolean bSound = false;
+						boolean bVibrate = true;
+	
+						switch (ni.mChatNotification) {
+						case SoundWithVibrate: {
+							bSound = true;
+							bVibrate = true;
 						}
-					} else {
-						String msgTemp = (item.getTextItem().message != null) ? item
-								.getTextItem().message : "";
-						msgTemp = msgTemp.replaceAll("\\[\\w*:[0-9]*\\]",
-								"[smiley]");
-						if(item.getUserItem() != null){
-							tips = item.getUserItem().userName + ": " + msgTemp;
+							break;
+						case Vibrate: {
+							bSound = false;
+							bVibrate = true;
 						}
-					}
-					if(!TextUtils.isEmpty(tips)){
-						nt.ShowNotification(R.drawable.logo_40dp, tips, bVibrate,
-								bSound);
+							break;
+						case Silent: {
+							bSound = false;
+							bVibrate = false;
+						}
+						default: {
+							bSound = false;
+							bVibrate = false;
+						}
+							break;
+						}
+	
+						// ExpressionImageGetter imageGetter = new
+						// ExpressionImageGetter(
+						// QpidApplication.getContext(),
+						// UnitConversion.dip2px(QpidApplication.getContext(), 28),
+						// UnitConversion.dip2px(QpidApplication.getContext(), 28)
+						// );
+						String tips = "";
+						if (item.msgType != MessageType.Text) {
+							if(item.getUserItem() != null){
+								tips = item.getUserItem().userName + ": "
+										+ generateMsgHint(item);
+							}
+						} else {
+							String msgTemp = (item.getTextItem().message != null) ? item
+									.getTextItem().message : "";
+							msgTemp = msgTemp.replaceAll("\\[\\w*:[0-9]*\\]",
+									"[smiley]");
+							if(item.getUserItem() != null){
+								tips = item.getUserItem().userName + ": " + msgTemp;
+							}
+						}
+						if(!TextUtils.isEmpty(tips)){
+							nt.ShowNotification(R.drawable.logo_40dp, tips, bVibrate,
+									bSound);
+						}
 					}
 				}
 					break;
@@ -187,42 +190,43 @@ public class ContactManager implements OnLoginManagerCallback,
 						//后台被踢时，notify user
 						NotificationItem ni = SettingPerfence
 								.GetNotificationItem(QpidApplication.getContext());
-
-						boolean bSound = false;
-						boolean bVibrate = true;
-
-						switch (ni.mPushNotification) {
-						case SoundWithVibrate: {
-							bSound = true;
-							bVibrate = true;
+						if(ni.mPushNotification != NotificationSetting.None){
+							boolean bSound = false;
+							boolean bVibrate = true;
+	
+							switch (ni.mPushNotification) {
+							case SoundWithVibrate: {
+								bSound = true;
+								bVibrate = true;
+							}
+								break;
+							case Vibrate: {
+								bSound = false;
+								bVibrate = true;
+							}
+								break;
+							case Silent: {
+								bSound = false;
+								bVibrate = false;
+							}
+							default: {
+								bSound = false;
+								bVibrate = false;
+							}
+								break;
+							}
+							String tips = "";
+							if(QpidApplication.kickOffType == KickOfflineType.Maintain){
+								tips = mContext.getString(R.string.livechat_kickoff_by_sever_update);
+							}
+							else{
+								tips = mContext.getString(R.string.livechat_kickoff_by_other);
+							}
+							KickOffNotification.newInstance(mContext).ShowNotification(
+									com.qpidnetwork.dating.R.drawable.logo_40dp,
+									tips, bVibrate,
+									bSound);
 						}
-							break;
-						case Vibrate: {
-							bSound = false;
-							bVibrate = true;
-						}
-							break;
-						case Silent: {
-							bSound = true;
-							bVibrate = false;
-						}
-						default: {
-							bSound = false;
-							bVibrate = false;
-						}
-							break;
-						}
-						String tips = "";
-						if(QpidApplication.kickOffType == KickOfflineType.Maintain){
-							tips = mContext.getString(R.string.livechat_kickoff_by_sever_update);
-						}
-						else{
-							tips = mContext.getString(R.string.livechat_kickoff_by_other);
-						}
-						KickOffNotification.newInstance(mContext).ShowNotification(
-								com.qpidnetwork.dating.R.drawable.logo_40dp,
-								tips, bVibrate,
-								bSound);
 					}
 					
 					Intent intent = new Intent();
@@ -257,7 +261,7 @@ public class ContactManager implements OnLoginManagerCallback,
 				}
 					break;
 				case REQUEST_LIVECHAT_LOGIN_FAIL_NEED_RELOGIN: {
-					LoginManager.getInstance().Logout(false);
+					LoginManager.getInstance().Logout(false, false);
 					LoginManager.getInstance().AutoLogin();
 				}break;
 				default:

@@ -22,6 +22,7 @@ import com.qpidnetwork.dating.authorization.LoginManager;
 import com.qpidnetwork.dating.authorization.LoginManager.LoginStatus;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.credit.BuyCreditActivity;
+import com.qpidnetwork.dating.gcm.GCMPushManager;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.framework.util.CompatUtil;
 import com.qpidnetwork.framework.util.Log;
@@ -34,6 +35,7 @@ import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.OnGetMyProfileCallback;
 import com.qpidnetwork.request.OnOtherGetCountCallback;
 import com.qpidnetwork.request.OnRequestCallback;
+import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestOperator;
 import com.qpidnetwork.request.RequestJniMonthlyFee.MemberType;
 import com.qpidnetwork.request.item.OtherGetCountItem;
@@ -219,7 +221,7 @@ public class MyProfileActivity extends BaseFragmentActivity implements MaterialT
 	 * @param view
 	 */
 	public void onClickLogout(View view) {
-		LoginManager.getInstance().LogoutAndClean(false);
+		LoginManager.getInstance().LogoutAndClean(false, true);
 		finish();
 	}
 	

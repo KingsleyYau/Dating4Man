@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.qpidnetwork.dating.advertisement.AdvertisementManager;
 import com.qpidnetwork.dating.authorization.LoginManager.OnLoginManagerCallback;
 import com.qpidnetwork.dating.authorization.LoginPerfence;
+import com.qpidnetwork.dating.gcm.GcmIntentService;
 import com.qpidnetwork.dating.home.AppUrlHandler;
 import com.qpidnetwork.dating.home.HomeActivity;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
@@ -23,6 +24,7 @@ import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.framework.util.StringUtil;
 import com.qpidnetwork.manager.ConfigManager;
 import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
+import com.qpidnetwork.manager.WebSiteManager.WebSiteType;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
@@ -54,6 +56,7 @@ public class DefaultActivity extends BaseFragmentActivity implements OnLoginMana
 	
 	//外部链接参数启动
 	private String launchModule = "";
+	private int launchSiteId = -1; 
 
 	
 	private int[]  imgesResourceIds = new int[]{
@@ -128,6 +131,16 @@ public class DefaultActivity extends BaseFragmentActivity implements OnLoginMana
 		    	String gaCategory = getString(R.string.OpenApp_Category);
 		    	onAnalyticsEvent(gaCategory, gaAction, gaAction + getString(R.string.OpenApp_Label) + gaLabel);
 		    }  
+		}else{
+			Bundle extra = getIntent().getExtras();
+			if(extra != null){ 
+				if(extra.containsKey(GcmIntentService.NOTIFICATION_JUMP_URL)){
+					launchModule = extra.getString(GcmIntentService.NOTIFICATION_JUMP_URL);
+				}
+				if(extra.containsKey(GcmIntentService.NOTIFICATION_SITE_ID)){
+					launchSiteId = extra.getInt(GcmIntentService.NOTIFICATION_SITE_ID);
+				}
+			}
 		}
 	}
 	
@@ -274,10 +287,21 @@ public class DefaultActivity extends BaseFragmentActivity implements OnLoginMana
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			startActivity(intent);
 		} else {
+			WebSiteType siteType = null;
+			if(launchSiteId != -1){
+				siteType = WebSiteManager.getInstance().ParsingWebSite(String.valueOf(launchSiteId));
+			}
 			Intent intent = new Intent(mContext, HomeActivity.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			if(!TextUtils.isEmpty(launchModule)){
 				intent.putExtra(HomeActivity.START_BROWSER_LINK, launchModule);
+			}
+			if(siteType != null){
+				if(!QpidApplication.isAppOpen){
+					WebSiteManager.getInstance().ChangeWebSite(siteType);
+				}else{
+					intent.putExtra(HomeActivity.START_SITE_ID, siteType.ordinal());
+				}
 			}
 			startActivity(intent);
 		}

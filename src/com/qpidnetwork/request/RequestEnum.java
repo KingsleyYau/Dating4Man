@@ -553,4 +553,14 @@ public class RequestEnum {
     	Hidden,
     	Offline,
     }
+    
+    /**
+     * 聊天邀请风控类型
+     */
+    public enum LivechatInviteRiskType{
+    	UNLIMITED,
+    	SEND_LIMITED,
+    	RECV_LIMITED,
+    	SEND_RECV_LIMITED
+    }
 }

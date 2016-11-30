@@ -69,6 +69,7 @@ import com.qpidnetwork.request.OnOtherGetCountCallback;
 import com.qpidnetwork.request.OnQueryChatRecordCallback;
 import com.qpidnetwork.request.OnQueryChatRecordMutipleCallback;
 import com.qpidnetwork.request.OnRequestFileCallback;
+import com.qpidnetwork.request.RequestEnum.LivechatInviteRiskType;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestJniLiveChat;
 import com.qpidnetwork.request.RequestJniLiveChat.PhotoModeType;
@@ -357,12 +358,17 @@ public class LiveChatManager
 					if (msg.obj instanceof Coupon) {
 						// 执行使用试聊券流程
 						Coupon coupon = (Coupon)msg.obj;
-						if (!UseTryTicket(coupon.userId)) {
-							// 执行失败
-							Message msgSendMsg = Message.obtain();
-							msgSendMsg.what = LiveChatRequestOptType.SendMessageListConnectFail.ordinal();
-							msgSendMsg.obj = coupon.userId;
-							mHandler.sendMessage(msgSendMsg);
+						//邀请禁发
+						if(isSendMessageLimited(coupon.userId)){
+							SendMessageList(coupon.userId);
+						}else{
+							if (!UseTryTicket(coupon.userId)) {
+								// 执行失败
+								Message msgSendMsg = Message.obtain();
+								msgSendMsg.what = LiveChatRequestOptType.SendMessageListConnectFail.ordinal();
+								msgSendMsg.obj = coupon.userId;
+								mHandler.sendMessage(msgSendMsg);
+							}
 						}
 					}
 				}break;
@@ -433,7 +439,7 @@ public class LiveChatManager
 				}break;
 				case LoginManagerLogout: {
 					if (null != LoginManager.getInstance()) {
-						LoginManager.getInstance().LogoutAndClean(true);
+						LoginManager.getInstance().LogoutAndClean(true, false);
 					}
 				}break;
 				case CheckFunctionsFinish: {
@@ -1628,6 +1634,14 @@ public class LiveChatManager
 	 */
 	private void SendMessageItem(LCMessageItem item)
 	{
+		//禁发功能处理
+		if(item != null && item.getUserItem() != null
+				&& isSendMessageLimited(item.getUserItem().userId)){
+			item.statusType = StatusType.Finish;
+			mCallbackHandler.OnSendMessage(LiveChatErrType.Success, "", item);
+			return;
+		}
+		
 		// 发送消息
 		switch (item.msgType) 
 		{
@@ -1694,10 +1708,7 @@ public class LiveChatManager
 			// 添加到历史记录
 			userItem.insertSortMsgList(item);
 			
-			//添加消息到待发送列表
-			userItem.addToSendMsgList(item);
-			//获取对方支持功能列表
-			mLCFunctionCheckManager.CheckFunctionSupported(userId);
+			SendMessagePreprocess(item);
 			
 //			if (IsSendMessageNow(userItem)) 
 //			{
@@ -1959,10 +1970,7 @@ public class LiveChatManager
 			// 添加到历史记录
 			userItem.insertSortMsgList(item);
 			
-			//添加消息到待发送列表
-			userItem.addToSendMsgList(item);
-			//获取对方支持功能列表
-			mLCFunctionCheckManager.CheckFunctionSupported(userId);
+			SendMessagePreprocess(item);
 
 //			if (IsSendMessageNow(userItem)) 
 //			{
@@ -2144,10 +2152,7 @@ public class LiveChatManager
 		// 添加到历史记录
 		userItem.insertSortMsgList(item);
 		
-		//添加消息到待发送列表
-		userItem.addToSendMsgList(item);
-		//获取对方支持功能列表
-		mLCFunctionCheckManager.CheckFunctionSupported(userId);
+		SendMessagePreprocess(item);
 		
 //		if (IsSendMessageNow(userItem)) 
 //		{
@@ -2493,10 +2498,7 @@ public class LiveChatManager
 		// 添加到聊天记录中
 		userItem.insertSortMsgList(item);
 		
-		//添加消息到待发送列表
-		userItem.addToSendMsgList(item);
-		//获取对方支持功能列表
-		mLCFunctionCheckManager.CheckFunctionSupported(userId);
+		SendMessagePreprocess(item);
 //		if (IsSendMessageNow(userItem)) 
 //		{
 //			// 发送消息
@@ -2705,10 +2707,7 @@ public class LiveChatManager
 			// 添加到历史记录
 			userItem.insertSortMsgList(item);
 			
-			//添加消息到待发送列表
-			userItem.addToSendMsgList(item);
-			//获取对方支持功能列表
-			mLCFunctionCheckManager.CheckFunctionSupported(userId);
+			SendMessagePreprocess(item);
 
 //			if (IsSendMessageNow(userItem)) 
 //			{
@@ -4065,6 +4064,11 @@ public class LiveChatManager
 		
 		LCMessageItem item = null;
 		
+		//邀请风控处理
+		if(IsRecvMessageLimited(fromId)){
+			return;
+		}
+		
 		// 判断是否邀请消息
 		HandleInviteMsgType handleType = mInviteMgr.IsToHandleInviteMsg(fromId, charget, msgType);
 		if (handleType == HandleInviteMsgType.HANDLE) {
@@ -4136,6 +4140,11 @@ public class LiveChatManager
 		// 返回票根给服务器
 		LiveChatClient.UploadTicket(fromId, ticket);
 		
+		//邀请风控处理
+		if(IsRecvMessageLimited(fromId)){
+			return;
+		}
+		
 		// 添加用户到列表中（若列表中用户不存在）
 		LCUserItem userItem = mUserMgr.getUserItem(fromId);
 		if (null == userItem) {
@@ -4192,6 +4201,11 @@ public class LiveChatManager
 			, String fileType
 			, int timeLen) 
 	{
+		//邀请风控处理
+		if(IsRecvMessageLimited(fromId)){
+			return;
+		}
+		
 		// 添加用户到列表中（若列表中用户不存在）
 		LCUserItem userItem = mUserMgr.getUserItem(fromId);
 		if (null == userItem) {
@@ -4256,6 +4270,11 @@ public class LiveChatManager
 		// 返回票根给服务器
 		LiveChatClient.UploadTicket(fromId, ticket);
 		
+		//邀请风控处理
+		if(IsRecvMessageLimited(fromId)){
+			return;
+		}
+		
 		// 添加用户到列表中（若列表中用户不存在）
 		LCUserItem userItem = mUserMgr.getUserItem(fromId);
 		if (null == userItem) {
@@ -4316,6 +4335,11 @@ public class LiveChatManager
 	{
 		// 返回票根给服务器
 		LiveChatClient.UploadTicket(fromId, ticket);
+		
+		//邀请风控处理
+		if(IsRecvMessageLimited(fromId)){
+			return;
+		}
 
 		// 添加用户到列表中（若列表中用户不存在）
 		LCUserItem userItem = mUserMgr.getUserItem(fromId);
@@ -4528,6 +4552,11 @@ public class LiveChatManager
 		// 返回票根给服务器
 		LiveChatClient.UploadTicket(fromId, ticket);
 		
+		//邀请风控处理
+		if(IsRecvMessageLimited(fromId)){
+			return;
+		}
+		
 		// 添加用户到列表中（若列表中用户不存在）
 		LCUserItem userItem = mUserMgr.getUserItem(fromId);
 		if (null == userItem) {
@@ -4594,6 +4623,11 @@ public class LiveChatManager
 	{
 		// 返回票根给服务器
 		LiveChatClient.UploadTicket(fromId, ticket);
+		
+		//邀请风控处理
+		if(IsRecvMessageLimited(fromId)){
+			return;
+		}
 		
 		// 不允许接收视频消息
 		if (!mIsRecvVideoMsg) {
@@ -4815,6 +4849,11 @@ public class LiveChatManager
 	@Override
 	public void OnRecvAutoInviteMsg(String womanId, String manId, String key) {
 		// TODO Auto-generated method stub
+		//邀请风控处理
+		if(IsRecvMessageLimited(womanId)){
+			return;
+		}
+		
 		if(mAutoInviteFilter != null){
 			mAutoInviteFilter.filterAutoInvite(womanId, manId, key);
 		}
@@ -5153,4 +5192,70 @@ public class LiveChatManager
 	public void onDownloadThemeFinish(boolean isSuccess, String themeId, String sourceDir) {
 		mCallbackHandler.onThemeDownloadFinish(isSuccess, themeId, sourceDir);
 	}
+	
+	/********************************  livechat invite risk control  *********************************************/
+	/**
+	 * 读取邀请风控类型
+	 * @return
+	 */
+	private LivechatInviteRiskType getLivechatInviteRiskType(){
+		LivechatInviteRiskType riskType = LivechatInviteRiskType.UNLIMITED;
+		LoginParam param = LoginManager.getInstance().GetLoginParam();
+		if(param != null && param.item != null){
+			riskType = param.item.livechatInvite;
+		}
+		return riskType;
+	}
+	
+	/**
+	 * 消息发送预处理
+	 * @param item
+	 */
+	private void SendMessagePreprocess(LCMessageItem item){
+		//添加消息到待发送列表
+		item.getUserItem().addToSendMsgList(item);
+		//获取对方支持功能列表
+		mLCFunctionCheckManager.CheckFunctionSupported(item.getUserItem().userId);
+	}
+	
+	/**
+	 * 是否消息禁发
+	 * @param userId
+	 * @return
+	 */
+	private boolean isSendMessageLimited(String userId){
+		boolean isLimited = false;
+		LCUserItem userItem = mUserMgr.getUserItem(userId);
+		if(userItem != null){
+			LivechatInviteRiskType type = getLivechatInviteRiskType();
+			if((type == LivechatInviteRiskType.SEND_LIMITED
+					|| type == LivechatInviteRiskType.SEND_RECV_LIMITED)
+					&& (userItem.chatType == ChatType.Other
+					|| userItem.chatType == ChatType.ManInvite)){
+				isLimited = true;
+			}
+		}
+		return isLimited;
+	}
+	
+	/**
+	 * 邀请接收风控
+	 * @return
+	 */
+	private boolean IsRecvMessageLimited(String userId){
+		boolean isLimited = false;
+		LCUserItem userItem = mUserMgr.getUserItem(userId);
+		if(userItem != null){
+			//邀请风控处理
+			LivechatInviteRiskType type = getLivechatInviteRiskType();
+			if((type == LivechatInviteRiskType.RECV_LIMITED
+					|| type == LivechatInviteRiskType.SEND_RECV_LIMITED)
+					&& (userItem.chatType == ChatType.Other
+					|| userItem.chatType == ChatType.Invite)){
+				isLimited = true;
+			}
+		}
+		return isLimited;
+	}
+	/********************************  livechat invite risk control end *********************************************/
 }

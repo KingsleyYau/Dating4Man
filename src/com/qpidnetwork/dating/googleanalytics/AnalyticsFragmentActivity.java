@@ -3,6 +3,7 @@ package com.qpidnetwork.dating.googleanalytics;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.view.ActionMode;
 
 /**
  * 仅用于跟踪统计的FragmentActivity基类（如：GoogleAnalytics）
@@ -11,6 +12,8 @@ import android.support.v4.app.FragmentActivity;
  */
 public class AnalyticsFragmentActivity extends FragmentActivity
 {
+	private ActionMode mActionMode;
+	
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
@@ -25,6 +28,7 @@ public class AnalyticsFragmentActivity extends FragmentActivity
 		// 统计activity onDestroy()状态
 		AnalyticsManager.newInstance().ReportDestroy(this);
 	}
+	
 	
 	@Override
 	protected void onRestart() {
@@ -54,6 +58,8 @@ public class AnalyticsFragmentActivity extends FragmentActivity
 	@Override
 	protected void onPause() {
 		super.onPause();
+		//关闭ActionMode
+		endActionMode();
 		// 统计activity onPause()状态
 		AnalyticsManager.newInstance().ReportPause(this);
 	}
@@ -151,5 +157,30 @@ public class AnalyticsFragmentActivity extends FragmentActivity
 	protected void SetPageActivity(boolean isPageActivity)
 	{
 		AnalyticsManager.newInstance().SetPageActivity(this, isPageActivity);
+	}
+	
+	/****************** 解决 FloatingActionMode BadToken问题 （Samsung） ******************************/
+	
+	@Override
+	public void onActionModeStarted(ActionMode mode) {
+		// TODO Auto-generated method stub
+		super.onActionModeStarted(mode);
+		mActionMode = mode;
+	}
+	
+	@Override
+	public void onActionModeFinished(ActionMode mode) {
+		// TODO Auto-generated method stub
+		super.onActionModeFinished(mode);
+		mActionMode = null;
+	}
+	
+	/**
+	 * onPause 执行手动关闭
+	 */
+	private void endActionMode(){
+		if(mActionMode != null){
+			mActionMode.finish();
+		}
 	}
 }

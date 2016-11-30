@@ -149,6 +149,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 	private static final String CHAT_TARGET_NAME = "targetName";
 	private static final String CHAT_TARGET_PHOTO_URL = "targetPhotoUrl";
 
+	private static final int MAX_EDITTEXT_LENGTH = 200;
 	private static final int MIN_HEIGHT = 200;// 单位dp
 
 	public static final int CHAT_SELECT_PHOTO = 1001;
@@ -1342,7 +1343,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 						@Override
 						public void onClick(View v) {
 							/* 由于未登录成功等原因，底层认为异常返回空，跳去登陆处理,首先注销php登陆 */
-							LoginManager.newInstance(ChatActivity.this).LogoutAndClean(false);
+							LoginManager.newInstance(ChatActivity.this).LogoutAndClean(false, true);
 							
 							Intent intent = new Intent(ChatActivity.this,
 									HomeActivity.class);
@@ -1401,6 +1402,8 @@ public class ChatActivity extends BaseFragmentActivity implements
 	 * 基础控件监听设置
 	 */
 	private TextWatcher edtInputWatcher = new TextWatcher() {
+		private int textCount = 0;
+		private int selectionEnd = 0;
 		@Override
 		public void beforeTextChanged(CharSequence s, int start, int count,
 				int after) {
@@ -1441,6 +1444,10 @@ public class ChatActivity extends BaseFragmentActivity implements
 	            }
 	            mEmoticonsToRemove.clear();
 			}
+			if(textCount > MAX_EDITTEXT_LENGTH){
+            	selectionEnd = etMessage.getSelectionEnd();
+            	s.delete(MAX_EDITTEXT_LENGTH, selectionEnd);
+            }
 		};
 
 		@Override
@@ -1448,6 +1455,7 @@ public class ChatActivity extends BaseFragmentActivity implements
 				int count) {
 			// btnSend.setEnabled(etMessage.getText().length() > 0 ? true :
 			// false);
+			textCount = etMessage.getText().toString().length();
 		}
 	};
 
@@ -1710,6 +1718,12 @@ public class ChatActivity extends BaseFragmentActivity implements
 	 */
 	@SuppressWarnings("deprecation")
 	public void selectEmotion(int val) {
+	
+		if(MAX_EDITTEXT_LENGTH - etMessage.getText().toString().length() < 8){
+			//小表情占用字符串长度最大为8，字符串长度不够，拦截输入
+			return;
+		}
+		
 		int imgId = 0;
 		try {
 			imgId = R.drawable.class.getDeclaredField("e" + val).getInt(null);
@@ -1871,12 +1885,15 @@ public class ChatActivity extends BaseFragmentActivity implements
 	@Override
 	public void OnSendMessage(LiveChatErrType errType, String errmsg,
 			LCMessageItem item) {
-		if ((item != null) && (item.getUserItem() != null)
-				&& (item.getUserItem().userId != null)
-				&& (item.getUserItem().userId.equals(targetId))) {
-			LiveChatCallBackItem callBack = new LiveChatCallBackItem(
-					errType.ordinal(), null, errmsg, item);
-			onSendMessageUpdate(callBack);
+		if(item != null){
+			LCUserItem userItem = item.getUserItem();
+			if(userItem != null &&
+					userItem.userId != null
+					&& userItem.userId.equals(targetId)){
+				LiveChatCallBackItem callBack = new LiveChatCallBackItem(
+						errType.ordinal(), null, errmsg, item);
+				onSendMessageUpdate(callBack);
+			}
 		}
 	}
 
@@ -1914,12 +1931,15 @@ public class ChatActivity extends BaseFragmentActivity implements
 	@Override
 	public void OnSendVoice(LiveChatErrType errType, String errno,
 			String errmsg, LCMessageItem item) {
-		if ((item != null) && (item.getUserItem() != null)
-				&& (item.getUserItem().userId != null)
-				&& (item.getUserItem().userId.equals(targetId))) {
-			LiveChatCallBackItem callBack = new LiveChatCallBackItem(
-					errType.ordinal(), errno, errmsg, item);
-			onSendMessageUpdate(callBack);
+		if(item != null){
+			LCUserItem userItem = item.getUserItem();
+			if(userItem != null &&
+					userItem.userId != null
+					&& userItem.userId.equals(targetId)){
+				LiveChatCallBackItem callBack = new LiveChatCallBackItem(
+						errType.ordinal(), errno, errmsg, item);
+				onSendMessageUpdate(callBack);
+			}
 		}
 	}
 
@@ -1983,12 +2003,15 @@ public class ChatActivity extends BaseFragmentActivity implements
 	@Override
 	public void OnSendPhoto(LiveChatErrType errType, String errno,
 			String errmsg, LCMessageItem item) {
-		if ((item != null) && (item.getUserItem() != null)
-				&& (item.getUserItem().userId != null)
-				&& (item.getUserItem().userId.equals(targetId))) {
-			LiveChatCallBackItem callBack = new LiveChatCallBackItem(
-					errType.ordinal(), errno, errmsg, item);
-			onSendMessageUpdate(callBack);
+		if(item != null){
+			LCUserItem userItem = item.getUserItem();
+			if(userItem != null &&
+					userItem.userId != null
+					&& userItem.userId.equals(targetId)){
+				LiveChatCallBackItem callBack = new LiveChatCallBackItem(
+						errType.ordinal(), errno, errmsg, item);
+				onSendMessageUpdate(callBack);
+			}
 		}
 	}
 
@@ -1997,10 +2020,13 @@ public class ChatActivity extends BaseFragmentActivity implements
 			LCMessageItem item) {
 		/* 购买图片成功，更新item属性 */
 		if (success) {
-			if ((item != null) && (item.getUserItem() != null)
-					&& (item.getUserItem().userId != null)
-					&& (item.getUserItem().userId.equals(targetId))) {
-				onGetPhotoFeeSuccess(item);
+			if(item != null){
+				LCUserItem userItem = item.getUserItem();
+				if(userItem != null &&
+						userItem.userId != null
+						&& userItem.userId.equals(targetId)){
+					onGetPhotoFeeSuccess(item);
+				}
 			}
 		}
 	}
@@ -2011,10 +2037,13 @@ public class ChatActivity extends BaseFragmentActivity implements
 		if (errType == LiveChatErrType.Success) {
 			/* 在购买私密照界面购买清晰图成功，回调更新界面 */
 			if (!isCurrActivityVisible && item.getPhotoItem().charge) {
-				if ((item != null) && (item.getUserItem() != null)
-						&& (item.getUserItem().userId != null)
-						&& (item.getUserItem().userId.equals(targetId))) {
-					onGetShowPhotoSuccess(item);
+				if(item != null){
+					LCUserItem userItem = item.getUserItem();
+					if(userItem != null &&
+							userItem.userId != null
+							&& userItem.userId.equals(targetId)){
+						onGetShowPhotoSuccess(item);
+					}
 				}
 			}
 		}
@@ -2037,12 +2066,15 @@ public class ChatActivity extends BaseFragmentActivity implements
 	@Override
 	public void OnSendEmotion(LiveChatErrType errType, String errmsg,
 			LCMessageItem item) {
-		if ((item != null) && (item.getUserItem() != null)
-				&& (item.getUserItem().userId != null)
-				&& (item.getUserItem().userId.equals(targetId))) {
-			LiveChatCallBackItem callBack = new LiveChatCallBackItem(
-					errType.ordinal(), null, errmsg, item);
-			onSendMessageUpdate(callBack);
+		if(item != null){
+			LCUserItem userItem = item.getUserItem();
+			if(userItem != null &&
+					userItem.userId != null
+					&& userItem.userId.equals(targetId)){
+				LiveChatCallBackItem callBack = new LiveChatCallBackItem(
+						errType.ordinal(), null, errmsg, item);
+				onSendMessageUpdate(callBack);
+			}
 		}
 	}
 
@@ -2392,10 +2424,13 @@ public class ChatActivity extends BaseFragmentActivity implements
 	@Override
 	public void OnVideoFee(boolean success, String errno, String errmsg,
 			LCMessageItem item) {
-		if ((item != null) && (item.getUserItem() != null)
-				&& (!StringUtil.isEmpty(item.getUserItem().userId))
-				&& (item.getUserItem().userId.equals(targetId))) {
-			onVideoFeeCallback(success, errno, errmsg, item);
+		if(item != null){
+			LCUserItem userItem = item.getUserItem();
+			if(userItem != null &&
+					userItem.userId != null
+					&& userItem.userId.equals(targetId)){
+				onVideoFeeCallback(success, errno, errmsg, item);
+			}
 		}
 	}
 
@@ -2448,12 +2483,15 @@ public class ChatActivity extends BaseFragmentActivity implements
 	@Override
 	public void OnSendMagicIcon(LiveChatErrType errType, String errmsg,
 			LCMessageItem item) {
-		if ((item != null) && (item.getUserItem() != null)
-				&& (item.getUserItem().userId != null)
-				&& (item.getUserItem().userId.equals(targetId))) {
-			LiveChatCallBackItem callBack = new LiveChatCallBackItem(
-					errType.ordinal(), null, errmsg, item);
-			onSendMessageUpdate(callBack);
+		if(item != null){
+			LCUserItem userItem = item.getUserItem();
+			if(userItem != null &&
+					userItem.userId != null
+					&& userItem.userId.equals(targetId)){
+				LiveChatCallBackItem callBack = new LiveChatCallBackItem(
+						errType.ordinal(), null, errmsg, item);
+				onSendMessageUpdate(callBack);
+			}
 		}		
 	}
 

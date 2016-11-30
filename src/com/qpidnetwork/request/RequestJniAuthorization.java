@@ -199,4 +199,19 @@ public class RequestJniAuthorization {
      */
     static public native long VerifyFixedPhone(String verify_code, OnRequestCallback callback);
     
+    /**
+     * 2.11.添加App token
+     * @param tokenId
+     * @param callback
+     * @return
+     */
+    static public native long SummitAppToken(String deviceId, String tokenId, OnRequestCallback callback);
+    
+    /**
+     * 2.12. 销毁App token
+     * @param callback
+     * @return
+     */
+    static public native long UnbindAppToken(OnRequestCallback callback);
+    
 }

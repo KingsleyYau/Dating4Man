@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,6 +22,7 @@ import com.qpidnetwork.framework.base.BaseCustomWebViewClient;
 import com.qpidnetwork.framework.base.BaseFragmentActivity;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
+import com.qpidnetwork.request.item.CookiesItem;
 import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.view.ButtonRaised;
@@ -90,8 +92,18 @@ public class WebViewActivity extends BaseFragmentActivity implements OnLoginMana
 		CookieSyncManager.createInstance(this);
 		CookieManager cookieManager = CookieManager.getInstance();
 		cookieManager.setAcceptCookie(true);
-		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
-		cookieManager.setCookie(domain, phpSession);
+		cookieManager.removeSessionCookie();
+		CookiesItem[] cookieList = RequestJni.GetCookiesItem();
+		if(cookieList != null && cookieList.length > 0){
+			for(CookiesItem item : cookieList){
+				if(item != null){
+					String sessionString = item.cName + "=" + item.value;
+					cookieManager.setCookie(item.domain, sessionString);	
+				}
+			}
+		}
+//		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
+//		cookieManager.setCookie(domain, phpSession);
 		CookieSyncManager.getInstance().sync();
 		
 		mWebView.setWebViewClient(new BaseCustomWebViewClient(this) { 

@@ -70,6 +70,8 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 	
 	public static long mHomeActicityDestroyTime = 0;//用于推广计算弹出推广广告设计
 	
+	public static boolean isAppOpen = false; //用于区分App是否处于打开状态
+	
 	private enum ApplicationHandleType {
 		LOGIN_SUCCESS,
 		LOGOUT,
@@ -242,7 +244,6 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
 //		it.setPackage("com.qpidnetwork.dating");
 //		it.putExtra("referrer", "utm_source%3DQpidnetworkCom%26utm_medium%3Dcpc%26utm_term%3Dandroid%252Bbrowser%26utm_content%3Dmaxthon%2520browser%2520for%2520android%26utm_campaign%3DYou%2520never%2520know%2520fast.");
 //		sendBroadcast(it);
-
 	}
 	
 	public static synchronized Context getContext(){
@@ -356,4 +357,12 @@ public class QpidApplication extends Application implements OnLoginManagerCallba
             throw new RuntimeException(e);
         }
     }
+    
+    @Override
+    public void onTerminate() {
+    	// TODO Auto-generated method stub
+    	super.onTerminate();
+    	isAppOpen = false;
+    }
+    
 }

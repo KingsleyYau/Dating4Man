@@ -32,7 +32,7 @@ import com.qpidnetwork.request.RequestJniEMF.ReplyType;
 public class AppUrlHandler {
 	public static final String base_url = "qpidnetwork://app/open?module=";
 	static public final String quickMatchModuleName = "quickmatch";// "qpidnetwork://app/quickmatch";
-	static public final String emfModuleName = base_url + "emf";// "qpidnetwork://app/emf";
+	static public final String emfModuleName = "emf";// "qpidnetwork://app/emf";
 	static public final String loveCallModuleName = "lovecall";// "qpidnetwork://app/lovecall";
 	static public final String myAdmirerModuleName = "admirer";// "qpidnetwork://app/admirer";
 	static public final String myContactModuleName = "contact";// "qpidnetwork://app/contact";

@@ -29,6 +29,7 @@ import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.authorization.LoginParam.LoginType;
 import com.qpidnetwork.dating.bean.RequestBaseResponse;
 import com.qpidnetwork.dating.credit.AutoChargeManager;
+import com.qpidnetwork.dating.gcm.GCMPushManager;
 import com.qpidnetwork.dating.googleanalytics.AnalyticsManager;
 import com.qpidnetwork.framework.util.Log;
 import com.qpidnetwork.manager.ConfigManager;
@@ -38,6 +39,7 @@ import com.qpidnetwork.manager.ThemeConfigManager;
 import com.qpidnetwork.request.OnGetThemeConfigCallback;
 import com.qpidnetwork.request.OnLoginCallback;
 import com.qpidnetwork.request.OnLoginWithFacebookCallback;
+import com.qpidnetwork.request.OnRequestCallback;
 import com.qpidnetwork.request.RequestErrorCode;
 import com.qpidnetwork.request.RequestJni;
 import com.qpidnetwork.request.RequestJniAuthorization;
@@ -537,8 +539,20 @@ public class LoginManager implements Session.StatusCallback,
      * 注销
      * @param bActive			是否超时
      */
-    public void Logout(boolean bActive) {
-    	RequestJni.CleanCookies();
+    public void Logout(boolean bActive, boolean fromProfile) {
+    	if(fromProfile){
+        	/*手动注销，清除token*/
+        	GCMPushManager.getInstance(mContext).UnbindAppToken(new OnRequestCallback() {
+    			
+    			@Override
+    			public void OnRequest(boolean isSuccess, String errno, String errmsg) {
+    				//等候解除绑定后清除Cookie，防止Cookie丢失
+    				RequestJni.CleanCookies();
+    			}
+    		});
+    	}else{
+    		RequestJni.CleanCookies();
+    	}
     	
 		Log.d("LoginManager", "Logout( " + 
 				"mLoginStatus : " + mLoginStatus.name() + 
@@ -561,11 +575,12 @@ public class LoginManager implements Session.StatusCallback,
      * 非主动注销
      */
     public void Logout() {
-    	Logout(false);
+    	Logout(false, false);
     }
     
-    public void LogoutAndClean(boolean bKick) {
-    	Logout(true);
+    public void LogoutAndClean(boolean bKick, boolean fromProfile) {
+    	
+    	Logout(true, fromProfile);
     	
 		LoginParam param = LoginPerfence.GetLoginParam(mContext);
 		if( param != null ) {
@@ -776,6 +791,10 @@ public class LoginManager implements Session.StatusCallback,
 			//登陆成功刷新月费配置
 			MonthlyFeeManager.getInstance().QueryMemberType();
 			MonthlyFeeManager.getInstance().GetMonthlyFeeTips();
+			/**
+			 * 登录成功绑定push接收
+			 */
+			GCMPushManager.getInstance(mContext).register();
 		}
 		// 通知其他模块
 		for(OnLoginManagerCallback callback : mCallbackList) {

@@ -18,6 +18,7 @@ import com.qpidnetwork.dating.QpidApplication;
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.setting.SettingPerfence;
 import com.qpidnetwork.dating.setting.SettingPerfence.NotificationItem;
+import com.qpidnetwork.dating.setting.SettingPerfence.NotificationSetting;
 import com.qpidnetwork.manager.FileCacheManager;
 import com.qpidnetwork.request.OnAdMainAdvertCallback;
 import com.qpidnetwork.request.OnAdPushAdvertCallback;
@@ -166,36 +167,37 @@ public class AdvertisementManager implements OnAdMainAdvertCallback,
 							String appName = mContenxt.getResources().getString(R.string.app_name);
 							NotificationItem ni = SettingPerfence
 									.GetNotificationItem(QpidApplication.getContext());
-
-							boolean bSound = false;
-							boolean bVibrate = true;
-
-							switch (ni.mPushNotification) {
-							case SoundWithVibrate: {
-								bSound = true;
-								bVibrate = true;
+							if(ni.mPushNotification != NotificationSetting.None){
+								boolean bSound = false;
+								boolean bVibrate = true;
+	
+								switch (ni.mPushNotification) {
+								case SoundWithVibrate: {
+									bSound = true;
+									bVibrate = true;
+								}
+									break;
+								case Vibrate: {
+									bSound = false;
+									bVibrate = true;
+								}
+									break;
+								case Silent: {
+									bSound = false;
+									bVibrate = false;
+								}
+								default: {
+									bSound = false;
+									bVibrate = false;
+								}
+									break;
+								}
+								AdvertNotification.getInstance().ShowNotification(
+										R.drawable.ic_launcher,
+										item.message, appName,
+										item.message, item.adurl, item.openType,
+										bVibrate, bSound);
 							}
-								break;
-							case Vibrate: {
-								bSound = false;
-								bVibrate = true;
-							}
-								break;
-							case Silent: {
-								bSound = true;
-								bVibrate = false;
-							}
-							default: {
-								bSound = false;
-								bVibrate = false;
-							}
-								break;
-							}
-							AdvertNotification.getInstance().ShowNotification(
-									R.drawable.ic_launcher,
-									item.message, appName,
-									item.message, item.adurl, item.openType,
-									bVibrate, bSound);
 						}
 					}
 				}

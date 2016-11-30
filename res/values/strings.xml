@@ -39,6 +39,7 @@
 	<string name="logn_secure_code">Secure code</string>
 	<string name="login_connect_with_facebook">Connect with Facebook</string>
 	<string name="login">Login</string>
+	<string name="website_change_notify">Do you want to change to %s ?</string>
 	
 	<!-- Home -->
 	<string name="search_criterial">Search Criteria</string>

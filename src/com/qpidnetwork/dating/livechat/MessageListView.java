@@ -1175,7 +1175,7 @@ public class MessageListView extends ScrollLayout implements
 //			param.password = "";
 //			LoginPerfence.SaveLoginParam(mContext, param);
 
-			LoginManager.newInstance(mContext).LogoutAndClean(false);
+			LoginManager.newInstance(mContext).LogoutAndClean(false, true);
 			((ChatActivity) mContext).finish();
 			Intent loginIntent = new Intent(mContext, RegisterActivity.class);
 			mContext.startActivity(loginIntent);
@@ -1344,19 +1344,21 @@ public class MessageListView extends ScrollLayout implements
 		/* 关闭所有正在播放的动画 */
 		isDestroyed = true;
 		stopPlaying();
-		getContainer().removeAllViews();
 		if (beanList != null) {
 			for (LCMessageItem item : beanList) {
 				if (item.msgType == MessageType.Emotion) {
 					if (mPositionMap.containsKey(item.msgId)) {
 						int postion = mPositionMap.get(item.msgId);
-						((EmotionPlayer) getContainer().getChildAt(postion)
-								.findViewById(R.id.emotionPlayer)).stop();
+						View view = getContainer().getChildAt(postion);
+						if(view != null){
+							((EmotionPlayer) view.findViewById(R.id.emotionPlayer)).stop();
+						}
 					}
 				}
 			}
 			beanList.clear();
 		}
+		getContainer().removeAllViews();
 		mPositionMap.clear();
 	}
 

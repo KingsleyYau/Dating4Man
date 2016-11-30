@@ -429,10 +429,12 @@ public class LCMagicIconManager implements LCMagicIconDownloaderCallback{
 		File magicDir = new File(mDirPath);
 		if (magicDir.exists() && magicDir.isDirectory()) {
 			File[] files = magicDir.listFiles();
-			for (int i = 0; i < files.length; i++) {
-				if (files[i].isFile() || files[i].isDirectory()) {
-					files[i].delete();
-				} 
+			if(files != null){
+				for (int i = 0; i < files.length; i++) {
+					if (files[i].isFile() || files[i].isDirectory()) {
+						files[i].delete();
+					} 
+				}
 			}
 		}
 	}

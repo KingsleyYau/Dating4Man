@@ -40,6 +40,7 @@ import com.qpidnetwork.manager.ConfigManager.OnConfigManagerCallback;
 import com.qpidnetwork.manager.MonthlyFeeManager;
 import com.qpidnetwork.manager.WebSiteManager;
 import com.qpidnetwork.request.RequestJni;
+import com.qpidnetwork.request.item.CookiesItem;
 import com.qpidnetwork.request.item.LoginErrorItem;
 import com.qpidnetwork.request.item.LoginItem;
 import com.qpidnetwork.request.item.OtherSynConfigItem;
@@ -401,9 +402,19 @@ public class BuyCreditActivity extends BaseActionBarFragmentActivity implements 
 		CookieSyncManager.createInstance(this);
 		CookieManager cookieManager = CookieManager.getInstance();
 		cookieManager.setAcceptCookie(true);
+		cookieManager.removeSessionCookie();
+		CookiesItem[] cookieList = RequestJni.GetCookiesItem();
+		if(cookieList != null && cookieList.length > 0){
+			for(CookiesItem item : cookieList){
+				if(item != null){
+					String sessionString = item.cName + "=" + item.value;
+					cookieManager.setCookie(item.domain, sessionString);	
+				}
+			}
+		}
 		String domain = WebSiteManager.getInstance().GetWebSite().getAppSiteHost();
-		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
-		cookieManager.setCookie(domain, phpSession); // 这样行 TODO 报异常
+//		String phpSession = RequestJni.GetCookies(domain.substring(domain.indexOf("http://") + 7, domain.length()));
+//		cookieManager.setCookie(domain, phpSession); // 这样行 TODO 报异常
 		CookieSyncManager.getInstance().sync();
 		if((!StringUtil.isEmpty(addCredits2Url)) && (!StringUtil.isEmpty(orderId))){
 			//有订单号

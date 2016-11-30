@@ -79,6 +79,22 @@ JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_Get
 JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_VerifyFixedPhone
   (JNIEnv *, jclass, jstring, jobject);
 
+/*
+ * Class:     com_qpidnetwork_request_RequestJniAuthorization
+ * Method:    SummitAppToken
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Lcom/qpidnetwork/request/OnRequestCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_SummitAppToken
+  (JNIEnv *, jclass, jstring, jstring, jobject);
+
+/*
+ * Class:     com_qpidnetwork_request_RequestJniAuthorization
+ * Method:    UnbindAppToken
+ * Signature: (Lcom/qpidnetwork/request/OnRequestCallback;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_qpidnetwork_request_RequestJniAuthorization_UnbindAppToken
+  (JNIEnv *, jclass, jobject);
+
 #ifdef __cplusplus
 }
 #endif

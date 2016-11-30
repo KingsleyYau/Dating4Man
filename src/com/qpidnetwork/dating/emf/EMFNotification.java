@@ -12,6 +12,7 @@ import android.widget.RemoteViews;
 
 import com.qpidnetwork.dating.R;
 import com.qpidnetwork.dating.home.HomeActivity;
+import com.qpidnetwork.framework.util.NotificationGenerator;
 
 /**
  * LiveChat消息中心
@@ -125,7 +126,7 @@ public class EMFNotification {
         stackBuilder.addNextIntent(intent);
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(
-                    0,
+                	NotificationGenerator.getNotificationRequestId(),
                     PendingIntent.FLAG_UPDATE_CURRENT
                 );
         builder.setContentIntent(resultPendingIntent);

@@ -14,7 +14,7 @@ import android.util.Base64;
 import com.qpidnetwork.request.item.OtherVersionCheckItem;
 
 public class SettingPerfence {
-	public enum Notification {
+	public enum NotificationSetting {
 		SoundWithVibrate,
 		Vibrate,
 		Silent,
@@ -27,14 +27,14 @@ public class SettingPerfence {
 		 */
 		private static final long serialVersionUID = 4453217563778925265L;
 		public NotificationItem() {
-			mChatNotification = Notification.Vibrate;
-			mMailNotification = Notification.Vibrate;
-			mPushNotification = Notification.Vibrate;
+			mChatNotification = NotificationSetting.Vibrate;
+			mMailNotification = NotificationSetting.Vibrate;
+			mPushNotification = NotificationSetting.Vibrate;
 		}
 		
-		public Notification mChatNotification;
-		public Notification mMailNotification;
-		public Notification mPushNotification;
+		public NotificationSetting mChatNotification;
+		public NotificationSetting mMailNotification;
+		public NotificationSetting mPushNotification;
 	}
 	
 	/**
